@@ -96,7 +96,7 @@ class DteGuiaDespDirAntiguaController extends Controller
         foreach ($cliente->clientebloqueados as $clientebloqueado) {
             return redirect('dteguiadespdirantigua')->with([
                 'id' => 0,
-                'mensaje'=>'No es posible hacer Guia Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'mensaje'=>'No es posible hacer Guia Despacho, Condición financiera en revisión: ' . $clientebloqueado->descripcion,
                 'tipo_alert' => 'alert-error'
             ]);
         }

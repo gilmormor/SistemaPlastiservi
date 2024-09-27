@@ -139,7 +139,7 @@ $(document).ready(function () {
 
             }else{
                 aux_text = 
-                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Cliente Bloqueado: ${aux_clienteBloqueado}">
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}">
                         <button type="button" class="btn btn-default btn-xs" disabled>
                             <i class="fa fa-fw fa-lock text-danger text-danger"></i>
                         </button>
@@ -153,7 +153,7 @@ $(document).ready(function () {
                     <i class="fa fa-fw ${data.icono}"></i>
                 </button>
             </a>
-            <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
+            <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
                 <button type="button" class="btn btn-default btn-xs">
                     <i class="fa fa-fw fa-lock text-danger text-danger"></i>
                 </button>
@@ -162,7 +162,7 @@ $(document).ready(function () {
 
             /* if(data.clientebloqueado_descripcion != null){
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Condición financiera en revisión: " + data.clientebloqueado_descripcion + "'>"+
                         "<button type='button' class='btn btn-default btn-xs' disabled>" +
                             "<i class='fa fa-fw fa-lock text-danger text-danger'></i>"+
                         "</button>" +

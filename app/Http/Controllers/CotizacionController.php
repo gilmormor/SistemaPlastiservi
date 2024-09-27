@@ -95,7 +95,7 @@ class CotizacionController extends Controller
                     IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
                     IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
                     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
-                    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+                    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
                     IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
@@ -475,7 +475,7 @@ class CotizacionController extends Controller
             $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
             if($bloqcli["bloqueo"]){
                 return redirect('cotizacion')->with([
-                    'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'mensaje'=> "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -864,7 +864,7 @@ class CotizacionController extends Controller
                 if($bloqcli["bloqueo"]){
                     return response()->json([
                         'error' => 1,
-                        'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                        'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                         'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                     ]);
                 }
@@ -977,7 +977,7 @@ class CotizacionController extends Controller
                     return response()->json([
                         'error' => 1,
                         'id' => 0,
-                        'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                        'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                         'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                     ]);
                 }

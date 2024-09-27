@@ -105,7 +105,7 @@ $(document).ready(function () {
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Condición financiera en revisión: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{

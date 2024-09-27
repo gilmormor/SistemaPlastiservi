@@ -125,7 +125,7 @@ function ajaxRequest(data,url,funcion) {
                     $("#cliente_id").val(data.id);
                     $("#obs").focus();
                 } else {
-                    Biblioteca.notificaciones('Cliente: '+data.razonsocial+' ya está desbloqueado.', 'Plastiservi', 'error');
+                    Biblioteca.notificaciones('Cliente: '+data.razonsocial+' ya está Habilitado.', 'Plastiservi', 'error');
                     $("#rut").val('');
 				}
 			}

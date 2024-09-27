@@ -210,7 +210,7 @@ $("#rut").blur(function(){
 							$(".selectpicker").selectpicker('refresh');
 						}else{
 							swal({
-								title: 'Cliente Bloqueado.',
+								title: 'Condición financiera en revisión.',
 								text: respuesta.dte[0].descripcion,
 								icon: 'error',
 								buttons: {

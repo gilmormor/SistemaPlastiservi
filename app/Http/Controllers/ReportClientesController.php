@@ -72,7 +72,7 @@ class ReportClientesController extends Controller
             foreach ($datas as $data) {
                 $clientebloqueadodesc = "";
                 if($data->clientebloqueadodesc){
-                    $clientebloqueadodesc = 'Bloqueado: ' . $data->clientebloqueadodesc;
+                    $clientebloqueadodesc = 'Condición financiera en revisión: ' . $data->clientebloqueadodesc;
                 }
                 $respuesta['tabla'] .= "
                 <tr class='tooltipsC' data-toggle='tooltip' title='$clientebloqueadodesc'>

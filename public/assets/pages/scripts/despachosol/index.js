@@ -124,7 +124,7 @@ $(document).ready(function () {
             aux_displaybtnac = `style="padding-left: 0px;"`;
             aux_displaybtnbl = `style="padding-left: 0px;"`;
             aux_iconobloqueo = "fa-lock text-danger";
-            aux_mensajebloqueo = `Cliente Bloqueado: ${aux_clienteBloqueado}`;
+            aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;
             if(aux_clienteBloqueado == ""){
                 aux_displaybtnac = `style="padding-left: 0px;"`;
                 aux_displaybtnbl = `style="display:none;padding-left: 0px;"`;
@@ -133,14 +133,14 @@ $(document).ready(function () {
                 aux_displaybtnbl = `style="padding-left: 0px;"`;
                 if(data.modulo_id_orddesp  !== null){
                     aux_iconobloqueo = "fa-unlock text-yellow";
-                    aux_mensajebloqueo = `Desbloqueado para Despacho`;
+                    aux_mensajebloqueo = `Habilitado para Despacho`;
                 }
             }
             aux_displaybtnac = `style="padding-left: 0px;"`;
 
             /* if(data.clientebloqueado_descripcion != null){
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Condición financiera en revisión: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{

@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Cliente Desbloqueado
+Cliente Habilitado
 @endsection
 
 @section("scripts")
@@ -14,7 +14,7 @@ Cliente Desbloqueado
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Cliente Desbloqueado</h3>
+                <h3 class="box-title">Cliente Habilitado</h3>
                 <div class="box-tools pull-right">
                     <a href="{{route('crear_clientedesbloqueado', ['id' => '1'])}}" class="btn btn-block btn-success btn-sm">
                         <i class="fa fa-fw fa-plus-circle"></i>NotaVenta

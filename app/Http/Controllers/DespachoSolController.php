@@ -178,7 +178,7 @@ class DespachoSolController extends Controller
         $data = NotaVenta::findOrFail($id);
         if(isset($data->cliente->clientebloqueado->descripcion)){
             return redirect('despachosol')->with([
-                'mensaje'=>'Cliente bloqueado: ' . $data->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->cliente->razonsocial,
+                'mensaje'=>'Condición financiera en revisión: ' . $data->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->cliente->razonsocial,
                 'tipo_alert' => 'alert-error'
             ]);    
         }
@@ -203,7 +203,7 @@ class DespachoSolController extends Controller
             $respuesta = DataCobranza::llenartabla($request);
     
             return redirect('despachosol/listarnv')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         } */
@@ -277,7 +277,7 @@ class DespachoSolController extends Controller
             $respuesta = DataCobranza::llenartabla($request1);
 
             return redirect('despachosol/listarnv')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         } */
@@ -297,7 +297,7 @@ class DespachoSolController extends Controller
             foreach ($notaventa->cliente->clientebloqueados as $clientebloqueado) {
                 return redirect('despachosol')->with([
                     'id' => 0,
-                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                    'mensaje'=>'Registro no fue guardado. Condición financiera en revisión: ' . $clientebloqueado->descripcion,
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -305,7 +305,7 @@ class DespachoSolController extends Controller
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
                 return redirect('despachosol')->with([
-                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'mensaje'=>'Registro no fue guardado. Condición financiera en revisión: ' . $clibloq[0]->descripcion ,
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -487,7 +487,7 @@ class DespachoSolController extends Controller
         $clibloq = clienteBloqueado($data->notaventa->cliente_id,0,$request);
         if(!is_null($clibloq["bloqueo"])){   
             return redirect('despachosol')->with([
-                "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión por " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         } */
@@ -529,7 +529,7 @@ class DespachoSolController extends Controller
             foreach ($despachosol->notaventa->cliente->clientebloqueados as $clientebloqueado) {
                 return redirect('despachosol')->with([
                     'id' => 0,
-                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                    'mensaje'=>'Registro no fue guardado. Condición financiera en revisión: ' . $clientebloqueado->descripcion,
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -548,7 +548,7 @@ class DespachoSolController extends Controller
                 $respuesta = DataCobranza::llenartabla($request1);
     
                 return redirect('despachosol')->with([
-                    "mensaje" => "Cliente Bloqueado por " . $clibloq["bloqueo"],
+                    "mensaje" => "Condición financiera en revisión por " . $clibloq["bloqueo"],
                     "tipo_alert" => "alert-error"
                 ]);
             } */
@@ -557,7 +557,7 @@ class DespachoSolController extends Controller
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
                 return redirect('despachosol')->with([
-                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'mensaje'=>'Registro no fue guardado. Condición financiera en revisión: ' . $clibloq[0]->descripcion ,
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -1450,7 +1450,7 @@ class DespachoSolController extends Controller
 
                 return response()->json([
                     'error' => 1,
-                    'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                 ]);
             } */
@@ -2214,7 +2214,7 @@ class DespachoSolController extends Controller
         if(count($despachosol->notaventa->notaventacerradas) == 0){
             foreach ($despachosol->notaventa->cliente->clientebloqueados as $clientebloqueado) {
                 return [
-                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clientebloqueado->descripcion ,
+                    'mensaje'=>'Registro no fue guardado. Condición financiera en revisión: ' . $clientebloqueado->descripcion ,
                     'tipo_alert' => 'error'
                 ];
             }
@@ -2222,7 +2222,7 @@ class DespachoSolController extends Controller
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$despachosol->notaventa->cliente_id)->get();
             if(count($clibloq) > 0){
                 return [
-                    'mensaje'=>'Registro no fue guardado. Cliente Bloqueado: ' . $clibloq[0]->descripcion ,
+                    'mensaje'=>'Registro no fue guardado. Condición financiera en revisión: ' . $clibloq[0]->descripcion ,
                     'tipo_alert' => 'error'
                 ];
             }
@@ -2284,7 +2284,7 @@ class DespachoSolController extends Controller
         if(isset($despachosol->notaventa->cliente->clientebloqueado)){
             return [
                 'error' => 1,
-                'mensaje' => 'Cliente bloqueado: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
+                'mensaje' => 'Condición financiera en revisión: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
                 'tipo_alert' => 'error'
             ];
         }
@@ -2496,7 +2496,7 @@ function consulta($request,$aux_sql,$orden){
                                     FROM dteanul 
                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
                                     and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
-        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         '' as rutanuevasoldesp,
         notaventa.aprobfechahora as notaventa_aprobfechahora,
         cliente.limitecredito,
@@ -2600,7 +2600,7 @@ function consulta($request,$aux_sql,$orden){
                                     FROM dteanul 
                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
                                     and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
-        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         '' as rutanuevasoldesp
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
@@ -2669,7 +2669,7 @@ function consulta($request,$aux_sql,$orden){
                 WHERE notaventa_id=notaventa.id)) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
         tipoentrega.nombre as tipentnombre,tipoentrega.icono,
-        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         '' as rutanuevasoldesp
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
@@ -2854,7 +2854,7 @@ function reporte1($request){
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Condición financiera en revisión: $aux_descbloq'>
                                     <i class='fa fa-fw fa-lock text-danger'></i>
                                 </a>";
             }else{
@@ -3009,7 +3009,7 @@ function reportesoldesp1($request){
             $nuevoOrdDesp = "";
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoOrdDesp = "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                $nuevoOrdDesp = "<a class='btn-accion-tabla tooltipsC' title='Condición financiera en revisión: $aux_descbloq'>
                                     <button type='button' class='btn btn-default btn-xs' disabled>
                                         <i class='fa fa-fw fa-lock text-danger'></i>
                                     </button>
@@ -3199,7 +3199,7 @@ function reportesoldespcerrarNV1($request){
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Condición financiera en revisión: $aux_descbloq'>
                                     <i class='fa fa-fw fa-lock text-danger'></i>
                                 </a>";
             }else{
@@ -3472,7 +3472,7 @@ function consultasoldesp($request){
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_updated_at,
             cliente.limitecredito,
-            if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+            if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
             IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
             IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
             IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
@@ -3599,7 +3599,7 @@ function consultaindex(){
                                         WHERE dteanul.dte_id = dteguiadesp.dte_id 
                                         and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
-    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     cliente.limitecredito,
     IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,

@@ -133,7 +133,7 @@ $(document).ready(function () {
                 aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = ``;
-                aux_mensajebloqueo = `Cliente Bloqueado: ${aux_clienteBloqueado}`;
+                aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;
                 aux_iconobloqueo = "fa-lock text-danger";
                 if(aux_clienteBloqueado == ""){
                     aux_displaybtnac = ``;
@@ -143,7 +143,7 @@ $(document).ready(function () {
                     aux_displaybtnbl = ``;
                     if(data.modulo_id_orddesp  !== null){
                         aux_iconobloqueo = "fa-unlock text-yellow";
-                        aux_mensajebloqueo = `Desbloqueado para Despacho`;
+                        aux_mensajebloqueo = `Habilitado para Despacho`;
                     }
     
                 }
@@ -162,7 +162,7 @@ $(document).ready(function () {
                     </a>`;
                 }else{
                     aux_text += 
-                        `<a id="aac${data.id}" name="aac${data.id}" class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id})" aclassact="btn-accion-tabla tooltipsC enlace-soldesp" ahrefact="${nuevaaux_rutadespsol}" atitleact="Hacer solicitud despacho: ${data.tipentnombre}" iclassact="fa fa-fw ${data.icono}">
+                        `<a id="aac${data.id}" name="aac${data.id}" class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id})" aclassact="btn-accion-tabla tooltipsC enlace-soldesp" ahrefact="${nuevaaux_rutadespsol}" atitleact="Hacer solicitud despacho: ${data.tipentnombre}" iclassact="fa fa-fw ${data.icono}">
                             <button type="button" class="btn btn-default btn-xs">
                                 <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw fa-lock text-danger"></i>
                             </button>
@@ -196,7 +196,7 @@ $(document).ready(function () {
                         }
                     }
                     aux_text += 
-                        `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${aux_descbloq}">
+                        `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_descbloq}">
                             <i class="fa fa-fw fa-lock text-danger"></i>
                         </a>`;
                 }else{

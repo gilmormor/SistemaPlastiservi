@@ -139,7 +139,7 @@ $(document).ready(function () {
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = ``;
                 aux_iconobloqueo = "fa-lock text-danger";
-                aux_mensajebloqueo = `Cliente Bloqueado: ${aux_clienteBloqueado}`;    
+                aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;    
                 if(aux_clienteBloqueado == ""){
                     aux_displaybtnac = ``;
                     aux_displaybtnbl = `style="display:none;"`;
@@ -148,7 +148,7 @@ $(document).ready(function () {
                     aux_displaybtnbl = ``;
                     if(data.modulo_id_orddesp  !== null){
                         aux_iconobloqueo = "fa-unlock text-yellow";
-                        aux_mensajebloqueo = `Desbloqueado para Despacho`;
+                        aux_mensajebloqueo = `Habilitado para Despacho`;
                     }
                 }
 
@@ -169,7 +169,7 @@ $(document).ready(function () {
                                 </a>`;
 
                 }else{
-                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${aux_clienteBloqueado}">
+                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}">
                                         <button type="button" class="btn btn-default btn-xs" disabled>
                                             <i class="fa fa-fw fa-lock text-danger"></i>
                                         </button>
@@ -195,7 +195,7 @@ $(document).ready(function () {
 
 
                 /* if(data.clientebloqueado_descripcion !== null){
-                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Cliente Bloqueado: ${data.clientebloqueado_descripcion}">
+                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${data.clientebloqueado_descripcion}">
                                         <button type="button" class="btn btn-default btn-xs" disabled>
                                             <i class="fa fa-fw fa-lock text-danger"></i>
                                         </button>

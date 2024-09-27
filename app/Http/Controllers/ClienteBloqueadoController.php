@@ -106,8 +106,8 @@ class ClienteBloqueadoController extends Controller
         $request->request->add(['usuario_id' => auth()->id()]);
         $clientebloqueado = ClienteBloqueado::create($request->all());
         if($clientebloqueado){
-            $asunto = 'Cliente Bloqueado';
-            $cuerpo = "Cliente Bloqueado: Id $request->cliente_id";
+            $asunto = 'Condición financiera en revisión';
+            $cuerpo = "Condición financiera en revisión: Id $request->cliente_id";
             //$cliente = Cliente::findOrFail($request->cliente_id);
             foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
                 $notificaciones = new Notificaciones();
@@ -120,13 +120,13 @@ class ClienteBloqueadoController extends Controller
                 $notificaciones->vendedor_id = $vendedor->id;
                 $notificaciones->status = 1;                    
                 $notificaciones->nombretabla = 'clientebloqueado';
-                $notificaciones->mensaje = 'Cliente Bloqueado RUT: '.$clientebloqueado->cliente->rut;
+                $notificaciones->mensaje = 'Condición financiera en revisión RUT: '.$clientebloqueado->cliente->rut;
                 $notificaciones->mensajetitle = $clientebloqueado->descripcion;
                 $notificaciones->nombrepantalla = 'clientebloqueado.index';
                 $notificaciones->rutaorigen = 'clientebloqueado/crear';
                 $notificaciones->rutadestino = 'reportclientes';
                 $notificaciones->tabla_id = $clientebloqueado->id;
-                $notificaciones->accion = 'Cliente Bloqueado.';
+                $notificaciones->accion = 'Condición financiera en revisión.';
                 $notificaciones->icono = 'fa fa-fw fa-lock text-red';
                 $notificaciones->save();
     
@@ -207,8 +207,8 @@ class ClienteBloqueadoController extends Controller
     {
         $clientebloqueado = ClienteBloqueado::findOrFail($id);
         ClienteBloqueado::findOrFail($id)->update($request->all());
-        $asunto = 'Cliente Bloqueado';
-        $cuerpo = "Cliente Bloqueado: Id $request->cliente_id";
+        $asunto = 'Condición financiera en revisión';
+        $cuerpo = "Condición financiera en revisión: Id $request->cliente_id";
         foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
             $notificaciones = new Notificaciones();
             $notificaciones->usuarioorigen_id = auth()->id();
@@ -220,13 +220,13 @@ class ClienteBloqueadoController extends Controller
             $notificaciones->vendedor_id = $vendedor->id;
             $notificaciones->status = 1;                    
             $notificaciones->nombretabla = 'clientebloqueado';
-            $notificaciones->mensaje = 'Cliente Bloqueado RUT: '.$clientebloqueado->cliente->rut;
+            $notificaciones->mensaje = 'Condición financiera en revisión RUT: '.$clientebloqueado->cliente->rut;
             $notificaciones->mensajetitle = $clientebloqueado->descripcion;
             $notificaciones->nombrepantalla = 'clientebloqueado.index';
             $notificaciones->rutaorigen = 'clientebloqueado/crear';
             $notificaciones->rutadestino = 'reportclientes';
             $notificaciones->tabla_id = $clientebloqueado->id;
-            $notificaciones->accion = 'Cliente Bloqueado.';
+            $notificaciones->accion = 'Condición financiera en revisión.';
             $notificaciones->icono = 'fa fa-fw fa-lock text-red';
             $notificaciones->save();
 
@@ -251,8 +251,8 @@ class ClienteBloqueadoController extends Controller
                     $clientebloqueado = ClienteBloqueado::withTrashed()->findOrFail($request->id);
                     $clientebloqueado->usuariodel_id = auth()->id();
                     $clientebloqueado->save();
-                    $asunto = 'Cliente Desbloqueado';
-                    $cuerpo = "Cliente Desbloqueado: Id $clientebloqueado->cliente_id";
+                    $asunto = 'Cliente Habilitado';
+                    $cuerpo = "Cliente Habilitado: Id $clientebloqueado->cliente_id";
                     foreach ($clientebloqueado->cliente->vendedores as $vendedor) {
                         $notificaciones = new Notificaciones();
                         $notificaciones->usuarioorigen_id = auth()->id();
@@ -270,7 +270,7 @@ class ClienteBloqueadoController extends Controller
                         $notificaciones->rutaorigen = 'clientebloqueado/crear';
                         $notificaciones->rutadestino = 'reportclientes';
                         $notificaciones->tabla_id = $clientebloqueado->id;
-                        $notificaciones->accion = 'Cliente Desbloqueado.';
+                        $notificaciones->accion = 'Cliente Habilitado.';
                         $notificaciones->icono = 'fa fa-fw fa-unlock text-green';
                         $notificaciones->save();
 

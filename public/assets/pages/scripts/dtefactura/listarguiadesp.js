@@ -121,7 +121,7 @@ $(document).ready(function () {
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Condición financiera en revisión: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{
@@ -176,7 +176,7 @@ $(document).ready(function () {
                                 <i class='fa fa-fw fa-close'></i>
                             </button>
                         </a>
-                        <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" style="padding-left: 0px;">
+                        <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" style="padding-left: 0px;">
                             <span class="fa fa-fw fa-lock text-danger text-danger" style="bottom: 0px;top: 2px;"></span>
                         </a>`;
             $('td', row).eq(19).html(aux_text);

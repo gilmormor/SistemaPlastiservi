@@ -215,7 +215,7 @@ class NotaVentaController extends Controller
                     IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
                     IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
                     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
-                    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+                    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
                     IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
@@ -391,7 +391,7 @@ class NotaVentaController extends Controller
         if($bloqcli["bloqueo"]){
             return redirect('notaventa')->with([
                 'error' => 1,
-                'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                 'tipo_alert' => "alert-error"
             ]);
         } */
@@ -505,9 +505,7 @@ class NotaVentaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function guardar(ValidarNotaVenta $request)
-    //public function guardar(Request $request)
     {
-        //dd($request);
         can('guardar-notaventa');
         /* if(empty($request->cotizacion_id)){
             $request->merge(['modulo_id' => 2]);
@@ -516,7 +514,7 @@ class NotaVentaController extends Controller
             $clibloq = clienteBloqueado($request->cliente_id,0,$request);
             if(!is_null($clibloq["bloqueo"])){
                 return redirect('notaventa')->with([
-                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"] . "Permiso x Cliente",
+                    "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"] . "Permiso x Cliente",
                     "tipo_alert" => "alert-error"
                 ]);
             }    
@@ -548,7 +546,7 @@ class NotaVentaController extends Controller
             if($bloqcli["bloqueo"]){
                 return redirect('notaventa')->with([
                     'error' => 1,
-                    'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"]  . " Permiso por Nro. Cotizacion",
+                    'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"]  . " Permiso por Nro. Cotizacion",
                     'tipo_alert' => "alert-error"
                 ]);
             } */
@@ -672,10 +670,27 @@ class NotaVentaController extends Controller
             }    
         }
 
-        return redirect('notaventa')->with([
-                                            'mensaje'=>'Nota de Venta creada con exito.',
-                                            'tipo_alert' => 'alert-success'
-                                        ]);        
+        $notaventa = NotaVenta::findOrFail($notaventaid);
+        if(count($notaventa->notaventadetalles) > 0){
+            return redirect('notaventa')->with([
+                'mensaje'=>'Nota de Venta creada con exito.',
+                'tipo_alert' => 'alert-success'
+            ]);
+
+        }else{
+            $notaventa->neto = 0;
+            $notaventa->piva = 0;
+            $notaventa->iva = 0;
+            $notaventa->total = 0;
+            $notaventa->save();
+
+            // Redirigir a la edición de la nota de venta
+            return redirect()->route('editar_notaventa', ['id' => $notaventa->id])
+                            ->with([
+                                'mensaje' => 'Debe ingresar productos en la Nota de Venta.',
+                                'tipo_alert' => 'alert-warning'
+                            ]);
+        }
     }
 
     /**
@@ -921,16 +936,27 @@ class NotaVentaController extends Controller
                     }
                 }
             }
-            return redirect('notaventa')->with([
-                'mensaje'=>'Nota de Venta Actualizada con exito.',
-                'tipo_alert' => 'alert-success'
-            ]);
-/*
-            return redirect('notaventa/'.$id.'/editar')->with([
-                                                                'mensaje'=>'Nota de Venta Actualizada con exito.',
-                                                                'tipo_alert' => 'alert-success'
-                                                            ]);
-*/
+
+            $notaventa = NotaVenta::findOrFail($id);
+            if(count($notaventa->notaventadetalles) > 0){
+                return redirect('notaventa')->with([
+                    'mensaje'=>'Nota de Venta Actualizada con exito.',
+                    'tipo_alert' => 'alert-success'
+                ]);        
+            }else{
+                $notaventa->neto = 0;
+                $notaventa->piva = 0;
+                $notaventa->iva = 0;
+                $notaventa->total = 0;
+                $notaventa->save();
+    
+                // Redirigir a la edición de la nota de venta
+                return redirect()->route('editar_notaventa', ['id' => $notaventa->id])
+                                ->with([
+                                    'mensaje' => 'Debe ingresar productos en la Nota de Venta.',
+                                    'tipo_alert' => 'alert-warning'
+                                ]);
+            }
         }else{
             return redirect('notaventa')->with([
                 'mensaje'=>'Registro modificado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
@@ -1008,6 +1034,17 @@ class NotaVentaController extends Controller
         can('guardar-notaventa');
         if ($request->ajax()) {
             $notaventa = NotaVenta::findOrFail($request->id);
+            if(count($notaventa->notaventadetalles) <= 0){
+                $notaventa->neto = 0;
+                $notaventa->piva = 0;
+                $notaventa->iva = 0;
+                $notaventa->total = 0;
+                $notaventa->save();
+    
+                return response()->json(['mensaje' => 'Nota de venta Nro:' . $request->id . ' no tiene productos asociados.']);
+            }
+    
+
             $request->merge(['notaventa_id' => $request->id]);
             $request->request->set('notaventa_id', $request->id);
             $request->merge(['modulo_id' => 3]);
@@ -1018,7 +1055,7 @@ class NotaVentaController extends Controller
             if($bloqcli["bloqueo"]){
                 return response()->json([
                     'error' => 1,
-                    'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                 ]);
             }
@@ -1135,7 +1172,7 @@ class NotaVentaController extends Controller
 
                     return response()->json([
                         'id' => 0,
-                        'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                        'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                         'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                     ]);
                 }    

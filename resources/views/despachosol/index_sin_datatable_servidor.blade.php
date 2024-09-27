@@ -92,7 +92,7 @@ Solicitud de despacho
                                                 $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->notaventa->cliente_id)->get();
                                             ?>
                                             @if(count($clibloq) > 0)
-                                                <a class='btn-accion-tabla btn-sm' title='Cliente Bloqueado: {{$clibloq[0]->descripcion}}' data-toggle='tooltip'>
+                                                <a class='btn-accion-tabla btn-sm' title='Condición financiera en revisión: {{$clibloq[0]->descripcion}}' data-toggle='tooltip'>
                                                     <span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>
                                                 </a>
                                             @else

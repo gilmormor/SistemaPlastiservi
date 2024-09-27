@@ -215,7 +215,7 @@ class NotaventaAprobarController extends Controller
         $bloqcli = clienteBloqueado($data->cliente_id,0,$request1);
         if($bloqcli["bloqueo"]){
             return redirect('notaventaaprobar')->with([
-                'mensaje'=> "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                'mensaje'=> "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                 'tipo_alert' => 'alert-error'
             ]);
         } */

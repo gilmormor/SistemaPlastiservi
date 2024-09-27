@@ -97,7 +97,7 @@ class DteFacturaDirAntiguaController extends Controller
         foreach ($cliente->clientebloqueados as $clientebloqueado) {
             return redirect('dtefacturadirantigua')->with([
                 'id' => 0,
-                'mensaje'=>'No es posible hacer Factura, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'mensaje'=>'No es posible hacer Factura, Condición financiera en revisión: ' . $clientebloqueado->descripcion,
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -114,7 +114,7 @@ class DteFacturaDirAntiguaController extends Controller
             $respuesta = DataCobranza::llenartabla($request1); */
 
             return redirect('dtefacturadir')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }

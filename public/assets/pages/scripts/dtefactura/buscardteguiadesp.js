@@ -139,7 +139,7 @@ function configTablaDteGuiaDesp(){
             if(data.clientebloqueado_descripcion != null){
                 /*
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Condición financiera en revisión: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
                 */
@@ -152,7 +152,7 @@ function configTablaDteGuiaDesp(){
 
             if(data.clientebloqueado_descripcion != null){
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cliente Bloqueado: " + data.clientebloqueado_descripcion + "'>"+
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Condición financiera en revisión: " + data.clientebloqueado_descripcion + "'>"+
                         "<span class='fa fa-fw fa-lock text-danger text-danger' style='bottom: 0px;top: 2px;'></span>"+
                     "</a>";
             }else{
@@ -197,7 +197,7 @@ function configTablaDteGuiaDesp(){
                         <input type="text" name="dte_idGD[]" id="dte_idGD${(i+1)}" class="form-control" value="${data.id}" style=display:none;"/>
                         <input type="text" name="updated_atGD[]" id="updated_atGD${(i+1)}" class="form-control" value="${data.updated_at}" style="display:none;"/>
                     </div>
-                    <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" style="padding-left: 0px;">
+                    <a ${aux_displaybtnbl} class="btn-accion-tabla btn-sm tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" style="padding-left: 0px;">
                         <span class="fa fa-fw fa-lock text-danger text-danger" style="bottom: 0px;top: 2px;"></span>
                     </a>
                 </div>`;

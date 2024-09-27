@@ -94,7 +94,7 @@ class PickingController extends Controller
         $data = DespachoSol::findOrFail($id);
         if(isset($data->notaventa->cliente->clientebloqueado->descripcion)){
             return redirect('/')->with([
-                'mensaje'=>'Cliente bloqueado: ' . $data->notaventa->cliente->clientebloqueado->descripcion . " Razon Social: " . $data->notaventa->cliente->razonsocial,
+                'mensaje'=>'Condición financiera en revisión: ' . $data->notaventa->cliente->clientebloqueado->descripcion . " Razon Social: " . $data->notaventa->cliente->razonsocial,
                 'tipo_alert' => 'alert-error'
             ]);    
         }
@@ -587,7 +587,7 @@ class PickingController extends Controller
         if(isset($despachosol->notaventa->cliente->clientebloqueado)){
             return [
                 'error' => 1,
-                'mensaje' => 'Cliente bloqueado: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
+                'mensaje' => 'Condición financiera en revisión: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
                 'tipo_alert' => 'error'
             ];
         }
@@ -604,7 +604,7 @@ class PickingController extends Controller
         if(!is_null($clibloq["bloqueo"])){   
             return [
                 "error" => 1,
-                "mensaje" => "Cliente Bloqueado: \n" . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: \n" . $clibloq["bloqueo"],
                 "tipo_alert" => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
             ];
         } */
@@ -675,7 +675,7 @@ class PickingController extends Controller
         /* if(isset($despachosol->notaventa->cliente->clientebloqueado)){
             return [
                 'error' => 1,
-                'mensaje' => 'Cliente bloqueado: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
+                'mensaje' => 'Condición financiera en revisión: ' . $despachosol->notaventa->cliente->clientebloqueado->descripcion,
                 'tipo_alert' => 'error'
             ];
         } */
@@ -734,7 +734,7 @@ function reportesoldesp1($request){
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoOrdDesp = "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                $nuevoOrdDesp = "<a class='btn-accion-tabla tooltipsC' title='Condición financiera en revisión: $aux_descbloq'>
                                     <button type='button' class='btn btn-default btn-xs' disabled>
                                         <i class='fa fa-fw fa-lock text-danger'></i>
                                     </button>
@@ -1045,7 +1045,7 @@ function consultasoldesp($request){
             clientedesbloqueado.obs as clientedesbloqueado_obs,
             modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
             clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
-            if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+            if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
             IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id

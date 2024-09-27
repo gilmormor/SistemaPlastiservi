@@ -64,7 +64,7 @@ class DteGuiaDespNVController extends Controller
         $clibloq = clienteBloqueado($data->cliente_id,0,$request);
         if(!is_null($clibloq["bloqueo"])){   
             return redirect('dteguiadespnv/listarnv')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -134,7 +134,7 @@ class DteGuiaDespNVController extends Controller
         foreach ($cliente->clientebloqueados as $clientebloqueado) {
             return redirect('dteguiadespnv')->with([
                 'id' => 0,
-                'mensaje'=>'No es posible hacer Guia Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'mensaje'=>'No es posible hacer Guia Despacho, Condición financiera en revisión: ' . $clientebloqueado->descripcion,
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -156,7 +156,7 @@ class DteGuiaDespNVController extends Controller
             $respuesta = DataCobranza::llenartabla($request1); */
 
             return redirect('dteguiadespnv/listarnv')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -449,7 +449,7 @@ function consultaindex($dte_id){
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     dteoc.oc_id,dteoc.oc_folder,dteoc.oc_file,foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at,
     cliente.limitecredito,
-    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
     IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,

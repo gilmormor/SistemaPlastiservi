@@ -602,7 +602,7 @@ class Dte extends Model
         IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
         IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
-        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)

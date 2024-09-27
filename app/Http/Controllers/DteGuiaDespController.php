@@ -119,7 +119,7 @@ class DteGuiaDespController extends Controller
         //dd($clibloq);
         if(!is_null($clibloq["bloqueo"])){    
             return redirect('dteguiadesp/listarorddesp')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -179,7 +179,7 @@ class DteGuiaDespController extends Controller
         foreach ($despachoord->notaventa->cliente->clientebloqueados as $clientebloqueado) {
             return redirect('dteguiadesp/listarorddesp')->with([
                 'id' => 0,
-                'mensaje'=>'No es posible hacer Guia de Despacho, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'mensaje'=>'No es posible hacer Guia de Despacho, Condición financiera en revisión: ' . $clientebloqueado->descripcion,
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -245,7 +245,7 @@ class DteGuiaDespController extends Controller
             $respuesta = DataCobranza::llenartabla($request1); */
 
             return redirect('dteguiadesp/listarorddesp')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -972,7 +972,7 @@ class DteGuiaDespController extends Controller
                 return response()->json([
                     'id' => 0,
                     'error' => 1,
-                    'mensaje' => "Cliente bloqueado: \n" . $bloqcli["bloqueo"],
+                    'mensaje' => "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
                     'tipo_alert' => isset($bloqcli["tipo_alert"]) ? $bloqcli["tipo_alert"] : "error"
                 ]);
             } */
@@ -1111,7 +1111,7 @@ function consultaindex(){
         dteguiadesp.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at,despachoord.updated_at as despordupdated_at,
         dtedev.obs as dtedev_obs,usuario.nombre as dtedevusuario_nombre,dte.indtraslado,
-        if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         cliente.limitecredito,
         IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
         IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
@@ -1282,7 +1282,7 @@ function consultalistarorddesppage($request){
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
     IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
     IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
     IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
     FROM despachoord INNER JOIN notaventa

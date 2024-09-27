@@ -212,7 +212,7 @@ function reporte1($request){
             $clibloq = ClienteBloqueado::where("cliente_id" , "=" ,$data->cliente_id)->get();
             if(count($clibloq) > 0){
                 $aux_descbloq = $clibloq[0]->descripcion;
-                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Cliente Bloqueado: $aux_descbloq'>
+                $nuevoSolDesp .= "<a class='btn-accion-tabla tooltipsC' title='Condición financiera en revisión: $aux_descbloq'>
                                     <i class='fa fa-fw fa-lock text-danger'></i>
                                 </a>";
             }else{

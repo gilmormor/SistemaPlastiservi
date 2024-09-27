@@ -107,7 +107,7 @@ class DteNCFacturaController extends Controller
             $request1->request->set('cliente_id', $dtefac->cliente_id);
             $respuesta = DataCobranza::llenartabla($request1); */
             return redirect('dtencfactura')->with([
-                "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                 "tipo_alert" => "alert-error"
             ]);
         }
@@ -356,7 +356,7 @@ function consultaindex($dte_id){
     comuna.nombre as nombre_comuna,dte.stasubsii,dte.stasubcob,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     dte.updated_at,0 as dtefac_id,
-    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     cliente.limitecredito,
     IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,

@@ -186,7 +186,7 @@ $(document).ready(function () {
 	
 			aux_text = 
 				`<div class="tools11">
-					<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Cliente Bloqueado: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0,0)">
+					<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0,0)">
 						<i class="fa fa-fw fa-lock text-danger fa-lg"></i>
 					</a>
 					<a ${aux_displaybtnac} id="bntaprobnv${data.id}" name="bntaprobnv${data.id}" class="btn-accion-tabla btn-sm tooltipsC action-buttons botonac${data.id}" onclick="aprobarnv(${data.id},${data.id},${aprobstatus})" title="Aprobar">
@@ -316,7 +316,7 @@ function ajaxRequest(data,url,funcion) {
 						if (respuesta.mensaje == "sp"){
 							Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
 						}else{
-							Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+							Biblioteca.notificaciones('El registro no pudo ser procesado. ' + respuesta.mensaje, 'Plastiservi', 'error');
 						}
 					}	
 				}
@@ -429,7 +429,7 @@ $("#cotizacion_idM").blur(function(){
 						$("#razonsocialM").val(respuesta.cotizaciones[0]['razonsocial']);
 					}else{
 						swal({
-							title: 'Cliente Bloqueado.',
+							title: 'Condición financiera en revisión.',
 							text: respuesta.cotizaciones[0]['descripbloqueo'],
 							icon: 'error',
 							buttons: {

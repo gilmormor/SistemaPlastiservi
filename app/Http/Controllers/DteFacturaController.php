@@ -137,7 +137,7 @@ class DteFacturaController extends Controller
         foreach ($cliente->clientebloqueados as $clientebloqueado) {
             return redirect('dtefactura')->with([
                 'id' => 0,
-                'mensaje'=>'No es posible hacer Factura, Cliente Bloqueado: ' . $clientebloqueado->descripcion,
+                'mensaje'=>'No es posible hacer Factura, Condición financiera en revisión: ' . $clientebloqueado->descripcion,
                 'tipo_alert' => 'alert-error'
             ]);
         }
@@ -308,7 +308,7 @@ class DteFacturaController extends Controller
             //NO PUEDO BLOQUEAR PORQUE YA TENGO EL FOLIO
             /* if(!is_null($clibloq["bloqueo"])){   
                 return redirect('dtefactura')->with([
-                    "mensaje" => "Cliente Bloqueado: " . $clibloq["bloqueo"],
+                    "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
                     "tipo_alert" => "alert-error"
                 ]);
             } */
@@ -1238,7 +1238,7 @@ function consultaindex($dte_id){
     foliocontrol.tipodocto,foliocontrol.nombrepdf,
     dteoc.oc_id as dteoc_oc_id,dteoc.oc_folder as dteoc_oc_folder,dteoc.oc_file as dteoc_oc_file,
     dte.updated_at,
-    if(cliente.plazopago_id = 1,'Bloqueado: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     cliente.limitecredito,
     IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
