@@ -324,14 +324,16 @@ class DteFacturaController extends Controller
         //*******AQUI ELIMINO TODOS LOS DESBLOQUEOS HACIA ATRAS
         $modulos = Modulo::where("stamodapl",1)->get();
         foreach ($modulos as $modulo) {
-            $request1 = new Request();
-            $request1->merge(['modulo_id' => $modulo->id]);
-            $request1->request->set('modulo_id', $modulo->id);
-            $request1->merge(['deldesbloqueo' => 1]);
-            $request1->request->set('deldesbloqueo', 1);
-            $request1->merge(['notaventa_id' => $notaventa_id]);
-            $request1->request->set('notaventa_id', $notaventa_id);
-            $clibloq = clienteBloqueado($request->cliente_id,0,$request1);
+            foreach ($arraynotaventa_id as $notaventa_id) {
+                $request1 = new Request();
+                $request1->merge(['modulo_id' => $modulo->id]);
+                $request1->request->set('modulo_id', $modulo->id);
+                $request1->merge(['deldesbloqueo' => 1]);
+                $request1->request->set('deldesbloqueo', 1);
+                $request1->merge(['notaventa_id' => $notaventa_id]);
+                $request1->request->set('notaventa_id', $notaventa_id);
+                $clibloq = clienteBloqueado($request->cliente_id,0,$request1);    
+            }
         }
         //*******FIN: AQUI ELIMINO TODOS LOS DESBLOQUEOS HACIA ATRAS
         //dd($modulos);
