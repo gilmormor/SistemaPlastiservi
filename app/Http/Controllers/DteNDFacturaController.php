@@ -173,10 +173,16 @@ class DteNDFacturaController extends Controller
         $dte->obs = $request->obs;
         $dte->tipodespacho = $dtefac->tipodespacho;
         $dte->indtraslado = $dtefac->indtraslado;
-        $dte->mntneto = $Tmntneto;
+        /* $dte->mntneto = $Tmntneto;
         $dte->tasaiva = $dtefac->tasaiva;
         $dte->iva = $Tiva;
-        $dte->mnttotal = $Tmnttotal;
+        $dte->mnttotal = $Tmnttotal; */
+
+        $dte->mntneto = $dtefac->mntneto;
+        $dte->tasaiva = $dtefac->tasaiva;
+        $dte->iva = $dtefac->iva;
+        $dte->mnttotal = $dtefac->mnttotal;
+
         $dte->kgtotal = $Tkgtotal;
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = auth()->id();
