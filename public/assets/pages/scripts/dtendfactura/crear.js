@@ -59,6 +59,8 @@ $(document).ready(function () {
 
 });
 
+aux_dte = "";
+
 function ajaxRequest(data,url,funcion) {
 	$.ajax({
 		url: url,
@@ -108,7 +110,7 @@ function ajaxRequest(data,url,funcion) {
 					$('.select2').trigger('change'); // Notify any JS components that the value changed
 					//$("#centroeconomico_id option[value='"+ respuesta[0].centroeconomico_id +"']").attr("selected",true);
 					//$(".selectpicker").selectpicker('refresh');
-					llenarItemFact(respuesta)
+					llenarItemFact(respuesta,respuesta.dte[0]);
 				}
 			}
 		},
@@ -283,7 +285,7 @@ $("#nrodoctoF").blur(function(){
 						if(respuesta.dtefacdet.length>0){
 							$("#aux_iva").val(respuesta.dte[0].dte_tasaiva); //ASIGNO A aux_iva respuesta.dte[0].tasaiva LO QUE VIENE DE LA TABLA DTE
 							llenarDatosCliente(respuesta);
-							llenarItemFact(respuesta.dtefacdet);
+							llenarItemFact(respuesta.dtefacdet,respuesta.dte[0]);
 							bandera = false;
 						}	
 					}
@@ -340,7 +342,7 @@ $("#btnaceptarGD").click(function(event){
 });
 
 
-function llenarItemFact(data){
+function llenarItemFact(data,dte){
 	let htmlTags = "";
 	$('#tabla-data tbody').html(htmlTags);
 	for (i = 0; i < data.length; i++) {
@@ -426,6 +428,11 @@ function llenarItemFact(data){
 	}
 	totalizar();
 	totalizarNd();
+	if(true){
+		aux_dte = dte;
+		recalcularTotalesND(dte);
+	}
+
 	$("#totalini").val($("#tdtotalmodificado").attr("valor"));
 	$("#totalini").attr("valor",$("#tdtotalmodificado").attr("valor"));
 	aux_totalini = $("#totalini").attr("valor");
@@ -700,6 +707,7 @@ $("#codref").change(function(){
 		//buscardocumento(aux_val,this); //paso una bandera = 1 y el objeto this que corresponde a codref
 	}
 	totalizar();
+	recalcularTotalesND(aux_dte);
 	if(aux_val == 2){
 		$("#total").val(1);
 	}
@@ -760,7 +768,7 @@ function buscardocumento(aux_band,thiscodref){
 				if(respuesta.dte.length>0){
 					if(respuesta.dtefacdet.length>0){
 						llenarDatosCliente(respuesta);
-						llenarItemFact(respuesta.dtefacdet);
+						llenarItemFact(respuesta.dtefacdet,respuesta.dte[0]);
 						bandera = false;
 						if(aux_band == 3){
 							//$(thiscodref).val(3);
@@ -796,4 +804,19 @@ function activarClases(){
 	$(".calpreciounit").keyup(function(){
 		calpreciounit(this)
 	});
+}
+
+function recalcularTotalesND(dte){
+	aux_netoform = MASKLA(dte.mntneto,0);
+	aux_ivaform = MASKLA(dte.iva,0);
+	aux_mnttotalform = MASKLA(dte.mnttotal,0);
+	$("#tdneto").html(aux_netoform);
+	$("#tdneto").attr("valor",dte.mntneto);
+	$("#tdiva").html(aux_ivaform);
+	$("#tdtotal").attr("valor",dte.mnttotal);
+	$("#tdtotal").html(aux_mnttotalform);
+
+	$("#neto").val(dte.mntneto);
+	$("#iva").val(dte.iva);	
+
 }

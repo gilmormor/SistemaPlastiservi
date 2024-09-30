@@ -4119,7 +4119,8 @@ function consultasql_dte($request){
     cliente.provinciap_id,cliente.comunap_id,
     clientebloqueado.descripcion,comuna.nombre as comuna_nombre,provincia.nombre as provincia_nombre,
     formapago.descripcion as formapago_desc,plazopago.dias as plazopago_dias,
-    foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.statusgen
+    foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.statusgen,
+    dte.mntneto,dte.tasaiva,dte.iva,dte.mnttotal
     FROM dte INNER JOIN cliente
     ON dte.cliente_id  = cliente.id AND ISNULL(dte.deleted_at) AND ISNULL(cliente.deleted_at)
     LEFT JOIN dtefac
