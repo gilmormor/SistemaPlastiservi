@@ -855,7 +855,7 @@ class Dte extends Model
         cliente.rut,cliente.razonsocial,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as oc_id,
         if(isnull(notaventa.oc_file),CONCAT(dteoc.oc_folder,'/',dteoc.oc_file),notaventa.oc_file) as oc_file,
-        dteguiadesp.notaventa_id,
+        IF(NOT ISNULL(dteguiadesp.notaventa_id),dteguiadesp.notaventa_id,dteguiadespnv.notaventa_id) as notaventa_id,
         '' as notaventaxk,comuna.nombre as comuna_nombre,
         tipoentrega.nombre as tipoentrega_nombre,'  ' as te,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
         dte.kgtotal as aux_totalkg,
@@ -907,6 +907,8 @@ class Dte extends Model
         ON producto.id = dtedet.producto_id
         INNER JOIN categoriaprod
         ON categoriaprod.id = producto.categoriaprod_id
+        LEFT JOIN dteguiadespnv
+        ON dte.id = dteguiadespnv.dte_id AND ISNULL(dte.deleted_at)
         $unionOtrasTablas
         WHERE $vendedorcond
         AND $aux_condFecha
