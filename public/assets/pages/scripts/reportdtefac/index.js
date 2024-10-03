@@ -1,6 +1,25 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
+    //Verificar permiso para mostrar boton de subir DTE a Sistema de cobranza
+    aux_slug = "subir-dte-sistema-cobranza-en-reporte"
+    var data = {
+        slug: aux_slug,
+        _token: $('input[name=_token]').val()
+    };
+    aux_mostrarsubirdtesiscobranza = false;
+    $.ajax({
+        url: '/generales_valpermiso',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            if(respuesta.resp){
+                aux_mostrarsubirdtesiscobranza = true;
+            }
+            configurarTabla('#tabla-data-consulta',aux_mostrarsubirdtesiscobranza);
+        }
+    });
+    
     $('.datepicker').datepicker({
 		language: "es",
         autoclose: true,
@@ -12,9 +31,9 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
-    configurarTabla('#tabla-data-consulta');
+    
 
-    function configurarTabla(aux_tabla){
+    function configurarTabla(aux_tabla,aux_mostrarsubirdtesiscobranza){
         data = datosFac(1);
         $(aux_tabla).DataTable({
             'paging'      : true, 
@@ -213,11 +232,13 @@ $(document).ready(function () {
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">
                         <i class="fa fa-fw fa-cloud-download"></i>
                     </a>`;
+
+                    if(aux_mostrarsubirdtesiscobranza){
+                        aux_text += `<a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
+                                        <span class="fa fa-upload text-yellow"></span>
+                                    </a>`;
                     
-                    /* `<a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
-                        <span class="fa fa-upload text-yellow"></span>
-                    </a>`; */
-        ;
+                    }
                 }
                 $('td', row).eq(11).attr("class","action-buttons");
                 $('td', row).eq(11).html(aux_text);
