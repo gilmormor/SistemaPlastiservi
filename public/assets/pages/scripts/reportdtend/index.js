@@ -76,7 +76,7 @@ $(document).ready(function () {
                 aux_text = "";
                 if(data.nrodocto != null){
                     aux_text = 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='PDF Nota Dédito' onclick='genpdfND(" + data.nrodocto + ",\"\")'>" +
+                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='PDF Nota Débito' onclick='genpdfND(" + data.nrodocto + ",\"\")'>" +
                         data.nrodocto +
                     "</a>";
                 }

@@ -151,7 +151,7 @@ class Producto extends Model
                 if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
                 if(isnull(at_largo),producto.long,at_largo) as long1,producto.long,
                 if(isnull(at_espesor),producto.peso,at_espesor) as peso,
-                producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
+                producto.tipounion,producto.precioneto,categoriaprod.precio,
                 categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id,
                 at_color_id,at_formatofilm,at_complementonomprod,at_materiaprima_id,
                 categoriaprod.nombre as categoriaprod_nombre,

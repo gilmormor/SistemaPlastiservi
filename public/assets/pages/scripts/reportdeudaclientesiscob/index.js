@@ -244,6 +244,7 @@ function ajaxRequest(data,url,funcion) {
                 totalizar(respuesta.datosTodasFacDeuda);                
             }
             if(funcion=='consultarJS'){
+                //console.log(respuesta1);
                 if (respuesta1.clientes.length <= 0) {
                     aux_text = "Verifique los filtros";
                     /* if(data.data1.sucursal_id == ""){

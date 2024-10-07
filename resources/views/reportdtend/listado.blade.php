@@ -20,7 +20,7 @@
 			</td>
 			<td class="info_factura">
 				<div class="round">
-					<span class="h3">Nota de Dédito</span>
+					<span class="h3">Nota de Débito</span>
 					<p>Fecha: {{date("d/m/Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Estatus: {{$request->status}}</p>
