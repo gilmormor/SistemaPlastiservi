@@ -126,6 +126,7 @@ function datosproducto(){
         categoriaprod_id  : $("#categoriaprod_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
+        at_impreso        : $("#at_impreso").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -135,7 +136,8 @@ function datosproducto(){
     "&producto_id="+data1.producto_id +
     "&categoriaprod_id="+data1.categoriaprod_id +
     "&areaproduccion_id="+data1.areaproduccion_id +
-    "&rut="+data1.rut
+    "&rut="+data1.rut +
+    "&at_impreso="+data1.at_impreso
 
 
     var data = {

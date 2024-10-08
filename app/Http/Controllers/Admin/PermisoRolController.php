@@ -78,6 +78,13 @@ class PermisoRolController extends Controller
             WHERE  $aux_condrol_id
             AND isnull(rol.deleted_at);";
         $rols = DB::select($sql);
+        //dd($rols);
+        // Verifica si el array tiene más de 34 elementos
+        if (count($rols) > 35) {
+            // Limita el array a los primeros 34 elementos
+            $rols = array_slice($rols, 0, 34);
+        }
+        // Ahora $miArray solo contiene los primeros 34 registros
         $respuesta = [];
         $respuesta["campos"] = [];
         $respuesta["campos_id"] = [];

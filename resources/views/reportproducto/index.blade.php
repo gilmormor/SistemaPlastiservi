@@ -118,6 +118,22 @@ Reporte Productos
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" classorig="col-xs-12 col-sm-6" title="Impreso">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Impreso:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="at_impreso" id="at_impreso"  class="selectpicker form-control impreso form_acutec valorrequerido" tipoval="combobox">
+                                            @if (can('filtro-reportproductos-mostrar-solo-prod-impresos',false))
+                                                <option value="1">Si</option>
+                                            @else
+                                                <option value="2">Seleccione...</option>
+                                                <option value="1">Si</option>
+                                                <option value="0">No</option>
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

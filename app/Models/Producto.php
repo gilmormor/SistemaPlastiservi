@@ -982,6 +982,21 @@ class Producto extends Model
             ON cliente.id = cliente_producto.cliente_id AND cliente.rut = '$request->rut' AND isnull(cliente.deleted_at)";
         }
 
+        if(!isset($request->at_impreso) or (empty($request->at_impreso) and $request->at_impreso!= "0")){
+            $aux_at_impresoCond = "true";
+        }else{
+            if($request->at_impreso == "2"){
+                $aux_at_impresoCond = "true";
+            }else{
+                //SI EL USUARIO TIENE MARCADO ESTE PERMISO SOLO DEBE MOSTRAR LOS PRODUCTOS CON ACUERDO TECNICO MARCADO COMO IMPRESO
+                if (can('filtro-reportproductos-mostrar-solo-prod-impresos',false)){
+                    $aux_at_impresoCond = " acuerdotecnico.at_impreso in (1) ";
+                }else{
+                    $aux_at_impresoCond = " acuerdotecnico.at_impreso in ($request->at_impreso) ";
+                }
+            }
+    
+        }
 
         $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
             producto.diamextmm,producto.diamextpg,
@@ -1005,6 +1020,7 @@ class Producto extends Model
             and $aux_categoriaprod_idCond
             and $aux_condsucursal_id
             and tipoprod = 0
+            and $aux_at_impresoCond
             ORDER BY producto.id;";
             $datas = DB::select($sql);
             foreach ($datas as &$data) {
