@@ -145,6 +145,13 @@ class Producto extends Model
         }
         $sucurcadena = implode(",", $sucurArray);
 
+        //SI EL USUARIO TIENE MARCADO ESTE PERMISO SOLO DEBE MOSTRAR LOS PRODUCTOS CON ACUERDO TECNICO MARCADO COMO IMPRESO
+        $aux_at_impresoCond = " true ";
+        if (can('filtro-reportproductos-mostrar-solo-prod-impresos',false)){
+            $aux_at_impresoCond = " acuerdotecnico.at_impreso in (1) ";
+        }
+        //dd($aux_at_impresoCond);
+
         $sql = "SELECT producto.id,producto.nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 if(isnull(at_claseprod_id),CAST(claseprod.cla_nombre AS CHAR),at_claseprod.cla_nombre) as cla_nombre,
                 if(isnull(at_ancho),CAST(producto.diametro AS CHAR),at_ancho) as diametro,
@@ -170,6 +177,7 @@ class Producto extends Model
                 ON at_claseprod.id = acuerdotecnico.at_claseprod_id
                 WHERE sucursal.id in ($sucurcadena)
                 AND producto.estado = 1
+                AND $aux_at_impresoCond
                 GROUP BY producto.id
                 ORDER BY producto.id asc;";
         //dd($sql);
@@ -988,15 +996,15 @@ class Producto extends Model
             if($request->at_impreso == "2"){
                 $aux_at_impresoCond = "true";
             }else{
-                //SI EL USUARIO TIENE MARCADO ESTE PERMISO SOLO DEBE MOSTRAR LOS PRODUCTOS CON ACUERDO TECNICO MARCADO COMO IMPRESO
-                if (can('filtro-reportproductos-mostrar-solo-prod-impresos',false)){
-                    $aux_at_impresoCond = " acuerdotecnico.at_impreso in (1) ";
-                }else{
-                    $aux_at_impresoCond = " acuerdotecnico.at_impreso in ($request->at_impreso) ";
-                }
+                $aux_at_impresoCond = " acuerdotecnico.at_impreso in ($request->at_impreso) ";
             }
     
         }
+        //SI EL USUARIO TIENE MARCADO ESTE PERMISO SOLO DEBE MOSTRAR LOS PRODUCTOS CON ACUERDO TECNICO MARCADO COMO IMPRESO
+        if (can('filtro-reportproductos-mostrar-solo-prod-impresos',false)){
+            $aux_at_impresoCond = " acuerdotecnico.at_impreso in (1) ";
+        }
+
 
         $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
             producto.diamextmm,producto.diamextpg,
