@@ -232,7 +232,7 @@ class DteNCFacturaController extends Controller
             Dte::subirSisCobranza($dte);
             Event(new GuardarDteNC($dteNew)); //ENVIAR CORREO A CONTABILIDAD AVISANDO QUE HAY UNA NC
             return redirect('dtencfactura')->with([
-                'mensaje'=>'Nota de Debito creada con exito.',
+                'mensaje'=>'Nota de Credito creada con exito.',
                 'tipo_alert' => 'alert-success'
             ]);    
         }else{

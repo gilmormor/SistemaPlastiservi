@@ -3951,7 +3951,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
             "</Receptor>" .
             "<Totales>";
-            if($dte->dtedte->dter->foliocontrol->tipodocto == 34){
+            if($dte->tasaiva == 0){
                 $contenido .= "<MntExe>$dte->mnttotal</MntExe>" .
                 "<MntTotal>$dte->mnttotal</MntTotal>";
             }else{

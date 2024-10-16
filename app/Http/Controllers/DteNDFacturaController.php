@@ -231,7 +231,7 @@ class DteNDFacturaController extends Controller
             Dte::subirSisCobranza($dte);
             Event(new GuardarDteND($dteNew));//ENVIAR CORREO A CONTABILIDAD AVISANDO QUE HAY UNA ND
             return redirect('dtendfactura')->with([
-                'mensaje'=>'Nota de Credito creada con exito.',
+                'mensaje'=>'Nota de Debito creada con exito.',
                 'tipo_alert' => 'alert-success'
             ]);    
         }else{
