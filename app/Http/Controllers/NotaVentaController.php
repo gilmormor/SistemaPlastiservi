@@ -1461,6 +1461,10 @@ class NotaVentaController extends Controller
         session(['aux_aproNV' => '0']);
         $user = Usuario::findOrFail(auth()->id());
 
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
+
         $sql= 'SELECT COUNT(*) AS contador
         FROM vendedor INNER JOIN persona
         ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
@@ -1490,7 +1494,8 @@ class NotaVentaController extends Controller
                 and isnull(anulada)
                 and (aprobstatus=1 or aprobstatus=3)
                 and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
-                and isnull(notaventa.deleted_at);";
+                and isnull(notaventa.deleted_at)
+                and notaventa.sucursal_id IN ($sucurcadena);";
         //where usuario_id='.auth()->id();
         //dd($sql);
         $datas = DB::select($sql);
