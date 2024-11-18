@@ -139,7 +139,11 @@ $(document).ready(function () {
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = ``;
                 aux_iconobloqueo = "fa-lock text-danger";
-                aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;    
+                aux_iconoenviar = `fa-arrow-right text-yellow`;
+                aux_clicenviar = `onclick="enviardespord(${data.id},'${data.updated_at}')"`;
+                aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;
+                aux_clicbotonbloqueado = `onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)"`;
+                aux_titlebotonenviarorddesp = "Enviar SolDesp a OrdDesp";
                 if(aux_clienteBloqueado == ""){
                     aux_displaybtnac = ``;
                     aux_displaybtnbl = `style="display:none;"`;
@@ -149,6 +153,13 @@ $(document).ready(function () {
                     if(data.modulo_id_orddesp  !== null){
                         aux_iconobloqueo = "fa-unlock text-yellow";
                         aux_mensajebloqueo = `Habilitado para Despacho`;
+                    }else{
+                        aux_iconoenviar = `fa-ban text-red`;
+                        aux_clicenviar = ``;
+                        aux_clicbotonbloqueado = `onclick="activarbotonenviar(${data.id},${data.cliente_id},${data.notaventa_id})"`;
+                        aux_mensajeAdvertencia = `. Puede desbloquear bajo su responsabilidad!`
+                        aux_titlebotonenviarorddesp = aux_mensajebloqueo + aux_mensajeAdvertencia;
+                        aux_mensajebloqueo += aux_mensajeAdvertencia;
                     }
                 }
 
@@ -182,14 +193,14 @@ $(document).ready(function () {
                                     <i class="fa fa-fw ${data.icono}"></i>
                                 </button>
                             </a>
-                            <a ${aux_displaybtnac} id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
+                            <a ${aux_displaybtnac} id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC botonac${data.id}" title="${aux_titlebotonenviarorddesp}" item="${data.id}" value="0" ${aux_clicenviar} update_at="${data.updated_at}">
                                 <button type="button" class="btn btn-default btn-xs">
-                                    <i class="fa fa-fw fa-arrow-right text-yellow"></i>
+                                    <i id="botonenviar${data.id}" name="botonenviar${data.id}" class="fa fa-fw ${aux_iconoenviar}"></i>
                                 </button>
                             </a>
-                            <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
+                            <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" ${aux_clicbotonbloqueado}>
                                 <button type="button" class="btn btn-default btn-xs">
-                                    <i class="fa fa-fw ${aux_iconobloqueo}"></i>
+                                    <i id="ibotonbloqueado${data.id}" name="ibotonbloqueado${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
                                 </button>
                             </a>`;
 
@@ -858,4 +869,23 @@ function validareditarpicking(id,updated_at,aux_ruta){
     };
     ruta = '/picking/validareditarpicking';
     ajaxRequest(data,ruta,"validareditarpicking");
+}
+
+function activarbotonenviar(id,cliente_id,notaventa_id){
+    if($("#ibotonbloqueado" + id).attr('class') == "fa fa-fw fa-lock text-danger"){
+        aux_updateta = $("#enviardespord" + id).attr("update_at")
+        aux_iconoenviar = `fa fa-fw fa-arrow-right text-yellow`;
+        aux_clicenviar = `enviardespord(${id},'${aux_updateta}')`;
+        $("#enviardespord" + id).attr('onclick',aux_clicenviar);
+        $("#botonenviar" + id).attr('class',aux_iconoenviar);
+        $("#ibotonbloqueado" + id).attr('class',"fa fa-fw fa-unlock text-danger");    
+    }else{
+        aux_updateta = $("#enviardespord" + id).attr("update_at")
+        aux_iconoenviar = `fa fa-fw fa-ban text-red`;
+        aux_clicenviar = ``;
+        $("#enviardespord" + id).attr('onclick',aux_clicenviar);
+        $("#botonenviar" + id).attr('class',aux_iconoenviar);
+        $("#ibotonbloqueado" + id).attr('class',"fa fa-fw fa-lock text-danger");    
+
+    }
 }
