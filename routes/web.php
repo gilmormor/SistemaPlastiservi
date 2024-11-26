@@ -1594,3 +1594,5 @@ Route::post('emailxlote', 'EmailxLoteController@guardar')->name('guardar_emailxl
 Route::get('emailxlote/{id}/editar', 'EmailxLoteController@editar')->name('editar_emailxlote');
 Route::put('emailxlote/{id}', 'EmailxLoteController@actualizar')->name('actualizar_emailxlote');
 Route::delete('emailxlote/{id}', 'EmailxLoteController@eliminar')->name('eliminar_emailxlote');
+
+Route::get('notaventa/llenarclienteproducto', 'NotaVentaController@llenarclienteproducto')->name('llenarclienteproducto_notaventa');

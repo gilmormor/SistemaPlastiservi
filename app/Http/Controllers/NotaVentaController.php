@@ -1840,6 +1840,31 @@ class NotaVentaController extends Controller
         }
     }
 
+    public function llenarclienteproducto(){
+        $sql = "SELECT producto.id AS producto_id,notaventa.cliente_id
+                    FROM producto INNER JOIN acuerdotecnico
+                    ON producto.id = acuerdotecnico.producto_id
+                    INNER JOIN notaventadetalle
+                    ON notaventadetalle.producto_id = producto.id
+                    INNER JOIN notaventa
+                    ON notaventa.id = notaventadetalle.notaventa_id
+                    WHERE notaventa.cliente_id NOT IN (SELECT cliente_producto.cliente_id FROM cliente_producto WHERE cliente_producto.producto_id = producto.id)
+                    AND (notaventa.aprobstatus='1' or notaventa.aprobstatus='3')
+                    AND producto.tipoprod = 0
+                    GROUP BY producto.id,notaventa.cliente_id;";
+        $datas = DB::select($sql);
+        foreach ($datas as $data) {
+            $ClienteProducto = ClienteProducto::updateOrCreate(
+                ['cliente_id' => $data->cliente_id,'producto_id' => $data->producto_id],
+                [
+                    'cliente_id' => $data->cliente_id,
+                    'producto_id' => $data->producto_id
+                ]
+            );
+
+        }
+    }
+
 }
 
 function consultaNVaprobadas($id){
