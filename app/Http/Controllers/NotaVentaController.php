@@ -1256,6 +1256,19 @@ class NotaVentaController extends Controller
                             NotaVentaDetalle::findOrFail($notaventadetalle->id)->update([
                                 'producto_id' => $productonew->id
                             ]);
+                        }else{
+                            //CUANDO EL PRODUCTO YA EXISTE Y TIENE ACUERDO TECNICO LO INSERTO EN LA TABLA cliente_producto
+                            if(isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 0){
+                                //CREAR RELACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
+                                $ClienteProducto = ClienteProducto::updateOrCreate(
+                                    ['cliente_id' => $notaventa->cliente_id,'producto_id' => $notaventadetalle->producto_id],
+                                    [
+                                        'cliente_id' => $notaventa->cliente_id,
+                                        'producto_id' => $notaventadetalle->producto_id
+                                    ]
+                                );
+
+                            }
                         }
                     }
                 }
