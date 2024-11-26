@@ -150,9 +150,11 @@
                 <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                 <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' required>
                     <option value="" selected>Seleccione...</option>
-                    <option 
-                        value="1" 
-                        >Operación constituye venta</option>
+                    @if (can('mostrar-solo-traslado-dte-guia-desp-directa',false) == false)
+                        <option 
+                            value="1" 
+                            >Operación constituye venta</option>                       
+                    @endif
                     <option 
                         value="6"
                         >Otros traslados no venta</option>
