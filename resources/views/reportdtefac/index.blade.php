@@ -240,6 +240,20 @@ DTE Facturacion
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label data-toggle='tooltip' title="Tipo de Factura">Tipo Fact:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="tipoFactura" id="tipoFactura" class="selectpicker form-control tipoFactura">
+                                            <option value="0">Todos</option>
+                                            <option value="1">Factura con Nota de Venta</option>
+                                            <option value="2">Factura Directa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">

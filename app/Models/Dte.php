@@ -1113,6 +1113,22 @@ class Dte extends Model
             ON categoriaprod.id = producto.categoriaprod_id
             WHERE categoriaprod.areaproduccion_id in ($request->areaproduccion_id) and dte.id=dtedet.dte_id and isnull(dtedet.deleted_at))";
         }
+        $aux_tipoFactura = " true";
+        if(!isset($request->tipoFactura) or empty($request->tipoFactura)){
+            $aux_tipoFactura = " true";
+        }else{
+            switch ($request->tipoFactura) {
+                case 0:
+                    $aux_tipoFactura = " true";
+                    break;
+                case 1:
+                    $aux_tipoFactura = " not ISNULL(notaventa.id)";
+                    break;    
+                case 2:
+                    $aux_tipoFactura = " ISNULL(notaventa.id)";
+                    break;
+            }
+        }
 
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,dte.kgtotal,
@@ -1181,6 +1197,7 @@ class Dte extends Model
         AND NOT ISNULL(dte.nrodocto)
         AND $aux_producto_idCond
         AND $aux_areaproduccion_idCond
+        AND $aux_tipoFactura
         GROUP BY dte.id
         ORDER BY dte.nrodocto asc;";
 

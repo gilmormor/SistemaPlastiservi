@@ -428,6 +428,7 @@ function datosFac(filtro = 0){
         filtro            : 1,
         nrodocto          : $("#nrodocto").val(),
         statusgen         : 1,
+        tipoFactura       : $("#tipoFactura").val(),
         _token            : $('input[name=_token]').val()
     };
 /*
@@ -468,6 +469,7 @@ function datosFac(filtro = 0){
     "&filtro="+data1.filtro +
     "&nrodocto="+data1.nrodocto +
     "&statusgen="+data1.statusgen +
+    "&tipoFactura="+data1.tipoFactura +
     "&_token="+data1._token
 
     var data = {
