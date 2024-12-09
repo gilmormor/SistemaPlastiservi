@@ -70,7 +70,9 @@ class DteNCFacturaController extends Controller
     public function guardar(ValidarDTENC $request)
     {
         can('guardar-nota-credito-factura');
+        //dd($request->tdfoliocontrol_id);
         $dtefac = Dte::findOrFail($request->dte_id);
+        //dd($dtefac);
         if($dtefac->updated_at != $request->updated_at){
             return redirect('dtencfactura')->with([
                 'mensaje'=>'Registro fué modificado por otro usuario.',
@@ -184,6 +186,15 @@ class DteNCFacturaController extends Controller
         $dte->iva = $Tiva;
         $dte->mnttotal = $Tmnttotal;
         $dte->kgtotal = $Tkgtotal;
+        //ESTA VALIDACION ES QUE SIEMPRE DEBE TOMAR EL TOTAL DE LA NOTA DE DEBITO SIN IMPORTAR EL DETALLE
+        //YA QUE EN OCACIONES SE HA GENERADO LA ND CON EL DETALLE Y EL TOTAL DIFERENTE
+        if($dtefac->foliocontrol_id == 6){
+            $dte->mntneto = $dtefac->mntneto;
+            $dte->tasaiva = $dtefac->tasaiva;
+            $dte->iva = $dtefac->iva;
+            $dte->mnttotal = $dtefac->mnttotal;
+            $dte->kgtotal = $dtefac->kgtotal;
+        }
         $dte->centroeconomico_id = $request->centroeconomico_id;
         $dte->usuario_id = auth()->id();
 
