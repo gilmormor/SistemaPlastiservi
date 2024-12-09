@@ -173,15 +173,16 @@ class DteNDFacturaController extends Controller
         $dte->obs = $request->obs;
         $dte->tipodespacho = $dtefac->tipodespacho;
         $dte->indtraslado = $dtefac->indtraslado;
-        /* $dte->mntneto = $Tmntneto;
+        
+        $dte->mntneto = $Tmntneto;
         $dte->tasaiva = $dtefac->tasaiva;
         $dte->iva = $Tiva;
-        $dte->mnttotal = $Tmnttotal; */
+        $dte->mnttotal = $Tmnttotal;
 
-        $dte->mntneto = $dtefac->mntneto;
+        /* $dte->mntneto = $dtefac->mntneto;
         $dte->tasaiva = $dtefac->tasaiva;
         $dte->iva = $dtefac->iva;
-        $dte->mnttotal = $dtefac->mnttotal;
+        $dte->mnttotal = $dtefac->mnttotal; */
 
         $dte->kgtotal = $Tkgtotal;
         $dte->centroeconomico_id = $request->centroeconomico_id;
@@ -198,7 +199,7 @@ class DteNDFacturaController extends Controller
         $dtencnd->dte_id = "";
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
-        //dd($dte);
+        dd($dte);
 
         //$respuesta = Dte::generardteprueba($dte);
         $respuesta = Dte::dteSolicitarFolio($dte);

@@ -254,7 +254,7 @@ Nota Débito
                             <th>Razón Social</th>
                             <th class='tooltipsC' title='Comuna'>Comuna</th>
                             <th class='tooltipsC' title='DTE Origen'>DTE Origen</th>
-                            <th class='tooltipsC' title='PDF Nota Credito'>DTE NC</th>
+                            <th class='tooltipsC' title='PDF Nota Débito'>DTE ND</th>
                             <th class="ocultar">dteanul_obs</th>
                             <th class="ocultar">dteanulcreated_at</th>
                             <th class="ocultar">Obs Bloqueo</th>
