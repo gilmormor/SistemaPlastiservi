@@ -199,7 +199,7 @@ class DteNDFacturaController extends Controller
         $dtencnd->dte_id = "";
         $dtencnd->codref = $request->codref;
         $dte->dtencnd = $dtencnd;
-        dd($dte);
+        //dd($dte);
 
         //$respuesta = Dte::generardteprueba($dte);
         $respuesta = Dte::dteSolicitarFolio($dte);
