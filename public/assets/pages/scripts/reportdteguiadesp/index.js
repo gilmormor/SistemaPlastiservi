@@ -110,7 +110,7 @@ $(document).ready(function () {
                 if(data.nrodocto){
                     aux_indtra = indtrasladoObj(data.indtraslado);
                     aux_text = 
-                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto} ${aux_indtra.desc}" onclick="genpdfGD('${data.nrodocto}','')">
+                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto} ${aux_indtra.desc} Usuario: ${data.usuario}" onclick="genpdfGD('${data.nrodocto}','')">
                             ${data.nrodocto} ${aux_indtra.letra}
                         </a>
                         <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">

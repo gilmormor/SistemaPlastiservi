@@ -1154,7 +1154,8 @@ class Dte extends Model
         GROUP BY dtedte1.dte_id) AS nombrepdf_guiadesp,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         foliocontrol.tipodocto,foliocontrol.nombrepdf,
-        dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at
+        dte.nrodocto,dte.updated_at,dtefac.staverfacdesp,dtefac.updated_at as dtefac_updated_at,
+        dte.usuario_id,usuario.usuario
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         LEFT JOIN dteguiadesp
@@ -1179,6 +1180,8 @@ class Dte extends Model
         ON dtefac.dte_id = dte.id
         LEFT JOIN dteoc
         ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
+        LEFT JOIN usuario
+        ON dte.usuario_id=usuario.id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond
