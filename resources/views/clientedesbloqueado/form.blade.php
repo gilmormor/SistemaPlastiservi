@@ -26,6 +26,18 @@
                 <input type="text" name="notaventa_idenabled" id="notaventa_idenabled" class="form-control" value="{{old('notaventa_idenabled', $data->notaventa_id ?? '')}}" maxlength="12" required  disabled readonly/>
             @endif
         </div>
+        <div class="col-lg-2" id="vistaprevNV" style="display:none">
+            <a id="vpnv1" class='btn-accion-tabla btn-sm tooltipsC' title='Ver Nota venta' onclick="genpdfNV(2720,1)">
+                <i class='fa fa-fw fa-file-pdf-o'></i>
+            </a>
+            <a id="btnverdesp" name="btnverdesp" class="btn-accion-tabla btn-sm tooltipsC" data-toggle="tooltip" data-original-title="">
+                <i id="iverdesp" name="iverdesp"></i>                                    
+            </a>
+            {{-- <a id="vpnv2" class='btn-accion-tabla btn-sm tooltipsC' title='Precio x Kg' onclick="genpdfNV(2720,2)">
+                <i class='fa fa-fw fa-file-pdf-o'></i>
+            </a> --}}
+        </div>
+
     </div>
     <div class="form-group">
         <label for="rut" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
@@ -82,3 +94,5 @@
         <textarea name="obs" id="obs" class="form-control" value="{{old('obs', $data->obs ?? '')}}" required>{{old('obs', $data->obs ?? '')}}</textarea>
     </div>
 </div>
+
+@include('generales.listarorddesp')

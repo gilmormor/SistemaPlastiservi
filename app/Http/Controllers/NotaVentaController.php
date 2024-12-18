@@ -1724,6 +1724,7 @@ class NotaVentaController extends Controller
     }
 
     public function buscarNVActiva(Request $request){
+        //dd($request);
         $sql = "SELECT notaventa.*,SUM(notaventadetalle.cant - (SELECT cantsoldesp
                     FROM vista_sumsoldespdet
                     WHERE notaventadetalle_id=notaventadetalle.id)) AS pendDesp,
@@ -1745,7 +1746,8 @@ class NotaVentaController extends Controller
             //if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
                 return [
                     "id" => 0,
-                    "title" => "Nota de venta despachada en su totalidad. ",
+                    "men_cod" => 2,
+                    "title" => "Nota venta despachada en su totalidad. ",
                     "mensaje" => "",
                     "tipo_alert" => 'warning'
                 ];
@@ -1755,7 +1757,8 @@ class NotaVentaController extends Controller
                 if($datas[0]->notaventacerrada_observacion != null){
                     return [
                         "id" => 0,
-                        "title" => "Nota de Venta cerrada. Obs: " . $datas[0]->notaventacerrada_observacion,
+                        "men_cod" => 0,
+                        "title" => "Nota venta cerrada. Obs: " . $datas[0]->notaventacerrada_observacion . ".",
                         "mensaje" => "",
                         "tipo_alert" => 'warning'
                     ];    
@@ -1763,6 +1766,7 @@ class NotaVentaController extends Controller
                 }
                 return [
                     "id" => 1,
+                    "men_cod" => 1,
                     "title" => "",
                     "cliente_id" => $cliente->id,
                     "rut" => $cliente->rut,
@@ -1775,7 +1779,8 @@ class NotaVentaController extends Controller
         }else{
             return [
                 "id" => 0,
-                "title" => "Nota de venta no existe. ",
+                "men_cod" => 3,
+                "title" => "Nota venta no existe. ",
                 "mensaje" => "",
                 "tipo_alert" => 'error'
             ];

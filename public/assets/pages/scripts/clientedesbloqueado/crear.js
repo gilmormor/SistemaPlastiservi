@@ -20,6 +20,8 @@ $(document).ready(function () {
     $("#rut" ).focus();
     $("#rut").focus(function(){
         eliminarFormatoRut($(this));
+        $("#btnguardargen").attr('disabled',true)
+        $("#btnguardargen").hide();
     });
     $("#rut").keyup(function(event){
 		if(event.which==113){
@@ -55,6 +57,13 @@ $(document).ready(function () {
         $("#rut").val("");
         $("#razonsocial").val("");
     });
+    $("#notaventa_id").focus(function(){
+        $('#vistaprevNV').hide();
+        $("#btnguardargen").hide();
+        $("#btnguardargen").attr('disabled',true);
+    });
+    $("#btnguardargen").hide();
+    $("#btnguardargen").attr('disabled',true);
 });
 
 function copiar_rut(id,rut){
@@ -124,6 +133,8 @@ function ajaxRequest(data,url,funcion) {
                     $("#razonsocial").val(data.razonsocial);
                     $("#cliente_id").val(data.id);
                     $("#obs").focus();
+                    $("#btnguardargen").attr('disabled',false)
+                    $("#btnguardargen").show();
                 } else {
                     Biblioteca.notificaciones('Cliente: '+data.razonsocial+' ya está Habilitado.', 'Plastiservi', 'error');
                     $("#rut").val('');
@@ -162,7 +173,7 @@ $("#notaventa_id").blur(function(){
 		//totalizar();
         var data = {
             id: codigo,
-            sta_cerrarNV : 0, // = 0 no estoy consultando nota de venta para cerrar, estoy consultando para desbloquear cliente
+            sta_cerrarNV : 1, // = 0 no estoy consultando nota de venta para cerrar, estoy consultando para desbloquear cliente
             _token: $('input[name=_token]').val()
         };
         $.ajax({
@@ -175,11 +186,11 @@ $("#notaventa_id").blur(function(){
                     $("#rut").val(respuesta.rut);
                     $("#razonsocial").val(respuesta.razonsocial);
                     formato_rut($("#rut"));
-                    /* $("#observacion").focus();
-                    $("#vpnv1").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
-                    $("#vpnv2").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
-                    $('#vistaprevNV').show(); */
+                    $("#btnguardargen").attr('disabled',false)
+                    $("#btnguardargen").show();
                 }else{
+                    $("#btnguardargen").attr('disabled',true)
+                    $("#btnguardargen").hide();
                     swal({
                         title: respuesta.title,
                         text: "",
@@ -189,9 +200,30 @@ $("#notaventa_id").blur(function(){
                         },
                     }).then((value) => {
                         if (value) {
-                            $("#notaventa_id").focus();
+                            //$("#notaventa_id").focus();
                         }
                     });
+                }
+                if(respuesta.men_cod != 3){
+                    if(respuesta.men_cod == 0){
+                        $("#iverdesp").attr("class","fa fa-fw fa-star text-red");
+                    }
+
+                    if(respuesta.men_cod == 1){
+                        $("#iverdesp").attr("class","fa fa-fw fa-star-o text-aqua");
+                        
+                    }
+                    if(respuesta.men_cod == 2){
+                        $("#iverdesp").attr("class","fa fa-fw fa-star text-aqua");
+                        
+                    }
+                    $("#btnverdesp").attr("data-original-title",respuesta.title + " Clic para ver despacho.")
+
+                    $("#btnverdesp").attr("onclick","listarorddespxNV(" + codigo + ")");
+                    /* $("#observacion").focus(); */
+                    $("#vpnv1").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)");
+                    /* $("#vpnv2").attr("onclick","genpdfNV(" + $("#notaventa_id").val() + ",1)"); */
+                    $('#vistaprevNV').show();
                 }
             }
         });
@@ -241,3 +273,18 @@ $("#cotizacion_id").blur(function(){
 	}
 });
 
+function configurarTabla(aux_tabla){
+    $(aux_tabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        "order"       : [[ 0, "desc" ]],
+        "language": {
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });    
+}

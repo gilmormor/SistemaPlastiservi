@@ -36,4 +36,5 @@
     </div>
 </div>
 @include('generales.buscarclientebd')
+@include('generales.modalpdf')
 @endsection
