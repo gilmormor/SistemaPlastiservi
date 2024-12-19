@@ -153,7 +153,7 @@
                                                 {{'selected'}}
                                             @endif
                                         @else
-                                            @if ($data->notaventa->sucursal_id == 2 and $centroeconomico->id == 2)
+                                            {{-- @if ($data->notaventa->sucursal_id == 2 and $centroeconomico->id == 2)
                                                 {{'selected'}}
                                             @else
                                                 @if ($data->notaventa->sucursal_id != 2)
@@ -161,8 +161,10 @@
                                                         {{'selected'}}
                                                     @endif                                                    
                                                 @endif
+                                            @endif --}}
+                                            @if ($data->notaventa->centroeconomico_id==$centroeconomico->id)
+                                                {{'selected'}}
                                             @endif
-
                                         @endif
                                         >{{$centroeconomico->nombre}}</option>
                                 @endforeach

@@ -316,6 +316,43 @@ $(document).ready(function () {
 		
 	}
 
+	// Crear el array para almacenar los datos
+	const centroeconomicoArray = [];
+
+	// Recorrer las opciones del select
+	$('#centroeconomicoarray_id option').each(function () {
+		centroeconomicoArray.push({
+			sucursal_id: $(this).attr('sucursal_id'),
+			centroeconomico_id: $(this).attr('centroeconomico_id'),
+			nombre: $(this).text()
+		});
+	});
+
+	$('#sucursal_id').on('change', function () {
+		const sucursalId = parseInt($(this).val());
+		const centroeconomicoSelect = $('#centroeconomico_id');
+
+		// Limpiar el select de centroeconomicos
+		centroeconomicoSelect.empty();
+		centroeconomicoSelect.append('<option value="">Seleccione...</option>');
+		if (sucursalId) {
+			// Filtrar los centros económicos por sucursal_id
+			const filtrados = centroeconomicoArray.filter(centro => centro.sucursal_id == sucursalId);
+
+			// Agregar las opciones al select
+			filtrados.forEach(centro => {
+				centroeconomicoSelect.append(
+					`<option value="${centro.centroeconomico_id}">${centro.nombre}</option>`
+				);
+			});
+			if (filtrados.length == 1){
+				centroeconomicoSelect.val(filtrados[0].centroeconomico_id);
+			}
+
+		}
+	});
+	$('#sucursal_id').change();
+
 });
 /*
 $("#botonNewProd").click(function(event)
@@ -819,7 +856,7 @@ $("#rut").blur(function(){
 							if (respuesta.sucursales.length == 1){
 								$("#sucursal_id").val(respuesta.sucursales[0].id);
 							}
-	
+							$('#sucursal_id').change();
 							/*
 							$("#clientedirec_id option").remove();
 							if(respuesta[0]['direcciondetalle']!=null){

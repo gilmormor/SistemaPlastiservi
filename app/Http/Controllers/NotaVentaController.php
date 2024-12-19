@@ -10,6 +10,7 @@ use App\Http\Requests\ValidarNotaVenta;
 use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnico_Cliente;
 use App\Models\CategoriaProd;
+use App\Models\CentroEconomico;
 use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\ClienteDesBloqueado;
@@ -368,6 +369,7 @@ class NotaVentaController extends Controller
         session(['editaracutec' => '0']);
         session(['aux_aproNV' => '0']);
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->where("mostrarnv", 1)->get();
         //dd($vendedor_id);
         return view('notaventa.crear',compact('formapagos','plazopagos','vendedores','vendedores1','fecha','comunas','empresa','tipoentregas','vendedor_id','giros','sucurArray','aux_sta','aux_statusPant','tablas'));
     }
@@ -491,6 +493,7 @@ class NotaVentaController extends Controller
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
 
         $tablas['limitecredito'] = $data->cliente->limitecredito;
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->where("mostrarnv", 1)->get();
         session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);

@@ -135,6 +135,14 @@ Guia Despacho por Facturar
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="ID Orden de Despacho">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="despachoord_id">OrdDespID:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="despachoord_id" id="despachoord_id" class="form-control" maxlength="10"/>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comuna">
@@ -147,14 +155,22 @@ Guia Despacho por Facturar
                                         ?>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="ID Orden de Despacho">
+                                <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="despachoord_id">OrdDespID:</label>
+                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="despachoord_id" id="despachoord_id" class="form-control" maxlength="10"/>
+                                        <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
+                                            <option value="">Seleccione...</option>
+                                            @foreach($tablashtml['sucursales'] as $sucursal)
+                                                <option
+                                                    value="{{$sucursal->id}}"
+                                                >{{$sucursal->nombre}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
+
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
@@ -172,16 +188,27 @@ Guia Despacho por Facturar
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
+                                        <label for="centroeconomico_id" data-toggle='tooltip' title="Centro de costos">Centro Costos</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
+                                        <select name="centroeconomico_id" id="centroeconomico_id" class="selectpicker form-control" required>
                                             <option value="">Seleccione...</option>
                                             @foreach($tablashtml['sucursales'] as $sucursal)
-                                                <option
-                                                    value="{{$sucursal->id}}"
-                                                >{{$sucursal->nombre}}</option>
+                                                <optgroup label="{{$sucursal->nombre}}" data-max-options="0">
+                                                    @foreach($tablashtml['centroeconomicos'] as $centroeconomico)
+                                                        @if ($centroeconomico->sucursal_id == $sucursal->id)
+                                                            <option
+                                                                value="{{$centroeconomico->id}}"
+                                                            >{{$centroeconomico->nombre}}</option>                                                            
+                                                        @endif
+                                                    @endforeach
+                                                </optgroup>
                                             @endforeach
+                                            {{-- @foreach($tablashtml['centroeconomicos'] as $centroeconomico)
+                                                <option
+                                                    value="{{$centroeconomico->id}}"
+                                                >{{$centroeconomico->nombre}}</option>
+                                            @endforeach --}}
                                         </select>
                                     </div>
                                 </div>

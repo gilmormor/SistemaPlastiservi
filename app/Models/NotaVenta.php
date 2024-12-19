@@ -17,6 +17,7 @@ class NotaVenta extends Model
     protected $table = "notaventa";
     protected $fillable = [
         'sucursal_id',
+        'centroeconomico_id',
         'cotizacion_id',
         'fechahora',
         'direccioncot',
@@ -179,6 +180,13 @@ class NotaVenta extends Model
     {
         return $this->hasOne(ClienteDesBloqueado::class,'notaventa_id');
     }
+
+    //Relacion inversa a CentroEconomico
+    public function centroeconomico()
+    {
+        return $this->belongsTo(CentroEconomico::class);
+    }
+    
     
     
     public static function consulta($request,$aux_consulta){

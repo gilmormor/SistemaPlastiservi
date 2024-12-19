@@ -28,3 +28,21 @@
         </select>
     </div>
 </div>
+<div class="form-group">
+    <label for="mostrarnv" class="col-lg-3 control-label requerido" title="Mostrar en Nota de Venta?">Mostrar en Nota Venta</label>
+    <div class="col-lg-9">
+        <select name="mostrarnv" id="mostrarnv" class="form-control select2 mostrarnv" required>
+            <option value="">Seleccione...</option>
+            <option value="1"
+                @if (isset($data) and ($data->mostrarnv=="1"))
+                    {{'selected'}}
+                @endif
+            >Si</option>
+            <option value="0"
+                @if (isset($data) and ($data->mostrarnv=="0"))
+                    {{'selected'}}
+                @endif    
+            >No</option>
+        </select>
+    </div>    
+</div>

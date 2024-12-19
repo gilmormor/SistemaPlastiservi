@@ -485,6 +485,7 @@ function datosGD(){
         filtro            : 1,
         dtenotnull        : 1, //Estatus que se envia a la consulta para mostrar o no los dte anulados (1=no se trae los anulados ""=empty se trae todo sin importar que esta anulado)
         dteguiausada      : 1,
+        centroeconomico_id: $("#centroeconomico_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -500,7 +501,8 @@ function datosGD(){
     "&filtro=" + data.filtro +
     "&dtenotnull=" + data.dtenotnull +
     "&dteguiausada=" + data.dteguiausada +
-    "&sucursal_id=" + data.sucursal_id;
+    "&sucursal_id=" + data.sucursal_id +
+    "&centroeconomico_id=" + data.centroeconomico_id;
 
     var data = {
         data1 : data,

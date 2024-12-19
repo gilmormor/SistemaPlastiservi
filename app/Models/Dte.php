@@ -583,6 +583,12 @@ class Dte extends Model
         if(isset($request->aux_condindtraslado) and $request->aux_condindtraslado != "" and $request->aux_condindtraslado != null){
             $aux_condindtraslado = $request->aux_condindtraslado;
         }
+        if(!isset($request->centroeconomico_id) or empty($request->centroeconomico_id) or ($request->centroeconomico_id == "") or ($request->centroeconomico_id == "undefined")){
+            $aux_centroeconomico_idCond = "true";
+        }else{
+            $aux_centroeconomico_idCond = "dte.centroeconomico_id = $request->centroeconomico_id";
+        }
+
         $sql = "SELECT dte.id,dte.cliente_id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.indtraslado,
         cliente.razonsocial,cliente.rut,cliente.razonsocial,despachosol.notaventa_id as notaventa_id,
@@ -653,6 +659,7 @@ class Dte extends Model
         AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
         AND $aux_condsucurArray
         AND $aux_sucursal_idCond
+        AND $aux_centroeconomico_idCond
         order BY dte.nrodocto;";
         //dd($sql);
         //AND $aux_conddtenotnull

@@ -13,6 +13,7 @@ class CentroEconomico extends Model
         'sucursal_id',
         'nombre',
         'desc',
+        'mostrarnv',
         'usuario_id',
         'usuariodel_id'
     ];
@@ -28,6 +29,17 @@ class CentroEconomico extends Model
     {
         return $this->hasMany(GuiaDesp::class);
     }
+
+    //RELACION DE UNO A MUCHOS DTE
+    public function dtes()
+    {
+        return $this->hasMany(Dte::class);
+    }
     
+    //RELACION DE UNO A MUCHOS NotaVenta
+    public function notaventas()
+    {
+        return $this->hasMany(NotaVenta::class);
+    }
     
 }

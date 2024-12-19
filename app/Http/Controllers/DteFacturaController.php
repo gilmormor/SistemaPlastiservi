@@ -536,6 +536,7 @@ class DteFacturaController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
                                     ->whereIn('sucursal.id', $sucurArray)
                                     ->get();
+        $tablashtml['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         return view('dtefactura.listarguiadesp', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
