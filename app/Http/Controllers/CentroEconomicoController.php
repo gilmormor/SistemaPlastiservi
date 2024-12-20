@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarCentroEconomico;
 use App\Models\CentroEconomico;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CentroEconomicoController extends Controller
 {
@@ -22,9 +23,22 @@ class CentroEconomicoController extends Controller
     }
 
     public function centroeconomicopage(){
-        return datatables()
+        /* return datatables()
             ->eloquent(CentroEconomico::query())
-            ->toJson();
+            ->toJson(); */
+
+        $sql = "SELECT centroeconomico.id,centroeconomico.nombre,sucursal.nombre as sucursal_nombre
+        FROM centroeconomico INNER JOIN sucursal
+        on centroeconomico.sucursal_id = sucursal.id
+        where ISNULL(centroeconomico.deleted_at)
+        AND ISNULL(sucursal.deleted_at)
+        ORDER BY centroeconomico.id desc;";
+
+        $datas = DB::select($sql);
+        //dd($datas);
+
+        return datatables($datas)->toJson();
+
     }
 
     /**

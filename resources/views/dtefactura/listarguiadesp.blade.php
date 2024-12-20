@@ -188,7 +188,7 @@ Guia Despacho por Facturar
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="centroeconomico_id" data-toggle='tooltip' title="Centro de costos">Centro Costos</label>
+                                        <label for="centroeconomico_id" data-toggle='tooltip' title="Centro de costos">Centro Economico</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="centroeconomico_id" id="centroeconomico_id" class="selectpicker form-control" required>

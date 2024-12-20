@@ -231,11 +231,23 @@ DTE Facturacion
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="centroeconomico_id" id="centroeconomico_id" class="selectpicker form-control" required>
                                             <option value="">Seleccione...</option>
-                                            @foreach($tablashtml['centroeconomicos'] as $centroeconomico)
+                                            @foreach($tablashtml['sucursales'] as $sucursal)
+                                                <optgroup label="{{$sucursal->nombre}}" data-max-options="0">
+                                                    @foreach($tablashtml['centroeconomicos'] as $centroeconomico)
+                                                        @if ($centroeconomico->sucursal_id == $sucursal->id)
+                                                            <option
+                                                                value="{{$centroeconomico->id}}"
+                                                            >{{$centroeconomico->nombre}}</option>                                                            
+                                                        @endif
+                                                    @endforeach
+                                                </optgroup>
+                                            @endforeach
+
+                                            {{-- @foreach($tablashtml['centroeconomicos'] as $centroeconomico)
                                                 <option
                                                     value="{{$centroeconomico->id}}"
                                                 >{{$centroeconomico->nombre}}</option>
-                                            @endforeach
+                                            @endforeach --}}
                                         </select>
                                     </div>
                                 </div>

@@ -13,6 +13,7 @@ $(document).ready(function () {
         'columns'     : [
             {data: 'id'},
             {data: 'nombre'},
+            {data: 'sucursal_nombre'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : "<a href='centroeconomico' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'><i class='fa fa-fw fa-pencil'></i></a><a href='centroeconomico' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'><i class='fa fa-fw fa-trash text-danger'></i></a>"}
         ],

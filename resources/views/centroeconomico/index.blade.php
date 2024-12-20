@@ -27,7 +27,8 @@ Centro Económico
                         <tr>
                             <th class="width70">ID</th>
                             <th>Nombre</th>
-                            <th class="width70"></th>
+                            <th>Sucursal</th>
+                            <th class="width70">Acción</th>
                         </tr>
                     </thead>
                 </table>
