@@ -811,6 +811,7 @@ class NotaVentaController extends Controller
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->where("mostrarnv", 1)->get();
 
         return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }
