@@ -41,6 +41,7 @@
             >{{$centroeconomico->nombre}}</option>
     @endforeach
 </select>
+<input type="hidden" name="centroeconomico01_id" id="centroeconomico01_id" value="{{old('centroeconomico01_id', $data->centroeconomico_id ?? '')}}">
 
 <?php
     $selecmultprod = false;

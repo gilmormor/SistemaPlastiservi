@@ -327,7 +327,7 @@ $(document).ready(function () {
 			nombre: $(this).text()
 		});
 	});
-
+	aux_centroeconomico_id = $('#centroeconomico01_id').val();
 	$('#sucursal_id').on('change', function () {
 		const sucursalId = parseInt($(this).val());
 		const centroeconomicoSelect = $('#centroeconomico_id');
@@ -341,8 +341,12 @@ $(document).ready(function () {
 
 			// Agregar las opciones al select
 			filtrados.forEach(centro => {
+				aux_seleccionado = "";
+				if(aux_centroeconomico_id == centro.centroeconomico_id){
+					aux_seleccionado = "selected";
+				}
 				centroeconomicoSelect.append(
-					`<option value="${centro.centroeconomico_id}">${centro.nombre}</option>`
+					`<option value="${centro.centroeconomico_id}" ${aux_seleccionado}>${centro.nombre}</option>`
 				);
 			});
 			if (filtrados.length == 1){
