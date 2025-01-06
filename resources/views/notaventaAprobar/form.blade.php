@@ -299,7 +299,12 @@
                                 </select>    
                             </div>
                         </div>
-                
+
+                        <div class="form-group col-xs-12 col-sm-3">
+                            <label for="centroeconomico_nombre" class="control-label requerido">Centro Economico</label>
+                            <input type="text" name="centroeconomico_nombre" id="centroeconomico_nombre" class="form-control" value="{{old('centroeconomico_nombre', $data->centroeconomico->nombre ?? '')}}" readonly required disabled>
+                        </div>
+
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
                             <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', $data->lugarentrega ?? '')}}" required placeholder="Lugar de Entrega" readonly required disabled/>
@@ -329,21 +334,21 @@
                             <button type="button" class="form-control btn btn-primary" id="btnfotooc" name="btnfotooc" title="Guardar">Cargar OrdenCompra</button>
                         </div>-->
                         
+                    </div>
+                    <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="contacto" class="control-label requerido">Contacto</label>
                             <input type="text" name="contacto" id="contacto" class="form-control" value="{{old('contacto', $data->contacto ?? '')}}" required placeholder="Contacto Entrega" readonly required disabled/>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">
                             <label for="contactotelf" class="control-label requerido">Teléfono</label>
                             <input type="text" name="contactotelf" id="contactotelf" class="form-control" value="{{old('contactotelf', $data->contactotelf ?? '')}}" required placeholder="Teléfono Contacto Entrega" readonly required disabled/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-4">
+                        <div class="form-group col-xs-12 col-sm-3">
                             <label for="contactoemail" class="control-label requerido">Email</label>
                             <input type="email" name="contactoemail" id="contactoemail" class="form-control" value="{{old('contactoemail', $data->contactoemail ?? '')}}" required placeholder="Email Contacto Entrega" readonly required disabled/>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-5">
+                        <div class="form-group col-xs-12 col-sm-3">
                             <label for="observacion" class="control-label">Observaciones</label>
                             <input type="text" name="observacion" id="observacion" class="form-control" value="{{old('observacion', $data->observacion ?? '')}}" placeholder="Observaciones" readonly disabled/>
                         </div>
@@ -451,7 +456,7 @@
                             <th>Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
-                            @if($aux_concot==false)
+                            @if(($aux_sta==1 or $aux_sta==2) and $aux_concot == false)
                                 <th class="width70"></th>
                             @endif
                         </tr>
