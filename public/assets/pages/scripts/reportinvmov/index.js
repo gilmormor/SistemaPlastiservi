@@ -248,6 +248,12 @@ function consultarpage(data){
             $('td', row).eq(9).attr('style','text-align:right');
             aux_text = MASKLA(data.cant,2);
             $('td', row).eq(9).html(aux_text);
+            if(data.cant != 0){
+                aux_text = MASKLA(data.cantkg,2);
+                $('td', row).eq(9).attr('title',aux_text + ' Kg.');
+            }else{
+                $('td', row).eq(9).attr('title','0 Kg.');
+            }
         }
       });
 }
