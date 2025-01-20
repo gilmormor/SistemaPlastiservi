@@ -61,6 +61,7 @@ class ReportClientesController extends Controller
             }else{
                 $respuesta['tabla'] .= "
                     <th>Dirección</th>
+                    <th>Email</th>
                     <th>Comuna</th>";
             }
             
@@ -88,6 +89,7 @@ class ReportClientesController extends Controller
                     }else{
                         $respuesta['tabla'] .= "
                             <td>$data->direccion</td>
+                            <td>$data->email</td>
                             <td>$data->nombrecomuna</td>";
                     }
         
