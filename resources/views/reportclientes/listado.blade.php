@@ -37,7 +37,7 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th class="textleft">ID</th>
+					{{-- <th class="textleft">ID</th> --}}
 					<th class="textleft">RUT</th>
 					<th class="textleft">Razón Social</th>
 					@if ($request->bloqueado == "1")
@@ -45,14 +45,16 @@
 						<th class="textleft">Fecha Bloqueo</th>
 					@else
 						<th class="textleft">Dirección</th>
-						<th class="textleft">Comuna</th>
+						<th class="textleft">Email</th>
+						<th class="textleft">Telefono</th>
+						{{-- <th class="textleft">Comuna</th> --}}
 					@endif
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($datas as $data)
 					<tr class='btn-accion-tabla tooltipsC'>
-						<td>{{$data->id}}</td>
+						{{-- <td>{{$data->id}}</td> --}}
 						<td>{{$data->rut}}</td>
 						<td>{{$data->razonsocial}}</td>
 						@if ($request->bloqueado == "1")
@@ -63,7 +65,9 @@
 							<td>{{$aux_fechabloq}}</td>
 						@else
 							<td>{{$data->direccion}}</td>
-							<td>{{$data->nombrecomuna}}</td>
+							<td>{{$data->email}}</td>
+							<td>{{$data->telefono}}</td>
+							{{-- <td>{{$data->nombrecomuna}}</td> --}}
 						@endif
 					</tr>
 				@endforeach

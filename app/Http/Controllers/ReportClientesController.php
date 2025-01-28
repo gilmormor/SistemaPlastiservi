@@ -50,7 +50,6 @@ class ReportClientesController extends Controller
             $respuesta['tabla'] .= "<table id='tabla-data-listar' name='tabla-data-listar' class='table display AllDataTables table-hover table-condensed tablascons2' data-page-length='10'>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>RUT</th>
                     <th>Razón Social</th>";
             if($request->bloqueado == "1"){
@@ -62,7 +61,7 @@ class ReportClientesController extends Controller
                 $respuesta['tabla'] .= "
                     <th>Dirección</th>
                     <th>Email</th>
-                    <th>Comuna</th>";
+                    <th>Telefono</th>";
             }
             
             $respuesta['tabla'] .= "
@@ -77,7 +76,6 @@ class ReportClientesController extends Controller
                 }
                 $respuesta['tabla'] .= "
                 <tr class='tooltipsC' data-toggle='tooltip' title='$clientebloqueadodesc'>
-                    <td>$data->id</td>
                     <td>$data->rut</td>
                     <td>$data->razonsocial</td>";
 
@@ -90,7 +88,7 @@ class ReportClientesController extends Controller
                         $respuesta['tabla'] .= "
                             <td>$data->direccion</td>
                             <td>$data->email</td>
-                            <td>$data->nombrecomuna</td>";
+                            <td>$data->telefono</td>";
                     }
         
                 $respuesta['tabla'] .= "
