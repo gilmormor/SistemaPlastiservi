@@ -2490,12 +2490,14 @@ function consulta($request,$aux_sql,$orden){
             INNER JOIN dteguiadesp
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
+            AND dteoc.oc_folder = 'notaventa'
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id
             AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
                                     FROM dteanul 
                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                    and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
+                                    and ISNULL(dteanul.deleted_at))
+            GROUP BY dteoc.oc_id) as dte_nrodocto,
         if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         '' as rutanuevasoldesp,
         notaventa.aprobfechahora as notaventa_aprobfechahora,
@@ -2594,12 +2596,14 @@ function consulta($request,$aux_sql,$orden){
             INNER JOIN dteguiadesp
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
+            AND dteoc.oc_folder = 'notaventa'
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id
             AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
                                     FROM dteanul 
                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                    and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
+                                    and ISNULL(dteanul.deleted_at))
+            GROUP BY dteoc.oc_id) as dte_nrodocto,
         if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         '' as rutanuevasoldesp
         FROM notaventadetalle INNER JOIN notaventa
@@ -3456,17 +3460,19 @@ function consultasoldesp($request){
             vista_despsoltotales.totalkilos,
             vista_despsoltotales.subtotalsoldesp,despachosol.updated_at,
             (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
-            FROM dteoc INNER JOIN dte
-            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
-            INNER JOIN dteguiadesp
-            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
-            WHERE dteoc.oc_id = notaventa.oc_id
-            AND isnull(dteguiadesp.notaventa_id)
-            AND dte.cliente_id= notaventa.cliente_id
-            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                                            FROM dteanul 
-                                            WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                            and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
+                FROM dteoc INNER JOIN dte
+                ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+                INNER JOIN dteguiadesp
+                ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+                WHERE dteoc.oc_id = notaventa.oc_id
+                AND dteoc.oc_folder = 'notaventa'
+                AND isnull(dteguiadesp.notaventa_id)
+                AND dte.cliente_id= notaventa.cliente_id
+                AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
+                                                FROM dteanul 
+                                                WHERE dteanul.dte_id = dteguiadesp.dte_id 
+                                                and ISNULL(dteanul.deleted_at))
+                GROUP BY dteoc.oc_id) as dte_nrodocto,
             despachosol.aprorddesp,
             clientebloqueado.descripcion as clientebloqueado_descripcion,
             despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,
@@ -3592,12 +3598,14 @@ function consultaindex(){
         INNER JOIN dteguiadesp
         ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
         WHERE dteoc.oc_id = notaventa.oc_id
+        AND dteoc.oc_folder = 'notaventa'
         AND isnull(dteguiadesp.notaventa_id)
         AND dte.cliente_id= notaventa.cliente_id
         AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
 		                                FROM dteanul 
                                         WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                        and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
+                                        and ISNULL(dteanul.deleted_at))
+        GROUP BY dteoc.oc_id) as dte_nrodocto,
     clientebloqueado.descripcion as clientebloqueado_descripcion,
     if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
     cliente.limitecredito,

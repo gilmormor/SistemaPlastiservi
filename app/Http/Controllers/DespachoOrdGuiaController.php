@@ -134,8 +134,10 @@ function consultaindex($request){
         INNER JOIN dteguiadesp
         ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
         WHERE dteoc.oc_id = notaventa.oc_id
+        AND dteoc.oc_folder = 'notaventa'
         AND isnull(dteguiadesp.notaventa_id)
-        AND dte.cliente_id= notaventa.cliente_id) as dte_nrodocto,
+        AND dte.cliente_id= notaventa.cliente_id
+        GROUP BY dteoc.oc_id) as dte_nrodocto,
     bloquearhacerguia
     FROM despachoord INNER JOIN notaventa
     ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)

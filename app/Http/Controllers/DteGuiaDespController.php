@@ -1265,17 +1265,18 @@ function consultalistarorddesppage($request){
     sum(round((despachoorddet.cantdesp * notaventadetalle.preciounit) * ((notaventa.piva+100)/100))) as subtotal,
     despachoord.updated_at,'' as rutacrear,
     (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
-    FROM dteoc INNER JOIN dte
-    ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
-    INNER JOIN dteguiadesp
-    ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
-    WHERE dteoc.oc_id = notaventa.oc_id
-    AND isnull(dteguiadesp.notaventa_id)
-    AND dte.cliente_id= notaventa.cliente_id
-    AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                                    FROM dteanul 
-                                    WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                    and ISNULL(dteanul.deleted_at))) as dte_nrodocto,
+        FROM dteoc INNER JOIN dte
+        ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+        INNER JOIN dteguiadesp
+        ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+        WHERE dteoc.oc_id = notaventa.oc_id
+        AND isnull(dteguiadesp.notaventa_id)
+        AND dte.cliente_id= notaventa.cliente_id
+        AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
+                                        FROM dteanul 
+                                        WHERE dteanul.dte_id = dteguiadesp.dte_id 
+                                        and ISNULL(dteanul.deleted_at))
+        GROUP BY dteoc.oc_id) as dte_nrodocto,
     bloquearhacerguia,
     cliente.limitecredito,
     IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
