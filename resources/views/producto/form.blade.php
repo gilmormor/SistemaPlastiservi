@@ -9,13 +9,15 @@
     <div class="form-group col-xs-12 col-sm-6">
         <label for="nombre" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Nombre">Nombre</label>
         <div class="col-lg-9">
-        <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre', $data->nombre ?? '')}}" required/>
+            {{-- <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre', $data->nombre ?? '')}}" required/> --}}
+            <textarea name="nombre" id="nombre" class="form-control" value="{{old('nombre', $data->nombre ?? '')}}"  maxlength="300" required>{{old('nombre', $data->nombre ?? '')}}</textarea>
         </div>
     </div>
     <div class="form-group col-xs-12 col-sm-6">
         <label for="descripcion" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Descripción">Descripción</label>
         <div class="col-lg-9">
-        <input type="text" name="descripcion" id="descripcion" class="form-control" value="{{old('descripcion', $data->descripcion ?? '')}}" required/>
+            {{-- <input type="text" name="descripcion" id="descripcion" class="form-control" value="{{old('descripcion', $data->descripcion ?? '')}}" required/> --}}
+            <textarea name="descripcion" id="descripcion" class="form-control" value="{{old('descripcion', $data->descripcion ?? '')}}" maxlength="300" required>{{old('descripcion', $data->descripcion ?? '')}}</textarea>
         </div>
     </div>
 </div>

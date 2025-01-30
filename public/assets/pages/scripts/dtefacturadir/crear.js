@@ -375,7 +375,7 @@ function agregarFila() {
 			'</select>' +
 		'</td>' +
 		'<td name="nombreProdTDDir' + aux_nfila + '" id="nombreProdTDDir' + aux_nfila + '" valor="">' +
-			'<input type="text" name="nmbitem[]" id="nmbitem' + aux_nfila + '" class="form-control itemrequerido" value="" title="Nombre Producto"/>' +
+			'<textarea name="nmbitem[]" id="nmbitem' + aux_nfila + '" class="form-control itemrequerido" value="" title="Nombre Producto" maxlength="500"></textarea>' +
 			'<input type="text" name="dscitem[]" id="dscitem' + aux_nfila + '" class="form-control" value="" style="display:none;"/>' +
 		'</td>' +
 		'<td style="text-align:right;" class="subtotalkg" valor="0">' +

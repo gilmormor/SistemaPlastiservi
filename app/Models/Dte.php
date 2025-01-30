@@ -3419,7 +3419,7 @@ function dtefactura($id,$Folio,$tipoArch,$request){
     
         foreach ($dte->dtedets as $dtedet) {
             $VlrCodigo = substr(trim($dtedet->vlrcodigo),0,35);
-            $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,80)));
+            $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,500)));
             $DscItem = strtoupper(sanear_string(substr(trim($dtedet->dscitem),0,1000)));
             $UnmdItem = substr(trim($dtedet->unmditem),0,4);
             $contenido .= "<Detalle>" .
@@ -3645,7 +3645,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         
             foreach ($dte->dtedets as $dtedet) {
                 $VlrCodigo = substr(trim($dtedet->vlrcodigo),0,35);
-                $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,80)));
+                $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,500)));
                 $DscItem = strtoupper(sanear_string(trim($dtedet->dscitem)));
                 $UnmdItem = substr(trim($dtedet->unmditem),0,4);
                 $contenido .= "<Detalle>" .
@@ -3791,7 +3791,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         
             foreach ($dte->dtedets as $dtedet) {
                 $VlrCodigo = substr(trim($dtedet->vlrcodigo),0,35);
-                $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,80)));
+                $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,500)));
                 $DscItem = strtoupper(sanear_string(trim($dtedet->dscitem)));
                 $UnmdItem = substr(trim($dtedet->unmditem),0,4);
                 $contenido .= "<Detalle>" .
@@ -3994,7 +3994,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
         
             foreach ($dte->dtedets as $dtedet) {
                 $VlrCodigo = substr(trim($dtedet->vlrcodigo),0,35);
-                $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,80)));
+                $NmbItem = strtoupper(sanear_string(substr(trim($dtedet->nmbitem),0,500)));
                 $DscItem = strtoupper(sanear_string(substr(trim($dtedet->dscitem),0,1000)));
                 $UnmdItem = substr(trim($dtedet->unmditem),0,4);
                 $contenido .= "<Detalle>" .
