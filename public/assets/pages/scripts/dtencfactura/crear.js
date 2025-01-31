@@ -307,7 +307,7 @@ function llenarItemFact(data){
 				<p name="nombreProdTD${data[i].id}" id="nombreProdTD${data[i].id}" valor="${aux_nmbitem}" style="display:none;">
 					${aux_nmbitemhtml}
 				</p>
-				<input type="text" name="nmbitem[]" id="nmbitem${data[i].id}" class="form-control itemrequerido" value="${aux_nmbitem}" title="Nombre producto"/>
+				<textarea name="nmbitem[]" id="nmbitem${data[i].id}" class="form-control itemrequerido" value="${aux_nmbitem}" title="Nombre Producto" maxlength="500">${aux_nmbitem}</textarea>
 				<input type="text" name="dscitem[]" id="dscitem${data[i].id}" class="form-control" value="${data[i].dscitem}" style="display:none;"/>
 			</td>
 			<td name="subtotalkg${data[i].id}" id="subtotalkg${data[i].id}" style="text-align:right;" class="subtotalkg" valor="${data[i].itemkg}">
