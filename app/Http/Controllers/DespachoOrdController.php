@@ -64,7 +64,8 @@ class DespachoOrdController extends Controller
     }
 
     public function despachoordpage(Request $request){
-        $datas = consultaindex($request);
+        //$datas = consultaindex($request);
+        $datas = DespachoOrd::consultaindex($request);
         $i = 0;
         foreach ($datas as $data) {
             //dd($datas[$i]);
@@ -1526,7 +1527,8 @@ class DespachoOrdController extends Controller
             <table id='tabladespachoord' name='tabladespachoord' class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
             <thead>
                 <tr>
-                    <th>ID OD</th>
+                    <th title='Orden de Despacho'>OD</th>
+                    <th title='Solicitud de Despacho'>SD</th>
                     <th>Fecha</th>
                     <th style='text-align:left'>Razon Social</th>
                     <th class='textcenter'>Guia</th>
@@ -1616,12 +1618,18 @@ class DespachoOrdController extends Controller
                     //**** */
 
                     $tab1 .=
-                        "<tr id='filaord$i' name='filaord$i'>
+                    "<tr id='filaord$i' name='filaord$i'>
                         <td id='id$i' name='id$i'>
                             <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoord->id,1,\"myModalTablaOD\")'>
                                 $despachoord->id
                             </a>                            
                         </td>
+                        <td id='id$i' name='id$i'>
+                            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD($despachoord->despachosol_id,1,\"myModalTablaOD\")'>
+                                $despachoord->despachosol_id
+                            </a>                            
+                        </td>
+
                         <td id='fechahoraord$i' name='fechahoraord$i'>" . date('d/m/Y', strtotime($despachoord->created_at)) . "</td>
                         <td style='text-align:left'>". $despachoord->notaventa->cliente->razonsocial ."</td>
                         <td class='textcenter'>" . $aux_enlaceguia ." </td>
@@ -1785,11 +1793,229 @@ class DespachoOrdController extends Controller
             </tfoot>
             </table>";
 
+
+
+            /************************************* */
+
+            $tab3 = "
+            <table id='tablatrazabilidaddespachosol' name='tablatrazabilidaddespachosol' class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
+            <thead>
+                <tr>
+                    <th title='Solicitud de Despacho'>SD</th>
+                    <th>Fecha</th>
+                    <th title='Orden Despacho, Guias de Despacho, Facturas'>OD/Guias/Facturas</th>
+                </tr>
+            </thead>
+            <tbody>";
+            $i=0;
+            foreach ($notaventa->despachosols as $despachosol) {
+                //VALIDAR QUE NO ESTE ANULADA LA OD
+                $aux_anuladaSD = "";
+                if(isset($despachosol->despachosolanul)){
+                    $aux_usuario = $despachosol->despachosolanul->usuario->nombre;
+                    $aux_anuladaSD = 
+                    "<a class='btn-accion-tabla tooltipsC' title='Anulada " . date('d/m/Y h:i:s A', strtotime($despachosol->despachosolanul->updated_at)) . "<br>Usuario: $aux_usuario ' >" .
+                        "<small class='label label-danger'>A</small>" .
+                    "</a>";
+                }
+                $aux_orddespnro = "";
+                foreach ($despachosol->despachoords as $despachoord) {
+                    $aux_anuladaOD = "";
+                    if(isset($despachoord->despachoordanul)){
+                        $aux_usuario = $despachoord->despachoordanul->usuario->nombre;
+                        $aux_anuladaOD = 
+                        "<a class='btn-accion-tabla tooltipsC' title='Anulada OD $despachoord->id " . date('d/m/Y h:i:s A', strtotime($despachoord->despachoordanul->updated_at)) . "<br>Usuario: $aux_usuario ' >" .
+                            "<small class='label label-danger'>A</small>" .
+                        "</a>";
+                    }
+    
+                    $aux_verguia = "";
+                    foreach ($despachoord->dteguiadesps as $dteguiadesp) {
+                        $aux_nrodocto = $dteguiadesp->dte->nrodocto;
+                        $aux_anuladaGD = "";
+                        if(isset($dteguiadesp->dte->dteanul)){
+                            $aux_usuario = $dteguiadesp->dte->dteanul->usuario->nombre;
+                            $aux_obsgd = $dteguiadesp->dte->dteanul->obs;
+                            $aux_anuladaGD = 
+                            "<a class='btn-accion-tabla tooltipsC' title='Anulada Guia $aux_nrodocto " . date('d/m/Y h:i:s A', strtotime($dteguiadesp->dte->dteanul->updated_at)) . "<br>Usuario: $aux_usuario <br>Obs: $aux_obsgd' >" .
+                                "<small class='label label-danger'>A</small>" .
+                            "</a>";
+                        }
+
+                        $request1 = new Request();
+                        $request1->merge(['dte_id' => $dteguiadesp->dte->id]);
+                        $aux_dteGuiaDesp = Dte::guiadespconsultaindex($request1);
+                        $ir_indexGuiaDesp = "";
+                        if(count($aux_dteGuiaDesp) > 0){
+                            $ir_indexGuiaDesp = "                                        
+                            <a href='dteguiadesp' target='_blank'  title='Buscar en: Guia Despacho sin aprobar.'>
+                                <i class='fa fa-mail-forward'></i>
+                            </a>";
+                        }
+                        
+                        $aux_tipoGD = $dteguiadesp->dte->indtraslado == 1 ? "V" : "T";
+                        $ir_hacerdteFactura = "";
+                        if($aux_tipoGD == "V"){
+                            $request1 = new Request();
+                            $request1->merge(['dte_id' => $dteguiadesp->dte->id]);
+                            $request1->merge(['aprobstatus' => 3]);
+                            $request1->merge(['filtro' => 1]);
+                            $request1->merge(['dtenotnull' => 1]);
+                            $request1->merge(['dteguiausada' => 1]);
+                            $request1->merge(['dteguiausada' => 1]);
+                            $aux_hacerdteFactura = Dte::consultalistarguiadesppage($request1);
+                            if(count($aux_hacerdteFactura) > 0){
+                                $ir_hacerdteFactura = "
+                                <a href='dtefactura/listarguiadesp' target='_blank' title='Buscar en: Guias por Facturar.'>
+                                    <i class='fa fa-mail-forward'></i> 
+                                </a>";
+                            }    
+                        }
+                        $aux_enlacefactura = "";
+                        if(isset($dteguiadesp->dte->dtedter->dte->nrodocto)){
+                            $dtefac = $dteguiadesp->dte->dtedter->dte;
+                            $nrodocto_str = $dtefac->foliocontrol->nombrepdf . str_pad($dtefac->nrodocto, 8, "0", STR_PAD_LEFT);
+                            $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='Factura'>
+                                FC:$dtefac->nrodocto
+                            </a>";
+    
+                        }
+    
+
+                        
+                        $aux_verguia .= 
+                            "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Guia Despacho' onclick='genpdfGD($aux_nrodocto,1,\"myModalTablaOD\")'>
+                                GD$aux_tipoGD:$aux_nrodocto
+                            </a>
+                            $ir_indexGuiaDesp
+                            $ir_hacerdteFactura
+                            $aux_anuladaGD
+                            $aux_enlacefactura";
+                    }
+
+
+
+                    $request1 = new Request();
+                    $request1->merge(['despachoord_id' => $despachoord->id]);
+                    $aux_despachoord = DespachoOrd::consultaindex($request1);
+                    $ir_indexdespachoord = "";
+                    if(count($aux_despachoord) > 0){
+                        $ir_indexdespachoord = "                                        
+                        <a href='despachoord' target='_blank'  title='Buscar en: Orden despacho.'>
+                            <i class='fa fa-mail-forward'></i>
+                        </a>";
+                    }
+                    $request1 = new Request();
+                    $request1->merge(['despachoord_id' => $despachoord->id]);
+                    $aux_hacerdteGuiaDesp = Dte::consultalistarorddesppage($request1);
+                    $ir_hacerdteGuiaDesp = "";
+                    if(count($aux_hacerdteGuiaDesp) > 0){
+                        $ir_hacerdteGuiaDesp = "                                        
+                        <a href='dteguiadesp/listarorddesp' target='_blank'  title='Buscar en: hacer Guia Despacho.'>
+                            <i class='fa fa-mail-forward'></i>
+                        </a>";
+                    }
+
+
+                    $aux_orddespnro .= 
+                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoord->id,1,\"myModalTablaOD\")'>
+                        OD:$despachoord->id
+                    </a>
+                    $ir_indexdespachoord
+                    $ir_hacerdteGuiaDesp
+                    $aux_anuladaOD
+                    $aux_verguia
+                    <br>";
+                }
+
+                $request1 = new Request();
+                $request1->merge(['despachosol_id' => $despachosol->id]);
+        
+                $aux_despachosol = DespachoSol::consultaindex($request1);
+                $ir_indexdespachosol = "";
+                if(count($aux_despachosol) > 0){
+                    $aux_url = "despachosol";
+                    $ir_indexdespachosol = "                                        
+                    <a href='$aux_url' target='_blank'  title='Buscar en: Solicitud despacho.'>
+                        <i class='fa fa-mail-forward'></i>
+                    </a>";
+                }
+
+                $request1->merge(['aprobstatus' => 3]);
+                $request1->merge(['filtro' => 1]);
+                $request1->merge(['sta_picking' => 0]);
+                $aux_despachosol = DespachoSol::consultasoldespIndexPicking($request1);
+                $ir_PendODindexPicking = "";
+                if(count($aux_despachosol) > 0){
+                    $ir_PendODindexPicking = "
+                    <a href='picking' target='_blank'  title='Buscar en: Picking.'>
+                        <i class='fa fa-mail-forward'></i>
+                    </a>";
+                }
+
+                $request1 = new Request();
+                $request1->merge(['id' => $despachosol->id]);
+                $request1->merge(['aprobstatus' => 3]);
+                $request1->merge(['filtro' => 1]);
+                $request1->merge(['sololectura' => 0]);
+                $request1->merge(['solenvord' => 0]);
+                $request1->merge(['sta_picking' => 0]);
+                $aux_despachoSolEnvDespachoOrd = DespachoSol::consultasoldesp($request1);
+                $ir_DespachoSolEnviadoAOrd = "";
+                if(count($aux_despachoSolEnvDespachoOrd) > 0){
+                    $aux_url = "despachoord/listarsoldesp";
+                    $ir_DespachoSolEnviadoAOrd = "
+                    <a href='$aux_url' target='_blank'  title='Buscar en: hacer Orden Despacho sin aprobar desde Picking.'>
+                        <i class='fa fa-mail-forward'></i>
+                    </a>";
+                }
+
+                $request1->merge(['aprobstatus' => 3]);
+                $request1->merge(['filtro' => 1]);
+                $request1->merge(['sololectura' => 0]);
+                $request1->merge(['solenvord' => 1]);
+                $request1->merge(['sta_picking' => 0]);
+                $aux_despachoPickingEnvOrd = DespachoSol::consultasoldesp($request1);
+                $ir_PickingEnviadoAOrd = "";
+                if(count($aux_despachoPickingEnvOrd) > 0){
+                    $aux_url = "despachoord/listarsoldespsolenvord";
+                    $ir_PickingEnviadoAOrd = "
+                    <a href='$aux_url' target='_blank'  title='Buscar en: hacer Orden Despacho aprobadas desde Picking.'>
+                        <i class='fa fa-mail-forward'></i>
+                    </a>";
+                }
+
+
+                $tab3 .=
+                "<tr id='filasol$i' name='filasol$i'>
+                    <td id='id$i' name='id$i'>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD($despachosol->id,1,\"myModalTablaOD\")'>
+                            $despachosol->id
+                        </a>
+                        $ir_indexdespachosol
+                        $ir_PendODindexPicking
+                        $ir_DespachoSolEnviadoAOrd
+                        $ir_PickingEnviadoAOrd
+                        $aux_anuladaSD
+                    </td>
+                    <td>" . date('d/m/Y', strtotime($despachosol->created_at)) . "</td>
+                    <td>$aux_orddespnro</td>
+                </tr>";
+            }
+
+            $tab3 .= "
+                </tbody>
+            </table>";
+
+
+            /************************************** */
+
             $respuesta['tabla'] .= "
             <div class='nav-tabs-custom' id='tabs'>
                 <ul class='nav nav-tabs'>
                     <li class='active'><a href='#tab_1' data-toggle='tab'  id='tab1' name='tab1'>Orden de despacho</a></li>
                     <li><a href='#tab_2' data-toggle='tab' id='tab2' name='tab2'>Detalle Orden Despacho</a></li>
+                    <li><a href='#tab_3' data-toggle='tab' id='tab3' name='tab3' title='Trazabilidad Solicitud Despacho'>Trazabilidad SD</a></li>
                 </ul>
                 <div class='tab-content'>
                 <div class='tab-pane active' id='tab_1'>
@@ -1797,6 +2023,9 @@ class DespachoOrdController extends Controller
                 </div>
                 <div class='tab-pane' id='tab_2'>
                     $tab2
+                </div>
+                <div class='tab-pane' id='tab_3'>
+                    $tab3
                 </div>
             </div>";
 
@@ -1822,7 +2051,8 @@ class DespachoOrdController extends Controller
 
     public function totalizarindex(){
         $respuesta = array();
-        $datas = consultaindex();
+        //$datas = consultaindex();
+        $datas = DespachoOrd::consultaindex();
         $aux_totalkg = 0;
         //$aux_totaldinero = 0;
         foreach ($datas as $data) {
@@ -2071,88 +2301,6 @@ function consulta($request){
     $datas = DB::select($sql);
     //dd($datas);
     return $datas;
-}
-
-
-function consultaindex(){
-
-    $user = Usuario::findOrFail(auth()->id());
-    $sucurArray = $user->sucursales->pluck('id')->toArray();
-    $sucurcadena = implode(",", $sucurArray);
-    $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
-
-    $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
-    notaventa.cliente_id,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
-    '' as notaventaxk,comuna.nombre as comuna_nombre, sucursal.nombre as sucursal_nombre,
-    tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
-    SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
-    (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
-        FROM dteoc INNER JOIN dte
-        ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
-        INNER JOIN dteguiadesp
-        ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
-        WHERE dteoc.oc_id = notaventa.oc_id
-        AND dteoc.oc_folder = 'notaventa'
-        AND isnull(dteguiadesp.notaventa_id)
-        AND dte.cliente_id= notaventa.cliente_id
-        AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                                        FROM dteanul 
-                                        WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                        and ISNULL(dteanul.deleted_at))
-        GROUP BY dteoc.oc_id) as dte_nrodocto,
-    despachoord.updated_at,
-    if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
-    cliente.limitecredito,
-    IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
-    IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
-    IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
-    IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
-    modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
-    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
-    FROM despachoord INNER JOIN notaventa
-    ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
-    INNER JOIN cliente
-    ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
-    INNER JOIN comuna
-    ON comuna.id = despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
-    INNER JOIN despachoorddet
-    ON despachoorddet.despachoord_id = despachoord.id AND ISNULL(despachoorddet.deleted_at)
-    INNER JOIN notaventadetalle
-    ON notaventadetalle.id = despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
-    INNER JOIN tipoentrega
-    ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
-    LEFT JOIN clientebloqueado
-    ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    INNER JOIN despachosol
-    ON despachoord.despachosol_id = despachosol.id AND ISNULL(despachosol.deleted_at)
-    INNER JOIN sucursal
-    ON despachosol.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
-    INNER JOIN producto
-    ON producto.id = notaventadetalle.producto_id AND ISNULL(producto.deleted_at)
-    INNER JOIN categoriaprod
-    ON categoriaprod.id=producto.categoriaprod_id AND ISNULL(categoriaprod.deleted_at)
-    LEFT JOIN vista_datacobranza
-    ON vista_datacobranza.cliente_id = notaventa.cliente_id
-    LEFT JOIN clientedesbloqueado
-    ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
-    LEFT JOIN clientedesbloqueadomodulo
-    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 8
-    LEFT JOIN modulo
-    ON modulo.id = clientedesbloqueadomodulo.modulo_id
-    LEFT JOIN clientedesbloqueadopro
-    ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
-    WHERE categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-        FROM categoriaprodsuc 
-        WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
-        AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu))
-    AND ISNULL(despachoord.aprguiadesp)
-    AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
-    AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
-    AND despachosol.sucursal_id in ($sucurcadena)
-    GROUP BY despachoorddet.despachoord_id;";
-
-    return DB::select($sql);
-
 }
 
 function updatenumguia($despachoord,$request){

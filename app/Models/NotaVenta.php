@@ -149,6 +149,12 @@ class NotaVenta extends Model
     {
         return $this->hasMany(NotaVentaCerrada::class,'notaventa_id');
     }
+    //RELACION UNO A UNO NotaVentaCerrada
+    public function notaventacerrada()
+    {
+        return $this->hasOne(NotaVentaCerrada::class,'notaventa_id');
+    }
+    
     //Relacion inversa a Giro
     public function giro()
     {
@@ -175,6 +181,12 @@ class NotaVenta extends Model
         return $this->hasMany(DespachoOrd::class,'notaventa_id');
     }
 
+    //RELACION DE UNO A MUCHOS DespachoSol
+    public function despachosols()
+    {
+        return $this->hasMany(DespachoSol::class,'notaventa_id');
+    }
+    
     //RELACION UNO A UNO clientedesbloqueado
     public function clientedesbloqueado()
     {
@@ -235,12 +247,6 @@ class NotaVenta extends Model
             $aux_rut = str_replace("-","",$aux_rut);
             $aux_condrut = "cliente.rut='$aux_rut'";
         }
-        if(!isset($request->oc_id) or empty($request->oc_id)){
-            $aux_condoc_id = " true";
-        }else{
-            $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
-            $aux_condFecha = " true";
-        }
         if(empty($request->giro_id)){
             $aux_condgiro_id = " true";
         }else{
@@ -255,12 +261,6 @@ class NotaVenta extends Model
             $aux_condtipoentrega_id = " true";
         }else{
             $aux_condtipoentrega_id = "notaventa.tipoentrega_id='$request->tipoentrega_id'";
-        }
-        if(!isset($request->notaventa_id) or empty($request->notaventa_id)){
-            $aux_condnotaventa_id = " true";
-        }else{
-            $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
-            $aux_condFecha = " true";
         }
     
         $aux_aprobstatus = "";
@@ -374,6 +374,21 @@ class NotaVenta extends Model
             $cond_order = "";
         }else{
             $cond_order = $request->order;
+        }
+
+        if(!isset($request->notaventa_id) or empty($request->notaventa_id)){
+            $aux_condnotaventa_id = " true";
+        }else{
+            $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+            $aux_condFecha = " true";
+            $aux_aprobstatus = " true";
+        }
+        if(!isset($request->oc_id) or empty($request->oc_id)){
+            $aux_condoc_id = " true";
+        }else{
+            $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+            $aux_condFecha = " true";
+            $aux_aprobstatus = " true";
         }
 
         

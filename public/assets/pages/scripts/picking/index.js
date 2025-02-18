@@ -1,243 +1,17 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
-    configurarTabla('#tabla-data-picking');
-
-    function configurarTabla(aux_tabla){
-        data = datospicking();
-        $(aux_tabla).DataTable({
-            'paging'      : true, 
-            'lengthChange': true,
-            'ordering'    : true,
-            'info'        : true,
-            'autoWidth'   : false,
-            'processing'  : true,
-            'serverSide'  : true,
-            'ajax'        : "/pickingpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 0, "desc" ]],
-            'columns'     : [
-                {data: 'id'},
-                {data: 'fechahora'},
-                {data: 'fechaestdesp'},
-                {data: 'razonsocial'},
-                {data: 'sucursal_nombre'},
-                {data: 'oc_id'},
-                {data: 'notaventa_id'},
-                {data: 'comunanombre'},
-                {data: 'totalkilos'},
-                {data: 'totalkilospicking'},
-                {data: 'totalcantpicking'},
-                {data: 'id'},
-                {data: 'icono'},
-                {data: 'icono'},
-            ],
-            "language": {
-                //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-            },
-            "createdRow": function ( row, data, index ) {
-                /*
-                if(data.stock <= 0){
-                    $(row).hide();                    
-                }*/
-                $(row).attr('id','fila' + data.id);
-                $(row).attr('name','fila' + data.id);    
-                $('td', row).eq(0).attr('style','text-align:center');
-                aux_text = 
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Solicitud de Despacho" onclick="genpdfSD(${data.id},1)">
-                    ${data.id}
-                </a>`;
-                $('td', row).eq(0).html(aux_text);
-
-                $('td', row).eq(1).attr('data-order',data.fechahora);
-                aux_fecha = new Date(data.fechahora);
-                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
-
-                $('td', row).eq(2).attr('data-order',data.fechaestdesp);
-                aux_fecha = new Date(data.fechaestdesp + " 00:00:00");
-
-                if(data.despachosolenvorddesp_obs != "" && data.despachosolenvorddesp_obs != null){
-                    aux_text = data.razonsocial +
-                    " <a class='btn-sm tooltipsC' title='" + data.despachosolenvorddesp_obs + "'>" +
-                        "<i class='fa fa-fw fa-question-circle text-red'></i>" + 
-                    "</a>";
-                    $('td', row).eq(3).html(aux_text);
-                }
-    
-
-                aux_text = 
-                `<a id="fechaestdesp${data.id}" name="fechaestdesp${data.id}" class="editfed">
-                    ${fechaddmmaaaa(aux_fecha)}
-                </a>
-                <input type="text" class="form-control datepickerfed savefed" name="fechaed${data.id}" id="fechaed${data.id}" value="${fechaddmmaaaa(aux_fecha)}" style="display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;" readonly>
-                <a name="editfed${data.id}" id="editfed${data.id}" class="btn-accion-tabla btn-sm tooltipsC editfed" title="Editar Fecha ED" onclick="editfeced(${data.id},${data.id})">
-                    <i class="fa fa-fw fa-pencil-square-o"></i>
-                </a>
-                <a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar Fecha ED" onclick="savefeced(${data.id},${data.id})" style="display:none" updated_at="${data.updated_at}">
-                    <i class="fa fa-fw fa-save text-red"></i>
-                </a>`;
-                $('td', row).eq(2).html(aux_text);
-
-                if(data.razonsocial.length > 30){
-                    $('td', row).eq(3).attr('class',"btn-accion-tabla");
-                    $('td', row).eq(3).attr('title',data.razonsocial);
-                    $('td', row).eq(3).html(data.razonsocial.substring(0, 30));    
-                }
-
-                if(data.oc_file == "" ||  data.oc_file === null){
-                    aux_enlaceoc = "";
-                }else{
-                    aux_enlaceoc = `<a onclick="verpdf2('${data.oc_file}',2)" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra">${data.oc_id}</a>`;
-                }
-                $('td', row).eq(5).html(aux_enlaceoc);
-
-                aux_text =
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta" onclick="genpdfNV(${data.notaventa_id},1)">
-                    ${data.notaventa_id}
-                </a>`;
-                $('td', row).eq(6).html(aux_text);
-
-                aux_totalkilos = data.totalkilos - data.totalkilosdesp;
-
-                $('td', row).eq(8).attr('class','kgpend');
-                $('td', row).eq(8).attr('style','text-align:right');
-                $('td', row).eq(8).attr('data-order',aux_totalkilos);
-                $('td', row).eq(8).attr('data-search',aux_totalkilos);
-                $('td', row).eq(8).html(MASKLA(aux_totalkilos, 2));
-
-                $('td', row).eq(9).attr('class','kgpend');
-                $('td', row).eq(9).attr('style','text-align:right');
-                $('td', row).eq(9).attr('data-order',data.totalkilospicking);
-                $('td', row).eq(9).attr('data-search',data.totalkilospicking);
-                $('td', row).eq(9).html(MASKLA(data.totalkilospicking, 2));
-
-                $('td', row).eq(10).attr('class','kgpend');
-                $('td', row).eq(10).attr('style','text-align:right');
-                $('td', row).eq(10).attr('data-order',data.totalcantpicking);
-                $('td', row).eq(10).attr('data-search',data.totalcantpicking);
-                $('td', row).eq(10).html(MASKLA(data.totalcantpicking, 2));
+    //configurarTabla('#tabla-data-picking');
 
 
-                aux_subtotal = data.subtotalsoldesp - data.subtotaldesp;
-                $('td', row).eq(11).attr('class','dinpend');
-                $('td', row).eq(11).attr('style','text-align:right');
-                $('td', row).eq(11).attr('data-order',aux_subtotal);
-                $('td', row).eq(11).attr('data-search',aux_subtotal);
-                $('td', row).eq(11).html(MASKLA(aux_subtotal, 0));
-
-                aux_text =
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)">
-                    <i class='fa fa-fw fa-file-pdf-o'></i>
-                </a>`;
-                $('td', row).eq(12).html(aux_text);
-
-                aux_ruta_crearord = $("#aux_ruta_crearord").val();
-                aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
-
-                $('td', row).eq(13).attr('class','action-buttons');
-                aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
-                aux_displaybtnac = ``;
-                aux_displaybtnbl = ``;
-                aux_iconobloqueo = "fa-lock text-danger";
-                aux_iconoenviar = `fa-arrow-right text-yellow`;
-                aux_clicenviar = `onclick="enviardespord(${data.id},'${data.updated_at}')"`;
-                aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;
-                aux_clicbotonbloqueado = `onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)"`;
-                aux_titlebotonenviarorddesp = "Enviar SolDesp a OrdDesp";
-                if(aux_clienteBloqueado == ""){
-                    aux_displaybtnac = ``;
-                    aux_displaybtnbl = `style="display:none;"`;
-                }else{
-                    aux_displaybtnac = `style="display:none;"`;
-                    aux_displaybtnbl = ``;
-                    if(data.modulo_id_orddesp  !== null){
-                        aux_iconobloqueo = "fa-unlock text-yellow";
-                        aux_mensajebloqueo = `Habilitado para Despacho`;
-                    }else{
-                        aux_iconoenviar = `fa-ban text-red`;
-                        aux_clicenviar = ``;
-                        aux_clicbotonbloqueado = `onclick="activarbotonenviar(${data.id},${data.cliente_id},${data.notaventa_id})"`;
-                        aux_mensajeAdvertencia = `. Puede desbloquear bajo su responsabilidad!`
-                        aux_titlebotonenviarorddesp = aux_mensajebloqueo + aux_mensajeAdvertencia;
-                        aux_mensajebloqueo += aux_mensajeAdvertencia;
-                    }
-                }
-
-                //aux_clienteBloqueado = "";
-                aux_displaybtnac = ``;
-                //aux_displaybtnbl = `style="display:none;"`;
-    
-                /* if(aux_clienteBloqueado == ""){
-                    aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC" title="Editar Picking">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw ${data.icono}"></i>
-                                    </button>
-                                </a>
-                                <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw fa-arrow-right text-yellow"></i>
-                                    </button>
-                                </a>`;
-
-                }else{
-                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}">
-                                        <button type="button" class="btn btn-default btn-xs" disabled>
-                                            <i class="fa fa-fw fa-lock text-danger"></i>
-                                        </button>
-                                    </a>`;    
-
-                } */
-
-                aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Editar Picking">
-                                <button type="button" class="btn btn-default btn-xs">
-                                    <i class="fa fa-fw ${data.icono}"></i>
-                                </button>
-                            </a>
-                            <a ${aux_displaybtnac} id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC botonac${data.id}" title="${aux_titlebotonenviarorddesp}" item="${data.id}" value="0" ${aux_clicenviar} update_at="${data.updated_at}">
-                                <button type="button" class="btn btn-default btn-xs">
-                                    <i id="botonenviar${data.id}" name="botonenviar${data.id}" class="fa fa-fw ${aux_iconoenviar}"></i>
-                                </button>
-                            </a>
-                            <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" ${aux_clicbotonbloqueado}>
-                                <button type="button" class="btn btn-default btn-xs">
-                                    <i id="ibotonbloqueado${data.id}" name="ibotonbloqueado${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
-                                </button>
-                            </a>`;
-
-
-                /* if(data.clientebloqueado_descripcion !== null){
-                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${data.clientebloqueado_descripcion}">
-                                        <button type="button" class="btn btn-default btn-xs" disabled>
-                                            <i class="fa fa-fw fa-lock text-danger"></i>
-                                        </button>
-                                    </a>`;    
-                }else{
-                    aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC" title="Editar Picking">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw ${data.icono}"></i>
-                                    </button>
-                                </a>
-                                <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw fa-arrow-right text-yellow"></i>
-                                    </button>
-                                </a>`;
-
-                } */
-                $('td', row).eq(13).html(aux_text);
-                
-            }
-        });
-    }
-
-    //consultar(datoslsd());
+    /* //consultar(datoslsd());
     $("#btnconsultar").click(function()
     {
         //consultar(datoslsd());
         data = datospicking();
         $('#tabla-data-picking').DataTable().ajax.url( "/pickingpage/" + data.data2 ).load();
 
-    });
+    }); */
 
 
 
@@ -258,11 +32,295 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
-    configurarTabla('.tablas');
+    configurarTabla("#tabla-data-picking","",false)
+
+    //configurarTabla('.tablas');
 
 });
 
-function configurarTabla(aux_tabla){
+var tabla;
+
+function configurarTabla(nombreTabla,url,serverSide) {
+    // Si ya hay una tabla inicializada, la destruimos
+    if ($.fn.DataTable.isDataTable(nombreTabla)) {
+        $(nombreTabla).DataTable().destroy();
+        $(nombreTabla).empty(); // Limpia la tabla para evitar errores de redibujado
+    }
+
+    //Asegura que la tabla tiene el encabezado correcto
+    if ($(nombreTabla + " thead").length === 0) {
+        $(nombreTabla).append(`
+            <thead>
+                <tr>
+                    <th class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                    <th>Fecha</th>
+                    <th class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+                    <th>Razón Social</th>
+                    <th>Sucursal</th>
+                    <th class='tooltipsC' title='Orden de Compra'>OC</th>
+                    <th class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th>Comuna</th>
+                    <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
+                    <th class='tooltipsC' title='Total Kg Picking'>Kg Pick</th>
+                    <th class='tooltipsC' title='Total Cant Picking'>Cant Pick</th>
+                    <th class='tooltipsC' title='Total $'>$</th>
+                    <th class='tooltipsC' title='Vista Previa Orden Despacho'>VP</th>
+                    <th class='tooltipsC' title='Acción'>Acción</th>            
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+            </tfoot>
+
+        `);
+    }
+
+    // Configura DataTable con `serverSide` dinámico
+    tabla = $(nombreTabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        'serverSide'  : serverSide, // Se define dinámicamente
+        'ajax'        : url, // Se define dinámicamente
+        "order": [[ 0, "desc" ]],
+        'columns'     : [
+            {data: 'id'},
+            {data: 'fechahora'},
+            {data: 'fechaestdesp'},
+            {data: 'razonsocial'},
+            {data: 'sucursal_nombre'},
+            {data: 'oc_id'},
+            {data: 'notaventa_id'},
+            {data: 'comunanombre'},
+            {data: 'totalkilos'},
+            {data: 'totalkilospicking'},
+            {data: 'totalcantpicking'},
+            {data: 'id'},
+            {data: 'icono'},
+            {data: 'icono'},
+        ],
+        "language": {
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            // Verifica si los datos existen antes de modificar la fila
+            /* if (!data || Object.keys(data).length === 0) {
+                return;
+            } */
+            /*
+            if(data.stock <= 0){
+                $(row).hide();                    
+            }*/
+            $(row).attr('id','fila' + data.id);
+            $(row).attr('name','fila' + data.id);    
+            $('td', row).eq(0).attr('style','text-align:center');
+            aux_text = 
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Solicitud de Despacho" onclick="genpdfSD(${data.id},1)">
+                ${data.id}
+            </a>`;
+            $('td', row).eq(0).html(aux_text);
+
+            $('td', row).eq(1).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+            $('td', row).eq(2).attr('data-order',data.fechaestdesp);
+            aux_fecha = new Date(data.fechaestdesp + " 00:00:00");
+
+            if(data.despachosolenvorddesp_obs != "" && data.despachosolenvorddesp_obs != null){
+                aux_text = data.razonsocial +
+                " <a class='btn-sm tooltipsC' title='" + data.despachosolenvorddesp_obs + "'>" +
+                    "<i class='fa fa-fw fa-question-circle text-red'></i>" + 
+                "</a>";
+                $('td', row).eq(3).html(aux_text);
+            }
+
+
+            aux_text = 
+            `<a id="fechaestdesp${data.id}" name="fechaestdesp${data.id}" class="editfed">
+                ${fechaddmmaaaa(aux_fecha)}
+            </a>
+            <input type="text" class="form-control datepickerfed savefed" name="fechaed${data.id}" id="fechaed${data.id}" value="${fechaddmmaaaa(aux_fecha)}" style="display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;" readonly>
+            <a name="editfed${data.id}" id="editfed${data.id}" class="btn-accion-tabla btn-sm tooltipsC editfed" title="Editar Fecha ED" onclick="editfeced(${data.id},${data.id})">
+                <i class="fa fa-fw fa-pencil-square-o"></i>
+            </a>
+            <a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar Fecha ED" onclick="savefeced(${data.id},${data.id})" style="display:none" updated_at="${data.updated_at}">
+                <i class="fa fa-fw fa-save text-red"></i>
+            </a>`;
+            $('td', row).eq(2).html(aux_text);
+
+            if(data.razonsocial.length > 30){
+                $('td', row).eq(3).attr('class',"btn-accion-tabla");
+                $('td', row).eq(3).attr('title',data.razonsocial);
+                $('td', row).eq(3).html(data.razonsocial.substring(0, 30));    
+            }
+
+            if(data.oc_file == "" ||  data.oc_file === null){
+                aux_enlaceoc = "";
+            }else{
+                aux_enlaceoc = `<a onclick="verpdf2('${data.oc_file}',2)" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra">${data.oc_id}</a>`;
+            }
+            $('td', row).eq(5).html(aux_enlaceoc);
+
+            aux_text =
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta" onclick="genpdfNV(${data.notaventa_id},1)">
+                ${data.notaventa_id}
+            </a>`;
+            $('td', row).eq(6).html(aux_text);
+
+            aux_totalkilos = data.totalkilos - data.totalkilosdesp;
+
+            $('td', row).eq(8).attr('class','kgpend');
+            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(8).attr('data-order',aux_totalkilos);
+            $('td', row).eq(8).attr('data-search',aux_totalkilos);
+            $('td', row).eq(8).html(MASKLA(aux_totalkilos, 2));
+
+            $('td', row).eq(9).attr('class','kgpend');
+            $('td', row).eq(9).attr('style','text-align:right');
+            $('td', row).eq(9).attr('data-order',data.totalkilospicking);
+            $('td', row).eq(9).attr('data-search',data.totalkilospicking);
+            $('td', row).eq(9).html(MASKLA(data.totalkilospicking, 2));
+
+            $('td', row).eq(10).attr('class','kgpend');
+            $('td', row).eq(10).attr('style','text-align:right');
+            $('td', row).eq(10).attr('data-order',data.totalcantpicking);
+            $('td', row).eq(10).attr('data-search',data.totalcantpicking);
+            $('td', row).eq(10).html(MASKLA(data.totalcantpicking, 2));
+
+
+            aux_subtotal = data.subtotalsoldesp - data.subtotaldesp;
+            $('td', row).eq(11).attr('class','dinpend');
+            $('td', row).eq(11).attr('style','text-align:right');
+            $('td', row).eq(11).attr('data-order',aux_subtotal);
+            $('td', row).eq(11).attr('data-search',aux_subtotal);
+            $('td', row).eq(11).html(MASKLA(aux_subtotal, 0));
+
+            aux_text =
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)">
+                <i class='fa fa-fw fa-file-pdf-o'></i>
+            </a>`;
+            $('td', row).eq(12).html(aux_text);
+
+            aux_ruta_crearord = $("#aux_ruta_crearord").val();
+            aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
+
+            $('td', row).eq(13).attr('class','action-buttons');
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            aux_iconobloqueo = "fa-lock text-danger";
+            aux_iconoenviar = `fa-arrow-right text-yellow`;
+            aux_clicenviar = `onclick="enviardespord(${data.id},'${data.updated_at}')"`;
+            aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;
+            aux_clicbotonbloqueado = `onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)"`;
+            aux_titlebotonenviarorddesp = "Enviar SolDesp a OrdDesp";
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+                if(data.modulo_id_orddesp  !== null){
+                    aux_iconobloqueo = "fa-unlock text-yellow";
+                    aux_mensajebloqueo = `Habilitado para Despacho`;
+                }else{
+                    aux_iconoenviar = `fa-ban text-red`;
+                    aux_clicenviar = ``;
+                    aux_clicbotonbloqueado = `onclick="activarbotonenviar(${data.id},${data.cliente_id},${data.notaventa_id})"`;
+                    aux_mensajeAdvertencia = `. Puede desbloquear bajo su responsabilidad!`
+                    aux_titlebotonenviarorddesp = aux_mensajebloqueo + aux_mensajeAdvertencia;
+                    aux_mensajebloqueo += aux_mensajeAdvertencia;
+                }
+            }
+
+            //aux_clienteBloqueado = "";
+            aux_displaybtnac = ``;
+            //aux_displaybtnbl = `style="display:none;"`;
+
+            /* if(aux_clienteBloqueado == ""){
+                aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC" title="Editar Picking">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw ${data.icono}"></i>
+                                </button>
+                            </a>
+                            <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw fa-arrow-right text-yellow"></i>
+                                </button>
+                            </a>`;
+
+            }else{
+                aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}">
+                                    <button type="button" class="btn btn-default btn-xs" disabled>
+                                        <i class="fa fa-fw fa-lock text-danger"></i>
+                                    </button>
+                                </a>`;    
+
+            } */
+
+            aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Editar Picking">
+                            <button type="button" class="btn btn-default btn-xs">
+                                <i class="fa fa-fw ${data.icono}"></i>
+                            </button>
+                        </a>
+                        <a ${aux_displaybtnac} id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC botonac${data.id}" title="${aux_titlebotonenviarorddesp}" item="${data.id}" value="0" ${aux_clicenviar} update_at="${data.updated_at}">
+                            <button type="button" class="btn btn-default btn-xs">
+                                <i id="botonenviar${data.id}" name="botonenviar${data.id}" class="fa fa-fw ${aux_iconoenviar}"></i>
+                            </button>
+                        </a>
+                        <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" ${aux_clicbotonbloqueado}>
+                            <button type="button" class="btn btn-default btn-xs">
+                                <i id="ibotonbloqueado${data.id}" name="ibotonbloqueado${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
+                            </button>
+                        </a>`;
+
+
+            /* if(data.clientebloqueado_descripcion !== null){
+                aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${data.clientebloqueado_descripcion}">
+                                    <button type="button" class="btn btn-default btn-xs" disabled>
+                                        <i class="fa fa-fw fa-lock text-danger"></i>
+                                    </button>
+                                </a>`;    
+            }else{
+                aux_text = `<a onclick="validareditarpicking(${data.id},'${data.updated_at}','${aux_ruta + data.id}')" class="btn-accion-tabla tooltipsC" title="Editar Picking">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw ${data.icono}"></i>
+                                </button>
+                            </a>
+                            <a id="enviardespord${data.id}" name="enviardespord${data.id}" class="btn-accion-tabla tooltipsC" title="Enviar SolDesp a OrdDesp" item="${data.id}" value="0" onclick="enviardespord(${data.id},'${data.updated_at}')">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw fa-arrow-right text-yellow"></i>
+                                </button>
+                            </a>`;
+
+            } */
+            $('td', row).eq(13).html(aux_text);
+            
+        }
+    });
+}
+//Inicializa la tabla sin AJAX al inicio
+//configurarTabla(false, "");
+
+//Cuando el usuario hace clic en "Consultar", activa `serverSide: true`
+$("#btnconsultar").click(function () {
+    /* $("#tabla-data-picking").DataTable().destroy();
+    $("#tabla-data-picking").empty(); // Limpia la tabla para evitar errores de redibujado */
+    //$('#tabla-data-picking').html("");
+
+    console.log("Ejecutando consulta AJAX...");
+    var data = datospicking();
+    var newUrl = "/pickingpage/" + data.data2;
+    
+    configurarTabla("#tabla-data-picking",newUrl,true); // Reinicia DataTable con `serverSide: true`
+});
+
+/* function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
         'paging'      : true, 
         'lengthChange': true,
@@ -276,7 +334,7 @@ function configurarTabla(aux_tabla){
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
     });    
-}
+} */
 
 
 function ajaxRequest(data,url,funcion) {

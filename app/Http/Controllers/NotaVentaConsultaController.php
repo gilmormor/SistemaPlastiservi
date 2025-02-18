@@ -181,7 +181,7 @@ class NotaVentaConsultaController extends Controller
                                     </a>";
                 }
 
-                $aux_icodespachoNew = "";
+                $aux_icodespachoNew = "fa-hourglass-o";
                 $aux_obsdespachoNew = "No ha iniciado el despacho";
                 if($aux_cantdesp > 0){
                     $aux_icodespachoNew = "fa-star-o";
@@ -204,11 +204,20 @@ class NotaVentaConsultaController extends Controller
                                         <span class='glyphicon glyphicon-remove text-danger'></span>
                                     </a>";
                 }
-                $notaventacerrada = NotaVenta::findOrFail($data->id)
+                /* $notaventacerrada = NotaVenta::findOrFail($data->id)
                                     ->notaventacerradas;
                 if(count($notaventacerrada)>0){
                     $aux_feccierre = date('d-m-Y h:i A', strtotime($notaventacerrada[0]->created_at));
                     $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cerrada: $aux_feccierre' data-toggle='tooltip'>
+                                        <i class='fa fa-fw fa-archive'></i>
+                                    </a>";
+                } */
+                $notaventa = NotaVenta::findOrFail($data->id);
+                if(isset($notaventa->notaventacerrada)){
+                    $aux_feccierre = date('d-m-Y h:i A', strtotime($notaventa->notaventacerrada->created_at));
+                    $aux_nomusurec = 'Usuario: ' . $notaventa->notaventacerrada->usuario->nombre;
+                    $aux_obsrec = '<br>Obs: ' . $notaventa->notaventacerrada->observacion;
+                    $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cerrada: $aux_feccierre $aux_nomusurec $aux_obsrec' data-toggle='tooltip'>
                                         <i class='fa fa-fw fa-archive'></i>
                                     </a>";
                 }

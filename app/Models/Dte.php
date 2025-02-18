@@ -483,6 +483,7 @@ class Dte extends Model
     }
 
     public static function consultalistarguiadesppage($request){
+        //dd($request);
         $user = Usuario::findOrFail(auth()->id());
         if(empty($request->vendedor_id)){
             $sql= 'SELECT COUNT(*) AS contador
@@ -589,6 +590,12 @@ class Dte extends Model
             $aux_centroeconomico_idCond = "dte.centroeconomico_id = $request->centroeconomico_id";
         }
 
+        if(!isset($request->dte_id) or empty($request->dte_id) or ($request->dte_id == "") or ($request->dte_id == "undefined")){
+            $aux_dte_idCond = "true";
+        }else{
+            $aux_dte_idCond = "dte.id = $request->dte_id";
+        }
+
         $sql = "SELECT dte.id,dte.cliente_id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.indtraslado,
         cliente.razonsocial,cliente.rut,cliente.razonsocial,despachosol.notaventa_id as notaventa_id,
@@ -660,6 +667,7 @@ class Dte extends Model
         AND $aux_condsucurArray
         AND $aux_sucursal_idCond
         AND $aux_centroeconomico_idCond
+        AND $aux_dte_idCond
         order BY dte.nrodocto;";
         //dd($sql);
         //AND $aux_conddtenotnull
@@ -3310,6 +3318,262 @@ class Dte extends Model
         }
         //dd($ArrayFact);
         return $ArrayFact;
+    }
+
+    public static function guiadespconsultaindex($request = null){
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
+        if(!isset($request->dte_id) or empty($request->dte_id)){
+            $aux_conddte_id = " true";
+        }else{
+            $aux_conddte_id = "dte.id='$request->dte_id'";
+        }
+
+        $sql ="SELECT dte.id,dte.nrodocto,dte.fechahora,dte.fchemis,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,
+            notaventa.cliente_id,despachoord.notaventa_id,dte.stasubsii,
+            despachoord.despachosol_id,dteguiadesp.despachoord_id,despachoord.fechaestdesp,comuna.nombre as cmnarecep,dte.kgtotal,
+            dteguiadesp.tipoentrega_id,tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,
+            clientebloqueado.descripcion as clientebloqueado_descripcion,dte.updated_at,despachoord.updated_at as despordupdated_at,
+            dtedev.obs as dtedev_obs,usuario.nombre as dtedevusuario_nombre,dte.indtraslado,
+            if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+            cliente.limitecredito,
+            IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+            IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+            IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+            IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+            modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+            IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
+            FROM dte INNER JOIN dteguiadesp
+            ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
+            INNER JOIN despachoord
+            ON dteguiadesp.despachoord_id = despachoord.id AND ISNULL(despachoord.deleted_at)
+            INNER JOIN notaventa
+            ON despachoord.notaventa_id = notaventa.id AND ISNULL(dte.deleted_at) and isnull(notaventa.deleted_at)
+            INNER JOIN tipoentrega
+            ON dteguiadesp.tipoentrega_id  = tipoentrega.id AND ISNULL(tipoentrega.deleted_at)
+            INNER JOIN cliente
+            ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
+            inner join comuna
+            ON cliente.comunap_id  = comuna.id AND ISNULL(comuna.deleted_at)
+            LEFT JOIN clientebloqueado
+            ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+            LEFT JOIN dtedev
+            ON dte.id = dtedev.dte_id AND ISNULL(dtedev.deleted_at)
+            LEFT JOIN usuario
+            ON dtedev.usuario_id = usuario.id AND ISNULL(usuario.deleted_at)
+            INNER JOIN despachosol
+            ON despachoord.despachosol_id = despachosol.id AND ISNULL(despachosol.deleted_at)
+            LEFT JOIN vista_datacobranza
+            ON vista_datacobranza.cliente_id = notaventa.cliente_id
+            LEFT JOIN clientedesbloqueado
+            ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+            LEFT JOIN clientedesbloqueadomodulo
+            ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 10
+            LEFT JOIN modulo
+            ON modulo.id = clientedesbloqueadomodulo.modulo_id
+            LEFT JOIN clientedesbloqueadopro
+            ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+            WHERE despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+            AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+            AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+            AND despachosol.sucursal_id in ($sucurcadena)
+            AND ISNULL(dte.statusgen)
+            AND dte.foliocontrol_id=2
+            AND $aux_conddte_id
+            GROUP BY dte.id
+            ORDER BY dte.id desc;";
+    
+        return DB::select($sql);
+    
+    }
+
+    public static function consultalistarorddesppage($request){
+        $user = Usuario::findOrFail(auth()->id());
+        if(empty($request->vendedor_id)){
+            $sql= 'SELECT COUNT(*) AS contador
+                FROM vendedor INNER JOIN persona
+                ON vendedor.persona_id=persona.id
+                INNER JOIN usuario 
+                ON persona.usuario_id=usuario.id
+                WHERE usuario.id=' . auth()->id();
+            $counts = DB::select($sql);
+            if($counts[0]->contador>0){
+                $vendedor_id=$user->persona->vendedor->id;
+                $vendedorcond = "notaventa.vendedor_id=" . $vendedor_id ;
+                $clientevendedorArray = ClienteVendedor::where('vendedor_id',$vendedor_id)->pluck('cliente_id')->toArray();
+                $sucurArray = $user->sucursales->pluck('id')->toArray();
+            }else{
+                $vendedorcond = " true ";
+                $clientevendedorArray = ClienteVendedor::pluck('cliente_id')->toArray();
+            }
+        }else{
+            $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
+        }
+    
+        if(empty($request->fechad) or empty($request->fechah)){
+            $aux_condFecha = " true";
+        }else{
+            $fecha = date_create_from_format('d/m/Y', $request->fechad);
+            $fechad = date_format($fecha, 'Y-m-d')." 00:00:00";
+            $fecha = date_create_from_format('d/m/Y', $request->fechah);
+            $fechah = date_format($fecha, 'Y-m-d')." 23:59:59";
+            $aux_condFecha = "despachoord.fechahora>='$fechad' and despachoord.fechahora<='$fechah'";
+        }
+        if(empty($request->rut)){
+            $aux_condrut = " true";
+        }else{
+            $aux_condrut = "cliente.rut='$request->rut'";
+        }
+        if(empty($request->oc_id)){
+            $aux_condoc_id = " true";
+        }else{
+            $aux_condoc_id = "notaventa.oc_id='$request->oc_id'";
+        }
+        if(empty($request->giro_id)){
+            $aux_condgiro_id = " true";
+        }else{
+            $aux_condgiro_id = "notaventa.giro_id='$request->giro_id'";
+        }
+        if(empty($request->areaproduccion_id)){
+            $aux_condareaproduccion_id = " true";
+        }else{
+            $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
+        }
+        if(empty($request->tipoentrega_id)){
+            $aux_condtipoentrega_id = " true";
+        }else{
+            $aux_condtipoentrega_id = "dteguiadesp.tipoentrega_id='$request->tipoentrega_id'";
+        }
+        if(empty($request->notaventa_id)){
+            $aux_condnotaventa_id = " true";
+        }else{
+            $aux_condnotaventa_id = "notaventa.id='$request->notaventa_id'";
+        }
+    
+        if(empty($request->aprobstatus)){
+            $aux_aprobstatus = " true";
+        }else{
+            switch ($request->aprobstatus) {
+                case 1:
+                    $aux_aprobstatus = "notaventa.aprobstatus='0'";
+                    break;
+                case 2:
+                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    break;    
+                case 3:
+                    $aux_aprobstatus = "(notaventa.aprobstatus='1' or notaventa.aprobstatus='3')";
+                    break;
+                case 4:
+                    $aux_aprobstatus = "notaventa.aprobstatus='$request->aprobstatus'";
+                    break;
+            }
+            
+        }
+    
+        if(empty($request->comuna_id)){
+            $aux_condcomuna_id = " true";
+        }else{
+            $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
+        }
+    
+        if(!isset($request->despachoord_id) or empty($request->despachoord_id)){
+            $aux_conddespachoord_id = " true";
+        }else{
+            $aux_conddespachoord_id = "despachoord.id='$request->despachoord_id'";
+        }
+
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+    
+        $sql = "SELECT despachoord.id,notaventa.cotizacion_id,despachoord.despachosol_id,notaventa.cliente_id,
+        despachoord.fechahora,despachoord.fechaestdesp,
+        cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
+        '' as notaventaxk,comuna.nombre as comuna_nombre,
+        tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
+        SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
+        sum(round((despachoorddet.cantdesp * notaventadetalle.preciounit) * ((notaventa.piva+100)/100))) as subtotal,
+        despachoord.updated_at,'' as rutacrear,
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+            FROM dteoc INNER JOIN dte
+            ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
+            INNER JOIN dteguiadesp
+            ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dteoc.oc_id = notaventa.oc_id
+            AND isnull(dteguiadesp.notaventa_id)
+            AND dte.cliente_id= notaventa.cliente_id
+            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
+                                            FROM dteanul 
+                                            WHERE dteanul.dte_id = dteguiadesp.dte_id 
+                                            and ISNULL(dteanul.deleted_at))
+            GROUP BY dteoc.oc_id) as dte_nrodocto,
+        bloquearhacerguia,
+        cliente.limitecredito,
+        IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+        IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+        IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+        IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+        if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
+        modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
+        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
+        FROM despachoord INNER JOIN notaventa
+        ON despachoord.notaventa_id = notaventa.id AND ISNULL(despachoord.deleted_at) and isnull(notaventa.deleted_at)
+        INNER JOIN cliente
+        ON cliente.id = notaventa.cliente_id AND isnull(cliente.deleted_at)
+        INNER JOIN comuna
+        ON comuna.id = despachoord.comunaentrega_id AND isnull(comuna.deleted_at)
+        INNER JOIN despachoorddet
+        ON despachoorddet.despachoord_id = despachoord.id AND ISNULL(despachoorddet.deleted_at)
+        INNER JOIN notaventadetalle
+        ON notaventadetalle.id = despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
+        INNER JOIN tipoentrega
+        ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
+        LEFT JOIN clientebloqueado
+        ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
+        INNER JOIN despachosol
+        ON despachoord.despachosol_id = despachosol.id AND ISNULL(despachosol.deleted_at)
+        LEFT JOIN vista_datacobranza
+        ON vista_datacobranza.cliente_id = notaventa.cliente_id
+        LEFT JOIN clientedesbloqueado
+        ON clientedesbloqueado.cliente_id = notaventa.cliente_id and clientedesbloqueado.notaventa_id = notaventa.id and not isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+        LEFT JOIN clientedesbloqueadomodulo
+        ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = 9
+        LEFT JOIN modulo
+        ON modulo.id = clientedesbloqueadomodulo.modulo_id
+        LEFT JOIN clientedesbloqueadopro
+        ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+        WHERE $vendedorcond
+        and $aux_condFecha
+        and $aux_condrut
+        and $aux_condoc_id
+        and $aux_condgiro_id
+        and $aux_condareaproduccion_id
+        and $aux_condtipoentrega_id
+        and $aux_condnotaventa_id
+        and $aux_aprobstatus
+        and $aux_condcomuna_id
+        AND $aux_conddespachoord_id
+        and despachoord.aprguiadesp='1' and isnull(despachoord.guiadespacho)
+        AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+        AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+        AND despachosol.sucursal_id in ($sucurcadena)
+        AND despachoord.id NOT IN (SELECT guiadesp.despachoord_id FROM guiadesp WHERE ISNULL(guiadesp.deleted_at) AND guiadesp.id not in (SELECT guiadespanul.guiadesp_id FROM guiadespanul WHERE ISNULL(guiadespanul.deleted_at)))
+        AND despachoord.id NOT IN (SELECT dteguiadesp.despachoord_id
+            FROM dte INNER JOIN dteguiadesp
+            ON dte.id=dteguiadesp.dte_id AND ISNULL(dte.deleted_at) AND ISNULL(dteguiadesp.deleted_at)
+            WHERE dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+            AND NOT ISNULL(dteguiadesp.despachoord_id))
+        GROUP BY despachoorddet.despachoord_id
+        ORDER BY despachoorddet.despachoord_id DESC";
+        $arrays = DB::select($sql);
+        $i = 0;
+        foreach ($arrays as $array) {
+            $arrays[$i]->rutacrear = route('crear_dteguiadesp', ['id' => $array->id,'updated_at' => $array->updated_at]);
+            $i++;
+        }
+        return $arrays;
     }
 }
 

@@ -74,6 +74,9 @@ class CotizacionController extends Controller
         }else{
             $aux_condvend = 'true';
         }
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
         $sql = "SELECT cotizacion.id,fechahora,
                     cotizacion.cliente_id,
@@ -115,6 +118,7 @@ class CotizacionController extends Controller
                 ON clientedesbloqueadopro.cliente_id = cotizacion.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
                 where $aux_condvend and (isnull(aprobstatus) or aprobstatus=0 or aprobstatus=4 or aprobstatus=7) 
                 and cotizacion.deleted_at is null
+                AND cotizacion.sucursal_id in ($sucurcadena)
                 ORDER BY cotizacion.id desc;";
 
         $datas = DB::select($sql);

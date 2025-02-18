@@ -19,11 +19,11 @@ Pendiente Solicitud Orden Despacho
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
-        <div class="box box-primary collapsed-box">
+        <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Pendientes Solicitud Orden Despacho</h3>
                 <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
             </div>
             @csrf
@@ -67,9 +67,9 @@ Pendiente Solicitud Orden Despacho
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sta_picking" id="sta_picking" class="selectpicker form-control sta_picking">
-                                            <option value="0">Todos</option>
+                                            <option value="0" selected>Todos</option>
                                             <option value="1">Con Picking</option>
-                                            <option value="2" selected>Sin Picking</option>
+                                            <option value="2">Sin Picking</option>
                                         </select>
                                     </div>
                                 </div>

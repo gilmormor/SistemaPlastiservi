@@ -19,11 +19,11 @@ Pendiente Solicitud Orden Despacho
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
-        <div class="box box-primary collapsed-box">
+        <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Pendientes Solicitud Orden Despacho</h3>
                 <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
                 @if ($tablashtml['sololectura'] == 0)
                     <div class="box-tools pull-right">

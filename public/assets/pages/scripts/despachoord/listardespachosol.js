@@ -3,232 +3,8 @@ $(document).ready(function () {
     $("#auxeditcampoT").attr('maxlength',"100");
     $("#auxeditcampoT").attr('placeholder',"Ingrese Observacion");
 
-    configurarTabla('#tabla-data-pendientesoldesp');
-
-    function configurarTabla(aux_tabla){
-        data = datosdespachosol();
-        $(aux_tabla).DataTable({
-            'paging'      : true, 
-            'lengthChange': true,
-            'ordering'    : true,
-            'info'        : true,
-            'autoWidth'   : false,
-            'processing'  : true,
-            'serverSide'  : true,
-            'ajax'        : "/despachosol/listardespachosolpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 1, "desc" ]],
-            'columns'     : [
-                {data: 'id'},
-                {data: 'fechahora'},
-                {data: 'fechaestdesp'},
-                {data: 'razonsocial'},
-                {data: 'sucursal_nombre'},
-                {data: 'oc_id'},
-                {data: 'notaventa_id'},
-                {data: 'comunanombre'},
-                {data: 'totalkilos'},
-                {data: 'id'},
-                {data: 'icono'},
-                {data: 'icono'},
-            ],
-            "language": {
-                //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-            },
-            "createdRow": function ( row, data, index ) {
-                /*
-                if(data.stock <= 0){
-                    $(row).hide();                    
-                }*/
-                if ('datosAdicionales' in data) {
-                    //console.log(data);
-                    $("#totalkg").html(MASKLA(data.datosAdicionales.aux_totalkilos,2))
-                    $("#totaldinero").html(MASKLA(data.datosAdicionales.aux_totaldinero,0));
-                }
-
-                $(row).attr('id','fila' + data.id);
-                $(row).attr('name','fila' + data.id);    
-
-                $('td', row).eq(0).attr('style','text-align:center');
-                aux_text = 
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Solicitud de Despacho" onclick="genpdfSD(${data.id},1)">
-                    ${data.id}
-                </a>`;
-                $('td', row).eq(0).html(aux_text);
-
-                $('td', row).eq(1).attr('id','fechahora'+data.id);
-                $('td', row).eq(1).attr('name','fechahora'+data.id);
-                $('td', row).eq(1).attr('data-order',data.fechahora);
-                aux_fecha = new Date(data.fechahora);
-                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
-
-                $('td', row).eq(2).attr('id','fechaestdespTD'+data.id);
-                $('td', row).eq(2).attr('name','fechaestdespTD'+data.id);
-                $('td', row).eq(2).attr('data-order',data.fechaestdesp);
-                aux_fecha = new Date(data.fechaestdesp + " 00:00:00");
-
-                aux_text = 
-                `<a id="fechaestdesp${data.id}" name="fechaestdesp${data.id}" class="editfed">
-                    ${fechaddmmaaaa(aux_fecha)}
-                </a>
-                <input type="text" class="form-control datepickerfed savefed" name="fechaed${data.id}" id="fechaed${data.id}" value="${fechaddmmaaaa(aux_fecha)}" style="display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;" readonly>
-                <a name="editfed${data.id}" id="editfed${data.id}" class="btn-accion-tabla btn-sm tooltipsC editfed" title="Editar Fecha ED" onclick="editfeced(${data.id},${data.id})">
-                    <i class="fa fa-fw fa-pencil-square-o"></i>
-                </a>
-                <a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar Fecha ED" onclick="savefeced(${data.id},${data.id})" style="display:none" updated_at="${data.updated_at}">
-                    <i class="fa fa-fw fa-save text-red"></i>
-                </a>`;
-                $('td', row).eq(2).html(aux_text);
-
-                if(data.razonsocial.length > 30){
-                    $('td', row).eq(3).attr('class',"btn-accion-tabla");
-                    $('td', row).eq(3).attr('title',data.razonsocial);
-                    $('td', row).eq(3).html(data.razonsocial.substring(0, 30));    
-                }
-
-                if(data.oc_file == "" ||  data.oc_file === null){
-                    aux_enlaceoc = "";
-                }else{
-                    aux_enlaceoc = `<a onclick="verpdf2('${data.oc_file}',2)" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra">${data.oc_id}</a>`;
-                }
-                $('td', row).eq(5).html(aux_enlaceoc);
-
-                aux_text =
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta" onclick="genpdfNV(${data.notaventa_id},1)">
-                    ${data.notaventa_id}
-                </a>`;
-                $('td', row).eq(6).html(aux_text);
-
-                aux_subtotalkilos = data.totalkilos - data.totalkilosdesp;
-
-                $('td', row).eq(8).attr('class','kgpend');
-                $('td', row).eq(8).attr('style','text-align:right');
-                $('td', row).eq(8).attr('data-order',aux_subtotalkilos);
-                $('td', row).eq(8).attr('data-search',aux_subtotalkilos);
-                $('td', row).eq(8).html(MASKLA(aux_subtotalkilos, 2));
-
-                aux_subtotal = data.subtotalsoldesp - data.subtotaldesp;
-                $('td', row).eq(9).attr('class','dinpend');
-                $('td', row).eq(9).attr('style','text-align:right');
-                $('td', row).eq(9).attr('data-order',aux_subtotal);
-                $('td', row).eq(9).attr('data-search',aux_subtotal);
-                $('td', row).eq(9).html(MASKLA(aux_subtotal, 0));
-
-                aux_ruta_crearord = $("#aux_ruta_crearord").val();
-                aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
-                aux_solenvord = $("#solenvord").val();
-
-                aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
-                aux_displaybtnac = ``;
-                aux_displaybtnbl = ``;
-                if(aux_clienteBloqueado == ""){
-                    aux_displaybtnac = ``;
-                    aux_displaybtnbl = `style="display:none;"`;
-                }else{
-                    aux_displaybtnac = `style="display:none;"`;
-                    aux_displaybtnbl = ``;
-                }
-
-                aux_text =
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)" style="display: inline-block;">
-                    <i class='fa fa-fw fa-file-pdf-o'></i>
-                </a>`;
-                if(aux_displaybtnbl !==""){
-                    aux_text += 
-                    `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa Picking" onclick="genpdfVPODPicking(${data.id})" style="display: inline-block;">
-                        <i class='fa fa-fw fa-file-pdf-o'></i>
-                    </a>`;    
-                }
-                $('td', row).eq(10).html(aux_text);
-
-                /* if(aux_clienteBloqueado == ""){
-                    aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}">
-                                        <button type="button" class="btn btn-default btn-xs">
-                                            <i class="fa fa-fw ${data.icono}"></i>
-                                        </button>
-                                    </a>`;
-                    aux_text = `<a onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw ${data.icono}"></i>
-                                    </button>
-                                </a>`;
-                    if($("#solenvord").val() == '0'){
-                        data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
-                            aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
-                                            <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
-                                        </a>`;
-                            });    
-                    }
-                }else{
-                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}" style="display: inline-block;">
-                                    <button type="button" class="btn btn-default btn-xs" disabled>
-                                        <i class="fa fa-fw fa-lock text-danger"></i>
-                                    </button>
-                                </a>`;
-                } */
-
-                aux_text = 
-                        `<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" style="display: inline-block;" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
-                            <button type="button" class="btn btn-default btn-xs">
-                                <i class="fa fa-fw fa-lock text-danger"></i>
-                            </button>
-                        </a><a ${aux_displaybtnac} onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
-                            <button type="button" class="btn btn-default btn-xs">
-                                <i class="fa fa-fw ${data.icono}"></i>
-                            </button>
-                        </a>`;
-                if($("#solenvord").val() == '0'){
-                    data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
-                        aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class} botonac${data.id}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
-                                        <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
-                                    </a>`;
-                        });    
-                }
-
-                /* if(data.clientebloqueado_descripcion !== null){
-                    aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${data.clientebloqueado_descripcion}" style="display: inline-block;">
-                                        <button type="button" class="btn btn-default btn-xs" disabled>
-                                            <i class="fa fa-fw fa-lock text-danger"></i>
-                                        </button>
-                                    </a>`;
-                }else{
-                    aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}">
-                                        <button type="button" class="btn btn-default btn-xs">
-                                            <i class="fa fa-fw ${data.icono}"></i>
-                                        </button>
-                                    </a>`;
-                    aux_text = `<a onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw ${data.icono}"></i>
-                                    </button>
-                                </a>`;
-                    if($("#solenvord").val() == '0'){
-                        data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
-                            aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
-                                            <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
-                                        </a>`;
-                            });    
-                    }
-                } */
-                if($("#solenvord").val() == '1'){
-                    /* aux_text += `<a onclick="delsolenvord(${data.id},'${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Eliminar de listado. Solo elimina del listado no afecta Stock picking." style="display: inline-block;">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw fa-trash-o text-danger"></i>
-                                    </button>
-                                </a>`; */
-                    aux_text += `<a onclick="delsolenvord1(${data.id},'${data.updated_at}')" class="btn-accion-tabla tooltipsC" fila="${data.id}" title="Eliminar de listado. Solo elimina del listado no afecta Stock picking." style="display: inline-block;">
-                                    <button type="button" class="btn btn-default btn-xs">
-                                        <i class="fa fa-fw fa-trash-o text-danger"></i>
-                                    </button>
-                                </a>`;
-            }
-                $('td', row).eq(11).html(aux_text);
-                
-            }
-        });
-    }
-
-    
+    //configurarTabla('#tabla-data-pendientesoldesp');
+   
     $('#tabla-data-pendientesoldesp').on('draw.dt', function () {
         // Aquí puedes ejecutar la función que deseas que se ejecute cuando se termine de llenar la tabla
         // Llamar a tu función aquí
@@ -254,7 +30,7 @@ $(document).ready(function () {
 
 
     //consultar(datoslsd());
-    $("#btnconsultar").click(function()
+    /* $("#btnconsultar").click(function()
     {
         //consultar(datoslsd());
         data = datosdespachosol();
@@ -263,7 +39,7 @@ $(document).ready(function () {
 
         $('#tabla-data-pendientesoldesp').DataTable().ajax.url( "/despachosol/listardespachosolpage/" + data.data2 ).load();
 
-    });
+    }); */
 
     //consultar(datoslsd());
     /* $("#btnconsultar").click(function()
@@ -290,11 +66,298 @@ $(document).ready(function () {
         eliminarFormatoRut($(this));
     });
 
-    configurarTabla('.tablas');
+    //configurarTabla('.tablas');
+
+    configurarTabla("#tabla-data-pendientesoldesp","",false)
 
 });
 
-function configurarTabla(aux_tabla){
+var tabla;
+
+function configurarTabla(nombreTabla,url,serverSide) {
+    // Si ya hay una tabla inicializada, la destruimos
+    if ($.fn.DataTable.isDataTable(nombreTabla)) {
+        $(nombreTabla).DataTable().destroy();
+        $(nombreTabla).empty(); // Limpia la tabla para evitar errores de redibujado
+    }
+
+    //Asegura que la tabla tiene el encabezado correcto
+    if ($(nombreTabla + " thead").length === 0) {
+        $(nombreTabla).append(`
+            <thead>
+                <tr>
+                    <th nombrecampo='despachosol.id' class='tooltipsC' title='Solicitud de Despacho'>SD</th>
+                    <th nombrecampo='despachosol.fechahora'>Fecha</th>
+                    <th nombrecampo='despachosol.fechaestdesp' class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
+                    <th nombrecampo='cliente.razonsocial'>Razón Social</th>
+                    <th nombrecampo='sucursal.nombre'>Sucursal</th>
+                    <th nombrecampo='notaventa.oc_id' class='tooltipsC' title='Orden de Compra'>OC</th>
+                    <th nombrecampo='despachosol.notaventa_id' class='tooltipsC' title='Nota de Venta'>NV</th>
+                    <th nombrecampo='comuna.nombre'>Comuna</th>
+                    <th class='tooltipsC' title='Total Kg Pendientes'>Total Kg</th>
+                    <th class='tooltipsC' title='Total $'>$</th>
+                    <th class='tooltipsC' title='Vista Previa Orden Despacho'>VP</th>
+                    <th class='tooltipsC' title='Acción'>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan='8' style='text-align:right'>Total página</th>
+                    <th id='subkgpend' name='subkgpend' style='text-align:right'>0,00</th>
+                    <th id='subtotaldinero' name='subtotaldinero' style='text-align:right'>0,00</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan='8'  style='text-align:right'>TOTAL GENERAL</th>
+                    <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                    <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+
+        `);
+    }
+
+    // Configura DataTable con `serverSide` dinámico
+    tabla = $(nombreTabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        'serverSide'  : serverSide,
+        'ajax'        : url, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+        "order": [[ 1, "desc" ]],
+        'columns'     : [
+            {data: 'id'},
+            {data: 'fechahora'},
+            {data: 'fechaestdesp'},
+            {data: 'razonsocial'},
+            {data: 'sucursal_nombre'},
+            {data: 'oc_id'},
+            {data: 'notaventa_id'},
+            {data: 'comunanombre'},
+            {data: 'totalkilos'},
+            {data: 'id'},
+            {data: 'icono'},
+            {data: 'icono'},
+        ],
+        "language": {
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            /*
+            if(data.stock <= 0){
+                $(row).hide();                    
+            }*/
+            if ('datosAdicionales' in data) {
+                //console.log(data);
+                $("#totalkg").html(MASKLA(data.datosAdicionales.aux_totalkilos,2))
+                $("#totaldinero").html(MASKLA(data.datosAdicionales.aux_totaldinero,0));
+            }
+
+            $(row).attr('id','fila' + data.id);
+            $(row).attr('name','fila' + data.id);    
+
+            $('td', row).eq(0).attr('style','text-align:center');
+            aux_text = 
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Solicitud de Despacho" onclick="genpdfSD(${data.id},1)">
+                ${data.id}
+            </a>`;
+            $('td', row).eq(0).html(aux_text);
+
+            $('td', row).eq(1).attr('id','fechahora'+data.id);
+            $('td', row).eq(1).attr('name','fechahora'+data.id);
+            $('td', row).eq(1).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+
+            $('td', row).eq(2).attr('id','fechaestdespTD'+data.id);
+            $('td', row).eq(2).attr('name','fechaestdespTD'+data.id);
+            $('td', row).eq(2).attr('data-order',data.fechaestdesp);
+            aux_fecha = new Date(data.fechaestdesp + " 00:00:00");
+
+            aux_text = 
+            `<a id="fechaestdesp${data.id}" name="fechaestdesp${data.id}" class="editfed">
+                ${fechaddmmaaaa(aux_fecha)}
+            </a>
+            <input type="text" class="form-control datepickerfed savefed" name="fechaed${data.id}" id="fechaed${data.id}" value="${fechaddmmaaaa(aux_fecha)}" style="display:none; width: 70px; height: 21.6px;padding-left: 0px;padding-right: 0px;" readonly>
+            <a name="editfed${data.id}" id="editfed${data.id}" class="btn-accion-tabla btn-sm tooltipsC editfed" title="Editar Fecha ED" onclick="editfeced(${data.id},${data.id})">
+                <i class="fa fa-fw fa-pencil-square-o"></i>
+            </a>
+            <a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar Fecha ED" onclick="savefeced(${data.id},${data.id})" style="display:none" updated_at="${data.updated_at}">
+                <i class="fa fa-fw fa-save text-red"></i>
+            </a>`;
+            $('td', row).eq(2).html(aux_text);
+
+            if(data.razonsocial.length > 30){
+                $('td', row).eq(3).attr('class',"btn-accion-tabla");
+                $('td', row).eq(3).attr('title',data.razonsocial);
+                $('td', row).eq(3).html(data.razonsocial.substring(0, 30));    
+            }
+
+            if(data.oc_file == "" ||  data.oc_file === null){
+                aux_enlaceoc = "";
+            }else{
+                aux_enlaceoc = `<a onclick="verpdf2('${data.oc_file}',2)" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra">${data.oc_id}</a>`;
+            }
+            $('td', row).eq(5).html(aux_enlaceoc);
+
+            aux_text =
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta" onclick="genpdfNV(${data.notaventa_id},1)">
+                ${data.notaventa_id}
+            </a>`;
+            $('td', row).eq(6).html(aux_text);
+
+            aux_subtotalkilos = data.totalkilos - data.totalkilosdesp;
+
+            $('td', row).eq(8).attr('class','kgpend');
+            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(8).attr('data-order',aux_subtotalkilos);
+            $('td', row).eq(8).attr('data-search',aux_subtotalkilos);
+            $('td', row).eq(8).html(MASKLA(aux_subtotalkilos, 2));
+
+            aux_subtotal = data.subtotalsoldesp - data.subtotaldesp;
+            $('td', row).eq(9).attr('class','dinpend');
+            $('td', row).eq(9).attr('style','text-align:right');
+            $('td', row).eq(9).attr('data-order',aux_subtotal);
+            $('td', row).eq(9).attr('data-search',aux_subtotal);
+            $('td', row).eq(9).html(MASKLA(aux_subtotal, 0));
+
+            aux_ruta_crearord = $("#aux_ruta_crearord").val();
+            aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
+            aux_solenvord = $("#solenvord").val();
+
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+            }
+
+            aux_text =
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa" onclick="genpdfVPOD(${data.id},1)" style="display: inline-block;">
+                <i class='fa fa-fw fa-file-pdf-o'></i>
+            </a>`;
+            if(aux_displaybtnbl !==""){
+                aux_text += 
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa Picking" onclick="genpdfVPODPicking(${data.id})" style="display: inline-block;">
+                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>`;    
+            }
+            $('td', row).eq(10).html(aux_text);
+
+            /* if(aux_clienteBloqueado == ""){
+                aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw ${data.icono}"></i>
+                                    </button>
+                                </a>`;
+                aux_text = `<a onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw ${data.icono}"></i>
+                                </button>
+                            </a>`;
+                if($("#solenvord").val() == '0'){
+                    data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
+                        aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
+                                        <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
+                                    </a>`;
+                        });    
+                }
+            }else{
+                aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}" style="display: inline-block;">
+                                <button type="button" class="btn btn-default btn-xs" disabled>
+                                    <i class="fa fa-fw fa-lock text-danger"></i>
+                                </button>
+                            </a>`;
+            } */
+
+            aux_text = 
+                    `<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" style="display: inline-block;" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.notaventa_id},0)">
+                        <button type="button" class="btn btn-default btn-xs">
+                            <i class="fa fa-fw fa-lock text-danger"></i>
+                        </button>
+                    </a><a ${aux_displaybtnac} onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC botonac${data.id}" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
+                        <button type="button" class="btn btn-default btn-xs">
+                            <i class="fa fa-fw ${data.icono}"></i>
+                        </button>
+                    </a>`;
+            if($("#solenvord").val() == '0'){
+                data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
+                    aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class} botonac${data.id}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
+                                    <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
+                                </a>`;
+                    });    
+            }
+
+            /* if(data.clientebloqueado_descripcion !== null){
+                aux_text = `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${data.clientebloqueado_descripcion}" style="display: inline-block;">
+                                    <button type="button" class="btn btn-default btn-xs" disabled>
+                                        <i class="fa fa-fw fa-lock text-danger"></i>
+                                    </button>
+                                </a>`;
+            }else{
+                aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}">
+                                    <button type="button" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw ${data.icono}"></i>
+                                    </button>
+                                </a>`;
+                aux_text = `<a onclick="crearord('${data.id}','${aux_ruta + aux_solenvord + '-' + data.id}','${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}" style="display: inline-block;">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw ${data.icono}"></i>
+                                </button>
+                            </a>`;
+                if($("#solenvord").val() == '0'){
+                    data.nuevoOrdDesp.forEach(function(nuevoOrdDesp, index) {
+                        aux_text += `<a href="${nuevoOrdDesp.a_href}" fila="${nuevoOrdDesp.a_fila}" id="btnanular${nuevoOrdDesp.a_fila}" name="btnanular${nuevoOrdDesp.a_fila}" class="${nuevoOrdDesp.a_class}" title="${nuevoOrdDesp.a_title}" data-toggle="tooltip" style="display: inline-block;" updated_at="${data.updated_at}">
+                                        <button type='button' class="${nuevoOrdDesp.b_class}"><i class="${nuevoOrdDesp.i_class}"></i></button>
+                                    </a>`;
+                        });    
+                }
+            } */
+            if($("#solenvord").val() == '1'){
+                /* aux_text += `<a onclick="delsolenvord(${data.id},'${data.updated_at}')" class="btn-accion-tabla tooltipsC" title="Eliminar de listado. Solo elimina del listado no afecta Stock picking." style="display: inline-block;">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw fa-trash-o text-danger"></i>
+                                </button>
+                            </a>`; */
+                aux_text += `<a onclick="delsolenvord1(${data.id},'${data.updated_at}')" class="btn-accion-tabla tooltipsC" fila="${data.id}" title="Eliminar de listado. Solo elimina del listado no afecta Stock picking." style="display: inline-block;">
+                                <button type="button" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw fa-trash-o text-danger"></i>
+                                </button>
+                            </a>`;
+        }
+            $('td', row).eq(11).html(aux_text);
+            
+        }
+    });
+}
+
+//Cuando el usuario hace clic en "Consultar", activa `serverSide: true`
+$("#btnconsultar").click(function () {
+
+    data = datosdespachosol();
+    $("#totalkg").html("0,00")
+    $("#totaldinero").html("0");
+
+
+    var newUrl = "/despachosol/listardespachosolpage/" + data.data2;
+    
+    configurarTabla("#tabla-data-pendientesoldesp",newUrl,true); // Reinicia DataTable con `serverSide: true`
+});
+
+/* function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
         'paging'      : true, 
         'lengthChange': true,
@@ -308,7 +371,7 @@ function configurarTabla(aux_tabla){
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
     });    
-}
+} */
 
 
 function ajaxRequest(data,url,funcion) {

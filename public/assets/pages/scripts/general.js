@@ -1729,6 +1729,7 @@ function listarorddespxNV(id,producto_id = null){
 			$("#tablalistarorddesp").html(respuesta.tabla);
 			//$("#tablaconsulta").html(datos['tabla']);
 			configurarTabla('#tabladespachoorddet');
+			configurarTabla('#tablatrazabilidaddespachosol');
 			$("#myModalTablaOD").modal('show');
         }
     });

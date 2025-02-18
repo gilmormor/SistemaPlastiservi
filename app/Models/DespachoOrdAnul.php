@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -20,4 +21,11 @@ class DespachoOrdAnul extends Model
     {
         return $this->belongsTo(DespachoOrd::class);
     }
+
+    //Relacion inversa a Usuario
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+    
 }

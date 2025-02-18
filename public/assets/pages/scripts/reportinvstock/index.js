@@ -9,104 +9,8 @@ $(document).ready(function () {
 		todayHighlight: true
     }).datepicker("setDate");
 
-    configurarTabla('#tabla-data-invstock');
+    //configurarTabla('#tabla-data-invstock');
 
-    function configurarTabla(aux_tabla){
-        data = datosinvstock();
-        $(aux_tabla).DataTable({
-            'paging'      : true, 
-            'lengthChange': true,
-            'ordering'    : true,
-            'info'        : true,
-            'autoWidth'   : false,
-            'processing'  : true,
-            'serverSide'  : true,
-            'ajax'        : "reportinvstockpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-            "order": [[ 1, "asc" ]],
-            'columns'     : [
-                {data: 'producto_id'},
-                {data: 'producto_nombre'},
-                {data: 'categoria_nombre'},
-                {data: 'cla_nombre'},
-                {data: 'diametro'},
-                {data: 'long'},
-                {data: 'peso'},
-                {data: 'tipounion'},
-                {data: 'invbodega_nombre'},
-                {data: 'stockini'},
-                {data: 'mov_in'},
-                {data: 'mov_out'},
-                {data: 'stock'},
-                {data: 'stockkg'}
-            ],
-            "language": {
-                //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-            },
-            "createdRow": function ( row, data, index ) {
-                /*
-                if(data.stock <= 0){
-                    $(row).hide();                    
-                }*/
-                $('td', row).eq(0).attr('style','text-align:center');
-                $('td', row).eq(3).attr('style','text-align:center');
-
-                $('td', row).eq(4).attr('style','text-align:center');
-                $('td', row).eq(5).attr('style','text-align:center');
-                $('td', row).eq(6).attr('style','text-align:center');
-                if(data.acuerdotecnico_id){
-                    $('td', row).eq(4).html(NUM(data.at_ancho, 2));
-                    $('td', row).eq(5).html(NUM(data.at_largo, 2));
-                    $('td', row).eq(6).html(MASKLA(data.at_espesor, 3));    
-                }else{
-                    $('td', row).eq(6).html(NUM(data.peso, 2));
-                }
-                $('td', row).eq(9).attr('style','text-align:center');
-                $('td', row).eq(10).attr('style','text-align:center');
-                $('td', row).eq(11).attr('style','text-align:center');
-                $('td', row).eq(12).attr('style','text-align:right');
-                $('td', row).eq(12).attr('data-order',data.stock);
-                $('td', row).eq(12).attr('data-search',data.stock);
-                $('td', row).eq(12).html(MASKLA(data.stock,0));
-                $('td', row).eq(12).addClass('subtotalstock');
-
-                $('td', row).eq(13).attr('style','text-align:right');
-                //$('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
-                if(data.peso <= 0){
-                    stockKg = data.stockkg;
-                }else{
-                    stockKg = data.stock * data.peso;
-                }
-                $('td', row).eq(13).attr('data-order',stockKg);
-                $('td', row).eq(13).attr('data-search',stockKg);
-                $('td', row).eq(13).html(MASKLA(stockKg,2));
-                $('td', row).eq(13).addClass('subtotalkg');
-                //MASKLA(data.aux_totalkg,2);
-                /*
-                aux_mesanno = mesanno(data.annomes);
-                $('td', row).eq(1).html(aux_mesanno);
-                $('td', row).eq(1).attr('data-search',aux_mesanno);
-                $('td', row).eq(4).attr('data-order',data.costo);
-                $('td', row).eq(4).attr('data-search',data.costo);
-                $('td', row).eq(4).attr('style','text-align:right');
-                $('td', row).eq(4).html(MASK(0, data.costo, '-###,###,###,##0.00',1));
-                $('td', row).eq(5).attr('data-order',data.metacomerkg);
-                $('td', row).eq(5).attr('data-search',data.metacomerkg);
-                $('td', row).eq(5).attr('style','text-align:right');
-                $('td', row).eq(5).html(MASK(0, data.metacomerkg, '-###,###,###,##0.00',1));
-                */
-            }
-        });
-    }
-
-    totalizar();
-
-    $("#btnconsultar").click(function()
-    {
-        data = datosinvstock();
-        $('#tabla-data-invstock').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
-        totalizar();
-    });
 
     arrayBodegas = [];
     $("#invbodega_id option").each(function(){
@@ -132,7 +36,158 @@ $(document).ready(function () {
 
     tablascolsultainv($("#sucursal_id").val());
 */
+    configurarTabla("#tabla-data-invstock","",false)
 
+});
+
+var tabla;
+
+function configurarTabla(nombreTabla,url,serverSide) {
+    // Si ya hay una tabla inicializada, la destruimos
+    if ($.fn.DataTable.isDataTable(nombreTabla)) {
+        $(nombreTabla).DataTable().destroy();
+        $(nombreTabla).empty(); // Limpia la tabla para evitar errores de redibujado
+    }
+
+    //Asegura que la tabla tiene el encabezado correcto
+    if ($(nombreTabla + " thead").length === 0) {
+        $(nombreTabla).append(`
+            <thead>
+                <tr>
+                    <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
+                    <th>Producto</th>
+                    <th>Categoria</th>
+                    <th>Clase<br>Sello</th>
+                    <th>Diam<br>Ancho</th>
+                    <th>Largo</th>
+                    <th>Peso<br>Esp</th>
+                    <th class="tooltipsC" title="Tipo de Union">TU</th>
+                    <th>Bodega</th>
+                    <th style='text-align:center'>Ini</th>
+                    <th style='text-align:center'>Ent</th>
+                    <th style='text-align:center'>Sal</th>
+                    <th style='text-align:center'>Stock</th>
+                    <th style='text-align:right'>Stock Kg</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                </tr>
+                <tr>
+                    <th colspan='12' style='text-align:right'>Total página</th>
+                    <th id='subtotalstock' name='subtotalstock' style='text-align:right'>0</th>
+                    <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
+                </tr>
+                <tr>
+                    <th colspan='12' style='text-align:right'>TOTAL GENERAL</th>
+                    <th id='totalstock' name='totalstock' style='text-align:right'>0</th>
+                    <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                </tr>
+            </tfoot>
+
+        `);
+    }
+
+    // Configura DataTable con `serverSide` dinámico
+    tabla = $(nombreTabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        //'serverSide'  : true,
+        //'ajax'        : "reportinvstockpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+        'serverSide'  : serverSide,
+        'ajax'        : url, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+        "order": [[ 1, "asc" ]],
+        'columns'     : [
+            {data: 'producto_id'},
+            {data: 'producto_nombre'},
+            {data: 'categoria_nombre'},
+            {data: 'cla_nombre'},
+            {data: 'diametro'},
+            {data: 'long'},
+            {data: 'peso'},
+            {data: 'tipounion'},
+            {data: 'invbodega_nombre'},
+            {data: 'stockini'},
+            {data: 'mov_in'},
+            {data: 'mov_out'},
+            {data: 'stock'},
+            {data: 'stockkg'}
+        ],
+        "language": {
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            /*
+            if(data.stock <= 0){
+                $(row).hide();                    
+            }*/
+            $('td', row).eq(0).attr('style','text-align:center');
+            $('td', row).eq(3).attr('style','text-align:center');
+
+            $('td', row).eq(4).attr('style','text-align:center');
+            $('td', row).eq(5).attr('style','text-align:center');
+            $('td', row).eq(6).attr('style','text-align:center');
+            if(data.acuerdotecnico_id){
+                $('td', row).eq(4).html(NUM(data.at_ancho, 2));
+                $('td', row).eq(5).html(NUM(data.at_largo, 2));
+                $('td', row).eq(6).html(MASKLA(data.at_espesor, 3));    
+            }else{
+                $('td', row).eq(6).html(NUM(data.peso, 2));
+            }
+            $('td', row).eq(9).attr('style','text-align:center');
+            $('td', row).eq(10).attr('style','text-align:center');
+            $('td', row).eq(11).attr('style','text-align:center');
+            $('td', row).eq(12).attr('style','text-align:right');
+            $('td', row).eq(12).attr('data-order',data.stock);
+            $('td', row).eq(12).attr('data-search',data.stock);
+            $('td', row).eq(12).html(MASKLA(data.stock,0));
+            $('td', row).eq(12).addClass('subtotalstock');
+
+            $('td', row).eq(13).attr('style','text-align:right');
+            //$('td', row).eq(13).html(MASK(0, data.stockkg, '-###,###,###,##0.00',1));
+            if(data.peso <= 0){
+                stockKg = data.stockkg;
+            }else{
+                stockKg = data.stock * data.peso;
+            }
+            $('td', row).eq(13).attr('data-order',stockKg);
+            $('td', row).eq(13).attr('data-search',stockKg);
+            $('td', row).eq(13).html(MASKLA(stockKg,2));
+            $('td', row).eq(13).addClass('subtotalkg');
+            //MASKLA(data.aux_totalkg,2);
+            /*
+            aux_mesanno = mesanno(data.annomes);
+            $('td', row).eq(1).html(aux_mesanno);
+            $('td', row).eq(1).attr('data-search',aux_mesanno);
+            $('td', row).eq(4).attr('data-order',data.costo);
+            $('td', row).eq(4).attr('data-search',data.costo);
+            $('td', row).eq(4).attr('style','text-align:right');
+            $('td', row).eq(4).html(MASK(0, data.costo, '-###,###,###,##0.00',1));
+            $('td', row).eq(5).attr('data-order',data.metacomerkg);
+            $('td', row).eq(5).attr('data-search',data.metacomerkg);
+            $('td', row).eq(5).attr('style','text-align:right');
+            $('td', row).eq(5).html(MASK(0, data.metacomerkg, '-###,###,###,##0.00',1));
+            */
+        }
+    });
+}
+
+totalizar();
+
+$("#btnconsultar").click(function()
+{
+    data = datosinvstock();
+    var newUrl = "invcontrolpage/" + data.data2;
+    
+    configurarTabla("#tabla-data-invstock",newUrl,true); // Reinicia DataTable con `serverSide: true`
+
+    //$('#tabla-data-invstock').DataTable().ajax.url( "invcontrolpage/" + data.data2 ).load();
+    totalizar();
 });
 
 function totalizar(){
