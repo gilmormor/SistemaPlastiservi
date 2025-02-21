@@ -494,7 +494,7 @@
                                         {{number_format($CotizacionDetalle->totalkilos, 2, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->totalkilos}}" style="display:none;"/>
+                                        <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->totalkilos}}" valor="{{$CotizacionDetalle->totalkilos}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
                                         {{number_format($CotizacionDetalle->subtotal, 0, ',', '.')}}

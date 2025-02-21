@@ -3763,7 +3763,7 @@ function llenartablagrupocatprom(){
 		producto_id = $("#producto_id" + fila).val();
 		categoriaprod_id = $("#producto_idTDT" + fila).attr('categoriaprod_id');
 		subtotalM = $("#subtotalSFTD" + fila).html();
-		totalkilosM  = $("#totalkilos" + fila).attr('value');
+		totalkilosM  = $("#totalkilos" + fila).val();
 		$("#tabla-data-grupocatprom tr .grupocatprom_nombre").each(function() {
 			fila = $(this).attr('fila');
 			aux_fila = Number(fila);

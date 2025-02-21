@@ -527,7 +527,7 @@ function insertarTabla(){
 				MASKLA($("#totalkilosM").attr("valor"),4) + //MASK(0, $("#totalkilosM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
+				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" valor="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
 				MASKLA($("#subtotalM").attr("valor"),0) + //MASK(0, $("#subtotalM").attr("valor"), '-#,###,###,##0.00',1)+
@@ -2045,7 +2045,7 @@ function insertarItem(){
 						MASKLA(producto.peso,4) + //MASK(0, producto.peso, '-##,###,##0.00',1)+
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
-						'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ producto.peso +'" style="display:none;"/>'+
+						'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ producto.peso +'" valor="'+ producto.peso +'" style="display:none;"/>'+
 					'</td>'+
 					'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
 						MASKLA(aux_subtotal,0) + //MASK(0, aux_subtotal, '-#,###,###,##0.00',1)+
