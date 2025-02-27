@@ -109,6 +109,35 @@ $(document).ready(function () {
 		$("#longM").val($("#largoM").attr('valor'));
 	});
 	
+	$("#at_espesor").on("input", function () {
+        // Reemplazar comas por puntos solo si no hay un punto ya presente
+        if (!$(this).val().includes(".")) {
+            $(this).val($(this).val().replace(/,/g, "."));
+        }
+		let valor = parseFloat($(this).val());
+        
+        // Si el valor es mayor a 1, se ajusta automáticamente a 1
+        if (valor > 1) {
+            $(this).val("1");
+        }
+		// Limitar la longitud a 5 caracteres
+        if ($(this).val().length > 5) {
+            $(this).val($(this).val().substring(0, 5));
+        }
+    });
+
+    $("#at_espesor").on("keydown", function (event) {
+        // Si el usuario presiona la tecla de coma ","
+        if (event.key === ",") {
+            // Prevenir la acción solo si aún no hay un punto en el input
+            if (!$(this).val().includes(".")) {
+                event.preventDefault();
+                $(this).val($(this).val() + ".");
+            } else {
+                event.preventDefault(); // Evita que se escriba la coma si ya hay un punto
+            }
+        }
+    });
 
 /*
  	$(".numerico").on({

@@ -325,7 +325,7 @@
                 
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_espesor" class="control-label requerido" data-toggle='tooltip' title="Espesor">Espesor</label>
-                                                        <input type="text" name="at_espesor" id="at_espesor" class="form-control form_acutec numerico4d valorrequerido" placeholder="Espesor" tipoval="texto" style="padding-right: 2px;padding-left: 6px;"/>
+                                                        <input type="text" name="at_espesor" id="at_espesor" class="form-control form_acutec numerico4d valorrequerido" placeholder="Espesor" tipoval="texto" style="padding-right: 2px;padding-left: 6px;" maxlength="5"/>
                                                         <span class="help-block"></span>
                                                     </div>
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
