@@ -1116,9 +1116,10 @@ $('#form-general').submit(function(event) {
 	if($("#imagen").val() ==""){
 		$("#imagen").val($('#oc_file').val());
 	}
+	$('#oc_id').prop('required', true);
 	$('#group_oc_id').removeClass('has-error');
 	$('#group_oc_file').removeClass('has-error');
-	if($("#sucursal_id option:selected").attr('value') == 3){
+	if($("#sucursal_id option:selected").attr('value') == 2){
 		$('#oc_id').prop('required', false);
 	}
 	$("#oc_file-error").hide();
