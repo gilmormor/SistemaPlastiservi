@@ -1535,6 +1535,7 @@ class DespachoOrdController extends Controller
                     <th class='textcenter'>FecFact</th>
                     <th class='textcenter'>Nfact</th>
                     <th style='text-align:right'>Total</th>
+                    <th style='text-align:right' title='Nota Credito o Debito'>NC ND</th>
                 </tr>
             </thead>
             <tbody>";
@@ -1584,6 +1585,7 @@ class DespachoOrdController extends Controller
                     }
                     $aux_enlacefactura = "";
                     $aux_totalFact = "";
+                    $aux_enlacencnd = "";
                     if(!is_null($despachoord->numfactura) and !empty($despachoord->numfactura)){
                         $dte = Dte::where("nrodocto",$despachoord->numfactura)->get();
                         if(count($dte) > 0){
@@ -1593,7 +1595,21 @@ class DespachoOrdController extends Controller
                             $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='Factura'>
                                 $dte->nrodocto
                             </a>";
-                            $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");    
+                            $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");
+                            //dd($dte->dtedtefacasosiadas);
+                            
+                            foreach($dte->dtedtefacasosiadas as $dtefac){
+                                if($dtefac->dte->foliocontrol_id == 5 or $dtefac->dte->foliocontrol_id == 6){
+                                    //dd($dtefac->dte);
+                                    $aux_nrodocto = $dtefac->dte->nrodocto;
+                                    $nrodocto_str = $dtefac->dte->foliocontrol->nombrepdf . str_pad($aux_nrodocto, 8, "0", STR_PAD_LEFT);
+                                    $aux_foliodesc = $dtefac->dte->foliocontrol->desc;
+                                    $aux_enlacencnd .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='$aux_foliodesc'>
+                                        $aux_nrodocto
+                                    </a>";
+        
+                                }                                
+                            }
                         }
                     }
                     $aux_fechaFact = $despachoord->fechafactura;
@@ -1636,6 +1652,7 @@ class DespachoOrdController extends Controller
                         <td class='textcenter'>" . $aux_fechaFact . "</td>
                         <td class='textcenter'>" . $aux_enlacefactura . "</td>
                         <td style='text-align:right'>". $aux_totalFact ."</td>
+                        <td style='text-align:right'>". $aux_enlacencnd ."</td>
                     </tr>";
                 }
             }

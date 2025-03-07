@@ -222,6 +222,7 @@ function datosFac(){
         dte_id            : $("#dte_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         filtro            : 1,
+        nrodoctofac       : $("#nrodoctofac").val(),
         nrodocto          : $("#nrodocto").val(),
         _token            : $('input[name=_token]').val()
     };
@@ -259,6 +260,7 @@ function datosFac(){
     "&dte_id="+data1.dte_id +
     "&producto_id="+data1.producto_id +
     "&filtro="+data1.filtro +
+    "&nrodoctofac="+data1.nrodoctofac +
     "&nrodocto="+data1.nrodocto +
     "&_token="+data1._token
 

@@ -37,7 +37,7 @@ Nota Débito
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="fecha" data-toggle='tooltip' title="Fecha Inicial">Fecha Ini:</label>
+                                        <label for="fecha" title="Fecha Inicial">Fecha Ini:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" value="{{old('fechad', date("01/m/Y") ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
@@ -45,7 +45,7 @@ Nota Débito
                                 </div>
                                 <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="dep_fecha" data-toggle='tooltip' title="Fecha Final">Fecha Fin:</label>
+                                        <label for="dep_fecha" title="Fecha Final">Fecha Fin:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" class="form-control datepicker" name="fechah" id="fechah" value="{{old('fechah', date("d/m/Y") ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
@@ -55,20 +55,20 @@ Nota Débito
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="rut" data-toggle='tooltip' title="RUT">RUT:</label>
+                                        <label for="rut" title="RUT">RUT:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
                                             <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" data-toggle='tooltip'/>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" title="Buscar">Buscar</button>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label data-toggle='tooltip' title="Vendedor">Vendedor:</label>
+                                        <label title="Vendedor">Vendedor:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <?php
@@ -77,10 +77,10 @@ Nota Débito
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
+                            {{-- <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="notaventa_id" data-toggle='tooltip' title="Número Nota de Venta">NotaVenta:</label>
+                                        <label for="notaventa_id" title="Número Nota de Venta">NotaVenta:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{old('notaventa_id')}}" maxlength="12"/>
@@ -88,17 +88,17 @@ Nota Débito
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="oc_id" data-toggle='tooltip' title="Orden de Compra">OC:</label>
+                                        <label for="oc_id" title="Orden de Compra">OC:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id')}}" maxlength="18"/>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label data-toggle='tooltip' title="Area de Producción">Area Prod:</label>
+                                        <label title="Area de Producción">Area Prod:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id">
@@ -115,7 +115,7 @@ Nota Débito
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label data-toggle='tooltip' title="Tipo de Entrega">T Entrega:</label>
+                                        <label title="Tipo de Entrega">T Entrega:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="tipoentrega_id" id="tipoentrega_id" class="selectpicker form-control tipoentrega_id">
@@ -134,7 +134,7 @@ Nota Débito
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label data-toggle='tooltip' title="Giro">Giro:</label>
+                                        <label title="Giro">Giro:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="giro_id" id="giro_id" class="selectpicker form-control giro_id">
@@ -151,7 +151,7 @@ Nota Débito
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label data-toggle='tooltip' title="Estatus Nota de Venta">Estatus:</label>
+                                        <label title="Estatus Nota de Venta">Estatus:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
@@ -165,7 +165,7 @@ Nota Débito
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label data-toggle='tooltip' title="Comuna">Comuna:</label>
+                                        <label title="Comuna">Comuna:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <?php
@@ -175,17 +175,17 @@ Nota Débito
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="id" data-toggle='tooltip' title="ID">ID Factura:</label>
+                                        <label for="id" title="Documento de Origen: Nro. Factura o Nro. NC">Nro.Doc Origen:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <input type="text" name="dte_id" id="dte_id" class="form-control" maxlength="10"/>
+                                    <div class="col-xs-12 col-md-8 col-sm-8" title="Documento de Origen: Nro. Factura o Nro. NC">
+                                        <input type="text" name="nrodoctofac" id="nrodoctofac" class="form-control" maxlength="10"/>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="producto_idPxP" class="control-label" data-toggle='tooltip' title="Código Producto">Producto</label>
+                                        <label for="producto_idPxP" class="control-label" title="Código Producto">Producto</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
@@ -198,9 +198,9 @@ Nota Débito
                                 </div>
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="id" data-toggle='tooltip' title="DTE NroDocto">ID DTE:</label>
+                                        <label for="id" title="Número Nota de Debito">Nro. ND:</label>
                                     </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <div class="col-xs-12 col-md-8 col-sm-8" title="Número Nota de Debito">
                                         <input type="text" name="nrodocto" id="nrodocto" class="form-control" maxlength="10"/>
                                     </div>
                                 </div>
@@ -209,7 +209,7 @@ Nota Débito
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-md-6 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" data-toggle='tooltip' title="Sucursal">Sucursal</label>
+                                        <label for="sucursal_id" title="Sucursal">Sucursal</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>

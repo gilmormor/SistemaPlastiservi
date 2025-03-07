@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use SplFileInfo;
 use setasign\Fpdi\Fpdi;
 use Illuminate\Support\SimpleXMLElement;
+use Mockery\Undefined;
 use SimpleXMLElement as GlobalSimpleXMLElement;
 
 class Dte extends Model
@@ -2065,7 +2066,6 @@ class Dte extends Model
         }else{
             $vendedorcond = "notaventa.vendedor_id='$request->vendedor_id'";
         }
-    
         if(empty($request->fechad) or empty($request->fechah)){
             $aux_condFecha = " true";
         }else{
@@ -2124,17 +2124,18 @@ class Dte extends Model
             $aux_conddtedet = "dte.id IN ($request->strdte_id)";
         }
 
-        if(empty($request->nrodocto)){
+        if(!isset($request->nrodocto) or empty($request->nrodocto)){
             $aux_condnrodocto = " true";
         }else{
             $aux_condnrodocto = "dte.nrodocto = $request->nrodocto";
         }
 
-        if(empty($request->dte_id)){
+        if(!isset($request->dte_id) or empty($request->dte_id) or $request->dte_id = "undefined"){
             $aux_conddte_id = " true";
         }else{
             $aux_conddte_id = "dte.id = $request->dte_id";
         }
+
         if(!isset($request->aprobstatus) or empty($request->aprobstatus)){
             $aux_aprobstatus = " true";
         }else{
@@ -2150,6 +2151,13 @@ class Dte extends Model
                     break;
             }
         }
+
+        if(!isset($request->nrodoctofac) or empty($request->nrodoctofac)){
+            $aux_condnrodoctofac = " true";
+        }else{
+            $aux_condnrodoctofac = "dteorigen.nrodocto = $request->nrodoctofac";
+        }
+
 
 
         $user = Usuario::findOrFail(auth()->id());
@@ -2187,10 +2195,9 @@ class Dte extends Model
         AND $aux_condFecha
         AND $aux_condnrodocto
         AND $aux_condrut
-        AND $aux_condoc_id
-        AND $aux_condnotaventa_id
         AND $aux_aprobstatus
         AND $aux_condsucurArray
+        AND $aux_condnrodoctofac
         GROUP BY dte.id
         ORDER BY dte.id asc;";
         //dd($sql);
