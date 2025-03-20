@@ -79,6 +79,8 @@ class AcuerdoTecnico extends Model
         'at_certificados',
         'at_otrocertificado',
         'at_formatofilm',
+        'at_peso',
+        'at_cantxunimed',
         'usuariodel_id'
     ];    
 

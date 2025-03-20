@@ -166,7 +166,7 @@ function ajaxRequest(data,url,funcion,form = false) {
             }
             if(funcion=='btnaprobar'){
                 if ('error' in respuesta){
-                    console.log(respuesta);
+                    //console.log(respuesta);
                     if (respuesta.error == 0){
                         form.parents('tr').remove();
                     }

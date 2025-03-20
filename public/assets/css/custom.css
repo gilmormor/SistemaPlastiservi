@@ -469,3 +469,7 @@ td.highlight {
     .highlight {
         background-color: yellow !important; /* Color para iluminar con prioridad */
     }
+
+    .new-item {
+        background-color: #d4edda; /* Verde claro */
+      }

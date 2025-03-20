@@ -16,6 +16,11 @@ $(document).ready(function () {
         //agregarFila(aux_nfilas);
     }
 
+    if($("#requiere_fabricacion").val() == '1'){
+        $("#aux_requiere_fabricacion").prop("checked", true);
+    }else{
+        $("#aux_requiere_fabricacion").prop("checked", false);
+    }
     
 });
 
@@ -101,3 +106,11 @@ $('#annomes').on('change', function () {
 function myFunction(i){
     $("#invbodega_id" + i).val($("#invbodega_idtmp" + i + " option:selected").attr('value'));
 }
+
+$("#aux_requiere_fabricacion").change(function() {
+    estaSeleccionado = $("#aux_requiere_fabricacion").is(":checked");
+    $("#requiere_fabricacion").val('0');
+    if(estaSeleccionado){
+        $("#requiere_fabricacion").val('1');
+    }
+});

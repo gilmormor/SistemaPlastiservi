@@ -175,7 +175,16 @@ class DespachoSolController extends Controller
     public function crearsol($id)
     {
         can('crear-solicitud-despacho');
+        
+        $notaventadetalle = NotaVentaDetalle::findOrFail(49551);
+        //dd($notaventadetalle->otdetnvdet);
         $data = NotaVenta::findOrFail($id);
+        if(isset($data->otnotaventa) and $data->otnotaventa->ot->aprobstatus == 0){
+            return redirect('despachosol/listarnv')->with([
+                'mensaje'=>'Nota Venta tiene OT esperando por ser aprobada. OT: ' . $data->otnotaventa->ot->id,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if(isset($data->cliente->clientebloqueado->descripcion)){
             return redirect('despachosol')->with([
                 'mensaje'=>'Condición financiera en revisión: ' . $data->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->cliente->razonsocial,
@@ -261,6 +270,13 @@ class DespachoSolController extends Controller
         can('guardar-solicitud-despacho');
         //dd($request);
         $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+        if(isset($notaventa->otnotaventa) and $notaventa->otnotaventa->ot->aprobstatus == 0){
+            return redirect('despachosol/listarnv')->with([
+                'mensaje'=>'Nota Venta tiene OT esperando por ser aprobada. OT: ' . $notaventa->otnotaventa->ot->id,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         //BLOQUEO POR DEUDA: DESHABILITADO POR AUTORIZACION DE JEANNETTE MARTINEZ 14/08/2024
         /* $request1 = new Request();
         $request1->merge(['modulo_id' => 4]);
@@ -1953,13 +1969,13 @@ class DespachoSolController extends Controller
             ];    
 
             if($stareport == '1'){
-                if(env('APP_DEBUG')){
+                /* if(env('APP_DEBUG')){
                     if($aux_staacutec == false){
                         return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa','datosArray'));
                     }else{
                         return view('despachosol.reporteat', compact('despachosol','despachosoldets','empresa','datosArray'));
                     }
-                }
+                } */
                 if($aux_staacutec == false){
                     $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa','datosArray'));
                 }else{
@@ -2465,7 +2481,7 @@ function consulta($request,$aux_sql,$orden){
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,notaventa.aprobstatus,visto,notaventa.oc_file,
         comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
         vista_notaventatotales.cant,
         vista_notaventatotales.precioxkilo,
@@ -2507,13 +2523,20 @@ function consulta($request,$aux_sql,$orden){
         clientedesbloqueado.obs as clientedesbloqueado_obs,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
-        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
+        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+        GROUP_CONCAT(
+            CONCAT_WS('|', notaventadetalle.producto_id, notaventadetalle.cant, notaventadetalle.preciounit, notaventadetalle.subtotal,if(ISNULL(vista_sumsoldespdet.cantsoldesp),0,vista_sumsoldespdet.cantsoldesp), notaventadetalle.requiere_fabricacion, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),notaventadetalle.totalkilos)
+            SEPARATOR ';'
+        ) AS nvdetalle,
+        ot.id as ot_id,ot.aprobstatus as ot_aprobstatus
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
                 FROM vista_sumsoldespdet
                 WHERE notaventadetalle_id=notaventadetalle.id
                 ) >= notaventadetalle.cant,false,true)
+        LEFT JOIN vista_sumsoldespdet
+        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
         INNER JOIN producto
         ON notaventadetalle.producto_id=producto.id
         INNER JOIN categoriaprod
@@ -2547,7 +2570,12 @@ function consulta($request,$aux_sql,$orden){
         ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
         ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
-
+        LEFT JOIN otnotaventa
+        ON otnotaventa.notaventa_id = notaventa.id and otnotaventa.ot_id not in (SELECT otanul.ot_id from otanul WHERE ISNULL(otanul.deleted_at))
+        LEFT JOIN ot
+        ON ot.id = otnotaventa.ot_id AND ot.id AND ISNULL(ot.deleted_at)
+        LEFT JOIN acuerdotecnico
+        ON acuerdotecnico.producto_id = notaventadetalle.producto_id
         WHERE
         categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
             FROM categoriaprodsuc 
@@ -2572,7 +2600,7 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
         AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,notaventa.aprobstatus,visto,notaventa.oc_file,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
         ORDER BY $aux_orden;";
     }
@@ -2723,6 +2751,40 @@ function consulta($request,$aux_sql,$orden){
     }
 
     $datas = DB::select($sql);
+    //dd($datas);
+    if($aux_sql==1){
+        foreach ($datas as &$data) {
+            //dd($data->nvdetalle);
+    
+            // Array para almacenar el resultado final
+            $detalleArrayFinal = [];
+    
+            // Dividir el campo detallenv en registros individuales
+            $detalleArray = explode(';', $data->nvdetalle);
+            //dd($detalleArray);
+    
+            // Crear un array con todos los producto_id
+            $productoIds = array_map(function ($detalle) {
+                return explode('|', $detalle)[0]; // Extraemos solo producto_id
+            }, $detalleArray);
+    
+            // Procesar cada registro de detallenv y agregar el nombre del producto
+            //dd($detalleArray);
+            foreach ($detalleArray as $index => $detalle) {
+                //dd($detalle);
+                $productoarray = Producto::atributosProducto($productoIds[$index]);
+                list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);
+                //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
+                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos]);
+                $detalleArrayFinal[] = $detalleFinal;
+            }
+            //dd(implode(';', $detalleArrayFinal));
+    
+            // Reconstruir el campo detallenv con los nuevos valores
+            $data->nvdetalle = implode(';', $detalleArrayFinal);
+        }
+    }
+    //dd($datas);
     filtrarclientesbloqueados($request,$datas);
     return $datas;
 }
@@ -3479,7 +3541,11 @@ function consultasoldesp($request){
             IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
             modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
             clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
-            IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
+            IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+            GROUP_CONCAT(
+                CONCAT_WS('|', notaventadetalle.producto_id, notaventadetalle.cant, notaventadetalle.preciounit, if(ISNULL(vista_despsoltotales.subtotalsoldesp),0,vista_despsoltotales.subtotalsoldesp),if(ISNULL(vista_despsoltotales.cantsoldesp),0,vista_despsoltotales.cantsoldesp), notaventadetalle.requiere_fabricacion, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id))
+                SEPARATOR ';'
+            ) AS nvdetalle
             FROM despachosol INNER JOIN despachosoldet
             ON despachosol.id=despachosoldet.despachosol_id
             AND $aux_condactivas
@@ -3524,6 +3590,8 @@ function consultasoldesp($request){
             ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
             LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
             ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
+            LEFT JOIN acuerdotecnico
+            ON acuerdotecnico.producto_id = notaventadetalle.producto_id
 
             WHERE $vendedorcond
             and $aux_condFecha
@@ -3566,6 +3634,36 @@ function consultasoldesp($request){
 */
     //dd("$sql");
     $datas = DB::select($sql);
+    foreach ($datas as &$data) {
+        //dd($data->nvdetalle);
+
+        // Array para almacenar el resultado final
+        $detalleArrayFinal = [];
+
+        // Dividir el campo detallenv en registros individuales
+        $detalleArray = explode(';', $data->nvdetalle);
+        //dd($detalleArray);
+
+        // Crear un array con todos los producto_id
+        $productoIds = array_map(function ($detalle) {
+            return explode('|', $detalle)[0]; // Extraemos solo producto_id
+        }, $detalleArray);
+
+        // Procesar cada registro de detallenv y agregar el nombre del producto
+        //dd($detalleArray);
+        foreach ($detalleArray as $index => $detalle) {
+            //dd($detalle);
+            $productoarray = Producto::atributosProducto($productoIds[$index]);
+            list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id) = explode('|', $detalle);
+            //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
+            $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id]);
+            $detalleArrayFinal[] = $detalleFinal;
+        }
+        //dd(implode(';', $detalleArrayFinal));
+
+        // Reconstruir el campo detallenv con los nuevos valores
+        $data->nvdetalle = implode(';', $detalleArrayFinal);
+    }
     filtrarclientesbloqueados($request,$datas);
     //dd($datas);
     return $datas;

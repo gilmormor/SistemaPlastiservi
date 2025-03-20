@@ -2,13 +2,17 @@
 
 use App\Models\Admin\Menu;
 use App\Models\Admin\Permiso;
+use App\Models\ClaseProd;
 use App\Models\Cliente;
 use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteDesbloqueadoModulo;
 use App\Models\ClienteDesbloqueadoModuloDel;
+use App\Models\Color;
 use App\Models\Dte;
 use App\Models\Empresa;
+use App\Models\MateriaPrima;
 use App\Models\Modulo;
+use App\Models\Producto;
 use Illuminate\Database\Eloquent\Builder;
 
 if (!function_exists('getMenuActivo')) {
@@ -629,4 +633,65 @@ if (!function_exists('ordenarArrayxCampo')) {
         };
     }
 }
+
+// Funcion que me calcula el peso unitario de un producto en la tabla acuerdo tecnico
+if (!function_exists('pesoUnitAT')) {
+    function pesounitat($at) {
+        $aux_doble = 2;
+        if($at->producto->categoriaprod_id == 13){
+            $aux_doble = 1;
+        }
+        if($at->at_formatofilm > 0 ){
+            return $at->at_formatofilm;
+        }
+        if($at->at_unidadmedida_id == 7 ){
+            return 1;
+        }
+        if($at->at_espesor == 0 or $at->at_peso > 0){
+            return $at->at_peso;
+        }
+        /* if($at->at_unidadmedida_id != 5 ){
+            return 0;
+        } */
+        return round((($at->at_ancho * $at->at_largo * $at->at_espesor * $at->materiaprima->pe) / 1000) * $aux_doble,10 );
+    }
+}
+
+if (!function_exists('nombreProductoAT')) {
+    function nombreProductoAT($request) {
+        //dd($request);
+        $at_ancho = $request->at_ancho;
+        $at_largo = $request->at_largo;
+        $at_espesor = $request->at_espesor;
+        $at_ancho = empty($at_ancho) ? "0,00" : $at_ancho;
+        $at_largo = empty($at_largo) ? "0,00" : $at_largo;
+        $at_espesor = empty($at_espesor) ? "0,00" : $at_espesor;
+
+        $aux_formatofilm = $request->at_formatofilm > 0 ? " " . number_format($request->at_formatofilm, 2, ',', '.') . "Kg." : "";
+        $color = Color::findOrFail($request->at_color_id);
+        $aux_color =  empty($color->descripcion) ? "" : " " . $color->descripcion;
+        $aux_at_complementonomprod = empty($request->at_complementonomprod) ? "" : " " . $request->at_complementonomprod;
+        $materiaprima = MateriaPrima::findOrFail($request->at_materiaprima_id);
+        $aux_atribAcuTec = $materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+        $aux_cla_nombre = "";
+        if(isset($request->at_claseprod_id)){
+            $claseprod = ClaseProd::findOrFail($request->at_claseprod_id);
+            $aux_cla_nombre =str_replace("N/A","",$claseprod->cla_descripcion);
+        }
+        $producto = Producto::findOrFail($request->producto_id);
+        //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+        $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($request->at_espesor, 3, ',', '.')) . " " . $aux_cla_nombre;
+        //dd($aux_nombreprod);
+        return $aux_nombreprod;
+    }
+}
+
+if (!function_exists('convertirNumeroLatinoaUS')) {
+    function convertirNumeroLatinoaUS($numero) {
+        $numero = str_replace('.', '', $numero);
+        $numero = str_replace(',', '.', $numero);
+        return $numero;
+    }
+}
+
 ?>

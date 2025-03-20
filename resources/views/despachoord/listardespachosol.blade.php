@@ -271,6 +271,7 @@ Pendiente Solicitud Orden Despacho
                 <table id='tabla-data-pendientesoldesp' name='tabla-data-pendientesoldesp' class='table display AllDataTables table-hover table-condensed tablascons' data-page-length='25'>
                     <thead>
                         <tr>
+                            <th></th>
                             <th nombrecampo='despachosol.id' class='tooltipsC' title='Solicitud de Despacho'>SD</th>
                             <th nombrecampo='despachosol.fechahora'>Fecha</th>
                             <th nombrecampo='despachosol.fechaestdesp' class='tooltipsC' title='Fecha Estimada de Despacho'>Fecha ED</th>
@@ -289,14 +290,14 @@ Pendiente Solicitud Orden Despacho
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan='8' style='text-align:right'>Total página</th>
+                            <th colspan='9' style='text-align:right'>Total página</th>
                             <th id='subkgpend' name='subkgpend' style='text-align:right'>0,00</th>
                             <th id='subtotaldinero' name='subtotaldinero' style='text-align:right'>0,00</th>
                             <th></th>
                             <th></th>
                         </tr>
                         <tr>
-                            <th colspan='8'  style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan='9'  style='text-align:right'>TOTAL GENERAL</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                             <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
                             <th></th>

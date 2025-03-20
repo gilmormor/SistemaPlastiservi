@@ -1594,3 +1594,65 @@ Route::post('emailxlote', 'EmailxLoteController@guardar')->name('guardar_emailxl
 Route::get('emailxlote/{id}/editar', 'EmailxLoteController@editar')->name('editar_emailxlote');
 Route::put('emailxlote/{id}', 'EmailxLoteController@actualizar')->name('actualizar_emailxlote');
 Route::delete('emailxlote/{id}', 'EmailxLoteController@eliminar')->name('eliminar_emailxlote');
+
+/*RUTAS OT*/
+Route::get('ot', 'OtController@index')->name('ot');
+Route::get('otpage', 'OtController@otpage')->name('otpage');
+Route::get('ot/listarnv', 'OtController@listarnv')->name('listarnv_ot');
+Route::get('ot/totalizarindex', 'OtController@totalizarindex')->name('ot_totalizarindex');
+Route::get('ot/crear', 'OtController@crear')->name('crear_ot');
+Route::post('ot', 'OtController@guardar')->name('guardar_ot');
+Route::get('ot/{id}/{updatednum_at}/editar', 'OtController@editar')->name('editar_ot');
+Route::put('ot/{id}', 'OtController@actualizar')->name('actualizar_ot');
+Route::delete('ot/{id}', 'OtController@eliminar')->name('eliminar_ot');
+
+Route::post('ot/aprobot/{id}', 'OtController@aprobot')->name('aprobot_ot');
+Route::post('ot/{id}/anular', 'OtController@anular')->name('anular_ot');
+Route::post('ot/procesar', 'OtController@procesar')->name('procesar_ot');
+Route::post('ot/anular', 'OtController@anular')->name('anular_ot');
+Route::get('ot/exportPdf/{id}', 'OtController@exportPdf')->name('exportPdf_ot');
+
+
+/*RUTAS OTNV*/
+Route::get('otnv', 'OtNVController@index')->name('otnv');
+Route::get('otnvpage', 'OtNVController@otnvpage')->name('otnvpage');
+Route::get('otnv/listarnv', 'OtNVController@listarnv')->name('listarnv_otnv');
+Route::get('otnv/totalizarindex', 'OtNVController@totalizarindex')->name('otnv_totalizarindex');
+Route::get('otnv/crear', 'OtNVController@crear')->name('crear_otnv');
+Route::post('otnv', 'OtNVController@guardar')->name('guardar_otnv');
+Route::get('otnv/{id}/{updatednum_at}/editar', 'OtNVController@editar')->name('editar_otnv');
+Route::put('otnv/{id}', 'OtNVController@actualizar')->name('actualizar_otnv');
+Route::delete('otnv/{id}', 'OtNVController@eliminar')->name('eliminar_otnv');
+
+Route::get('otnv/listarnvpage', 'OtNVController@listarnvpage')->name('listarnvpage_otnv');
+Route::get('otnv/totalizarlistarnvpage', 'OtNVController@totalizarlistarnvpage')->name('otnv_totalizarlistarnvpage');
+Route::get('otnv/{id}/{updatednum_at}/crearot', 'OtNVController@crearot')->name('crear_otnv');
+Route::post('otnv/aprobotnv/{id}', 'OtNVController@aprobot')->name('aprobot_otnv');
+Route::post('otnv/procesar', 'OtNVController@procesar')->name('procesar_otnv');
+Route::post('otnv/anular', 'OtNVController@anular')->name('anular_otnv');
+
+/*RUTAS REPORTE OT*/
+Route::get('reportot', 'ReportOtController@index')->name('reportot');
+Route::get('reportot/reportotpage', 'ReportOtController@reportotpage')->name('reportotpage');
+Route::get('reportot/reporte', 'ReportOtController@reporte')->name('reportot_reporte');
+Route::get('reportot/exportPdf', 'ReportOtController@exportPdf')->name('reportot_exportPdf');
+Route::get('reportot/totalizarindex', 'ReportOtController@totalizarindex')->name('reportot_totalizarindex');
+Route::get('reportot/listardtedet', 'ReportOtController@listardtedet')->name('reportot_listardtedet');
+
+/*RUTAS OT*/
+Route::get('otaprobar', 'OtAprobarController@index')->name('otaprobar');
+Route::get('otaprobarpage', 'OtAprobarController@otaprobarpage')->name('otaprobarpage');
+Route::post('otaprobar/aprobar', 'OtAprobarController@aprobar')->name('aprobar_otaprobar');
+Route::post('otaprobar/rechazar', 'OtAprobarController@rechazar')->name('rechazar_otaprobar');
+
+/*RUTAS APROBAR ITEM OT*/
+Route::get('otitemenvprogprod', 'OtItemEnvProgProdController@index')->name('otitemenvprogprod');
+Route::get('otitemenvprogprodpage', 'OtItemEnvProgProdController@otitemenvprogprodpage')->name('otitemenvprogprodpage');
+Route::post('otitemenvprogprod/aprobar', 'OtItemEnvProgProdController@aprobar')->name('aprobar_otitemenvprogprod');
+Route::post('otitemenvprogprod/rechazar', 'OtItemEnvProgProdController@rechazar')->name('rechazar_otitemenvprogprod');
+
+/*RUTAS PROGRAMAR ITEM OT*/
+Route::get('otitemprogramacion', 'OtItemProgramacionController@index')->name('otitemprogramacion');
+Route::get('otitemprogramacionpage', 'OtItemProgramacionController@otitemprogramacionpage')->name('otitemprogramacionpage');
+Route::post('otitemprogramacion/aprobar', 'OtItemProgramacionController@aprobar')->name('aprobar_otitemprogramacion');
+Route::post('otitemprogramacion/rechazar', 'OtItemProgramacionController@rechazar')->name('rechazar_otitemprogramacion');
