@@ -1276,6 +1276,26 @@ class DespachoOrdController extends Controller
                 if($despachoord->notaventa->vendedor->persona->usuario){
                     $aux_usuariodestino_id = $despachoord->notaventa->vendedor->persona->usuario->id;
                 }
+                //SI LA SOLICITUD FUE ENVIADA DESDE MODULO DE PICKING A DESPACHO 
+                //Y EL DESPACHO FUE PARCIAL ES DECIR NO SE DESPACHO TODO
+                //LA SD DEBE SER DEVUELTA A PICKING 26/03/2025
+                if(isset($despachoord->despachosol->despachosolEnvorddesp)){
+                    $despachosolEnvorddesp = $despachoord->despachosol->despachosolEnvorddesp;
+                    if($despachosolEnvorddesp->staenvdesp == 1){
+                        $requestSol = new Request();
+                        $requestSol->merge(['solenvord' => 1]);
+                        $requestSol->merge(['id' => $despachoord->despachosol_id]);
+
+                        $datas = DespachoSol::consultasoldesp($requestSol);
+                        //dd(count($datas));
+                        if(count($datas) > 0){
+                            $despachosolEnvorddesp->staenvdesp = 0;
+                            $despachosolEnvorddesp->obs = "Devuelta por despacho parcial (Proceso automatico).";
+                            $despachosolEnvorddesp->save();    
+                        }
+                    }
+                }
+    
                 /* NOTIFICACION EN COMENTARIO POR DECISION EN REUNION LOS PINOS 07/11/2023
                 // SE DEFINIO QUE NO ES NECESARIO ENVIAR CORREO AL HACER ORDEN DE DESPACHO
                 $aux_rut = number_format( substr ( $despachoord->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachoord->notaventa->cliente->rut, strlen($despachoord->notaventa->cliente->rut) -1 , 1 );

@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Pendiente Solicitud Orden Despacho
+Gestion Picking
 @endsection
 
 <?php
@@ -21,7 +21,7 @@ Pendiente Solicitud Orden Despacho
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Pendientes Solicitud Orden Despacho</h3>
+                <h3 class="box-title">Gestion Picking</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
