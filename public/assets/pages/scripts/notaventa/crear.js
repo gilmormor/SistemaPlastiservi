@@ -832,7 +832,17 @@ $("#rut").blur(function(){
 							$("#direccion").val(respuesta.cliente[0].direccion);
 							$("#direccioncot").val(respuesta.cliente[0].direccion);
 							$("#cliente_id").val(respuesta.cliente[0].id)
-							$("#contacto").val(respuesta.cliente[0].contactonombre);
+							let contactonombre = respuesta.cliente[0].contactonombre;
+							if (/^\/$|^S\/$|^S\/C$/i.test(contactonombre.trim())) {
+								contactonombre = '';
+							}
+							$("#contacto").val(contactonombre);
+							let telefonocontacto = respuesta.cliente[0].contactotelef;
+							if (isNaN(Number(telefonocontacto))) {
+								telefonocontacto = '';
+							}
+							$("#contactotelf").val(telefonocontacto);
+							$("#contactoemail").val(respuesta.cliente[0].contactoemail.toLowerCase());
 							/*
 							$("#vendedor_id").val(respuesta[0]['vendedor_id']);
 							$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
@@ -905,9 +915,17 @@ $("#rut").blur(function(){
 							data: data,
 							success: function (respuesta) {
 								if(respuesta.length>0){
+									console.log(respuesta);
+									if(respuesta[0].sucCoincidencia == 0){
+										aux_titulo = 'Cliente pertenece a otra Sucursal';
+										aux_texto = "Sucursales Usuario: " + respuesta[0].userSucNombreString + "\nSucursales Cliente: " + respuesta[0].clienteSucNombreString;
+									}else{
+										aux_titulo = 'Cliente pertenece a otro Vendedor';
+										aux_texto = "Cliente: " + respuesta[0].razonsocial + "\nVendedor: " + respuesta[0].vendedor_nombre;
+									}
 									swal({
-										title: 'Cliente pertenece a otro Vendedor',
-										text: "Cliente: " + respuesta[0].razonsocial + "\nVendedor: " + respuesta[0].vendedor_nombre,
+										title: aux_titulo,
+										text: aux_texto,
 										icon: 'warning',
 										buttons: {
 											confirm: "Aceptar"
@@ -984,6 +1002,8 @@ function limpiarCampos(){
 	$("#direccioncot").val('');
 	$("#cliente_id").val('')
 	$("#contacto").val('');
+	$("#contactotelf").val('');
+	$("#contactoemail").val('');
 	/*
 	$("#vendedor_id").val('');
 	$("#vendedor_idD").val('');
@@ -1005,7 +1025,6 @@ function limpiarCampos(){
 	$("#giro_id").val('');
 	$("#giro_idD").val('');
 	
-	$("#contacto").val('');
 	$("#region_id").val('');
 	$("#provincia_id").val('');
 	//$("#usuario_id").val('');

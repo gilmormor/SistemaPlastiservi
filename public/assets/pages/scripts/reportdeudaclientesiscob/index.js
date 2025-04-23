@@ -8,6 +8,7 @@ $(document).ready(function () {
 
         $("#razonsocial").val("");
         $("#limitecredito").val("");
+        $("#totalNVpenddesp").val("");
         $("#TDeuda").val("");
         $("#TDeudaFec").val("");
         $("#bloqueopro").val("");
@@ -209,7 +210,8 @@ function ajaxRequest(data,url,funcion) {
                         }
             
                     });
-        
+                    $("#totalNVpenddesp").val(MASKLA(respuesta.TotalNVPendDesp,0));
+
                     $("#TDeuda").val(MASKLA(aux_totaldeuda,0));
                     $("#TDeudaFec").val(MASKLA(aux_totaldeudaVenc,0));
                     //configurarTabla("#tabla-data-consulta",respuesta.datosFacDeuda);

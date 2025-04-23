@@ -337,9 +337,9 @@ function configurarTabla(nombreTabla,url,serverSide) {
                                     <i class="fa fa-fw fa-trash-o text-danger"></i>
                                 </button>
                             </a>`;
-        }
+            }
             $('td', row).eq(11).html(aux_text);
-            
+            //console.log(data);
         }
     });
 }

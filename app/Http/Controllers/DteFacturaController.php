@@ -401,9 +401,11 @@ class DteFacturaController extends Controller
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
             if(isset($request->ocnv_id) and $request->notaventa_id){
-                $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+                //En comentario para evitar que cambie la OC de la NV 22/04/2025
+                //Esto ha traido problemas ya que cuando en facturacion cambian el numero de OC de la NV, se cambia la OC de NV Original y eso acarrea dudas en la Nota de Venta
+                /* $notaventa = NotaVenta::findOrFail($request->notaventa_id);
                 $notaventa->oc_id = $request->ocnv_id;
-                $notaventa->save();
+                $notaventa->save(); */
             }
             /*
             if($dteguiadesp->dteoc){

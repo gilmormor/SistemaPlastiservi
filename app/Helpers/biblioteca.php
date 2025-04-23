@@ -400,7 +400,7 @@ if (!function_exists('clienteBloqueado')) {
                                     $clientedesbloqueadomodulodel->cliente_id = $clientedesbloqueado->cliente_id;
                                     $clientedesbloqueadomodulodel->notaventa_id = $clientedesbloqueado->notaventa_id;
                                     $clientedesbloqueadomodulodel->usuario_id = auth()->id();
-                                    $clientedesbloqueadomodulodel->save();    
+                                    $clientedesbloqueadomodulodel->save();
                                 }    
                             }
                             $aux_desbloqueo = true;
@@ -479,10 +479,18 @@ if (!function_exists('datacobranza')) {
         }
         //dd($dataCobranza);
         $staBloqueo["datacobranza"] = $dataCobranza;
-        if($dataCobranza["TDeuda"] > 0 and $dataCobranza["TDeuda"] >= $dataCobranza["limitecredito"]){
-            $staBloqueo ["titulo"] = "Limite de credito superado. ";
-            $staBloqueo ["bloqueo"] = "Limite de credito superado. "
+        //dd($dataCobranza);
+        $aux_deuda = $dataCobranza["TDeuda"] + $dataCobranza["TotalNVPendDesp"];
+        if($aux_deuda > 0 and $aux_deuda >= $dataCobranza["limitecredito"]){
+            $staBloqueo ["titulo"] = "Limite de crédito superado. ";
+            $aux_nvpenddesp = "";
+            if ($dataCobranza["TotalNVPendDesp"] > 0){
+                $aux_nvpenddesp = "\nNV Pendiente Desp: " . number_format($dataCobranza["TotalNVPendDesp"], 0, ',', '.')
+                . "\nNro. NV: " . $dataCobranza["IDsNVPendDesp"];
+            }
+            $staBloqueo ["bloqueo"] = "Limite de crédito superado. "
             . "\nLimite de Crédito: " . number_format($dataCobranza["limitecredito"], 0, ',', '.') 
+            . $aux_nvpenddesp
             . "\nDeuda a la Fecha: " . number_format($dataCobranza["TDeudaFec"], 0, ',', '.')
             . "\nTotal Deuda: " . number_format($dataCobranza["TDeuda"], 0, ',', '.');
         }else{

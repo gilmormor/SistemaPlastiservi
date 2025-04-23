@@ -1158,7 +1158,6 @@ class Producto extends Model
         
         //dd($request);
         $datas = InvMov::stocksql($request,"producto.id");
-        //dd($datas);
         $arreglo_ProdStock = [];
         foreach ($datas as $elemento) {
             $arreglo_ProdStock[$elemento->producto_id] = $elemento;
@@ -1332,7 +1331,12 @@ class Producto extends Model
             ];     
         }
         //dd($datas);
-        return datatables($datas)->toJson();
+        if(isset($request->sta_devarray) and $request->sta_devarray == 1){
+            return $datas;
+        }else{
+            return datatables($datas)->toJson();
+        }
+        
         //return datatables($datas)->toJson();
     }
 
