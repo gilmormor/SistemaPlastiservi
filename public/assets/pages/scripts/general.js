@@ -3862,7 +3862,15 @@ function validarClienteBloqueadoxModulo(data){
 	aux_clienteBloqueado = "";
 	//console.log(data);
 	if(data.clientedesbloqueadopro_obs == ""){
-		if((data.modulo_id === null) && ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)  || data.clientebloqueado_desc !== null))){
+		aux_nvtotal = (typeof data.nvtotal !== 'undefined' && data.nvtotal != null) ? data.nvtotal : 0;
+		aux_deuda = data.datacobranza_tdeuda + aux_nvtotal;
+		aux_notaventapenddesp_subtotal = 0;
+		if (typeof data.notaventapenddesp_subtotal !== 'undefined' && data.notaventapenddesp_subtotal != null) {
+			// Existe y no es null/undefined
+			aux_notaventapenddesp_subtotal = data.notaventapenddesp_subtotal;
+			aux_deuda += aux_notaventapenddesp_subtotal;
+		}
+		if((data.modulo_id === null) && ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (aux_deuda > data.limitecredito)  || data.clientebloqueado_desc !== null))){
 			aux_clienteBloqueado = "";
 			if((data.modulo_id === null)){
 				if(data.clientebloqueado_desc !== null){
@@ -3871,8 +3879,11 @@ function validarClienteBloqueadoxModulo(data){
 			}
 			if($("#stabloxdeusiscob").val() == "1")
 			{
-				if(data.datacobranza_tdeuda > data.limitecredito){
-					aux_clienteBloqueado += " Excede cupo de Crédito ";
+				if(aux_deuda > data.limitecredito){
+					aux_clienteBloqueado += " Excede cupo de Crédito. ";
+					if(aux_notaventapenddesp_subtotal > 0){
+						aux_clienteBloqueado += " Nota Venta pendientes de despacho #" + data.notaventapenddesp_notaventa_ids + ".";
+					}
 				}
 				if(data.datacobranza_tdeudafec > 0){
 					aux_clienteBloqueado += " Factura(s) Vencida(s)";

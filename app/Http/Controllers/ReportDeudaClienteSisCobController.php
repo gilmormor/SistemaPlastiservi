@@ -12,6 +12,7 @@ use App\Models\EmailxLote;
 use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Giro;
+use App\Models\NotaVenta;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\Vendedor;
@@ -66,6 +67,15 @@ class ReportDeudaClienteSisCobController extends Controller
                 $cliente->datacobranzadets = $data->datacobranza->datacobranzadets;
                 $aux_clientes[] = $cliente;
             }
+            //dd($aux_clientes);
+            $pendDespPendFact = NotaVenta::pendDespPendFact($cliente->id,$request);
+            if(count($aux_clientes) > 0){
+                //dd($aux_clientes);
+                $aux_clientes[0]->TotalNVPendDesp = $pendDespPendFact["TotalNVPendDesp"];
+                $aux_clientes[0]->IDsNVPendDesp = $pendDespPendFact["IDsNVPendDesp"];
+    
+            }
+            //dd($cliente);
         }
         //dd($cliente);
         if($request->GenExcel == 0){

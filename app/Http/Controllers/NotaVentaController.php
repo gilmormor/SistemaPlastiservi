@@ -215,9 +215,11 @@ class NotaVentaController extends Controller
                     IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
                     IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
                     IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+                    notaventa.neto as nvneto,notaventa.iva as nviva,notaventa.total as nvtotal,
                     modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
                     if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
-                    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
+                    IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+                    UNIX_TIMESTAMP(notaventa.updated_at) as updatednum_at,notaventa.updated_at
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
                 LEFT JOIN clientebloqueado
@@ -1038,15 +1040,31 @@ class NotaVentaController extends Controller
         can('guardar-notaventa');
         if ($request->ajax()) {
             $notaventa = NotaVenta::findOrFail($request->id);
+            //dd(strtotime($notaventa->updated_at) . " : " . $request->updatednum_at);
+            if(strtotime($notaventa->updated_at) != $request->updatednum_at){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "Nota de venta fue modificada por otro usuario.",
+                    'tipo_alert' => "alert-error"
+                ]);
+            }
+            
+            //dd($request);
             if(count($notaventa->notaventadetalles) <= 0){
                 $notaventa->neto = 0;
                 $notaventa->piva = 0;
                 $notaventa->iva = 0;
                 $notaventa->total = 0;
                 $notaventa->save();
-    
                 return response()->json(['mensaje' => 'Nota de venta Nro:' . $request->id . ' no tiene productos asociados.']);
             }
+            /* if($notaventa->total > $notaventa->cliente->limitecredito){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "El monto total de la Nota de Venta supera el límite de crédito del cliente.",
+                    'tipo_alert' => "alert-error"
+                ]);
+            } */
     
 
             $request->merge(['notaventa_id' => $request->id]);
@@ -1056,6 +1074,7 @@ class NotaVentaController extends Controller
             $request->merge(['deldesbloqueo' => 1]);
             $request->request->set('deldesbloqueo', 1);
             $bloqcli = clienteBloqueado($notaventa->cliente_id,0,$request);
+            //dd($bloqcli);
             if($bloqcli["bloqueo"]){
                 return response()->json([
                     'error' => 1,

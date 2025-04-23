@@ -281,6 +281,14 @@ class Cliente extends Model
             if(isset($staBloqueo["datacobranza"]["TDeuda"])){
                 $cliente[0]->TDeuda = $staBloqueo["datacobranza"]["TDeuda"];
             }
+            if(isset($staBloqueo["datacobranza"]["TotalNVPendDesp"])){
+                $cliente[0]->TotalNVPendDesp = $staBloqueo["datacobranza"]["TotalNVPendDesp"];
+                $cliente[0]->IDsNVPendDesp = $staBloqueo["datacobranza"]["IDsNVPendDesp"];
+            }else{
+                $cliente[0]->TotalNVPendDesp = 0;
+                $cliente[0]->IDsNVPendDesp = "";
+            }
+
             /* $clientebus = Cliente::findOrFail($cliente[0]->id);
             if($clientebus->clientedesbloqueado){
                 $cliente[0]->descripcion = null;

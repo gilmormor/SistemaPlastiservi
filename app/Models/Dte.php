@@ -19,6 +19,7 @@ use setasign\Fpdi\Fpdi;
 use Illuminate\Support\SimpleXMLElement;
 use Mockery\Undefined;
 use SimpleXMLElement as GlobalSimpleXMLElement;
+use Illuminate\Http\Request;
 
 class Dte extends Model
 {
@@ -3309,7 +3310,8 @@ class Dte extends Model
                     ];
                 }
             }
-
+            //$arrayNVPend = NotaVentaPendDesp::totalpendcli($cliente->id);
+            $arrayNVPend = NotaVenta::pendDespPendFact($cliente->id,$request);
             $ArrayFact = [
                 "rut" => $cliente->rut,
                 "razonsocial" => $cliente->razonsocial,
@@ -3319,7 +3321,9 @@ class Dte extends Model
                 "TDeudaFec" => $TDeudaFec,
                 "NroFacDeu" => implode(",", $ArrayNroFacDeuda),
                 "datosFacDeuda" => $datosFacDeuda,
-                "datosTodasFacDeuda" => $datosTodasFacDeuda
+                "datosTodasFacDeuda" => $datosTodasFacDeuda,
+                "TotalNVPendDesp" => isset($arrayNVPend["TotalNVPendDesp"]) ? $arrayNVPend["TotalNVPendDesp"] : 0,
+                "IDsNVPendDesp" => isset($arrayNVPend["IDsNVPendDesp"]) ? $arrayNVPend["IDsNVPendDesp"] : 0,
             ];   
             $aux_cont++;
         }
