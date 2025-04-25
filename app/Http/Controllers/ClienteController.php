@@ -412,8 +412,30 @@ class ClienteController extends Controller
         if($request->ajax()){
             //dd($request);
             $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
-            //dd($sucurArray);
+            $userSucurArray = $user->sucursales->pluck('id')->toArray();
+            $userSucNombreArray = $user->sucursales->pluck('nombre')->toArray();
+            $userSucNombreString = implode(',', $userSucNombreArray);
+            $userSucurString = implode(',', $userSucurArray);
+            $sql= "SELECT id
+            FROM cliente
+            WHERE rut='$request->rut'";
+            $sqlcliente = DB::select($sql);
+            //dd($sqlcliente);
+            $sucCoincidencia = 0;
+            $clienteSucNombreString = "";
+            if(count($sqlcliente) > 0){
+                $cliente = Cliente::findOrFail($sqlcliente[0]->id);
+                $ClienteSucurArray = $cliente->sucursales->pluck('id')->toArray();
+                $clienteSucNombreArray = $cliente->sucursales->pluck('nombre')->toArray();
+                $clienteSucNombreString = implode(',', $clienteSucNombreArray);
+                //dd($clienteSucNombreString);
+                $sucCoincidencia = !empty(array_intersect($userSucurArray, $ClienteSucurArray));
+                if($sucCoincidencia){
+                    $sucCoincidencia = 1;
+                }else{
+                    $sucCoincidencia = 0;
+                }
+            }
             $clientedirecs = Cliente::where('cliente.rut', $request->rut)
                     ->leftjoin('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
                     ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
@@ -444,10 +466,14 @@ class ClienteController extends Controller
                                 'clientedirec.id as direc_id',
                                 'clientedirec.direcciondetalle',
                                 'clientebloqueado.descripcion',
-                                DB::raw('GROUP_CONCAT(DISTINCT concat(persona.nombre, " " ,persona.apellido)) AS vendedor_nombre')
+                                DB::raw('GROUP_CONCAT(DISTINCT concat(persona.nombre, " " ,persona.apellido)) AS vendedor_nombre'),
+                                DB::raw("$sucCoincidencia as sucCoincidencia"),
+                                DB::raw("'" . $userSucNombreString . "' as userSucNombreString"),
+                                DB::raw("'" . $clienteSucNombreString . "' as clienteSucNombreString"),
                             ])
                     ->groupBy('cliente.id');
             //dd($clientedirecs->clientebloqueado->cliente_id);
+            //dd(count($clientedirecs->get()) > 0);
             return response()->json($clientedirecs->get());
         }
     }
@@ -758,7 +784,9 @@ class ClienteController extends Controller
                 $aux_clientesvendedorCond = "cliente.id in (SELECT cliente_id from cliente_vendedor where cliente_vendedor.vendedor_id = $vendedor_id)";
             }
             $sql= "SELECT cliente.id,cliente.rut,cliente.razonsocial,cliente.telefono,cliente.email,
-            cliente.direccion,cliente.vendedor_id,cliente.contactonombre,cliente.formapago_id,
+            cliente.direccion,cliente.vendedor_id,
+            cliente.contactonombre,cliente.contactoemail,cliente.contactotelef,
+            cliente.formapago_id,
             cliente.plazopago_id,cliente.giro_id,cliente.giro,cliente.regionp_id,cliente.provinciap_id,cliente.comunap_id,
             clientebloqueado.descripcion,clientebloqueado.descripcion as clientebloqueado_descripcion,
             cliente.limitecredito
@@ -786,7 +814,6 @@ class ClienteController extends Controller
                     $cliente[0]->TDeuda = $aux_Tdeuda + $aux_Tdeudapxp; //LUEGO ASIGNO EL TOTAL DEUDA A $cliente[0]->TDeuda        
                 }
             }
-
             $respuesta['cliente'] = $cliente;
             if(isset($aux_respuesta["error"])){
                 $respuesta['cliente'][0]->descripcion = $aux_respuesta["mensaje"];

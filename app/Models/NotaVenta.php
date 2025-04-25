@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use SplFileInfo;
 
 class NotaVenta extends Model
@@ -734,5 +735,131 @@ class NotaVenta extends Model
         return $aux_Tdeudapxp;
     }
 
+    public static function pendDespPendFact($cliente_id,$request = null){
+        //NotaVentaPendDesp::truncate();
+        if(!isset($request->consultarnvpendfact) or $request->consultarnvpendfact == 0){
+            return [
+                "cant" => 0, 
+                "TotalNVPendDesp" => 0, 
+                "IDsNVPendDesp" => "",
+                "TotalDteguiasPend" => 0,
+                "IDsDteguiasPend" => "",
+            ];
+        }
+        $cliente = Cliente::findOrFail($cliente_id);
+        //dd($cliente->sucursales);
+        $aux_cant = 0;
+        $aux_total = 0;
+        $TotalDteguiasPend = 0;
+        $IDsDteguiasPends = [];
+        $aux_idnvs = [];
+        $request1 = new Request();
+        $request1->merge([
+            "fechad" => null,
+            "fechah" => null,
+            "rut" => $cliente->rut,
+            "vendedor_id" => null,
+            "oc_id" => null,
+            "tipoentrega_id" => null,
+            "notaventa_id" => null,
+            "aprobstatus" => "3",
+            "comuna_id" => null,
+            "despachoord_id" => null,
+            "filtro" => "1",
+            "dtenotnull" => "1",
+            "dteguiausada" => "1",
+            "sucursal_id" => null,
+            "centroeconomico_id" => null,
+            'aux_condindtraslado' => "indtraslado != 6"
+        ]);
+        //dd($request1);
+        $dteguias = Dte::consultalistarguiadesppage($request1);
+        foreach ($dteguias as $dteguia) {
+            $dte = Dte::findOrFail($dteguia->id);
+            foreach ($dte->dtedets as $dtedet) {
+                //dd($dtedet->dtedet_despachoorddet);
+                if(isset($dtedet->dtedet_despachoorddet)){
+                    $notaventa_id = $dtedet->dtedet_despachoorddet->notaventadetalle->notaventa_id;
+                    if (!in_array($notaventa_id, $aux_idnvs, true)) {
+                        $idnvs[] = $notaventa_id;
+                    }
+                    //$aux_idnvs[] = $dtedet->dtedet_despachoorddet->notaventadetalle->notaventa_id;
+                    $aux_cant += $dtedet->qtyitem;
+                    $aux_total += $dtedet->montoitem * (($dte->tasaiva / 100) + 1);
+                    $TotalDteguiasPend += $dtedet->montoitem * (($dte->tasaiva / 100) + 1);
+                    $IDsDteguiasPends[] = $dtedet->dte->nrodocto;
+                }
+            }
+            //dd($dte->id);
+        }
+        //dd("entro");
+        //SOLO EJECUTA SI EL REQUEST TIENE EL CAMPO staconsNvPendDesp Y SU VALOR ES 1
+        //ESTO PARA NO HACER LA CONSULTA DE LO QUE ESTA PENDIENTE DE DESPACHO EN EL MODULO DE ENVIAR A GESTION LAS NOTA DE VENTA
+        //dd($request);
+        if(isset($request->staconsNVPendDesp) and $request->staconsNVPendDesp == 1){
+            $request2 = new Request();
+            foreach($cliente->sucursales as $sucursal){
+                /* $request2->merge(['sucursal_id' => $sucursal->id]);
+                $request2->merge(['sta_devarray' => 1]); */
+                $request2->merge([
+                    "fechad" => null,
+                    "fechah" => date("Y-m-d"),
+                    "plazoentregad" => null,
+                    "plazoentregah" => date("Y-m-d"),
+                    "rut" => $cliente->rut,
+                    "vendedor_id" => null,
+                    "oc_id" => null,
+                    "giro_id" => null,
+                    "areaproduccion_id" => null,
+                    "tipoentrega_id" => null,
+                    "notaventa_id" => null,
+                    "aprobstatus" => "3",
+                    "aprobstatusdesc" => "Aprobadas",
+                    "comuna_id" => null,
+                    "dte_id" => "undefined",
+                    "producto_id" => null,
+                    "categoriaprod_id" => null,
+                    "sucursal_id" => $sucursal->id,
+                    "filtro" => "0",
+                    "filtroacutec" => "0",
+                    'sta_devarray' => 1
+                ]);
+                //dd($request2);
+                /* foreach ($clientes as $cliente) {
+                    $request2->merge(['rut' => $cliente->rut]);
+                } */
+                
+                $datas = Producto::pendxprod($request2);
+                //dd($datas); 
+                foreach ($datas as $data) {
+                    $notaventa_id = $data->notaventa_id;
+                    //echo $notaventa_id;
+                    //$notaventa = Notaventa::findOrFail($request->notaventa_id);
+                    if (!in_array($notaventa_id, $aux_idnvs, true)) {
+                        $aux_idnvs[] = $data->notaventa_id;
+                    }
+                    $aux_cant += $data->cantsaldo;
+                    $aux_total += $data->subtotalplata * (($data->piva / 100) + 1);
+                }
+            }
+        }
+        //dd($aux_total);
+        //VALIDAR SI EL REQUEST TIENE EL CAMPO notaventa_id Y SI NO ES VACIO
+        //SI ES ASI, SE DEBE VALIDAR SI LA NOTA DE VENTA TIENE APROBSTATUS 1 O 3, Y SI ES ASI, SE SUMA EL TOTAL A LA VARIABLE $aux_total
+        if(isset($request->notaventa_id) and !empty($request->notaventa_id)){
+            $notaventa = Notaventa::findOrFail($request->notaventa_id);
+            if($notaventa->aprobstatus == null or $notaventa->aprobstatus == 0){
+                $aux_total += $notaventa->total;
+                $aux_idnvs[] = $notaventa->id;
+            }
+        }
+        return [
+            "cant" => $aux_cant, 
+            "TotalNVPendDesp" => $aux_total, 
+            "IDsNVPendDesp" => implode(',', $aux_idnvs),
+            "TotalDteguiasPend" => $TotalDteguiasPend,
+            "IDsDteguiasPend" => implode(',', $IDsDteguiasPends),
+        ];
+    }
 
 }
