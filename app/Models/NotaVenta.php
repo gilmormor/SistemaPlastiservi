@@ -597,9 +597,9 @@ class NotaVenta extends Model
             $aux_condFecha = " true";
         }else{
             $fecha = date_create_from_format('d/m/Y', $request->fechad);
-            $fechad = date_format($fecha, 'Y-m-d');
+            $fechad = date_format($fecha, 'Y-m-d') . " 00:00:00";
             $fecha = date_create_from_format('d/m/Y', $request->fechah);
-            $fechah = date_format($fecha, 'Y-m-d');
+            $fechah = date_format($fecha, 'Y-m-d') . " 23:59:59";
             $aux_condFecha = "notaventa.fechahora>='$fechad' and notaventa.fechahora<='$fechah'";
         }
         if(empty($request->rut)){
