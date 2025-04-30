@@ -176,6 +176,8 @@
                         >Otros traslados no venta</option>
                 </select>
             </div>
+        </div>
+        <div class="row">
             <div class="form-group col-xs-12 col-sm-5">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>

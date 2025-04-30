@@ -135,13 +135,17 @@ Deuda Clientes Sis Cob
             </div>
             
             <div class="table-responsive" id="tablaconsulta1">
-                <div class="form-group col-xs-12 col-sm-6">
+                <div class="form-group col-xs-12 col-sm-4">
                     <label for="razonsocial" class="control-label" title="Razón Social">Razón Social</label>
                     <input type="text" name="razonsocial" id="razonsocial" class="form-control" value="" maxlength="70" readonly/>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2">
                     <label for="limitecredito" class="control-label" title="Limite de Crédito">Limite de Crédito</label>
                     <input type="text" name="limitecredito" id="limitecredito" class="form-control" value="" maxlength="70" style="text-align:right" readonly/>
+                </div>
+                <div class="form-group col-xs-12 col-sm-2">
+                    <label for="totalNVpenddesp" class="control-label" title="Notas de Venta pendientes de despacho $">NV Pendientes Despacho</label>
+                    <input type="text" name="totalNVpenddesp" id="totalNVpenddesp" class="form-control" value="" maxlength="70" style="text-align:right" readonly/>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2">
                     <label for="TDeuda" class="control-label" title="Total Deuda">Total Deuda</label>

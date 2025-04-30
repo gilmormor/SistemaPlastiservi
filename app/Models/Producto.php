@@ -1158,7 +1158,6 @@ class Producto extends Model
         
         //dd($request);
         $datas = InvMov::stocksql($request,"producto.id");
-        //dd($datas);
         $arreglo_ProdStock = [];
         foreach ($datas as $elemento) {
             $arreglo_ProdStock[$elemento->producto_id] = $elemento;
@@ -1218,7 +1217,6 @@ class Producto extends Model
         //dd($producto_id_array);
         $aux_AgruOrd = "";
         $datas = consultapendxprod($request,2,1,$aux_AgruOrd);
-        //dd($datas);
         $total_sumapicking = 0;
         $total_sumacant = 0;
         $total_sumacantdesp = 0;
@@ -1226,6 +1224,7 @@ class Producto extends Model
         $total_kgpend = 0;
         $total_totalplata = 0;
         $total_precioxkilo = 0;
+        $total_totalplatamas_iva = 0;
 
         foreach ($datas as &$data){
             $id = $data->producto_id;
@@ -1307,6 +1306,7 @@ class Producto extends Model
             $data->cantsaldo = $aux_cantsaldo;
             $data->kgpend = $aux_cantsaldo * $data->peso;
             $data->subtotalplata = round($aux_subtotalplata,0);
+            $data->subtotalplatamasiva = $data->subtotalplata * (($data->piva /100) + 1);
 
             $total_sumapicking += $data->picking;
             $total_sumacant += $data->cant;
@@ -1315,6 +1315,7 @@ class Producto extends Model
             $total_kgpend += $data->kgpend;
             $total_totalplata += $data->subtotalplata;
             $total_precioxkilo += $data->precioxkilo;
+            $total_totalplatamas_iva += $data->subtotalplatamasiva;
         }
         //dd($datas);
         //$datas[]prueba = [];
@@ -1327,12 +1328,18 @@ class Producto extends Model
                 'total_cantsaldo' => $total_cantsaldo,
                 'total_kgpend' => round($total_kgpend),
                 'total_totalplata' => $total_totalplata,
+                'total_totalplatamas_iva' => round($total_totalplatamas_iva),
                 'prom_precioxkilo' => round($total_precioxkilo / $aux_contreg,2),
                 'prom_totalplata' => round($total_totalplata / $aux_contreg,0)
             ];     
         }
         //dd($datas);
-        return datatables($datas)->toJson();
+        if(isset($request->sta_devarray) and $request->sta_devarray == 1){
+            return $datas;
+        }else{
+            return datatables($datas)->toJson();
+        }
+        
         //return datatables($datas)->toJson();
     }
 
@@ -1537,7 +1544,8 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.id,notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,
         notaventa.comuna_id,notaventa.comunaentrega_id,
-        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        notaventa.oc_id,notaventa.anulada,notaventa.piva,
+        cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         comuna.nombre as comunanombre,
         vista_notaventatotales.cant,
         vista_notaventatotales.precioxkilo,
@@ -1602,7 +1610,7 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
     if($aux_sql==2){
         $aux_campos = "";
         if($aux_AgruOrd == ""){
-            $aux_campos = ",notaventa.fechahora,notaventa.cliente_id,
+            $aux_campos = ",notaventa.fechahora,notaventa.cliente_id,notaventa.piva,
             notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
             producto.nombre,cliente.razonsocial,notaventadetalle.id,
             notaventadetalle.notaventa_id,oc_file,

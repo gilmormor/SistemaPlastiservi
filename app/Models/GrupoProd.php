@@ -17,7 +17,7 @@ class GrupoProd extends Model
     //RELACION DE UNO A MUCHOS PRODUCTO
     public function productos()
     {
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class,"grupoprod_id");
     }
     
     //RELACION INVERSA PARA BUSCAR EL PADRE DE UNA CLASE
@@ -29,7 +29,7 @@ class GrupoProd extends Model
     //RELACION UNO A MUCHOS 
     public function categoriagrupovalmes()
     {
-        return $this->hasMany(CategoriaGrupoValMes::class);
+        return $this->hasMany(CategoriaGrupoValMes::class,"grupoprod_id");
     }
     
     //RELACION DE UNO A MUCHOS acuerdotecnico

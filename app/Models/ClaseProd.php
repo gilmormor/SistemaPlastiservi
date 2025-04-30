@@ -18,7 +18,7 @@ class ClaseProd extends Model
     //RELACION DE UNO A MUCHOS PRODUCTO
     public function productos()
     {
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class,"claseprod_id");
     }
     
 

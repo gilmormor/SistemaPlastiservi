@@ -134,13 +134,13 @@ $(document).ready(function () {
 			}
 			$('td', row).eq(5).html(aux_text);
 
-			aux_text = 
-			"<div class='tools1'>" +
-				"<a id='bntaprobnv" + data.id + "' name='bntaprobnv" + data.id + "' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='aprobarnv(" + data.id + "," + data.id + "," + aprobstatus + ")' title='Aprobar'>" +
-					"<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>" + 
-				"</a>"
-			"</div>";
-			$('td', row).eq(6).html(aux_text);
+			/* aux_text = 
+			`<div class='tools1'>
+				<a id='bntaprobnv${data.id}' name='bntaprobnv${data.id}' class='btn-accion-tabla btn-sm tooltipsC action-buttons' onclick='aprobarnv(${data.id},${data.id},${aprobstatus})' title='Aprobar'>" +
+					<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
+				</a>
+			</div>`;
+			$('td', row).eq(6).html(aux_text); */
 
 			aux_text = 
 			"<div class='tools1'>" +
@@ -183,13 +183,13 @@ $(document).ready(function () {
 				aux_displaybtnac = `style="display:none;"`;
 				aux_displaybtnbl = ``;
 			}
-	
+
 			aux_text = 
 				`<div class="tools11">
-					<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0,0)">
+					<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}">
 						<i class="fa fa-fw fa-lock text-danger fa-lg"></i>
 					</a>
-					<a ${aux_displaybtnac} id="bntaprobnv${data.id}" name="bntaprobnv${data.id}" class="btn-accion-tabla btn-sm tooltipsC action-buttons botonac${data.id}" onclick="aprobarnv(${data.id},${data.id},${aprobstatus})" title="Aprobar">
+					<a ${aux_displaybtnac} id="bntaprobnv${data.id}" name="bntaprobnv${data.id}" class="btn-accion-tabla btn-sm tooltipsC action-buttons botonac${data.id}" onclick="aprobarnv(${data.id},${data.id},${aprobstatus},${data.updatednum_at})" title="Aprobar">
 						<i class="fa fa-fw fa-save acciones1 fa-lg"></i>
 					</a>
 					<a href="notaventa" class="btn-accion-tabla tooltipsC btnEditar action-buttons" title="Editar">
@@ -242,13 +242,16 @@ $(document).ready(function () {
 	
 });
 
-function aprobarnv(i,id,aprobstatus){
-	event.preventDefault();
+function aprobarnv(i,id,aprobstatus,aupdatednum_at){
+	//event.preventDefault();
 	//alert($('input[name=_token]').val());
 	var data = {
 		id: id,
         nfila : i,
         aprobstatus : aprobstatus,
+		updatednum_at : aupdatednum_at,
+		consultarnvpendfact : 1,
+		staconsNVPendDesp : 0,
         _token: $('input[name=_token]').val()
 	};
 	var ruta = '/notaventa/aprobarnotaventa/'+i;

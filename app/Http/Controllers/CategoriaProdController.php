@@ -152,7 +152,35 @@ class CategoriaProdController extends Controller
         //dd($request->cla_id);
         $auxcla=ClaseProd::where('categoriaprod_id',$id)->whereNotIn('id', $request->cla_id)->pluck('id')->toArray(); //->destroy();
         for ($i=0; $i < count($auxcla) ; $i++){
-            ClaseProd::destroy($auxcla[$i]);
+            $claseprod = ClaseProd::findOrFail($auxcla[$i]);
+            $aux_regAso = false;
+            $aux_tabla = [];
+            if(count($claseprod->productos) > 0){
+                $aux_regAso = true;
+                $aux_tabla[] = "Producto";
+            }
+            if(count($claseprod->acuerdotecnicos) > 0){
+                $aux_regAso = true;
+                $aux_tabla[] = "Acuerdo tecnico";
+            }
+            if(count($claseprod->acuerdotecnicotemps) >0){
+                $aux_regAso = true;
+                $aux_tabla[] = "Acuerdo tecnico Temporal";
+            }
+            if($aux_regAso){
+                return redirect('categoriaprod')->with([
+                    'mensaje' => "Clase $claseprod->cla_nombre no se puede eliminar, tiene registros asociados a la tabla: " . implode(", ", $aux_tabla) . ".",
+                    'tipo_alert' => "alert-error"
+                ]);
+            }
+
+/*             if(count($claseprod->productos) > 0){
+                return redirect('categoriaprod')->with([
+                    'mensaje' => "Clase $claseprod->cla_nombre no se puede eliminar, tiene registros asociados a la tabla Productos",
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+ */            ClaseProd::destroy($auxcla[$i]);
         }
         for ($i=0; $i < count($request->cla_nombre) ; $i++){
             if(is_null($request->cla_longitud[$i])==false)
@@ -176,6 +204,39 @@ class CategoriaProdController extends Controller
         }
         $auxgru=GrupoProd::where('categoriaprod_id',$id)->whereNotIn('id', $request->gru_id)->pluck('id')->toArray(); //->destroy();
         for ($i=0; $i < count($auxgru) ; $i++){
+            $grupoprod = GrupoProd::findOrFail($auxgru[$i]);
+            $aux_regAso = false;
+            $aux_tabla = [];
+            if(count($grupoprod->productos) > 0){
+                $aux_regAso = true;
+                $aux_tabla[] = "Producto";
+            }
+            if(count($grupoprod->acuerdotecnicos) > 0){
+                $aux_regAso = true;
+                $aux_tabla[] = "Acuerdo tecnico";
+            }
+            if(count($grupoprod->acuerdotecnicotemps) >0){
+                $aux_regAso = true;
+                $aux_tabla[] = "Acuerdo tecnico Temporal";
+            }
+            if(count($grupoprod->categoriagrupovalmes) >0){
+                $aux_regAso = true;
+                $aux_tabla[] = "Categoria Grupo Valor mes";
+            }
+            if($aux_regAso){
+                return redirect('categoriaprod')->with([
+                    'mensaje' => "Grupo $grupoprod->gru_nombre no se puede eliminar, tiene registros asociados a la tabla: " . implode(", ", $aux_tabla) . ".",
+                    'tipo_alert' => "alert-error"
+                ]);
+            }
+
+            /* if(count($grupoprod->productos) > 0){
+                return redirect('categoriaprod')->with([
+                    'mensaje' => "Grupo $grupoprod->gru_nombre no se puede eliminar, tiene registros asociados a la tabla Productos",
+                    'tipo_alert' => 'alert-error'
+                ]);
+            } */
+
             GrupoProd::destroy($auxgru[$i]);
         }
         for ($i=0; $i < count($request->gru_nombre) ; $i++){
@@ -196,7 +257,7 @@ class CategoriaProdController extends Controller
                 );    
             }
         }
-        //dd($array_claseprod);
+        //dd($array_grupoprod);
         //$categoriaprod->claseprods()->update($array_claseprod);
         return redirect('categoriaprod')->with('mensaje','Categoría actualizado con exito');
     }

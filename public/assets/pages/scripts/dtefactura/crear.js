@@ -224,6 +224,7 @@ function ajaxRequest(data,url,funcion) {
 						$('#group_oc_file').show()
 					}else{
 						$("#ocnv_id").val(aux_oc_id);
+						$("#ocnv_id").attr("valor",aux_oc_id);
 						/*
 						aux_href = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' onclick='verpdf2(\"" + respuesta[0].oc_file + "\",2)'>" + 
 										aux_oc_id + 
@@ -602,6 +603,7 @@ function blanquearDatos(){
 	$('#tabla-data tbody').html("");
 	$("#lblocnv_id").html("OC");
 	$("#ocnv_id").val("");
+	$("#ocnv_id").attr("valor","");
 	$("#ocnv_id").attr("disabled", true);
 	$("#oc_id").attr("disabled", true);
 	$("#notaventa_id").val("");
@@ -657,4 +659,68 @@ $(".form-horizontal").on("submit", function(event){
 		//$('#oc_file').prop('required', true);
 		return false;
 	}
+});
+
+$("#ocnv_id").blur(function(){
+	//VALIDAR LA MODIFICACION DE ORDEN DE COMPRA 
+	//SI SE MODIFICA OC, SE DEBE VALIDAR QUE NO EXISTA EN OTRA NOTA VENTA
+	//SI EXISTE EN OTRA nv SE PREGUNTA SI DESEA CONTINUAR
+	//SI NO EXISTE EN OTRA NV SE CONTINUA CON LA MODIFICACION
+	const ocnvActual = $("#ocnv_id").val();
+    const ocnvOriginal = $("#ocnv_id").attr("valor");
+
+    if (ocnvActual !== ocnvOriginal) {
+        swal({
+            title: 'Modificación de OC',
+			text: "¿Seguro desea continuar?",
+            icon: 'warning',
+            buttons: {
+                cancel: "Cancelar",
+                confirm: "Aceptar"
+            },
+        }).then((confirm1) => {
+            if (!confirm1) {
+				$("#ocnv_id").val(ocnvOriginal);
+                return;
+            }
+
+			var data = {
+				oc_id: $("#ocnv_id").val(),
+				cliente_rut: eliminarFormatoRutret($("#rut").val()),
+				_token: $('input[name=_token]').val()
+			};
+            $.ajax({
+                url: '/notaventa/buscaroc_id',
+                method: 'POST',
+                data: data,
+                success: function(respuesta) {
+                    if(respuesta.mensaje == 'ok') {
+                        swal({
+                            title: 'OC ya existe en Nota Venta: ' + respuesta.notaventa_id,
+                            text: "¿Desea continuar de todas formas?",
+                            icon: 'warning',
+                            buttons: {
+                                cancel: "No, cancelar",
+                                confirm: "Sí, continuar"
+                            },
+                        }).then((confirm2) => {
+                            if (confirm2) {
+                                return;
+                            } else {
+                                $("#ocnv_id").val(ocnvOriginal);
+                            }
+                        });
+                    } else {
+                        return;
+                    }
+                },
+                error: function() {
+                    alertify.error("Error al validar OC.");
+                    $("#ocnv_id").val(ocnvOriginal);
+                }
+            });
+        });
+    } else {
+        return;
+    }
 });
