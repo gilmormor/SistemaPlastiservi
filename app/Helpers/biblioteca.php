@@ -485,7 +485,7 @@ if (!function_exists('datacobranza')) {
         if($aux_deuda > 0 and $aux_deuda >= $dataCobranza["limitecredito"]){
             $staBloqueo ["titulo"] = "Limite de crédito superado. ";
             $aux_nvpenddesp = "";
-            $aux_mensajesobrecupo = "\n\nGESTIONAR SOBRE CUPO.";
+            $aux_mensajesobrecupo = "\n\nGESTIONAR SOBRECUPO.";
             if ($dataCobranza["TotalNVPendDesp"] > 0){
                 $aux_nvpenddesp = "\nNV Pendiente Desp: " . number_format($dataCobranza["TotalNVPendDesp"], 0, ',', '.')
                 . "\nNro. NV: " . $dataCobranza["IDsNVPendDesp"];
