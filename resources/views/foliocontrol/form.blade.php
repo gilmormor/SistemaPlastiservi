@@ -19,7 +19,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="ultfoliohab" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Ultimo Folio Habilitado'>Ultimo Folio Hab</label>
+    <label for="ultfoliohab" class="col-lg-3 control-label requerido" data-toggle='tooltip' title='Folio de termino'>Folio de termino</label>
     <div class="col-lg-9">
         <input type="text" name="ultfoliohab" id="ultfoliohab" class="form-control" value="{{old('ultfoliohab', $data->ultfoliohab ?? '')}}" required/>
     </div>

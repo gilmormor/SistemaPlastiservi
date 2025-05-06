@@ -8,7 +8,7 @@ $(document).ready(function () {
         autoclose: true,
 		todayHighlight: true
     }).datepicker("setDate");
-
+    blanquerarcampos();
     configurarTabla('#tabla-data-reporte-stockpicking');
 
     function configurarTabla(aux_tabla){
@@ -76,12 +76,21 @@ $(document).ready(function () {
                 //$('td', row).eq(6).attr('style','text-align:right');
                 $('td', row).eq(7).attr('style','text-align:center');
 
+                $('td', row).eq(8).attr('style','text-align:center');
+                $('td', row).eq(8).attr('data-order',data.stockBodProdTerm);
+                $('td', row).eq(8).attr('data-search',data.stockBodProdTerm);
+                $('td', row).eq(8).addClass('subtotalstockbodprodterm');
+
                 $('td', row).eq(9).attr('style','text-align:center');
-                $('td', row).eq(9).attr('data-order',data.stockBodProdTerm);
-                $('td', row).eq(9).attr('data-search',data.stockBodProdTerm);
+                $('td', row).eq(9).attr('data-order',data.stockPiking);
+                $('td', row).eq(9).attr('data-search',data.stockPiking);
+                $('td', row).eq(9).addClass('subtotalstockpicking');
+                
+
                 $('td', row).eq(10).attr('style','text-align:center');
-                $('td', row).eq(10).attr('data-order',data.stockPiking);
-                $('td', row).eq(10).attr('data-search',data.stockPiking);
+                $('td', row).eq(10).attr('data-order',data.stock);
+                $('td', row).eq(10).attr('data-search',data.stock);
+                $('td', row).eq(10).addClass('subtotalstock');
 
 
                 $('td', row).eq(11).attr('style','text-align:right');
@@ -99,6 +108,7 @@ $(document).ready(function () {
 
     $("#btnconsultar").click(function()
     {
+        blanquerarcampos();
         data = datosstockpicking();
         $('#tabla-data-reporte-stockpicking').DataTable().ajax.url( "reportinvstockbppage/" + data.data2 ).load();
         totalizar();
@@ -119,7 +129,10 @@ function totalizar(){
         url: '/reportinvstockbp/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            //console.log(datos);
+            console.log(datos);
+            $("#totalstockBodProdTerm").html(MASKLA(datos.totales.stockBodProdTerm,0));
+            $("#totalstockpicking").html(MASKLA(datos.totales.stockPiking,0));
+            $("#totalstock").html(MASKLA(datos.totales.stock,0));
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
@@ -127,7 +140,32 @@ function totalizar(){
 }
 
 var eventFired = function ( type ) {
+    totalstockbodprodterm = 0;
+    totalstockpicking = 0;
+    totalstock = 0;
 	total = 0;
+
+    $("#tabla-data-reporte-stockpicking tr .subtotalstockbodprodterm").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		totalstockbodprodterm += valorNum;
+	});
+    $("#subtotalstockBodProdTerm").html(MASKLA(totalstockbodprodterm,0))
+
+    $("#tabla-data-reporte-stockpicking tr .subtotalstockpicking").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		totalstockpicking += valorNum;
+	});
+    $("#subtotalstockpicking").html(MASKLA(totalstockpicking,0))
+
+    $("#tabla-data-reporte-stockpicking tr .subtotalstock").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		totalstock += valorNum;
+	});
+    $("#subtotalstock").html(MASKLA(totalstock,0))
+
 	$("#tabla-data-reporte-stockpicking tr .subtotalkg").each(function() {
 		valor = $(this).attr('data-order') ;
 		valorNum = parseFloat(valor);
@@ -232,3 +270,15 @@ function tablascolsultainv(id){
         $(".selectpicker").selectpicker('refresh');
     }
 } */
+
+function blanquerarcampos(){
+    $("#subtotalstockBodProdTerm").html('0')
+    $("#subtotalstockpicking").html('0')
+    $("#subtotalstock").html('0')
+    $("#subtotalkg").html('0,00')
+
+    $("#totalstockBodProdTerm").html('0')
+    $("#totalstockpicking").html('0')
+    $("#totalstock").html('0')
+    $("#totalkg").html('0,00')
+}

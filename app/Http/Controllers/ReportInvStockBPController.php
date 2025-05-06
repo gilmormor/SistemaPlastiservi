@@ -92,16 +92,28 @@ class ReportInvStockBPController extends Controller
         $respuesta = array();
         //$datas = InvMov::stock($request,"producto.id")->get();
         $datas = InvMov::stocksql($request,"producto.id");
+        $aux_totalstockBodProdTerm = 0;
+        $aux_totalstockPiking = 0;
+        $aux_totalstock = 0;
         $aux_totalkg = 0;
         foreach ($datas as $data) {
+            //dd($data);
             //$aux_totalkg += $data->stockkg;
             if($data->peso <= 0){
                 $aux_totalkg += $data->stockkg;
             }else{
                 $aux_totalkg += $data->stock * $data->peso;
             }
+            $aux_totalstockBodProdTerm += $data->stockBodProdTerm;
+            $aux_totalstockPiking += $data->stockPiking;
+            $aux_totalstock += $data->stock;
         }
         $respuesta['aux_totalkg'] = $aux_totalkg;
+        $respuesta['totales'] = [
+            'stockBodProdTerm' => $aux_totalstockBodProdTerm,
+            'stockPiking' => $aux_totalstockPiking,
+            'stock' => $aux_totalstock,
+        ];
         return $respuesta;
     }
 

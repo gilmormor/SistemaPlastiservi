@@ -29,7 +29,7 @@ Control Folios
                             <th>Documento</th>
                             <th>Descripcion</th>
                             <th>Ultimo Folio Usado</th>
-                            <th>Ultimo Folio Habilitado</th>
+                            <th>Folio de termino</th>
                             <th>Status</th>
                             <th class="width70"></th>
                         </tr>

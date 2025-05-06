@@ -155,11 +155,17 @@ Stock Inventario
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan='11' style='text-align:right'>Total página</th>
+                            <th colspan='8' style='text-align:right'>Total página</th>
+                            <th id='subtotalstockBodProdTerm' name='subtotalstockBodProdTerm' style='text-align:right'>0</th>
+                            <th id='subtotalstockpicking' name='subtotalstockpicking' style='text-align:right'>0</th>
+                            <th id='subtotalstock' name='subtotalstock' style='text-align:right'>0</th>
                             <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
                         </tr>
                         <tr>
-                            <th colspan='11' style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan='8' style='text-align:right'>TOTAL GENERAL</th>
+                            <th id='totalstockBodProdTerm' name='totalstockBodProdTerm' style='text-align:right'>0</th>
+                            <th id='totalstockpicking' name='totalstockpicking' style='text-align:right'>0</th>
+                            <th id='totalstock' name='totalstock' style='text-align:right'>0</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                         </tr>
                     </tfoot>
