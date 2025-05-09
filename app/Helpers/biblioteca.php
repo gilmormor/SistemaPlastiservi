@@ -480,14 +480,18 @@ if (!function_exists('datacobranza')) {
         //dd($dataCobranza);
         $staBloqueo["datacobranza"] = $dataCobranza;
         //dd($dataCobranza);
-        $aux_deuda = $dataCobranza["TDeuda"] + $dataCobranza["TotalNVPendDesp"];
+        $aux_TotalNVPendDesp = 0;
+        if(isset($dataCobranza["TotalNVPendDesp"])){
+            $aux_TotalNVPendDesp = $aux_TotalNVPendDesp;
+        }
+        $aux_deuda = $dataCobranza["TDeuda"] + $aux_TotalNVPendDesp;
         $aux_mensajesobrecupo = "";
         if($aux_deuda > 0 and $aux_deuda >= $dataCobranza["limitecredito"]){
             $staBloqueo ["titulo"] = "Limite de crédito superado. ";
             $aux_nvpenddesp = "";
             $aux_mensajesobrecupo = "\n\nGESTIONAR SOBRECUPO.";
-            if ($dataCobranza["TotalNVPendDesp"] > 0){
-                $aux_nvpenddesp = "\nNV Pendiente Desp: " . number_format($dataCobranza["TotalNVPendDesp"], 0, ',', '.')
+            if ($aux_TotalNVPendDesp > 0){
+                $aux_nvpenddesp = "\nNV Pendiente Desp: " . number_format($aux_TotalNVPendDesp, 0, ',', '.')
                 . "\nNro. NV: " . $dataCobranza["IDsNVPendDesp"];
             }
             $staBloqueo ["bloqueo"] = "Limite de crédito superado. "
