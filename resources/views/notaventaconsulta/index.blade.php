@@ -221,6 +221,33 @@ Consulta Nota Venta
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Categoria">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="categoriaprod_id" class="control-label">Categoria:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id'  data-live-search='true' multiple data-actions-box='true'>"
+                                            @foreach($tablashtml['categoriaprod'] as $categoriaprod)
+                                                <option value="{{$categoriaprod->id}}">
+                                                    {{$categoriaprod->nombre}}
+                                                </option>";
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Consultar Despacho">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="consdesp" class="control-label">Cons Desp?:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name='consdesp' id='consdesp' class='selectpicker form-control categoriaprod_id'>"
+                                            <option value="0">No</option>
+                                            <option value="1">Si</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12">

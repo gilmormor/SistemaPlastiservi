@@ -44,6 +44,7 @@ class NotaVentaConsultaController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
         ->whereIn('sucursal.id', $sucurArray)
         ->get();
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('notaventaconsulta.index', compact('giros','areaproduccions','tipoentregas','fechaServ','tablashtml'));
 
     }
@@ -89,7 +90,10 @@ class NotaVentaConsultaController extends Controller
             $aux_totalps = 0;
             $aux_prom = 0;
             foreach ($datas as $data) {
-                $aux_cantdesp = NotaVenta::consultatotcantod($data->id);
+                $aux_cantdesp = 0;
+                if(!isset($request->consdesp) or (isset($request->consdesp) and $request->consdesp == 1)){
+                    $aux_cantdesp = NotaVenta::consultatotcantod($data->id);
+                }
                 if(in_array('5',$request->aprobstatus)){
                     if($aux_cantdesp >= $data->cant){
                         continue;
@@ -193,6 +197,11 @@ class NotaVentaConsultaController extends Controller
                         $aux_obsdespachoNew = "Fin despacho";
                     }
                 }
+                if(isset($request->consdesp) and $request->consdesp == 0){
+                    $aux_icodespachoNew = " fa-question-circle";
+                    $aux_obsdespachoNew = "Consultar despacho";
+                }
+
                 $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->id)' title='$aux_obsdespachoNew' data-toggle='tooltip'>
                                     <i class='fa fa-fw $aux_icodespachoNew text-aqua'></i>                                    
                                 </a>";

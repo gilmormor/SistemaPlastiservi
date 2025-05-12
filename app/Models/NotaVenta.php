@@ -392,6 +392,17 @@ class NotaVenta extends Model
             $aux_aprobstatus = " true";
         }
 
+        if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = " true";
+        }else{
+            //$aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprodid = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
+        }
         
         if($aux_consulta == 1){
             $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
@@ -431,6 +442,7 @@ class NotaVenta extends Model
             and $aux_condcomuna_id
             and $aux_condsucursal_id
             and $aux_sucursal_idCond
+            and $aux_condcategoriaprod_id
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             $cond_group
             $cond_order;";
@@ -463,6 +475,7 @@ class NotaVenta extends Model
             and $aux_condproducto_id
             and $aux_condcomuna_id
             and $aux_sucursal_idCond
+            and $aux_condcategoriaprod_id
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY areaproduccion_id,areaproduccion.nombre;";
         }

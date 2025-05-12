@@ -134,6 +134,8 @@ function datosNVCons(){
         producto_idM      : $("#producto_idM").val(),
         comuna_id         : $("#comuna_id").val(),
         sucursal_id       : $("#sucursal_id").val(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),
+        consdesp          : $("#consdesp").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -149,7 +151,10 @@ function datosNVCons(){
     "&aprobstatus="+data1.aprobstatus +
     "&producto_idM="+data1.producto_idM +
     "&comuna_id="+data1.comuna_id +
-    "&sucursal_id="+data1.sucursal_id
+    "&sucursal_id="+data1.sucursal_id +
+    "&categoriaprod_id="+data1.categoriaprod_id +
+    "&consdesp="+data1.consdesp
+    
     var data = {
     data1 : data1,
     data2 : data2
