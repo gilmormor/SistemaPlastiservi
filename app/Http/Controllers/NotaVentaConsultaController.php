@@ -90,6 +90,36 @@ class NotaVentaConsultaController extends Controller
             $aux_totalps = 0;
             $aux_prom = 0;
             foreach ($datas as $data) {
+                //dd($data);
+                $notaventa = NotaVenta::findOrFail($data->id);
+                //dd($notaventa->notaventadetalles);
+                $aux_totalpesokg = 0;
+                foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+                    $aux_pesounit = 0;
+                    if($notaventadetalle->unidadmedida_id == 7){
+                        $aux_pesounit = 1;
+                    }else{
+                        $producto = Producto::findOrFail($notaventadetalle->producto_id);
+                        //dd($producto->acuerdotecnico);
+                        if(isset($producto->acuerdotecnico)){
+                            //$producto->acuerdotecnico;
+                            $aux_pesounit = pesounitattemp($producto->acuerdotecnico);
+                            //dd($aux_pesounit);
+                        }else{
+                            if($notaventadetalle->peso > 0){
+                                $aux_pesounit = $notaventadetalle->peso;
+                            }else{
+                                if($producto->peso > 0){
+                                    $aux_pesounit = $producto->peso;
+                                }
+                            }
+                        }
+                        //$aux_pesounit = $notaventadetalle->pesounit;
+                    }
+                    $aux_totalpesokg += $aux_pesounit * $notaventadetalle->cant;
+                        
+                }
+                //dd($aux_totalpesokg);
                 $aux_cantdesp = 0;
                 if(!isset($request->consdesp) or (isset($request->consdesp) and $request->consdesp == 1)){
                     $aux_cantdesp = NotaVenta::consultatotcantod($data->id);
@@ -240,7 +270,7 @@ class NotaVentaConsultaController extends Controller
                     <td id='razonsocial$i' name='razonsocial$i' style='font-size:12px'>$data->razonsocial</td>
                     <td id='comuna$i' name='comuna$i'>$comuna->nombre</td>
                     <td id='oc_id$i' name='oc_id$i'>$aux_enlaceoc</a></td>
-                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right' data-order='$data->totalkilos'>".number_format($data->totalkilos, 2, ",", ".") ."</td>
+                    <td id='totalkilos$i' name='totalkilos$i' style='text-align:right' data-order='$aux_totalpesokg'>".number_format($aux_totalpesokg, 2, ",", ".") ."</td>
                     <td id='totalps$i' name='totalps$i' style='text-align:right' data-order='$data->subtotal'>".number_format($data->subtotal, 0, ",", ".") ."</td>
                     <td id='prompvc$i' name='prompvc$i' style='text-align:right' data-order='$aux_prom'>".number_format($aux_prom, 2, ",", ".") ."</td>
                     <td>
@@ -263,7 +293,7 @@ class NotaVentaConsultaController extends Controller
                     $aux_Tpvcpesos += $data->pvcpesos;
                     $aux_Tcankg += $data->cankg;
                     $aux_Tcanpesos += $data->canpesos;
-                    $aux_totalKG += $data->totalkilos;
+                    $aux_totalKG += $aux_totalpesokg;
                     $aux_totalps += $data->subtotal;    
                 }
 

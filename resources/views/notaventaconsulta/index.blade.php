@@ -243,8 +243,8 @@ Consulta Nota Venta
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name='consdesp' id='consdesp' class='selectpicker form-control categoriaprod_id'>"
-                                            <option value="0">No</option>
                                             <option value="1">Si</option>
+                                            <option value="0">No</option>
                                         </select>
                                     </div>
                                 </div>

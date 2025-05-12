@@ -90,6 +90,9 @@
 							$aux_sumtotalkilos += $notaventaDetalle->totalkilos;
 						?>
 					@endforeach
+					<?php
+						$aux_totalpesokg = 0;
+					?>
 					@foreach($notaventaDetalles as $notaventaDetalle)
 						<?php
 							if($aux_sumtotalkilos > 0){
@@ -117,6 +120,29 @@
 								$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 								$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 							}
+							$aux_pesounit = 0;
+							
+							if($notaventaDetalle->unidadmedida_id == 7){
+								$aux_pesounit = 1;
+							}else{
+								$producto = $notaventaDetalle->producto;
+								//dd($producto->acuerdotecnico);
+								if(isset($producto->acuerdotecnico)){
+									//$producto->acuerdotecnico;
+									$aux_pesounit = pesounitattemp($producto->acuerdotecnico);
+									//dd($aux_pesounit);
+								}else{
+									if($notaventaDetalle->peso > 0){
+										$aux_pesounit = $notaventaDetalle->peso;
+									}else{
+										if($producto->peso > 0){
+											$aux_pesounit = $producto->peso;
+										}
+									}
+								}
+								//$aux_pesounit = $notaventaDetalle->pesounit;
+							}
+							$aux_totalpesokg += $aux_pesounit * $notaventaDetalle->cant;
 						?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
@@ -126,9 +152,9 @@
 							<td class="textcenter">{{$aux_ancho}}</td>
 							<td class="textcenter">{{$aux_largo}}</td>
 							<td class="textcenter">{{$aux_espesor}}</td>
-							<td class="textright">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($aux_pesounit , 5, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 0, ",", ".")}}</td>
-							<td class="textright">{{number_format($notaventaDetalle->totalkilos, 2, ",", ".")}}</td>
+							<td class="textright">{{number_format($aux_pesounit * $notaventaDetalle->cant, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->preciounit,  $datosArray["monedaLocal"] ? 2 : 3, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->subtotal, 0, ",", ".")}}</td>
 						</tr>
@@ -138,7 +164,7 @@
 					<tr>
 						<td colspan="8" class="textright"><span><strong>Totales</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 0, ",", ".")}}</strong></span></td>
-						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 0, ",", ".")}}</strong></span></td>
+						<td class="textright"><span><strong>{{number_format($aux_totalpesokg, 0, ",", ".")}}</strong></span></td>
 						<td class="textright"><span><strong>NETO</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($notaventa->neto, 0, ",", ".")}}</strong></span></td>
 					</tr>
