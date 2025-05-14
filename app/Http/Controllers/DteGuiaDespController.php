@@ -1523,11 +1523,13 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
         /* $foliocontrol->bloqueo = 0;
         $foliocontrol->save(); */
         //dd($respuesta["id"]);
-        
-        return redirect('dteguiadesp/listarorddesp')->with([
+        //return en coimentario porque debe devolver el array de respuesta
+        /* return redirect('dteguiadesp/listarorddesp')->with([
+            'id' => 0,
             'mensaje'=>$respuesta["mensaje"] ,
             'tipo_alert' => 'alert-error'
-        ]);
+        ]); */
+        return $respuesta;
        
     }
     return $respuesta;

@@ -357,37 +357,41 @@ class DespachoSolController extends Controller
                                         $notaventadetalleext->delete();
                                     }
                                 }
-                                $cont_bodegas = count($request->invcant);
-                                if($cont_bodegas>0){
-                                    for ($b=0; $b < $cont_bodegas ; $b++){
-                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
-                                            $despachosoldet_invbodegaproducto = new DespachoSolDet_InvBodegaProducto();
-                                            $despachosoldet_invbodegaproducto->despachosoldet_id = $despachosoldet->id;
-                                            $despachosoldet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
-                                            $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
-                                            //$existencia = InvBodegaProducto::existencia($array_request);
-                                            if($request->staex[$b] == 1){
-                                                $despachosoldet_invbodegaproducto->cant = 0;
-                                                $despachosoldet_invbodegaproducto->cantex = $request->invcant[$b] * -1;
-                                                $despachosoldet_invbodegaproducto->staex = $request->staex[$b];
-                                            }
-                                            else{
-                                                $invbodegaproducto_id = $request->invbodegaproducto_id[$b]; //TOMO EL CODIGO invbodegaproducto_id
-                                                $aux_existencia = $aux_arraystocks[$invbodegaproducto_id]["stock"]; //AQUI ME UBICO EN LA POSICION DONDE ESTA LA BODEGA ESPECIFICA PARA TOMAR EL STOCK ACTUAL
-                                                if($request->invcant[$b] > $aux_existencia) {//$existencia["stock"]["cant"]){
-                                                    $despachosoldet_invbodegaproducto->cant = $aux_existencia * -1; //$existencia["stock"]["cant"] * -1;
-                                                    $despachosoldet_invbodegaproducto->cantex = ($request->invcant[$b] - $aux_existencia) * -1; // ($request->invcant[$b] - $existencia["stock"]["cant"]) * -1;
-                                                }else{
-                                                    $despachosoldet_invbodegaproducto->cant = $request->invcant[$b] * -1;
-                                                    $despachosoldet_invbodegaproducto->cantex = 0;
+                                //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                if($despachosoldet->notaventadetalle->producto->tipoprod == 0){ //tipoprod = 0 TIPO PRODUCTO QUE MUEVE INVENTARIO
+                                    $cont_bodegas = count($request->invcant);
+                                    if($cont_bodegas>0){
+                                        for ($b=0; $b < $cont_bodegas ; $b++){
+                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
+                                                $despachosoldet_invbodegaproducto = new DespachoSolDet_InvBodegaProducto();
+                                                $despachosoldet_invbodegaproducto->despachosoldet_id = $despachosoldet->id;
+                                                $despachosoldet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
+                                                $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
+                                                //$existencia = InvBodegaProducto::existencia($array_request);
+                                                if($request->staex[$b] == 1){
+                                                    $despachosoldet_invbodegaproducto->cant = 0;
+                                                    $despachosoldet_invbodegaproducto->cantex = $request->invcant[$b] * -1;
+                                                    $despachosoldet_invbodegaproducto->staex = $request->staex[$b];
                                                 }
-                                                //ACTUALIZAR SALDO DE STOCK EN ARREGLO QUE CONTIENE LA BODEGA DE CADA PRODUCTO
-                                                $aux_arraystocks[$invbodegaproducto_id]["stock"] = $aux_arraystocks[$invbodegaproducto_id]["stock"] + $despachosoldet_invbodegaproducto->cant;
+                                                else{
+                                                    $invbodegaproducto_id = $request->invbodegaproducto_id[$b]; //TOMO EL CODIGO invbodegaproducto_id
+                                                    $aux_existencia = $aux_arraystocks[$invbodegaproducto_id]["stock"]; //AQUI ME UBICO EN LA POSICION DONDE ESTA LA BODEGA ESPECIFICA PARA TOMAR EL STOCK ACTUAL
+                                                    if($request->invcant[$b] > $aux_existencia) {//$existencia["stock"]["cant"]){
+                                                        $despachosoldet_invbodegaproducto->cant = $aux_existencia * -1; //$existencia["stock"]["cant"] * -1;
+                                                        $despachosoldet_invbodegaproducto->cantex = ($request->invcant[$b] - $aux_existencia) * -1; // ($request->invcant[$b] - $existencia["stock"]["cant"]) * -1;
+                                                    }else{
+                                                        $despachosoldet_invbodegaproducto->cant = $request->invcant[$b] * -1;
+                                                        $despachosoldet_invbodegaproducto->cantex = 0;
+                                                    }
+                                                    //ACTUALIZAR SALDO DE STOCK EN ARREGLO QUE CONTIENE LA BODEGA DE CADA PRODUCTO
+                                                    $aux_arraystocks[$invbodegaproducto_id]["stock"] = $aux_arraystocks[$invbodegaproducto_id]["stock"] + $despachosoldet_invbodegaproducto->cant;
+                                                }
+                                                $despachosoldet_invbodegaproducto->save();
                                             }
-                                            $despachosoldet_invbodegaproducto->save();
                                         }
                                     }
                                 }
+
 
                                 /*
                                 $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
@@ -592,16 +596,19 @@ class DespachoSolController extends Controller
                                     if($request->cantsoldesp[$i]==0){
                                         $despachosoldet->usuariodel_id = auth()->id();
                                         $despachosoldet->save();
-                                        DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
-                                        /* ESTO ES POR SI DA ERROR AL ELIMINAR EN DespachoSolDet_InvBodegaProducto Y HAY REGISTROA ASOCIADOS EN InvMovDet_BodSolDesp
-                                        $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id', $despachosoldet->id)->get();
-                                        foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
-                                            InvMovDet_BodSolDesp::where('despachosoldet_invbodegaproducto_id', $despachosoldet_invbodegaproducto->id)->delete();
-                                            DespachoSolDet_InvBodegaProducto::where('id', $despachosoldet_invbodegaproducto->id)->delete();
-                                            //DB::table('despachosoldet_invbodegaproducto')->where('id', $despachosoldet_invbodegaproducto->id)->delete();
-                                            //DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
+                                        //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                        if($despachosoldet->notaventadetalle->producto->tipoprod == 0){ //tipoprod = 0 TIPO PRODUCTO QUE MUEVE INVENTARIO
+                                            DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
+                                            /* ESTO ES POR SI DA ERROR AL ELIMINAR EN DespachoSolDet_InvBodegaProducto Y HAY REGISTROA ASOCIADOS EN InvMovDet_BodSolDesp
+                                            $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id', $despachosoldet->id)->get();
+                                            foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                                                InvMovDet_BodSolDesp::where('despachosoldet_invbodegaproducto_id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                DespachoSolDet_InvBodegaProducto::where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                //DB::table('despachosoldet_invbodegaproducto')->where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                //DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
+                                            }
+                                            */                                            
                                         }
-                                        */
                                         $despachosoldet->delete();
                                     }else{
                                         if($request->cantext[$i]>0){
@@ -617,62 +624,65 @@ class DespachoSolController extends Controller
                                                 $notaventadetalleext->delete();
                                             }
                                         }
-                                        $cont_bodegas = count($request->invcant);
-                                        if($cont_bodegas>0){
-                                            for ($b=0; $b < $cont_bodegas ; $b++){
-                                                if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i]){
-                                                    if($request->invcant[$b] > 0){
-                                                        $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
-                                                        //$existencia = InvBodegaProducto::existencia($array_request);
-                                                        $invbodegaproducto_id = $request->invbodegaproducto_id[$b]; //TOMO EL CODIGO invbodegaproducto_id
-                                                        $aux_existencia = $aux_arraystocks[$invbodegaproducto_id]["stock"];//AQUI ME UBICO EN LA POSICION DONDE ESTA LA BODEGA ESPECIFICA PARA TOMAR EL STOCK ACTUAL
-                                                        if($request->invcant[$b] > $aux_existencia) { //$existencia["stock"]["cant"]){
-                                                            $aux_cant = $aux_existencia * -1; //$existencia["stock"]["cant"] * -1;
-                                                            $aux_cantex = ($request->invcant[$b] - $aux_existencia) * -1; // $existencia["stock"]["cant"]) * -1;
+                                        //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                        if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
+                                            $cont_bodegas = count($request->invcant);
+                                            if($cont_bodegas>0){
+                                                for ($b=0; $b < $cont_bodegas ; $b++){
+                                                    if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i]){
+                                                        if($request->invcant[$b] > 0){
+                                                            $array_request["invbodegaproducto_id"] = $request->invbodegaproducto_id[$b];
+                                                            //$existencia = InvBodegaProducto::existencia($array_request);
+                                                            $invbodegaproducto_id = $request->invbodegaproducto_id[$b]; //TOMO EL CODIGO invbodegaproducto_id
+                                                            $aux_existencia = $aux_arraystocks[$invbodegaproducto_id]["stock"];//AQUI ME UBICO EN LA POSICION DONDE ESTA LA BODEGA ESPECIFICA PARA TOMAR EL STOCK ACTUAL
+                                                            if($request->invcant[$b] > $aux_existencia) { //$existencia["stock"]["cant"]){
+                                                                $aux_cant = $aux_existencia * -1; //$existencia["stock"]["cant"] * -1;
+                                                                $aux_cantex = ($request->invcant[$b] - $aux_existencia) * -1; // $existencia["stock"]["cant"]) * -1;
+                                                            }else{
+                                                                $aux_cant = $request->invcant[$b] * -1;
+                                                                $aux_cantex = 0;
+                                                            }
+                                                            if($request->staex[$b] == 1){
+                                                                $aux_cant = 0;
+                                                                $aux_cantex = $request->invcant[$b] * -1;
+                                                            }
+                                                            //ACTUALIZAR SALDO DE STOCK EN ARREGLO QUE CONTIENE LA BODEGA DE CADA PRODUCTO
+                                                            $aux_arraystocks[$invbodegaproducto_id]["stock"] = $aux_arraystocks[$invbodegaproducto_id]["stock"] + $aux_cant;
+                                                            /*
+                                                            DB::table('despachosoldet_invbodegaproducto')->updateOrInsert(
+                                                                ['despachosoldet_id' => $request->NVdet_id[$i], 'invbodegaproducto_id' => $request->invbodegaproducto_id[$b]],
+                                                                [
+                                                                    'cant' => $aux_cant,
+                                                                    'cantex' => $aux_cantex
+                                                                ]
+                                                            );
+                                                            */
+                                                            DespachoSolDet_InvBodegaProducto::updateOrCreate(
+                                                                ['despachosoldet_id' => $request->NVdet_id[$i], 'invbodegaproducto_id' => $request->invbodegaproducto_id[$b]],
+                                                                [
+                                                                    'cant' => $aux_cant,
+                                                                    'cantex' => $aux_cantex,
+                                                                    'staex' => is_null($request->staex[$b]) ? 0 : $request->staex[$b]
+                                                                ]
+                                                            );
                                                         }else{
-                                                            $aux_cant = $request->invcant[$b] * -1;
-                                                            $aux_cantex = 0;
+                                                            //AL CAMBIAR EL PICKING A OTRA BODEGA ELIMINO EL MOVIMIENTO EN InvMovDet_BodSolDesp Y LUEGO EN despachosoldet_invbodegaproductos
+                                                            //dd($request->NVdet_id[$i] ."  " . $request->invbodegaproducto_id[$b]);
+                                                            $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id',"=", $request->NVdet_id[$i])
+                                                                    ->where('invbodegaproducto_id',"=", $request->invbodegaproducto_id[$b])
+                                                                    ->get();
+                                                            //dd($despachosoldet_invbodegaproductos);
+                                                            foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+                                                                InvMovDet_BodSolDesp::where('despachosoldet_invbodegaproducto_id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                                //DespachoSolDet_InvBodegaProducto::where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                                //DB::table('despachosoldet_invbodegaproducto')->where('id', $despachosoldet_invbodegaproducto->id)->delete();
+                                                                //DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
+                                                            }
+                                                            DB::table('despachosoldet_invbodegaproducto')
+                                                                ->where('despachosoldet_id', $request->NVdet_id[$i])
+                                                                ->where('invbodegaproducto_id', $request->invbodegaproducto_id[$b])
+                                                                ->delete();
                                                         }
-                                                        if($request->staex[$b] == 1){
-                                                            $aux_cant = 0;
-                                                            $aux_cantex = $request->invcant[$b] * -1;
-                                                        }
-                                                        //ACTUALIZAR SALDO DE STOCK EN ARREGLO QUE CONTIENE LA BODEGA DE CADA PRODUCTO
-                                                        $aux_arraystocks[$invbodegaproducto_id]["stock"] = $aux_arraystocks[$invbodegaproducto_id]["stock"] + $aux_cant;
-                                                        /*
-                                                        DB::table('despachosoldet_invbodegaproducto')->updateOrInsert(
-                                                            ['despachosoldet_id' => $request->NVdet_id[$i], 'invbodegaproducto_id' => $request->invbodegaproducto_id[$b]],
-                                                            [
-                                                                'cant' => $aux_cant,
-                                                                'cantex' => $aux_cantex
-                                                            ]
-                                                        );
-                                                        */
-                                                        DespachoSolDet_InvBodegaProducto::updateOrCreate(
-                                                            ['despachosoldet_id' => $request->NVdet_id[$i], 'invbodegaproducto_id' => $request->invbodegaproducto_id[$b]],
-                                                            [
-                                                                'cant' => $aux_cant,
-                                                                'cantex' => $aux_cantex,
-                                                                'staex' => is_null($request->staex[$b]) ? 0 : $request->staex[$b]
-                                                            ]
-                                                        );
-                                                    }else{
-                                                        //AL CAMBIAR EL PICKING A OTRA BODEGA ELIMINO EL MOVIMIENTO EN InvMovDet_BodSolDesp Y LUEGO EN despachosoldet_invbodegaproductos
-                                                        //dd($request->NVdet_id[$i] ."  " . $request->invbodegaproducto_id[$b]);
-                                                        $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id',"=", $request->NVdet_id[$i])
-                                                                ->where('invbodegaproducto_id',"=", $request->invbodegaproducto_id[$b])
-                                                                ->get();
-                                                        //dd($despachosoldet_invbodegaproductos);
-                                                        foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
-                                                            InvMovDet_BodSolDesp::where('despachosoldet_invbodegaproducto_id', $despachosoldet_invbodegaproducto->id)->delete();
-                                                            //DespachoSolDet_InvBodegaProducto::where('id', $despachosoldet_invbodegaproducto->id)->delete();
-                                                            //DB::table('despachosoldet_invbodegaproducto')->where('id', $despachosoldet_invbodegaproducto->id)->delete();
-                                                            //DespachoSolDet_InvBodegaProducto::destroy($despachosoldet_invbodegaproducto->id);
-                                                        }
-                                                        DB::table('despachosoldet_invbodegaproducto')
-                                                            ->where('despachosoldet_id', $request->NVdet_id[$i])
-                                                            ->where('invbodegaproducto_id', $request->invbodegaproducto_id[$b])
-                                                            ->delete();
                                                     }
                                                 }
                                             }
@@ -1497,21 +1507,24 @@ class DespachoSolController extends Controller
                     //ESTO DEBE IR EL EL PROYECTO FINAL
                     $aux_arraysuc = [];
                     foreach ($despachosol->despachosoldets as $despachosoldet) {
-                        foreach ($despachosoldet->despachosoldet_invbodegaproductos as $sddetbodprod) {
-                            $aux_sucursal_id_producto = $sddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
-                            $aux_bodega_idPicking = 0;
-                            foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
-                                //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
-                                if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
-                                    $aux_arraysuc[] = $invmovmodulobodent->id;
-                                    $aux_bodega_idPicking = $invmovmodulobodent->id;
+                        //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                        if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
+                            foreach ($despachosoldet->despachosoldet_invbodegaproductos as $sddetbodprod) {
+                                $aux_sucursal_id_producto = $sddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
+                                $aux_bodega_idPicking = 0;
+                                foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                                    //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
+                                    if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
+                                        $aux_arraysuc[] = $invmovmodulobodent->id;
+                                        $aux_bodega_idPicking = $invmovmodulobodent->id;
+                                    }
                                 }
-                            }
-                            if($aux_bodega_idPicking == 0){
-                                return response()->json([
-                                    'mensaje' => 'No existe Bodega Picking en Sucursal: ' . $despachosol->notaventa->sucursal->nombre
-                                ]);
-                            }
+                                if($aux_bodega_idPicking == 0){
+                                    return response()->json([
+                                        'mensaje' => 'No existe Bodega Picking en Sucursal: ' . $despachosol->notaventa->sucursal->nombre
+                                    ]);
+                                }
+                            }    
                         }
                     }
                     //ANTES DE PROCESAR SOLICITUD VALIDO QUE LOS PRODUCTOS INVOLUCRADOS TENGAS BODEGA DE PICKING CORRESPONDIENTE A LA SUCURSAL DE CADA PRODUCTO
@@ -1520,10 +1533,13 @@ class DespachoSolController extends Controller
                     //$despachosol = DespachoSol::findOrFail($request->id);
                     $aux_bandera = true;
                     foreach ($despachosol->despachosoldets as $despachosoldet) {
-                        $aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachosoldet->despachosoldet_invbodegaproductos);
-                        if($aux_respuesta["bandera"] == false){
-                            $aux_bandera = $aux_respuesta["bandera"];
-                            break;
+                        //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                        if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
+                            $aux_respuesta = InvBodegaProducto::validarExistenciaStock($despachosoldet->despachosoldet_invbodegaproductos);
+                            if($aux_respuesta["bandera"] == false){
+                                $aux_bandera = $aux_respuesta["bandera"];
+                                break;
+                            }    
                         }
                     }
                     $aux_banderacant = false; //VALIDAR QUE EXISTE AL MENOS 1 PRODUCTO CON CANTIDAD
@@ -1562,23 +1578,25 @@ class DespachoSolController extends Controller
                             $invmov = InvMov::create($invmov_array);
                             array_push($arrayinvmov_id, $invmov->id);
                             foreach ($despachosol->despachosoldets as $despachosoldet) {
-                                foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
-                                    $aux_cant = $oddetbodprod->cant * -1;
-                                    if($aux_cant > 0){
-                                        $array_invmovdet = $oddetbodprod->attributesToArray();
-                                        $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                                        $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
-                                        $array_invmovdet["sucursal_id"] = $despachosol->notaventa->sucursal_id;
-                                        $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
-                                        $array_invmovdet["invmovtipo_id"] = 2;
-                                        $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
-                                        $array_invmovdet["cantxgrupo"] = 1;
-                                        $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
-                                        $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
-                                        $array_invmovdet["invmov_id"] = $invmov->id;
-                                        $invmovdet = InvMovDet::create($array_invmovdet);
-                                    }
-                
+                                //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
+                                    foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
+                                        $aux_cant = $oddetbodprod->cant * -1;
+                                        if($aux_cant > 0){
+                                            $array_invmovdet = $oddetbodprod->attributesToArray();
+                                            $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                                            $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
+                                            $array_invmovdet["sucursal_id"] = $despachosol->notaventa->sucursal_id;
+                                            $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
+                                            $array_invmovdet["invmovtipo_id"] = 2;
+                                            $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                                            $array_invmovdet["cantxgrupo"] = 1;
+                                            $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
+                                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                                            $array_invmovdet["invmov_id"] = $invmov->id;
+                                            $invmovdet = InvMovDet::create($array_invmovdet);
+                                        }
+                                    }    
                                 }
                             }
                             $invmov_array = array();
@@ -1595,41 +1613,44 @@ class DespachoSolController extends Controller
                             $invmov = InvMov::create($invmov_array);
                             array_push($arrayinvmov_id, $invmov->id);
                             foreach ($despachosol->despachosoldets as $despachosoldet) {
-                                foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
-                                    $aux_cant = $oddetbodprod->cant * -1;
-                                    if($aux_cant > 0){
-                                        $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
-                                        foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
-                                            //BUSCAR BODEGA PICKING CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
-                                            if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
-                                                $aux_bodega_idPicking = $invmovmodulobodent->id;
-                                            }
-                                        }            
-                                        $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                                            ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodega_idPicking],
-                                            [
-                                                'producto_id' => $oddetbodprod->invbodegaproducto->producto_id,
-                                                'invbodega_id' => $aux_bodega_idPicking
-                                            ]
-                                        );
-                                        $array_invmovdet = $oddetbodprod->attributesToArray();
-                                        $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
-                                        $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
-                                        $array_invmovdet["invbodega_id"] = $aux_bodega_idPicking;
-                                        $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
-                                        $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
-                                        $array_invmovdet["invmovtipo_id"] = 1;
-                                        $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
-                                        $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
-                                        $array_invmovdet["cantxgrupo"] = 1;
-                                        $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
-                                        $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
-                                        $array_invmovdet["invmov_id"] = $invmov->id;
-                                        $invmovdet = InvMovDet::create($array_invmovdet);
-                                        $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
-                                            'invmovdet_id' => $invmovdet->id,
-                                            'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id
-                                            ]);
+                                //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
+                                    foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
+                                        $aux_cant = $oddetbodprod->cant * -1;
+                                        if($aux_cant > 0){
+                                            $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
+                                            foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
+                                                //BUSCAR BODEGA PICKING CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
+                                                if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
+                                                    $aux_bodega_idPicking = $invmovmodulobodent->id;
+                                                }
+                                            }            
+                                            $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                                                ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodega_idPicking],
+                                                [
+                                                    'producto_id' => $oddetbodprod->invbodegaproducto->producto_id,
+                                                    'invbodega_id' => $aux_bodega_idPicking
+                                                ]
+                                            );
+                                            $array_invmovdet = $oddetbodprod->attributesToArray();
+                                            $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
+                                            $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
+                                            $array_invmovdet["invbodega_id"] = $aux_bodega_idPicking;
+                                            $array_invmovdet["sucursal_id"] = $invbodegaproducto->invbodega->sucursal_id;
+                                            $array_invmovdet["unidadmedida_id"] = $despachosoldet->notaventadetalle->unidadmedida_id;
+                                            $array_invmovdet["invmovtipo_id"] = 1;
+                                            $array_invmovdet["cant"] = $array_invmovdet["cant"] * -1;
+                                            $array_invmovdet["cantgrupo"] = $array_invmovdet["cant"];
+                                            $array_invmovdet["cantxgrupo"] = 1;
+                                            $array_invmovdet["peso"] = $despachosoldet->notaventadetalle->producto->peso;
+                                            $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
+                                            $array_invmovdet["invmov_id"] = $invmov->id;
+                                            $invmovdet = InvMovDet::create($array_invmovdet);
+                                            $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
+                                                'invmovdet_id' => $invmovdet->id,
+                                                'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id
+                                                ]);
+                                        }
                                     }
                                 }
                             }
@@ -1760,7 +1781,12 @@ class DespachoSolController extends Controller
                                         $aux_cantNV = number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".");
                                         $aux_cantSD = number_format($despachosoldet->cantsoldesp, 0, ",", ".");
                                         $aux_unimed = $despachosoldet->notaventadetalle->unidadmedida->nombre;
-                                        $aux_picking = $despachosoldet->despachosoldet_invbodegaproducto->cant * -1;
+                                        $aux_picking = 0;
+                                        //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                        if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
+                                            $aux_picking = $despachosoldet->despachosoldet_invbodegaproducto->cant * -1;
+                                        }
+                                        
                                         /*
                                         $aux_cantSolPrev = $sumacantsoldesp - $aux_cantSD;
                                         $aux_saldoNV = $aux_cantNV - $sumacantsoldesp;

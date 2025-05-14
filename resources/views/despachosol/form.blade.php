@@ -411,7 +411,7 @@
                         @if ($aux_sta==2 or $aux_sta==3)
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
-                                <?php 
+                                <?php
                                     $aux_cant = $detalle->cant;
                                     $notaventadetalleext = null;
                                     if($detalle->notaventadetalleext){
@@ -557,7 +557,11 @@
                                         {{$aux_saldo}}
                                     </td>
                                     <td name="saldocantF{{$aux_nfila}}" id="saldocantF{{$aux_nfila}}" style="text-align:center">
-                                        {{$aux_saldo}}
+                                        @if($detalle->producto->tipoprod == 0)
+                                            {{$aux_saldo}}
+                                        @else
+                                            0
+                                        @endif
                                     </td>
                                     <td class='tooltipsC' style='text-align:center;display:none;' class='tooltipsC' title='Marcar'>
                                         <div class='checkbox'>
@@ -568,10 +572,19 @@
                                         </div>
                                     </td>
                                     <td name="cantsolF{{$aux_nfila}}" id="cantsolF{{$aux_nfila}}" style="text-align:right">
-                                        <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control numerico cantsolsum" onkeyup="actSaldo({{$detalle->cant - $sumacantsoldesp}},{{$aux_nfila}})" style="text-align:right;" readonly/>
+                                        @if($detalle->producto->tipoprod == 0)
+                                            <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control numerico cantsolsum" onkeyup="actSaldo({{$detalle->cant - $sumacantsoldesp}},{{$aux_nfila}})" style="text-align:right;" readonly/>
+                                        @else
+                                            <input type="text" name="cantsol[]" id="cantsol{{$aux_nfila}}" class="form-control numerico cantsolsum" value="{{$aux_cant}}" style="text-align:right;" readonly/>
+                                        @endif
+                                        
                                     </td>
                                     <td name="cantsoldespinputF{{$aux_nfila}}" id="cantsoldespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
-                                        <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" style="text-align:right;"/>
+                                        @if($detalle->producto->tipoprod == 0)
+                                            <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" style="text-align:right;"/>
+                                        @else
+                                            <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" style="text-align:right;" value="{{$aux_cant}}"/>
+                                        @endif
                                     </td>
                                     <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;width: 18% !important">
                                         <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
@@ -640,7 +653,7 @@
                                                         @endif
                                                     @endif
                                                 @endforeach
-                                                @if ($i == 0)
+                                                @if (($i == 0) and ($detalle->producto->tipoprod == 0))
                                                     <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada'>
                                                         <i class='fa fa-fw fa-question-circle text-aqua'></i>
                                                     </a>
@@ -726,13 +739,21 @@
                                         <input type="text" name="precioxkiloreal[]" id="precioxkiloreal{{$aux_nfila}}" class="form-control" value="{{$detalle->precioxkiloreal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalCFTD{{$aux_nfila}}" id="subtotalCFTD{{$aux_nfila}}" class="subtotalCF" style="text-align:right"> 
-                                        0 <!--{{number_format($detalle->subtotal, 2, '.', ',')}}-->
+                                        @if($detalle->producto->tipoprod == 3)
+                                            {{number_format($detalle->subtotal, 0, ',', '.')}}
+                                        @else
+                                            0 <!--{{number_format($detalle->subtotal, 2, '.', ',')}}-->
+                                        @endif                                        
                                     </td>
                                     <td class="subtotalCF" style="text-align:right;display:none;"> 
                                         <input type="text" name="subtotal[]" id="subtotal{{$aux_nfila}}" class="form-control" value="{{$detalle->subtotal}}" style="display:none;"/>
                                     </td>
                                     <td name="subtotalSFTD{{$aux_nfila}}" id="subtotalSFTD{{$aux_nfila}}" class="subtotal" style="text-align:right;display:none;">
-                                        0 <!--{{$detalle->subtotal}}-->
+                                        @if($detalle->producto->tipoprod == 3)
+                                            {{$detalle->subtotal}}
+                                        @else
+                                            0 <!--{{$detalle->subtotal}}-->
+                                        @endif
                                     </td>
                                 </tr>
                                 <?php 

@@ -220,10 +220,15 @@ class Producto extends Model
         $sucurcadena = implode(",", $sucurArray);
         $aux_sucursalidCond = " sucursal.id in ($sucurcadena) ";
         if(!isset($request->tipoprod) or ($request->tipoprod == "undefined") or is_null($request->tipoprod)){
-            $tipoprodCond = "producto.tipoprod = 0";
+            $tipoprodCond = "(producto.tipoprod = 0 or producto.tipoprod = 3)";
         }else{
-            $tipoprodCond = "producto.tipoprod = " . $request->tipoprod;
+            if($request->tipoprod == 0){
+                $tipoprodCond = "(producto.tipoprod = " . $request->tipoprod .  " or producto.tipoprod = 3)";
+            }else{
+                $tipoprodCond = "producto.tipoprod = " . $request->tipoprod;
+            }
         }
+        //dd($request->tipoprod);
         if(isset($request->tipoprod) and $request->tipoprod=="10"){
             $cliente_idCond = " true";
             $aux_sucursalidCond = " true ";

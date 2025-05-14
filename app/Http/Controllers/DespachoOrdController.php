@@ -414,7 +414,7 @@ class DespachoOrdController extends Controller
                     ]); 
                 }    
             }else{
-                //HICE ESTO PATRA VALIDAR TAMBIEN EL PIKING, PERO CON EL PICKING NO HAY PROBLEMA
+                //HICE ESTO PARA VALIDAR TAMBIEN EL PIKING, PERO CON EL PICKING NO HAY PROBLEMA
                 //YA QUE EL PICKING ESTA GUARDADO POR CLIENTE Y POR ITEM
                 //ES DECIR QUE EL STOCK DEL PICKING ES INDIVIDUAL DE CADA ITEM, ASI QUE NO HAY PROBLEMA CON RESPECTO AL STOCK
                 //IGUAL DEBO VALIDAR EL STOCK DEL LADO DEL SERVIDOR, ESO QUEDA PENDIENTE
@@ -519,17 +519,20 @@ class DespachoOrdController extends Controller
                             $despachoorddet->notaventadetalle_id = $request->notaventadetalle_id[$i];
                             $despachoorddet->cantdesp = $request->cantord[$i];
                             if($despachoorddet->save()){
-                                $cont_bodegas = count($request->invcant);
-                                if($cont_bodegas>0){
-                                    for ($b=0; $b < $cont_bodegas ; $b++){
-                                        if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
-                                            $despachoorddet_invbodegaproducto = new DespachoOrdDet_InvBodegaProducto();
-                                            $despachoorddet_invbodegaproducto->despachoorddet_id = $despachoorddet->id;
-                                            $despachoorddet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
-                                            $despachoorddet_invbodegaproducto->cant = $request->invcant[$b] * -1;
-                                            $despachoorddet_invbodegaproducto->save();
+                                //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                if($despachoorddet->notaventadetalle->producto->tipoprod == 0){
+                                    $cont_bodegas = count($request->invcant);
+                                    if($cont_bodegas>0){
+                                        for ($b=0; $b < $cont_bodegas ; $b++){
+                                            if($request->invbodegaproducto_producto_id[$b] == $request->producto_id[$i] and $request->invbodegaproductoNVdet_id[$b] == $request->NVdet_id[$i] and ($request->invcant[$b] != 0)){
+                                                $despachoorddet_invbodegaproducto = new DespachoOrdDet_InvBodegaProducto();
+                                                $despachoorddet_invbodegaproducto->despachoorddet_id = $despachoorddet->id;
+                                                $despachoorddet_invbodegaproducto->invbodegaproducto_id = $request->invbodegaproducto_id[$b];
+                                                $despachoorddet_invbodegaproducto->cant = $request->invcant[$b] * -1;
+                                                $despachoorddet_invbodegaproducto->save();
+                                            }
                                         }
-                                    }
+                                    }    
                                 }
                                 /*
                                 $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
@@ -757,7 +760,10 @@ class DespachoOrdController extends Controller
                                     if($request->cantord[$i]==0){
                                         $despachoorddet->usuariodel_id = auth()->id();
                                         $despachoorddet->save();
-                                        DB::table('despachoorddet_invbodegaproducto')->where('despachoorddet_id', $despachoorddet->id)->delete();
+                                        //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
+                                        if($despachoorddet->notaventadetalle->producto->tipoprod == 0){
+                                            DB::table('despachoorddet_invbodegaproducto')->where('despachoorddet_id', $despachoorddet->id)->delete();
+                                        }                                        
                                         $despachoorddet->delete();
                                     }else{
                                         $cont_bodegas = count($request->invcant);

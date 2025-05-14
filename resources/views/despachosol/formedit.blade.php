@@ -655,6 +655,11 @@
                                                         @endif
                                                     @endif
                                                 @endforeach
+                                                @if (($i == 0) and ($detalle->notaventadetalle->producto->tipoprod == 0))
+                                                    <a style="text-align:center" class='btn-sm tooltipsC' title='Producto sin Bodega Asignada'>
+                                                        <i class='fa fa-fw fa-question-circle text-aqua'></i>
+                                                    </a>
+                                                @endif
                                             </tbody>
                                         </table>
                                     </td>

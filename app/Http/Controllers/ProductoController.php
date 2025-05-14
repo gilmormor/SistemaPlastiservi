@@ -280,7 +280,10 @@ class ProductoController extends Controller
             $productos = CategoriaProd::where('producto.id',$request->id)
             ->when(!$mostrarTodo,function ($query) {
                 // Si $mostrarTodo es falso, agrega la condición para tipoprod=0
-                return $query->where('producto.tipoprod', 0);
+                return $query->where(function ($q) {
+                    $q->where('producto.tipoprod', 0)
+                      ->orWhere('producto.tipoprod', 3);
+                });
             })
             ->join('categoriaprodsuc', 'categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
             ->join('sucursal', 'categoriaprodsuc.sucursal_id', '=', 'sucursal.id')

@@ -293,9 +293,11 @@
                                     <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:right;">
                                         <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
                                             <tbody>
+                                                <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
                                                     @if ($invbodegaproducto->invbodega->sucursal_id == $data->despachosol->sucursal_id)
                                                         <?php
+                                                            $i++;
                                                             //dd($invbodegaproductos);
                                                             $request = new Request();
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;

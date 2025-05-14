@@ -281,10 +281,15 @@
                     @endif
                 >Transicional (Para Hacer Acuerdo Técnico)</option>
                 <option value="2"
-                @if (isset($data) and ($data->tipoprod=='2'))
-                    {{'selected'}}
-                @endif
+                    @if (isset($data) and ($data->tipoprod=='2'))
+                        {{'selected'}}
+                    @endif
                 >Factura Directa</option>
+                <option value="3"
+                    @if (isset($data) and ($data->tipoprod=='3'))
+                        {{'selected'}}
+                    @endif
+                >Servicio</option>
             </select>
         </div>
     </div>
