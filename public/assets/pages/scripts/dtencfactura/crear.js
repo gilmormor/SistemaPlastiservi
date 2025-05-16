@@ -566,9 +566,9 @@ function respableservaloresini(name){
 	
 	//console.log(aux_totalini);
 	//console.log(aux_totalfin);
-	let qtyitem = $("#qtyitem" + i).val();
-	let qtyitemini = $("#qtyitem" + i).attr("valorini");
-	let prcitem = $("#prcitem" + i).val();
+	let qtyitem = parseFloat($("#qtyitem" + i).val());
+	let qtyitemini = parseFloat($("#qtyitem" + i).attr("valorini"));
+	let prcitem = parseFloat($("#prcitem" + i).val());
 	let montoitem = $("#montoitem" + i).val();
 	if((aux_totalfin >= aux_totalini) || qtyitem == "0" || prcitem == "0" || montoitem == "0" || (qtyitem > qtyitemini)){
 		$("#qtyitem" + i).val($("#qtyitem" + i).attr("valorini"));
