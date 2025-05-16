@@ -2780,8 +2780,8 @@ class Dte extends Model
         acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
         materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
         unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
-        sum(DISTINCT IF(ISNULL(dtencnd.codref) OR dtencnd.codref = 1 OR dtencnd.codref = 4,dtedet.qtyitem * foliocontrol.signo, 0000000000.00)) as qtyitem,
-        sum(DISTINCT IF(ISNULL(dtencnd.codref) OR dtencnd.codref = 1 OR dtencnd.codref = 4,dtedet.itemkg * foliocontrol.signo, 0000000000.00)) as itemkg,
+        sum(DISTINCT dtedet.qtyitem * foliocontrol.signo) as qtyitem,
+        sum(DISTINCT dtedet.itemkg * foliocontrol.signo) as itemkg,
         sucursal.nombre as sucursal_nombre,
         sum(DISTINCT dtedet.prcitem * foliocontrol.signo) as prcitem,
         grupoprod.gru_nombre,categoriagrupovalmes.costo,
@@ -2794,9 +2794,9 @@ class Dte extends Model
             WHEN 1 THEN 'Anula Documento de Referencia'
             WHEN 2 THEN 'Corrige Texto Documento Referencia'
             WHEN 3 THEN 'Corrige montos'
-            WHEN 4 THEN 'Devolucion'
             ELSE ''
-        END AS codref_nombre
+        END AS codref_nombre,
+        dte.obs as dte_obs
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet

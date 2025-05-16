@@ -584,7 +584,7 @@ function exportarExcelLosPinos() {
         aux_totalitemkg = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen","Tipo NC ND","NV","Tipo entrega"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen","CodRef","Obs","NV","Tipo entrega"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalitemkg += registro.itemkg;
@@ -653,6 +653,7 @@ function exportarExcelLosPinos() {
                 aux_dteorigen_nrodocto,
                 aux_dteorigen_fchemis,
                 registro.codref_nombre,
+                registro.dte_obs,
                 registro.notaventa_id,
                 registro.tipoentrega_nombre
             ];
@@ -712,7 +713,7 @@ function createExcelLosPinos(datosExcel) {
     
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 41; i++) {
+    for (let i = 1; i <= 43; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -737,7 +738,7 @@ function createExcelLosPinos(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 41; i++) {
+    for (let i = 1; i <= 43; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
