@@ -31,8 +31,8 @@ class ValidarDTENC extends FormRequest
             'codref' => [ //Codigo Referencia que se guarda en tabla dtencnd (Ya que este datos solo es para las nota de crédito y débito.)
                     'required',
                     function ($attribute, $value, $fail) {
-                        if ($value < 1 or $value > 3) {
-                            $fail($attribute . ': Códido de Referencia debe estar entre 1 y 3');
+                        if ($value < 1 or $value > 4) {
+                            $fail($attribute . ': Códido de Referencia debe estar entre 1 y 4');
                         }
                     },
                 ]

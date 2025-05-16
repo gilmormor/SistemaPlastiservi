@@ -2868,7 +2868,7 @@ function totalizarNc(){
 //FUNCTION PARA VALIDAR LO QUE SE MUESTRA EN EL SELECT CODREF
 function validarlistcodrefNc(){
 	$('#codref option').remove();
-	$("#codref").append("<option value=''>Seleccione...</option>");
+	$("#codref").append("<option value='' selected>Seleccione...</option>");
 	let foliocontrol_id = $("foliocontrol_id").val();
 	let tdfoliocontrol_id = $("#tdfoliocontrol_id").val();
 	if($("#tdtotaloriginal").attr("valor") == $("#tdtotalmodificado").attr("valor")){
@@ -2886,7 +2886,8 @@ function validarlistcodrefNc(){
 	}
 	if(tdfoliocontrol_id == 1 || tdfoliocontrol_id == 7){
 		$("#codref").append("<option value='2'>Corrige Texto Documento Referencia</option>");
-		$("#codref").append("<option value='3' selected>Corrige montos</option>");
+		$("#codref").append("<option value='3'>Corrige montos</option>");
+		$("#codref").append("<option value='4'>Devolucion</option>");
 	}
 	$(".selectpicker").selectpicker('refresh');
 }
@@ -2900,9 +2901,10 @@ function totalizarNd(){
 //FUNCTION PARA VALIDAR LO QUE SE MUESTRA EN EL SELECT CODREF
 function validarlistcodrefNd(){
 	$('#codref option').remove();
-	$("#codref").append("<option value=''>Seleccione...</option>");
+	$("#codref").append("<option value='' selected>Seleccione...</option>");
 	if($("#tdfoliocontrol_id").val() == 1 || $("#tdfoliocontrol_id").val() == 7){
-		$("#codref").append("<option value='3' selected>Corrige montos</option>");
+		$("#codref").append("<option value='3'>Corrige montos</option>");
+		$("#codref").append("<option value='4'>Modificar Cant Mercaderia</option>");
 	}else{
 		$("#codref").append("<option value='1'>Anula Documento de Referencia</option>");
 	}

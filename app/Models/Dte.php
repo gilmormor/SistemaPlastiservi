@@ -2780,12 +2780,23 @@ class Dte extends Model
         acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
         materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
         unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
-        sum(DISTINCT dtedet.qtyitem * foliocontrol.signo) as qtyitem,sum(DISTINCT dtedet.itemkg * foliocontrol.signo) as itemkg,sucursal.nombre as sucursal_nombre,
+        sum(DISTINCT IF(ISNULL(dtencnd.codref) OR dtencnd.codref = 1 OR dtencnd.codref = 4,dtedet.qtyitem * foliocontrol.signo, 0000000000.00)) as qtyitem,
+        sum(DISTINCT IF(ISNULL(dtencnd.codref) OR dtencnd.codref = 1 OR dtencnd.codref = 4,dtedet.itemkg * foliocontrol.signo, 0000000000.00)) as itemkg,
+        sucursal.nombre as sucursal_nombre,
         sum(DISTINCT dtedet.prcitem * foliocontrol.signo) as prcitem,
         grupoprod.gru_nombre,categoriagrupovalmes.costo,
         dteorigen.id as dteorigen_id,dteorigen.fchemis as dteorigen_fchemis,dteorigen.nrodocto as dteorigen_nrodocto,
         dteorigen.updated_at as dteorigen_updated_at,
-        foliocontrolorigen.doc as foliocontrolorigen_doc,foliocontrolorigen.nombrepdf as foliocontrolorigen_nombrepdf
+        foliocontrolorigen.doc as foliocontrolorigen_doc,foliocontrolorigen.nombrepdf as foliocontrolorigen_nombrepdf,
+        GROUP_CONCAT(DISTINCT tipoentrega.nombre) AS tipoentrega_nombre,
+        dtencnd.codref as dtencnd_codref,
+        CASE dtencnd.codref
+            WHEN 1 THEN 'Anula Documento de Referencia'
+            WHEN 2 THEN 'Corrige Texto Documento Referencia'
+            WHEN 3 THEN 'Corrige montos'
+            WHEN 4 THEN 'Devolucion'
+            ELSE ''
+        END AS codref_nombre
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet
@@ -2836,6 +2847,10 @@ class Dte extends Model
         ON dtedte.dter_id = dteorigen.id and isnull(dteorigen.deleted_at)
         LEFT JOIN foliocontrol as foliocontrolorigen
         ON dteorigen.foliocontrol_id = foliocontrolorigen.id
+        LEFT JOIN tipoentrega
+        ON tipoentrega.id = notaventa.tipoentrega_id and isnull(tipoentrega.deleted_at)
+        LEFT JOIN dtencnd
+        ON dtencnd.dte_id = dte.id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

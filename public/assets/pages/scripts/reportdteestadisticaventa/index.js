@@ -581,11 +581,13 @@ function exportarExcelLosPinos() {
         datosExcel.push(["Estadistica Ventas","","","","","","","","","","","","","","",data.fechaact]);
         datosExcel.push(["Centro Economico: " + aux_centroeconomicoNombre + " Entre: " + aux_rangofecha,"","","","","","","","","","","","",""]);
         aux_totalMonto = 0;
+        aux_totalitemkg = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen","Tipo NC ND","NV","Tipo entrega"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
+            aux_totalitemkg += registro.itemkg;
             aux_totalComision += registro.comision;
             filainifusionar++;
             aux_length = registro.razonsocial.toString().length
@@ -611,7 +613,6 @@ function exportarExcelLosPinos() {
                 aux_foliocontrolorigen_doc = registro.foliocontrolorigen_doc;
             }
             aux_fecha = new Date(registro.fchemis + " 00:00:00");
-
             var filaExcel = [
                 registro.foliocontrol_doc, //"Tipo Doc",
                 registro.nrodocto, //"NDoc",
@@ -631,8 +632,8 @@ function exportarExcelLosPinos() {
                 registro.montoitem, //"Neto",
                 registro.gru_nombre, //"Categoria",
                 registro.prcitem, //"Precio",
-                registro.itemkg/registro.qtyitem, //"Peso Nominal",
-                registro.itemkg/registro.qtyitem, //"Peso Real",
+                (registro.qtyitem > 0 ? registro.itemkg/registro.qtyitem : 0), //"Peso Nominal",
+                (registro.qtyitem > 0 ? registro.itemkg/registro.qtyitem : 0), //"Peso Real",
                 0, //"Kg Desp",
                 aux_precioxkg, //"Precio x Kg"
                 registro.montoitem, //,"Venta $",
@@ -650,7 +651,10 @@ function exportarExcelLosPinos() {
                 0, //"Margen % peso Nom"
                 aux_foliocontrolorigen_doc,
                 aux_dteorigen_nrodocto,
-                aux_dteorigen_fchemis
+                aux_dteorigen_fchemis,
+                registro.codref_nombre,
+                registro.notaventa_id,
+                registro.tipoentrega_nombre
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -660,7 +664,7 @@ function exportarExcelLosPinos() {
         /* if(aux_totalMonto != 0){
             datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto,""]);
         } */
-        datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto,""]);
+        datosExcel.push(["","","","","","","","","","","","","","Total: ",aux_totalitemkg,aux_totalMonto,""]);
 
         createExcelLosPinos(datosExcel);
 
@@ -696,14 +700,19 @@ function createExcelLosPinos(datosExcel) {
     ajustarcolumnaexcel(worksheet,"H");
     ajustarcolumnaexcel(worksheet,"I");
     ajustarcolumnaexcel(worksheet,"N");
+    ajustarcolumnaexcel(worksheet,"O");
+    ajustarcolumnaexcel(worksheet,"P");
     ajustarcolumnaexcel(worksheet,"Q");
     ajustarcolumnaexcel(worksheet,"AJ");
     ajustarcolumnaexcel(worksheet,"AK");
     ajustarcolumnaexcel(worksheet,"AL");
+    ajustarcolumnaexcel(worksheet,"AM");
+    ajustarcolumnaexcel(worksheet,"AN");
+    ajustarcolumnaexcel(worksheet,"AO");
     
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 38; i++) {
+    for (let i = 1; i <= 41; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -728,7 +737,7 @@ function createExcelLosPinos(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 38; i++) {
+    for (let i = 1; i <= 41; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -983,7 +992,13 @@ function createExcelLosPinos(datosExcel) {
         cell.alignment = { horizontal: "right" };
         cell.numFmt = "#,##0";
     }
-    
+
+    // Establecer negrita y formato numerico a total Kg
+    cell = row.getCell(15);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0.00";
+
 
     // Guardar el archivo
     workbook.xlsx.writeBuffer().then(function(buffer) {

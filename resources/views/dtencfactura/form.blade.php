@@ -40,7 +40,7 @@
 
             <div class="form-group col-xs-12 col-sm-1">
                 <label for="nrodoctoF" class="control-label requerido" data-toggle='tooltip' title="Número Documento (Factura o Nota Crédito">DTE</label>
-                <input type="text" name="nrodoctoF" id="nrodoctoF" class="form-control" style="padding-left: 4px;padding-right: 4px;" value="{{old('nrodoctoF', $data->nrodocto ?? '')}}" required readonly/>
+                <input type="text" name="nrodoctoF" id="nrodoctoF" class="form-control numerico" style="padding-left: 4px;padding-right: 4px;" value="{{old('nrodoctoF', $data->nrodocto ?? '')}}" required readonly maxlength="8"/>
             </div>
             <div class="form-group col-xs-12 col-sm-2">
                 <label for="rut" class="control-label requerido" data-toggle='tooltip' title="RUT">RUT</label>
@@ -150,6 +150,7 @@
                     <option value="1">Anula Documento de Referencia</option>
                     <option value="2">Corrige Texto Documento Referencia</option>
                     <option value="3">Corrige montos</option>
+                    <option value="4">Devolucion</option>
                 </select>
             </div>
             <div class="form-group col-xs-12 col-sm-5">
