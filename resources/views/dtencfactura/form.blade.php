@@ -150,7 +150,7 @@
                     <option value="1">Anula Documento de Referencia</option>
                     <option value="2">Corrige Texto Documento Referencia</option>
                     <option value="3">Corrige montos</option>
-                    <option value="4">Devolucion o diferencia mercadería</option>
+                    {{-- <option value="4">Devolucion o diferencia mercadería</option> --}}
                 </select>
             </div>
             <div class="form-group col-xs-12 col-sm-5">

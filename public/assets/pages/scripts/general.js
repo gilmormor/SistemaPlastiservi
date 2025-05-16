@@ -2887,7 +2887,7 @@ function validarlistcodrefNc(){
 	if(tdfoliocontrol_id == 1 || tdfoliocontrol_id == 7){
 		$("#codref").append("<option value='2'>Corrige Texto Documento Referencia</option>");
 		$("#codref").append("<option value='3'>Corrige montos</option>");
-		$("#codref").append("<option value='4'>Devolucion o diferencia mercadería</option>");
+		//$("#codref").append("<option value='4'>Devolucion o diferencia mercadería</option>");
 	}
 	$(".selectpicker").selectpicker('refresh');
 }
@@ -2904,7 +2904,7 @@ function validarlistcodrefNd(){
 	$("#codref").append("<option value='' selected>Seleccione...</option>");
 	if($("#tdfoliocontrol_id").val() == 1 || $("#tdfoliocontrol_id").val() == 7){
 		$("#codref").append("<option value='3'>Corrige montos</option>");
-		$("#codref").append("<option value='4'>Diferencia mercadería</option>");
+		//$("#codref").append("<option value='4'>Diferencia mercadería</option>");
 	}else{
 		$("#codref").append("<option value='1'>Anula Documento de Referencia</option>");
 	}
