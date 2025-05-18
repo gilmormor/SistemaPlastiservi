@@ -12,7 +12,9 @@ class InvBodegaProducto extends Model
     protected $table = "invbodegaproducto";
     protected $fillable = [
         'producto_id',
-        'invbodega_id'
+        'invbodega_id',
+        'stock',
+        'stockkg'
     ];
 
     //RELACION INVERSA Producto

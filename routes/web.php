@@ -884,6 +884,7 @@ Route::post('invbodegaproducto/consexistencia', 'InvBodegaProductoController@con
 Route::get('invcontrol', 'InvControlController@index')->name('invcontrol');
 Route::get('invcontrolpage', 'InvControlController@invcontrolpage')->name('invcontrolpage');
 Route::post('invcontrol/procesarcierreini', 'InvControlController@procesarcierreini')->name('procesarcierreini_invcontrol');
+Route::post('invcontrol/actualizarstock', 'InvControlController@actualizarstock')->name('actualizarstock_invcontrol');
 
 /*RUTAS REPORTE MOVIMIENTO DE INVENTARIO*/
 Route::get('reportinvmov', 'ReportInvMovController@index')->name('reportinvmov');

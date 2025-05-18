@@ -97,6 +97,32 @@ $(document).ready(function () {
         });
     });
 
+    $("#btnact").click(function()
+    {
+
+        var data = {
+            annomes           : $("#annomes").val(),
+            sucursal_id       : $("#sucursal_id").val(),
+            _token            : $('input[name=_token]').val()
+        };
+    
+
+        var ruta = '/invcontrol/actualizarstock';
+        swal({
+            title: '¿ Seguro desea continuar ?',
+            text: "Esta acción no se puede deshacer!",
+                icon: 'warning',
+            buttons: {
+                cancel: "Cancelar",
+                confirm: "Aceptar"
+            },
+        }).then((value) => {
+            if (value) {
+                ajaxRequest(data,ruta,'btnprocesar');
+            }
+        });
+    });
+
 });
 
 function datos(){

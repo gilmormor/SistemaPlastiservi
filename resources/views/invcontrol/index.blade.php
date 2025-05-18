@@ -44,7 +44,7 @@ Inventario Control
                                         @foreach($sucursales as $sucursal)
                                             <option
                                                 value="{{$sucursal->id}}"
-                                                @if ($sucursal->id == $sucursal_id))
+                                                @if ($sucursal->id == $sucursal_id)
                                                     {{'selected'}}
                                                 @endif
                                             >
@@ -56,9 +56,14 @@ Inventario Control
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-md-5 col-sm-5">
+                    <div class="col-xs-12 col-md-1 col-sm-1">
                         <div class="col-xs-12 col-md-12 col-sm-12 text-center">
                             <button type="button" id="btnprocesar" name="btnprocesar" class="btn btn-success tooltipsC" title="Cerrar mes e iniciar mes siguiente">Procesar</button>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-1 col-sm-1">
+                        <div class="col-xs-12 col-md-12 col-sm-12 text-center">
+                            <button type="button" id="btnact" name="btnact" class="btn btn-success tooltipsC" title="Actualizar Stock">Actualizar</button>
                         </div>
                     </div>
                 </div>

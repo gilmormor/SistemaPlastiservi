@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarInvControl;
 use App\Models\CategoriaGrupoValMes;
+use App\Models\InvBodegaProducto;
 use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
@@ -215,6 +216,11 @@ class InvControlController extends Controller
                             $arrayinvmov_id = array();
                             
                             $invmov = InvMov::create($invmov_array);
+                            //LE ASIGNO 0 A TODOS LOS REGISTROS DE LA TABLA InvBodegaProducto PARA INICIALIZAR STOCK
+                            InvBodegaProducto::query()->update([
+                                'stock' => 0,
+                                'stockkg' => 0,
+                            ]);
                             foreach ($invmovdets as $invmovdet) {            
                                 $array_invmovdet = $invmovdet->attributesToArray();
                                 //dd($array_invmovdet);
@@ -230,6 +236,13 @@ class InvControlController extends Controller
 
                                 $array_invmovdet["invmov_id"] = $invmov->id;
                                 $invmovdet = InvMovDet::create($array_invmovdet);
+
+                                //BUSCO EL REGISTRO DE InvBodegaProducto PARA ACTUALIZAR STOCK
+                                $invbodegaproducto = InvBodegaProducto::findOrFail($invmovdet->invbodegaproducto_id);
+                                $invbodegaproducto->update([
+                                        'stock' => $invmovdet->cant,
+                                        'stockkg' => $invmovdet->cantkg
+                                ]);
                             }
                         }else{
                             $mensaje = 'Mes ya fue cerrado';
@@ -240,6 +253,65 @@ class InvControlController extends Controller
                         $mensaje = 'Mes procesado con exito';
                         $tipomensaje = 'success';
                     }
+                }
+            }
+            return response()->json([
+                'tipomensaje' => $tipomensaje,
+                'mensaje' => $mensaje
+            ]);
+        }
+    }
+
+    public function actualizarstock(Request $request){
+        can('guardar-inventario-control');
+        if ($request->ajax()) {
+            $aux_annomes = CategoriaGrupoValMes::annomes($request->annomes);
+            $tipomensaje = 'error';
+            $mensaje = "";
+            if($aux_annomes != date('Ym')){
+                $mensaje = 'No se puede actualizar Stock de otro mes diferente al actual ' . date('m/Y');
+            }else{
+                $invcontrol = InvControl::where('annomes','=',$aux_annomes)
+                                        ->where('sucursal_id','=',$request->sucursal_id)
+                                        ->get();
+                if(count($invcontrol) == 0){
+                    $mensaje = 'Mes no ha sido aperturado';
+                }else{
+                    $annomesini = date("Ym",strtotime($aux_annomes.'01'."+ 1 month"));
+
+                    $aux_sucursal_id = $request->sucursal_id;
+                    $invmovdets = InvMov::join('invmovdet','invmov.id', '=', 'invmovdet.invmov_id')
+                            ->where("annomes","=",$aux_annomes)
+                            ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
+                            ->select([
+                                        'invbodegaproducto_id',
+                                        'producto_id',
+                                        'invbodega_id',
+                                        'invbodega.sucursal_id',
+                                        'unidadmedida_id',
+                                        'invmovdet.invmovtipo_id',
+                                        DB::raw('sum(cant) as cant'),
+                                        DB::raw('sum(cantkg) as cantkg')
+                                    ])
+                            ->whereNull('invmov.deleted_at')
+                            ->whereNull('invmovdet.deleted_at')
+                            ->where("invbodega.sucursal_id",$aux_sucursal_id)
+                            ->groupBy("invmovdet.invbodegaproducto_id")
+                            ->get();
+                    //LE ASIGNO 0 A TODOS LOS REGISTROS DE LA TABLA InvBodegaProducto PARA INICIALIZAR STOCK
+                    InvBodegaProducto::query()->update([
+                        'stock' => 0,
+                        'stockkg' => 0,
+                    ]);            
+                    foreach ($invmovdets as $invmovdet) {
+                        $invbodegaproducto = InvBodegaProducto::findOrFail($invmovdet->invbodegaproducto_id);
+                        $invbodegaproducto->update([
+                                'stock' => $invmovdet->cant,
+                                'stockkg' => $invmovdet->cantkg
+                        ]);
+                    }
+                    $mensaje = 'Mes procesado con exito';
+                    $tipomensaje = 'success';
                 }
             }
             return response()->json([
