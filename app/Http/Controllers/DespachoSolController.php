@@ -2497,7 +2497,7 @@ function consulta($request,$aux_sql,$orden){
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,notaventa.aprobstatus,visto,notaventa.oc_file,
         comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
         vista_notaventatotales.cant,
         vista_notaventatotales.precioxkilo,
@@ -2541,7 +2541,11 @@ function consulta($request,$aux_sql,$orden){
         clientedesbloqueado.obs as clientedesbloqueado_obs,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
-        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
+        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+        GROUP_CONCAT(
+            CONCAT_WS('|', notaventadetalle.producto_id, notaventadetalle.cant, notaventadetalle.preciounit, notaventadetalle.subtotal,if(ISNULL(vista_sumsoldespdet.cantsoldesp),0,vista_sumsoldespdet.cantsoldesp), 0, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),notaventadetalle.totalkilos)
+            SEPARATOR ';'
+        ) AS nvdetalle
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -2581,6 +2585,10 @@ function consulta($request,$aux_sql,$orden){
         ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
         ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
+        LEFT JOIN vista_sumsoldespdet
+        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
+        LEFT JOIN acuerdotecnico
+        ON acuerdotecnico.producto_id = notaventadetalle.producto_id
 
         WHERE
         categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
@@ -2606,7 +2614,7 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
         AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
-        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
+        notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,notaventa.aprobstatus,visto,notaventa.oc_file,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
         ORDER BY $aux_orden;";
     }
@@ -2759,6 +2767,78 @@ function consulta($request,$aux_sql,$orden){
     }
 
     $datas = DB::select($sql);
+    if($aux_sql==1){
+        $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
+        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        foreach ($datas as &$data) {
+            //dd($data->nvdetalle);
+    
+            // Array para almacenar el resultado final
+            $detalleArrayFinal = [];
+    
+            // Dividir el campo detallenv en registros individuales
+            $detalleArray = explode(';', $data->nvdetalle);
+            //dd($detalleArray);
+    
+            // Crear un array con todos los producto_id
+            $productoIds = array_map(function ($detalle) {
+                return explode('|', $detalle)[0]; // Extraemos solo producto_id
+            }, $detalleArray);
+    
+            // Procesar cada registro de detallenv y agregar el nombre del producto
+            //dd($detalleArray);
+            $aux_statusstock = 0;
+            $aux_statusstockReg = 0;
+            foreach ($detalleArray as $index => $detalle) {
+                $productoarray = Producto::atributosProducto($productoIds[$index]);
+                $producto = Producto::findOrFail($productoIds[$index]);
+                //dd($producto->invbodegaproductos);
+                list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);
+                $bodegas = [];
+                foreach($producto->invbodegaproductos as $invbodegaproducto){
+                    if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)){
+                        if($invbodegaproducto->stock){
+                            $bodegas[] = $invbodegaproducto->invbodega->sucursal->abrev . ": " . $invbodegaproducto->stock;
+                        }
+                        if($invbodegaproducto->stock > 0){
+                            $aux_statusstock = 1;
+                        }
+                        if($invbodegaproducto->stock > ($cant - $cantsoldesp)){
+                            $aux_statusstock = 2;
+                        }
+                        if(($aux_statusstockReg) == 0 or ($aux_statusstockReg == 1)){
+                            if($invbodegaproducto->stock){
+                                $aux_statusstockReg = 1;
+                            }
+                            if($invbodegaproducto->stock >= ($cant - $cantsoldesp)){
+                                $aux_statusstockReg = 2;
+                            }
+                        }
+                    }
+                }
+                //dd($bodegas);
+                if(count($bodegas) > 0){
+                    $bodegasStock = implode(',', $bodegas);
+                }else{
+                    $bodegasStock = 0;
+                }
+                
+                //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
+                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos, $bodegasStock, $aux_statusstock]);
+                $detalleArrayFinal[] = $detalleFinal;
+            }
+            $data->statusstockreg = $aux_statusstockReg;
+            //dd($detalleArrayFinal);
+            //dd(implode(';', $detalleArrayFinal));
+    
+            // Reconstruir el campo detallenv con los nuevos valores
+            $data->nvdetalle = implode(';', $detalleArrayFinal);
+        }
+       
+
+        
+    }
+    //dd($datas);
     filtrarclientesbloqueados($request,$datas);
     return $datas;
 }

@@ -248,6 +248,8 @@ Notas de Venta
                 <table class="table display AllDataTables table-hover table-condensed" id="tabla-data-consulta" data-page-length="50">
                     <thead>
                         <tr>
+                            <th></th>
+                            <th>Flag</th>
                             <th class='tooltipsC' title='Nota de Venta PDF'>NV</th>
                             <th class='tooltipsC' title='Fecha creación Nota de Venta'>Fecha Creación</th>
                             <th class='tooltipsC' title='Fecha aprobación Nota de Venta'>Fecha Aprobado</th>
