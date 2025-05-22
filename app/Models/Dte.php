@@ -2929,10 +2929,10 @@ class Dte extends Model
                     }else{
                         $dte->stasubcob = 1;
                         $dte->save();
-                        Dte::actualizarDataCobranza($dte);
                         $cargadocumentoscobranza["stasubcob"] = $dte->stasubcob;
                         $cargadocumentoscobranza["updated_at"] = date("Y-m-d H:i:s", strtotime($dte->updated_at));
                         Event(new XMLCargaDocManager($dte,$xmlcobranza,$xmlcliente)); //ENVIAR CORREO a gmoreno@plastiservi.cl del contenido del XML
+                        Dte::actualizarDataCobranza($dte);
                         return $cargadocumentoscobranza;
                     }
                 }
@@ -3613,8 +3613,9 @@ class Dte extends Model
         if($TipoDTE == 33 or $TipoDTE == 34){
             $plazopago_id = $dte->cliente->plazopago_id;
             if($plazopago_id != 1){ //FACTURA A CREDITO
-                $datacobranza = $dte->cliente->datacobranza;
-                if(!isset($datacobranza)){
+                if(isset($dte->cliente->datacobranza)){
+                    $datacobranza = $dte->cliente->datacobranza;
+                }else{
                     $datacobranza = new DataCobranza();
                     $datacobranza->cliente_id = $dte->cliente_id;
                     $datacobranza->tfac = 0;
