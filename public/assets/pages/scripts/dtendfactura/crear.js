@@ -620,7 +620,8 @@ function calsubtotalitem(name){
 	$("#subtotalSFTD" + i).html(aux_subtotal);
 	aux_totalkg = (((subtotalkgini / qtyitemini).toFixed(2)) * qtyitem).toFixed(2);
 	$("#subtotalkg" + i).html(MASKLA(aux_totalkg,2));
-	$("#subtotalkg" + i).attr("valor",aux_totalkg)
+	$("#subtotalkg" + i).attr("valor",aux_totalkg);
+	$("#itemkg" + i).val(aux_totalkg);
 	totalizarNdLocal();
 	respableservaloresini(name);
 }

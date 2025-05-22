@@ -135,13 +135,13 @@ class DteNCFacturaController extends Controller
                 $dtedet->prcitem = $request->prcitem[$i]; //$request->montoitem[$i]/$request->qtyitem[$i]; //$request->prcitem[$i];
                 $dtedet->montoitem = round($dtedet->qtyitem * $dtedet->prcitem,0); //$request->montoitem[$i];
                 //$dtedet->obsdet = $request->obsdet[$i];
-                $dtedetorigen = DteDet::findOrFail($request->dtedetorigen_id[$i]);
+                /* $dtedetorigen = DteDet::findOrFail($request->dtedetorigen_id[$i]);
                 if(is_numeric($dtedetorigen->itemkg) and $dtedetorigen->itemkg > 0){
                     $aux_itemkg = ($dtedetorigen->itemkg / $dtedetorigen->qtyitem) * $request->qtyitem[$i];
                 }else{
                     $aux_itemkg = 0;    
-                }
-                //$aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                } */
+                $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
                 $dtedet->itemkg = $aux_itemkg;
                 //$dtedet->save();
                 $dte->dtedets[] = $dtedet;

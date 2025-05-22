@@ -199,6 +199,9 @@ class DteFacturaExentaController extends Controller
                 $dtedet->montoitem = round($dtedet->qtyitem * $dtedet->prcitem,0); //$request->montoitem[$i];
                 //$dtedet->obsdet = $request->obsdet[$i];
                 $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                if($aux_itemkg == 0 and $dtedet->unidadmedida_id == 7){ //SI LA UNIDAD DE MEDIDA ES = 7 (KG) Y NO TIENE PESO, SE ASIGNA $aux_itemkg = $dtedet->qtyitem;
+                    $aux_itemkg = $dtedet->qtyitem;
+                }
                 $dtedet->itemkg = $aux_itemkg;
                 //$dtedet->save();
                 $dte->dtedets[] = $dtedet;
@@ -251,6 +254,7 @@ class DteFacturaExentaController extends Controller
         $respuesta = Dte::dteSolicitarFolio($dte);
         /* $respuesta = [
                     'id' => 1,
+                    'aux_folio' => 1234,
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){

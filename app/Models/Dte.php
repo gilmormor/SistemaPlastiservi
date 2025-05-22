@@ -2780,8 +2780,8 @@ class Dte extends Model
         acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
         materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
         unidadmedida.nombre as unidadmedida_nombre,at_formatofilm,
-        sum(DISTINCT dtedet.qtyitem * foliocontrol.signo) as qtyitem,
-        sum(DISTINCT dtedet.itemkg * foliocontrol.signo) as itemkg,
+        sum(DISTINCT IF(ISNULL(dtencnd.codref) OR dtencnd.codref = 1 OR dtencnd.codref = 4,dtedet.qtyitem * foliocontrol.signo,00000000.00)) as qtyitem,
+        sum(DISTINCT IF(ISNULL(dtencnd.codref) OR dtencnd.codref = 1 OR dtencnd.codref = 4,dtedet.itemkg * foliocontrol.signo,00000000.00)) as itemkg,
         sucursal.nombre as sucursal_nombre,
         sum(DISTINCT dtedet.prcitem * foliocontrol.signo) as prcitem,
         grupoprod.gru_nombre,categoriagrupovalmes.costo,
@@ -2794,6 +2794,7 @@ class Dte extends Model
             WHEN 1 THEN 'Anula Documento de Referencia'
             WHEN 2 THEN 'Corrige Texto Documento Referencia'
             WHEN 3 THEN 'Corrige montos'
+            WHEN 4 THEN 'Diferencia mercaderia'
             ELSE ''
         END AS codref_nombre,
         dte.obs as dte_obs
@@ -2928,6 +2929,7 @@ class Dte extends Model
                     }else{
                         $dte->stasubcob = 1;
                         $dte->save();
+                        Dte::actualizarDataCobranza($dte);
                         $cargadocumentoscobranza["stasubcob"] = $dte->stasubcob;
                         $cargadocumentoscobranza["updated_at"] = date("Y-m-d H:i:s", strtotime($dte->updated_at));
                         Event(new XMLCargaDocManager($dte,$xmlcobranza,$xmlcliente)); //ENVIAR CORREO a gmoreno@plastiservi.cl del contenido del XML
@@ -3602,6 +3604,43 @@ class Dte extends Model
             $i++;
         }
         return $arrays;
+    }
+
+    //INSERTAR FACTURAS A CREDITO EN LAS TABLAS DE COBRANZA
+    //INCLUYO LAS FACTURAS A CREDITO PARA QUE ESTEN DE UNA VEZ EN LA TABLA DE COBRANZA PARA NO ESPERAR AL DIA SIGUIENTE POR LA ACTUALIZACION DE MANAGER
+    public static function actualizarDataCobranza($dte){
+        $TipoDTE = $dte->foliocontrol->tipodocto;
+        if($TipoDTE == 33 or $TipoDTE == 34){
+            $plazopago_id = $dte->cliente->plazopago_id;
+            if($plazopago_id != 1){ //FACTURA A CREDITO
+                $datacobranza = $dte->cliente->datacobranza;
+                if(!isset($datacobranza)){
+                    $datacobranza = new DataCobranza();
+                    $datacobranza->cliente_id = $dte->cliente_id;
+                    $datacobranza->tfac = 0;
+                    $datacobranza->tdeuda = 0;
+                    $datacobranza->tdeudafec = 0;
+                    $datacobranza->nrofacdeu = ""; 
+                }
+                $datacobranza->tfac += $dte->mnttotal;
+                $datacobranza->tdeuda += $dte->mnttotal;
+                $datacobranza->tdeudafec += $dte->mnttotal;
+                $datacobranza->nrofacdeu .= $dte->nrodocto; 
+                if($datacobranza->save()){
+                    $datacobranzadet = new Datacobranzadet();
+                    $datacobranzadet->datacobranza_id = $datacobranza->id;
+                    $datacobranzadet->cliente_id = $datacobranza->cliente_id;
+                    $datacobranzadet->dte_id = $dte->id;
+                    $datacobranzadet->nrofav = $dte->nrodocto;
+                    $datacobranzadet->fecfact = $dte->fchemis;
+                    $datacobranzadet->fecvenc = $dte->dtefac->fchvenc;
+                    $datacobranzadet->mnttot = $dte->mnttotal;
+                    $datacobranzadet->deuda = $dte->mnttotal;
+                    $datacobranzadet->stavencida = 0;
+                    $datacobranzadet->save();
+                }
+            }
+        }
     }
 }
 
@@ -4313,6 +4352,11 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 $aux_nrodocto = $dte->dtedte->dter->nrodocto;
                 $aux_FchEmis = $dte->dtedte->dter->fchemis;
                 $aux_codref = $dte->dtencnd->codref;
+                if($aux_codref == 4){
+                    //EN LA TABLA dtencnd GUARDO 4 PERO AL ENVIAR A XML DEBO ENVIAR 3, PORQUE SOLO PERMITE 1,2,3
+                    //4 ES PARA VALIDAR QUE SE HIZO UNA ND O NC PARA MODIFICAR LA CANTIDAD DE UNIDADES Y KILOS INVOLUCRADOS
+                    $aux_codref = 3;
+                }
                 $RazonRef = strtoupper(sanear_string(substr(empty($dte->obs) ? " " : $dte->obs,0,90)));
     
                 $contenido .= "<Referencia>" .

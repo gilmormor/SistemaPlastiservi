@@ -1380,10 +1380,14 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
                         $dtedet->montoitem = round($request->qtyitem[$i],0);
                     }
                     $dtedet->obsdet = $request->obsdet[$i];
-                    $dtedet->itemkg = $request->itemkg[$i];
+                    $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                    if($aux_itemkg == 0 and $dtedet->unidadmedida_id == 7){ //SI LA UNIDAD DE MEDIDA ES = 7 (KG) Y NO TIENE PESO, SE ASIGNA $aux_itemkg = $dtedet->qtyitem;
+                        $aux_itemkg = $dtedet->qtyitem;
+                    }
+                    $dtedet->itemkg = $aux_itemkg;
                     
                     $Tmntneto += $dtedet->montoitem;
-                    $Tkgtotal += $request->itemkg[$i];
+                    $Tkgtotal += $aux_itemkg;
                     $dtedet_id = $dtedet->id;
                     $dtedet->despachoorddet_id = $request->despachoorddet_id[$i];
                     $dtedet->notaventadetalle_id = $request->notaventadetalle_id[$i];
@@ -1444,21 +1448,15 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dteguiadesp->comunaentrega_id = $request->comunaentrega_id;
     $dteguiadesp->lugarentrega = $request->lugarentrega;
     $dteguiadesp->ot = $request->ot;
-    /*
-    if($dte->cliente_id == 1659){
-        $respuesta = response()->json([
-            'id' => 1
-        ]);    
-    }else{
-        $respuesta = Dte::generardteprueba($dte);
-    }
-    */
     $dte->dteguiadesp = $dteguiadesp;
+
     $respuesta = Dte::dteSolicitarFolio($dte);
     //$respuesta = Dte::generardteprueba($dte);
     /*
     $respuesta = response()->json([
-        'id' => 1
+        'id' => 1,
+        'aux_folio' => 1234,
+
     ]);
     */
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
