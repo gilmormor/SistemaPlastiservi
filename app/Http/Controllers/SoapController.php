@@ -282,6 +282,15 @@ class SoapController extends Controller
 
         // URL del servicio SOAP
         $soapUrl = env('APP_URLMANAGER');
+        if($soapUrl == "0"){
+            return [
+                "id" => 1,
+                "response" => "Local Ambiente desarrollo",
+                "titulo" => "Procesado",
+                "mensaje" => "Procesado con exito.",
+                "tipo_alert" => "success"
+            ];
+        }
 
         // Cuerpo de la solicitud SOAP
         $soapRequest = '<?xml version="1.0" encoding="utf-8"?>
@@ -371,6 +380,13 @@ class SoapController extends Controller
 
         // URL del servicio SOAP
         $soapUrl = env('APP_URLMANAGER');
+
+        if($soapUrl == "0"){
+            return [
+                "id" => 1,
+                "response" => "Local Ambiente desarrollo",
+            ];
+        }
 
         // Cuerpo de la solicitud SOAP
         $soapRequest = '<?xml version="1.0" encoding="utf-8"?>
