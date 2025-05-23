@@ -3628,7 +3628,7 @@ class Dte extends Model
                 $datacobranza->tdeudafec += $dte->mnttotal;
                 $datacobranza->nrofacdeu .= $dte->nrodocto; 
                 if($datacobranza->save()){
-                    $datacobranzadet = new Datacobranzadet();
+                    $datacobranzadet = new DataCobranzaDet();
                     $datacobranzadet->datacobranza_id = $datacobranza->id;
                     $datacobranzadet->cliente_id = $datacobranza->cliente_id;
                     $datacobranzadet->dte_id = $dte->id;
