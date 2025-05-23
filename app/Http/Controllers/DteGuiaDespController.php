@@ -1453,11 +1453,10 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     //$respuesta = Dte::dteSolicitarFolio($dte);
     //$respuesta = Dte::generardteprueba($dte);
     
-    $respuesta = response()->json([
+    $respuesta = [
         'id' => 1,
-        'aux_folio' => 1234,
-
-    ]);
+        'aux_folio' => '1234'
+    ];
    
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta["id"] == 1){
