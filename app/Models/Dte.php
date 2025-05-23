@@ -1880,6 +1880,7 @@ class Dte extends Model
         $soap = new SoapController();
         $tipoArch = "XML";
         $ArchivoTXT = dtefacturaprueba($dte,$dte->nrodocto,$tipoArch);
+        dd($ArchivoTXT);
         $Carga_TXTDTE = $soap->Carga_TXTDTE($ArchivoTXT,$tipoArch);
         if(isset($Carga_TXTDTE->Estatus)){
             //ACTUALIZO EL CAMPO nrodocto

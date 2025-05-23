@@ -1450,15 +1450,15 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dteguiadesp->ot = $request->ot;
     $dte->dteguiadesp = $dteguiadesp;
 
-    $respuesta = Dte::dteSolicitarFolio($dte);
+    //$respuesta = Dte::dteSolicitarFolio($dte);
     //$respuesta = Dte::generardteprueba($dte);
-    /*
+    
     $respuesta = response()->json([
         'id' => 1,
         'aux_folio' => 1234,
 
     ]);
-    */
+   
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta["id"] == 1){
         $dte->fchemisgen = date("Y-m-d H:i:s");
