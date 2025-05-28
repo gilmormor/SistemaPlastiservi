@@ -214,7 +214,6 @@ class Dte extends Model
         return $this->hasMany(DataCobranzaDet::class);
     }
     
-    
     public static function reportguiadesppage($request){
         $user = Usuario::findOrFail(auth()->id());
         if(empty($request->vendedor_id)){
@@ -419,7 +418,9 @@ class Dte extends Model
         AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nombrepdf,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
-        dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,dte.updated_at as dteupdated_at,
+        dte_rel_guia.id as guiaorigenprecio_id,
+        dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,
+        dte.updated_at as dteupdated_at,
         dteguiausada.id as dteguiausada_id,dteguiausada.updated_at as dteguiausadaupdated_at,
         dte.usuario_id,usuario.usuario
         FROM dte INNER JOIN dtedet

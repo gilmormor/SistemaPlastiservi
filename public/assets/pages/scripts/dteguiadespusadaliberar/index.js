@@ -108,15 +108,15 @@ $(document).ready(function () {
                 aux_text = "";
                 if(data.nrodocto){
                     aux_text = 
-                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','')">
+                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto}" onclick="genpdfFACDin('${data.id}',0)">
                             ${data.nrodocto}
                         </a>
-                        <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">
+                        <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfFACDin('${data.id}',1)" style="padding-left: 0px;">
                             <i class="fa fa-fw fa-file-pdf-o"></i>
                         </a>`;
                         if(data.guiaorigenprecio_nrodocto != null){
                             aux_text +=
-                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="" data-original-title="Guia Despacho origen: ${data.guiaorigenprecio_nrodocto}" onclick="genpdfGD('${data.guiaorigenprecio_nrodocto}','')">
+                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="" data-original-title="Guia Despacho origen: ${data.guiaorigenprecio_nrodocto}"  onclick="genpdfFACDin('${data.guiaorigenprecio_id}',0)">
                                 <i class="fa fa-fw fa-question-circle text-aqua"></i>
                             </a>`;
                         }

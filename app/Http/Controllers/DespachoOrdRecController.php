@@ -988,7 +988,9 @@ function consultaorddesp($request){
             despachoord.aprguiadesp,despachoord.aprguiadespfh,
             despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura,
             despachoordanul.id as despachoordanul_id,
-            notaventacerrada.id as notaventacerrada_id
+            notaventacerrada.id as notaventacerrada_id,
+            dteguia.id as dteguia_id,
+            dtefactura.id as dtefactura_id
             FROM despachoord INNER JOIN despachoorddet
             ON despachoord.id=despachoorddet.despachoord_id
             INNER JOIN notaventa
@@ -1011,6 +1013,10 @@ function consultaorddesp($request){
             ON vista_sumrecorddespdet.despachoorddet_id=despachoorddet.id
             left join notaventacerrada
             on notaventacerrada.notaventa_id=notaventa.id and isnull(notaventacerrada.deleted_at)
+            LEFT JOIN dte AS dteguia
+            ON dteguia.nrodocto = despachoord.guiadespacho
+            LEFT JOIN dte AS dtefactura
+            ON dtefactura.nrodocto = despachoord.numfactura
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condFechaFac

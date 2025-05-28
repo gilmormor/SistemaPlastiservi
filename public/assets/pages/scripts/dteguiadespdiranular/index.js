@@ -42,7 +42,7 @@ $(document).ready(function () {
             id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
             `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick="genpdfFACDin('${data.id}',0)">
-                #{data.id}
+                ${data.id}
             </a>`;
             $('td', row).eq(0).html(aux_text);
 

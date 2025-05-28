@@ -258,6 +258,18 @@ function consultarpage(data){
             $('td', row).eq(11).attr('style','text-align:center');
 
             aux_text =
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.guiadespacho}" onclick="genpdfFACDin('${data.dteguia_id}',0)">
+                ${data.guiadespacho}
+            </a>`;
+            $('td', row).eq(9).html(aux_text);
+            aux_text =
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Factura: ${data.numfactura}" onclick="genpdfFACDin('${data.dtefactura_id}',0)">
+                ${data.numfactura}
+            </a>`;
+            $('td', row).eq(11).html(aux_text);
+
+
+            aux_text =
                 "<a id='btndespachoordrec' name='btndespachoordrec' href='" + $("#rutacrearrec").val() + data.id + "' class='btn-accion-tabla tooltipsC btndespachoordrec' title='Hacer Rechazo' valor='" + data.id + "'>" +
                     "<button type='button' class='btn btn-default btn-xs'>" +
                         "<i class='fa fa-fw fa-undo'></i>" +

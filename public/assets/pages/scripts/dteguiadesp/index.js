@@ -94,12 +94,12 @@ $(document).ready(function () {
                 aux_indtrasladodesc = "T";
             }
             aux_text = 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>" +
-                        data.nrodocto +
-                    "</a>:" +
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")'>" +
-                        data.nrodocto + " " + aux_indtrasladodesc
-                    "</a>";
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick="genpdfFACDin('${data.id}',0)">
+                        ${data.nrodocto}
+                    </a>:
+                    <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick="genpdfFACDin('${data.id}',1)">
+                        ${data.nrodocto} ${aux_indtrasladodesc}
+                    </a>`;
             $('td', row).eq(8).html(aux_text);
             $('td', row).eq(8).attr('style','text-align:center');
             

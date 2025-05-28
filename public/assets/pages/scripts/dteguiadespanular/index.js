@@ -72,9 +72,9 @@ $(document).ready(function () {
                 "</a>";
             $('td', row).eq(7).html(aux_text);
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
-                    + data.nrodocto +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0)">
+                    ${data.nrodocto}
+                </a>`;
             $('td', row).eq(8).html(aux_text);
             $('td', row).eq(8).attr('style','text-align:center');
             $('td', row).eq(10).attr('data-order',data.kgtotal);

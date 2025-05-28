@@ -1580,7 +1580,10 @@ class DespachoOrdController extends Controller
                         //ES DECIR QUE SE HIZO UNA GUIA PREVIA DE VENTA QUE SE ORIGINO DESDE UNA NOTA DE VENTA Y LUEGO SE DESPACHO CON UNA GUIA DE TRASLADO
                         //SE HACE UNA GUIA DE TRASLADO PORQUE SE SUPONE QUE YA SE HIZO PREVIAMENTE UNA GUIA DE VENTA
                         //$enlaceDteOrigen EN ESTA VARIABLE ALMACENO LA GUIA PREVIA
-                        $sql = "SELECT dte.id,dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,dte.indtraslado,
+                        $sql = "SELECT dte.id,
+                            dte_rel_guia.id as guiaorigenprecio_id,
+                            dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,
+                            dte.indtraslado,
                             dte_rel_guia.indtraslado as indtrasladoorigen
                             FROM dte 
                             LEFT JOIN dtedte as dtedte_rel_guia
@@ -1595,7 +1598,8 @@ class DespachoOrdController extends Controller
                             $guiaorigenprecio_nrodocto = $dte[0]->guiaorigenprecio_nrodocto;
                             $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtrasladoorigen);
                             $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
-                            $enlaceDteOrigen = "<a class='btn-accion-tabla btn-sm tooltipsC' title='' data-original-title='Guia Despacho origen: $guiaorigenprecio_nrodocto $tipotrasladoDesc' onclick='genpdfGD($guiaorigenprecio_nrodocto,\"\",\"myModalTablaOD\")'>
+                            $aux_dte_id = $dte[0]->id;
+                            $enlaceDteOrigen = "<a class='btn-accion-tabla btn-sm tooltipsC' title='' data-original-title='Guia Despacho origen: $guiaorigenprecio_nrodocto $tipotrasladoDesc' onclick='genpdfFACDin(\"$aux_dte_id\",0,\"myModalTablaOD\")'>
                                 <i class='fa fa-fw fa-question-circle text-aqua'></i>
                             </a>";
                         }
@@ -1603,7 +1607,8 @@ class DespachoOrdController extends Controller
                             $arrayDTEtipotraslado = dtetipotraslado($dte[0]->indtraslado);
                             $tipotrasladoDesc = $arrayDTEtipotraslado["desc"];
                             $tipotrasladoLetra = $arrayDTEtipotraslado["letra"];
-                            $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfGD($aux_numguia,\"\",\"myModalTablaOD\")' data-original-title='Guia Despacho $tipotrasladoDesc'>
+                            $aux_dte_id = $dte[0]->id;
+                            $aux_enlaceguia = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$aux_dte_id\",1,\"myModalTablaOD\")' data-original-title='Guia Despacho $tipotrasladoDesc'>
                                                 $aux_numguia $tipotrasladoLetra $enlaceDteOrigen
                                                 </a>";
 
@@ -1618,7 +1623,7 @@ class DespachoOrdController extends Controller
                             $dte = Dte::findOrFail($dte[0]->id);
                             $aux_numfac = $despachoord->numfactura;
                             $nrodocto_str = $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT);
-                            $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='Factura'>
+                            $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dte->id\",0,\"myModalTablaOD\")' data-original-title='Factura'>
                                 $dte->nrodocto
                             </a>";
                             $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");
@@ -1630,7 +1635,7 @@ class DespachoOrdController extends Controller
                                     $aux_nrodocto = $dtefac->dte->nrodocto;
                                     $nrodocto_str = $dtefac->dte->foliocontrol->nombrepdf . str_pad($aux_nrodocto, 8, "0", STR_PAD_LEFT);
                                     $aux_foliodesc = $dtefac->dte->foliocontrol->desc;
-                                    $aux_enlacencnd .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='$aux_foliodesc'>
+                                    $aux_enlacencnd .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dte->id\",1,\"myModalTablaOD\")' data-original-title='$aux_foliodesc'>
                                         $aux_nrodocto
                                     </a>";
         
@@ -1875,6 +1880,7 @@ class DespachoOrdController extends Controller
                     $aux_verguia = "";
                     foreach ($despachoord->dteguiadesps as $dteguiadesp) {
                         $aux_nrodocto = $dteguiadesp->dte->nrodocto;
+                        $aux_dte_id_GD = $dteguiadesp->dte->id;
                         $aux_anuladaGD = "";
                         if(isset($dteguiadesp->dte->dteanul)){
                             $aux_usuario = $dteguiadesp->dte->dteanul->usuario->nombre;
@@ -1918,7 +1924,7 @@ class DespachoOrdController extends Controller
                         if(isset($dteguiadesp->dte->dtedter->dte->nrodocto)){
                             $dtefac = $dteguiadesp->dte->dtedter->dte;
                             $nrodocto_str = $dtefac->foliocontrol->nombrepdf . str_pad($dtefac->nrodocto, 8, "0", STR_PAD_LEFT);
-                            $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFAC(\"$nrodocto_str\",\"\",\"myModalTablaOD\")' data-original-title='Factura'>
+                            $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dtefac->id\",0,\"myModalTablaOD\")' data-original-title='Factura'>
                                 FC:$dtefac->nrodocto
                             </a>";
     
@@ -1927,7 +1933,7 @@ class DespachoOrdController extends Controller
 
                         
                         $aux_verguia .= 
-                            "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Guia Despacho' onclick='genpdfGD($aux_nrodocto,1,\"myModalTablaOD\")'>
+                            "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Guia Despacho' onclick='genpdfFACDin(\"$aux_dte_id_GD\",0,\"myModalTablaOD\")'>
                                 GD$aux_tipoGD:$aux_nrodocto
                             </a>
                             $ir_indexGuiaDesp

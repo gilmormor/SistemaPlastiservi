@@ -97,12 +97,12 @@ $(document).ready(function () {
             aux_text = "";
             if(data.nrodocto != "" && data.nrodocto != null){
                 aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
-                    + data.nrodocto +
-                "</a>:" +
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: "+ data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")' style='padding-left: 0px;'>"+
-                    "<i class='fa fa-fw fa-file-pdf-o'></i>" +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick="genpdfFACDin('${data.id}',0)">
+                    ${data.nrodocto}
+                </a>:
+                <a class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',1)" style='padding-left: 0px;'>
+                    <i class='fa fa-fw fa-file-pdf-o'></i>
+                </a>`;
             }
             $('td', row).eq(9).html(aux_text);
 

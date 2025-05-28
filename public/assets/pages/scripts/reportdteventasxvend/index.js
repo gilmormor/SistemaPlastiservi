@@ -181,10 +181,10 @@ function consultarpage(aux_data){
                     id_str = arr_pdftipodte_origen[i] + id_str.padStart(8, "0");
                     
                     aux_text += 
-                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFACDin('${arr_dte_id_origen[i]}',0)">
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick="genpdfFACDin('${arr_dte_id_origen[i]}',0)">
                         ${arr_nrodocto_origen[i]}
                     </a>:
-                    <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFACDin('${arr_dte_id_origen[i]}',1)">
+                    <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho Cedible' onclick="genpdfFACDin('${arr_dte_id_origen[i]}',1)">
                         ${arr_nrodocto_origen[i]}
                     </a>`;
                     if((i+1) < arr_nrodocto_origen.length){

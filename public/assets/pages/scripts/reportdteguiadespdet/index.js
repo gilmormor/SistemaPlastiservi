@@ -103,7 +103,7 @@ function consultarpage(aux_data){
                 id_str = "DTE_T33FE" + id_str.padStart(8, "0");
                 if(data.fact_nrodocto != null){
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc}" onclick="genpdfFACDin('${data.fact_dte_id}',0)">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.fact_nrodocto}" onclick="genpdfFACDin('${data.fact_dte_id}',0)">
                         ${data.fact_nrodocto}
                     </a>
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible:${data.fact_nrodocto}" onclick="genpdfFACDin('${data.fact_dte_id}','_cedible')">

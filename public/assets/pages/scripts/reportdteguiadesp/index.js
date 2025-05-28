@@ -117,8 +117,8 @@ $(document).ready(function () {
                             <i class="fa fa-fw fa-file-pdf-o"></i>
                         </a>`;
                         if(data.guiaorigenprecio_nrodocto != null){
-                            aux_text +=
-                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="" data-original-title="Guia Despacho origen: ${data.guiaorigenprecio_nrodocto}" onclick="genpdfGD('${data.guiaorigenprecio_nrodocto}','')">
+                            aux_text += 
+                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="" data-original-title="Guia Despacho origen: ${data.guiaorigenprecio_nrodocto}" onclick="genpdfFACDin('${data.guiaorigenprecio_id}',0)">
                                 <i class="fa fa-fw fa-question-circle text-aqua"></i>
                             </a>`;
                         }

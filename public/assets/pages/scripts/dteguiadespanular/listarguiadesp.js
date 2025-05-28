@@ -99,9 +99,9 @@ $(document).ready(function () {
             $('td', row).eq(7).html(aux_text);
             aux_indtra = indtrasladoObj(data.indtraslado);
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + " " +  aux_indtra.desc +  "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
-                    + data.nrodocto +  " " + aux_indtra.letra +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: ${data.nrodocto} ${aux_indtra.desc}' onclick="genpdfFACDin('${data.id}',0)">
+                    ${data.nrodocto} ${aux_indtra.letra}
+                </a>`;
             $('td', row).eq(8).html(aux_text);
 
 
