@@ -444,14 +444,14 @@ function llenarItemFact(data,dte){
 	activarClases();
 
 	if($("#tdfoliocontrol_id").val() == 1){
-		aux_txt = "Factura: <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + $("#nrodoctoF").val() + ",\"\")'>" +
-			$("#nrodoctoF").val() +
-		"</a>";
+		aux_txt = `Factura: <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick="genpdfFACDin('${dte.id}',0)">
+			${$("#nrodoctoF").val()}
+		</a>`;
 	}
 	if($("#tdfoliocontrol_id").val() == 5){
-		aux_txt = "Factura: <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfNC(" + $("#nrodoctoF").val() + ",\"\")'>" +
-			$("#nrodoctoF").val() +
-		"</a>";
+		aux_txt = `Factura: <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick="genpdfFACDin('${dte.id}',0)">
+			${$("#nrodoctoF").val()}
+		</a>`;
 	}
 	$("#dtencdet").html(aux_txt);
 

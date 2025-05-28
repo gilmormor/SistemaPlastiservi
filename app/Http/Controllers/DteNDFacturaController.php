@@ -434,6 +434,7 @@ function consultaindex($dte_id){
                         GROUP BY dte.id;";
             $guia = DB::select($sql);
             if(count($guia) > 0){
+                $dteDocs[$i]->dte_id_fac = $guia[0]->id;
                 $dteDocs[$i]->nrodocto_fac = $guia[0]->nrodocto_fac;
                 $dteDocs[$i]->cotizacion_id = $guia[0]->cotizacion_id ? $guia[0]->cotizacion_id : "";
                 $dteDocs[$i]->oc_id = $guia[0]->oc_id;
@@ -446,6 +447,7 @@ function consultaindex($dte_id){
                 $dteDocs[$i]->nrodocto_guiadesp = $guia[0]->nrodocto_guiadesp ? $guia[0]->nrodocto_guiadesp : "";
                 //dd($dteDocs[$i]);    
             }else{
+                $dteDocs[$i]->dte_id_fac = "";
                 $dteDocs[$i]->nrodocto_fac = "";
                 $dteDocs[$i]->cotizacion_id = "";
                 $dteDocs[$i]->oc_id = "";

@@ -226,7 +226,6 @@ function ajaxRequest(data,url,funcion) {
 		success: function (respuesta) {
 			if(funcion=='guardarguiadesp'){
 				if (respuesta.id != 0) {
-                    //genpdfFAC(respuesta.nrodocto,"_U");
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {

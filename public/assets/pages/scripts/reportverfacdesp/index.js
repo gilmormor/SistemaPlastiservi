@@ -145,10 +145,10 @@ $(document).ready(function () {
             let id_str = data.nrodocto_factura.toString();
             id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="cargarvistoFac(this,'${id_str}','')" item=${data.id}>
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="cargarvistoFac(this,'${id_str}',0)" item=${data.id}>
                     ${data.nrodocto_factura}
                 </a>,
-                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="cargarvistoFac(this,'${id_str}','_cedible')" item=${data.id}>
+                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="cargarvistoFac(this,'${id_str}',1)" item=${data.id}>
                     ${data.nrodocto_factura}
                 </a>`;
             $('td', row).eq(11).html(aux_text);
@@ -194,7 +194,7 @@ function ajaxRequest(data,url,funcion) {
             if(funcion=='staverfacdesp'){
 				if (respuesta.error == 0) {
                     $("#fila" + aux_data.dte_id).remove();
-                    genpdfFAC(aux_data.id_str,aux_data.cedible);
+                    genpdfFACDin(aux_data.dte_id,aux_data.cedible);
                     //$("#dtefac_updated_at" + aux_data.dte_id).html(respuesta.dtefac_updated_at);
 				}
             }

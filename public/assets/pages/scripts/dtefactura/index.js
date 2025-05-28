@@ -45,9 +45,9 @@ $(document).ready(function () {
             let id_str = data.nrodocto_factura.toString();
             id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
-                data.id +
-            "</a>";
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.id}',0)">
+                ${data.id}
+            </a>`;
             $('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
@@ -137,17 +137,18 @@ $(document).ready(function () {
 
 
             aux_text1 = "";
-            if(data.nrodocto_guiadesp !== null){
+            if(data.dte_id_guiadesp !== null){
+                let arr_dte_id_guiadesp = data.dte_id_guiadesp.split(','); 
                 let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
-                for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
+                for (let i = 0; i < arr_dte_id_guiadesp.length; i++){
                     aux_text1 += 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
-                        arr_nrodocto_guiadesp[i] +
-                    "</a>:"+
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: " + arr_nrodocto_guiadesp[i] + "' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"_cedible\")'>" +
-                        "<i class='fa fa-fw fa-file-pdf-o'></i>" +
-                    "</a>";
-                    if((i+1) < arr_nrodocto_guiadesp.length){
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick="genpdfFACDin('${arr_dte_id_guiadesp[i]}',0)">
+                        ${arr_nrodocto_guiadesp[i]}
+                    </a>:
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${arr_nrodocto_guiadesp[i]}" onclick="genpdfFACDin('${arr_dte_id_guiadesp[i]}',1)">
+                        <i class='fa fa-fw fa-file-pdf-o'></i>
+                    </a>`;
+                    if((i+1) < arr_dte_id_guiadesp.length){
                         aux_text1 += ",";
                     }
                 }    
@@ -185,12 +186,12 @@ $(document).ready(function () {
             //$('td', row).eq(10).html(aux_text2);
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
-                data.nrodocto_factura +
-            "</a>:" +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: " + data.nrodocto_factura + "' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
-                "<i class='fa fa-fw fa-file-pdf-o'></i>" +
-            "</a>";
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.id}',0)">
+                ${data.nrodocto_factura}
+            </a>:
+            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto_factura}" onclick="genpdfFACDin('${data.id}',1)">
+                <i class="fa fa-fw fa-file-pdf-o"></i>
+            </a>`;
             $('td', row).eq(10).html(aux_text);
 
             if(data.clientebloqueado_descripcion != null){

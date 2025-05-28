@@ -43,6 +43,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
+use Barryvdh\DomPDF\Facade as PDF;
+
 
 class DteFacturaController extends Controller
 {
@@ -1209,6 +1211,34 @@ class DteFacturaController extends Controller
         $respuesta = Dte::subirSisCobranza($dte);
         return $respuesta;
     }
+
+    public function Pdfdin($id,$cedible)
+    {
+        if(can('ver-pdf-factura',false)){
+            $dte = Dte::findOrFail($id);
+            $repuesta = Dte::consultarpdfdteBes($dte);
+            //dd($repuesta);
+            if($repuesta["id"] == 0){
+                return response($repuesta["mensaje"], 500);
+            }
+            if($cedible == 0){
+                $base64 = $repuesta["consulta_TXTDTE"]->PDF;
+            }else{
+                $base64 = $repuesta["consulta_TXTDTE"]->PDFCedible;
+            }
+
+            if (strpos($base64, '%PDF') === 0) {
+                $pdfContent = $base64;
+                return response($pdfContent)->header('Content-Type', 'application/pdf');
+            } else {
+                return response('Contenido no válido de PDF', 500);
+            }
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
+        }
+    }
 }
 
 
@@ -1240,6 +1270,11 @@ function consultaindex($dte_id){
     ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
     WHERE dtedte1.dte_id = dte.id
     GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
+    (SELECT GROUP_CONCAT(DISTINCT dte1.id) 
+    FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+    ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+    WHERE dtedte1.dte_id = dte.id
+    GROUP BY dtedte1.dte_id) AS dte_id_guiadesp,
     foliocontrol.tipodocto,foliocontrol.nombrepdf,
     dteoc.oc_id as dteoc_oc_id,dteoc.oc_folder as dteoc_oc_folder,dteoc.oc_file as dteoc_oc_file,
     dte.updated_at,

@@ -183,12 +183,13 @@ $(document).ready(function () {
     
                 aux_text = "";
                 if(data.nrodocto_guiadesp != null){
-                    let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
+                    let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(',');
+                    let arr_dte_id_guiadesp = data.dte_id_guiadesp.split(',');
                     for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
                         id_strgd = arr_nrodocto_guiadesp[i].toString();
                         id_strgd = data.nombrepdf_guiadesp + id_strgd.padStart(8, "0");
                         aux_text += 
-                        `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick="genpdfGD('${arr_nrodocto_guiadesp[i]}','')">
+                        `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick="genpdfFACDin('${arr_dte_id_guiadesp[i]}',0)">
                             ${arr_nrodocto_guiadesp[i]}
                         </a>
                         <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Guia" onclick="descArcTXT('${id_strgd}.xml')">
@@ -204,12 +205,13 @@ $(document).ready(function () {
     
                 aux_text = "";
                 if(data.nrodocto_guiadesp != null){
-                    let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
+                    let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(',');
+                    let arr_dte_id_guiadesp = data.dte_id_guiadesp.split(',');
                     for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
                         aux_text += 
-                        "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"_cedible\")'>" +
-                            arr_nrodocto_guiadespced[i] +
-                        "</a>";
+                        `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick="genpdfFACDin('${arr_dte_id_guiadesp[i]}',1)">
+                            ${arr_nrodocto_guiadespced[i]}
+                        </a>`;
                         if((i+1) < arr_nrodocto_guiadespced.length){
                             aux_text += ",";
                         }
@@ -223,10 +225,10 @@ $(document).ready(function () {
                 aux_text = "";
                 if(data.nrodocto != null){
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Usuario: ${data.usuario}" onclick="genpdfFAC('${id_str}','')">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Usuario: ${data.usuario}" onclick="genpdfFACDin('${data.id}',0)">
                         ${data.nrodocto}
                     </a>
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.id}',1)">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">

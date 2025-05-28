@@ -1174,6 +1174,8 @@ Route::post('dtefactura/staverfacdesp', 'DteFacturaController@staverfacdesp')->n
 Route::post('dtefactura/devolverguiadesp', 'DteFacturaController@devolverguiadesp')->name('dtefactura_devolverguiadesp');
 Route::post('dtefactura/descargar-xml', 'DteFacturaController@descargarXml')->name('dtefactura_descargarXml');
 Route::post('dtefactura/volverSubirDteSisCob', 'DteFacturaController@volverSubirDteSisCob')->name('volverSubirDteSisCob_dtefactura');
+Route::get('dtefactura/{id}/{cedible}/Pdfdin', 'DteFacturaController@Pdfdin')->name('Pdfdin_dtefactura');
+
 
 /*RUTAS REPORTE DTE FACTURA*/
 Route::get('reportdtefac', 'ReportDTEFacController@index')->name('reportdtefac');

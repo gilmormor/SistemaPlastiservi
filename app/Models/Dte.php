@@ -404,6 +404,12 @@ class Dte extends Model
         WHERE dtedte1.dter_id = dte.id
         AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
+        (SELECT GROUP_CONCAT(DISTINCT dte1.id) AS id
+        FROM dtedte as dtedte1 INNER JOIN dte as dte1
+        ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dter_id = dte.id
+        AND (dte1.foliocontrol_id = 1) 
+        AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_dte_id,
         (SELECT GROUP_CONCAT(DISTINCT foliocontrol.nombrepdf) AS nombrepdf
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
         ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
@@ -797,6 +803,12 @@ class Dte extends Model
                             WHERE dtedte1.dter_id = dte.id
                             AND (dte1.foliocontrol_id = 1) 
                             AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
+                            (SELECT GROUP_CONCAT(DISTINCT dte1.id) AS id
+                            FROM dtedte as dtedte1 INNER JOIN dte as dte1
+                            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+                            WHERE dtedte1.dter_id = dte.id
+                            AND (dte1.foliocontrol_id = 1) 
+                            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_dte_id,
                             dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
              ";
             $unionOtrasTablas = " LEFT JOIN dtedte
@@ -1162,6 +1174,11 @@ class Dte extends Model
         ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
         WHERE dtedte1.dte_id = dte.id
         GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
+        (SELECT GROUP_CONCAT(DISTINCT dte1.id) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS dte_id_guiadesp,
         (SELECT GROUP_CONCAT(DISTINCT foliocontrolGD.nombrepdf) 
         FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
         ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
@@ -2453,6 +2470,11 @@ class Dte extends Model
         ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
         WHERE dtedte1.dte_id = dte.id
         GROUP BY dtedte1.dte_id) AS nrodocto_origen,
+        (SELECT GROUP_CONCAT(DISTINCT dte1.id) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS dte_id_origen,
         (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) 
         FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
         ON dte1.id = dtedte1.dtefac_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
@@ -2749,6 +2771,11 @@ class Dte extends Model
         ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
         WHERE dtedte1.dte_id = dte.id
         GROUP BY dtedte1.dte_id) AS nrodocto_origen,
+        (SELECT GROUP_CONCAT(DISTINCT dte1.id) 
+        FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+        ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+        WHERE dtedte1.dte_id = dte.id
+        GROUP BY dtedte1.dte_id) AS dte_id_origen,
         (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) 
         FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
         ON dte1.id = dtedte1.dtefac_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
@@ -3641,6 +3668,41 @@ class Dte extends Model
                     $datacobranzadet->save();
                 }
             }
+        }
+    }
+
+    public static function consultarpdfdteBes($dte){
+        $TipoDocto = $dte->foliocontrol->tipodocto;
+        $empresa = Empresa::findOrFail(1);
+
+        $soap = new SoapController();
+
+        $consulta_TXTDTE = $soap->consulta_TXTDTE($empresa->rut,$TipoDocto,$dte->nrodocto);
+        if(isset($consulta_TXTDTE->Estatus)){
+            //ACTUALIZO EL CAMPO nrodocto
+            //SI OCURRIO ALGUN ERROR SE QUE TENGO EL FOLIO, 
+            //SE QUE NO LO PUEDO VOLVER A PEDIR PORQUE POR ALGUNA RAZON SE GENERO UN ERROR EN EL ULTIMO FOLIO SOLICITADO
+            if($consulta_TXTDTE->Estatus == 0){
+                return [
+                    'id' => 1,
+                    'consulta_TXTDTE' => $consulta_TXTDTE
+                ];
+            }else{
+                Dte::ErrorSubirDte($dte,"Documento: " . $dte->nrodocto,$consulta_TXTDTE->Estatus . " " . $consulta_TXTDTE->MsgEstatus,1);
+                return [
+                    'id' => 0,
+                    'mensaje'=> $consulta_TXTDTE->MsgEstatus,
+                    'tipo_alert' => 'error'                
+                ];
+            }
+        }else{
+            Dte::ErrorSubirDte($dte,"Documento: " . $dte->nrodocto,$consulta_TXTDTE,1);
+            return [
+                'id' => 0,
+                'mensaje'=> nl2br("Error: Ocurrio un error al intentar Generar el PDF. \n\n") . $consulta_TXTDTE,
+                'tipo_alert' => "error"
+            ];
+
         }
     }
 }

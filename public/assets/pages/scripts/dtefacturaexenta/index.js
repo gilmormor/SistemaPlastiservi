@@ -41,9 +41,9 @@ $(document).ready(function () {
             let id_str = data.nrodocto.toString();
             id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
-                data.id +
-            "</a>";
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.id}',0)">
+                ${data.id}
+            </a>`;
             $('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
@@ -63,12 +63,12 @@ $(document).ready(function () {
 
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
-                data.nrodocto +
-            "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible: " + data.nrodocto + "' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
-                "<i class='fa fa-fw fa-file-pdf-o'></i>" +
-            "</a>";
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.id}',0)">
+                ${data.nrodocto}
+            </a>,
+            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto} onclick="genpdfFACDin('${data.id}',1)">
+                <i class="fa fa-fw fa-file-pdf-o"></i>
+            </a>`;
             $('td', row).eq(5).html(aux_text);
 
             $('td', row).eq(11).addClass('updated_at');
@@ -159,7 +159,6 @@ function ajaxRequest(data,url,funcion) {
 			
 			if(funcion=='procesar'){
 				if (respuesta.mensaje == "ok") {
-                    //genpdfFAC(respuesta.nrodocto,"_U");
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {

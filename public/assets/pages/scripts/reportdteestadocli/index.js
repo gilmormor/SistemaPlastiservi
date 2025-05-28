@@ -173,6 +173,8 @@ function consultarpage(aux_data){
             aux_text = "";
             if(data.nrodocto_origen != null){
                 let arr_nrodocto_origen = data.nrodocto_origen.split(',');
+                let arr_dte_id_origen = data.dte_id_origen.split(',');
+                
                 let arr_pdftipodte_origen = data.pdftipodte_origen.split(',');
                 let arr_foliocontroldesc_origen = data.foliocontroldesc_origen.split(',');
                 for (let i = 0; i < arr_nrodocto_origen.length; i++){
@@ -180,10 +182,10 @@ function consultarpage(aux_data){
                     id_str = arr_pdftipodte_origen[i] + id_str.padStart(8, "0");
                     
                     aux_text += 
-                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFAC('${id_str}','')">
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFACDin('${arr_dte_id_origen[i]}',0)">
                         ${arr_nrodocto_origen[i]}
                     </a>:
-                    <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFAC('${id_str}','_cedible')">
+                    <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='${arr_foliocontroldesc_origen[i]}' onclick="genpdfFACDin('${arr_dte_id_origen[i]}',1)">
                         ${arr_nrodocto_origen[i]}
                     </a>`;
                     if((i+1) < arr_nrodocto_origen.length){
@@ -200,10 +202,10 @@ function consultarpage(aux_data){
                 id_str = data.nombrepdf + id_str.padStart(8, "0");
                 if(data.nrodocto != null){
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc}" onclick="genpdfFAC('${id_str}','')">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc}" onclick="genpdfFACDin('${data.id}',0)">
                         ${data.nrodocto}
                     </a>:
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc} Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc} Cedible" onclick="genpdfFACDin('${data.id}',1)">
                         ${data.nrodocto}
                     </a>`;
                 }    

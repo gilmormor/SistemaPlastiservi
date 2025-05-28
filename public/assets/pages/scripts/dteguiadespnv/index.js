@@ -41,9 +41,9 @@ $(document).ready(function () {
             let id_str = data.nrodocto.toString();
             id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
-                data.id +
-            "</a>";
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick=genpdfFACDin('${data.id}',0)>
+                ${data.id}
+            </a>`;
             $('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
@@ -63,12 +63,12 @@ $(document).ready(function () {
 
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
-                data.nrodocto +
-            "</a>:" +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
-                data.nrodocto +
-            "</a>";
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho" onclick="genpdfFACDin('${data.id}',0)">
+                ${data.nrodocto}
+            </a>:
+            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.id}',1)">
+                ${data.nrodocto}
+            </a>`;
             $('td', row).eq(5).html(aux_text);
 
             $('td', row).eq(11).addClass('updated_at');

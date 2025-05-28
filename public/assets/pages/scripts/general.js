@@ -3180,7 +3180,6 @@ function ajaxRequestGeneral(data,url,funcion) {
 			}
 			if(funcion=='procesarDTE'){
 				if (respuesta.id != 0) {
-                    //genpdfFAC(respuesta.nrodocto,"_U");
                     $("#fila"+respuesta.dte_id).remove();
 					/* aux_text = 
 							`<a id="bntaproord${respuesta.dte_id}" name="bntaproord${respuesta.dte_id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${respuesta.dte_id})" title="Enviar a procesados">
@@ -4176,4 +4175,15 @@ function cargardatospantprodms(){
 	}
 	//console.log(aux_tipoprod);
 	//$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
+}
+
+function genpdfFACDin(id,cedible,aux_venmodant = ""){ //GENERAR PDF Solicitud de Despacho
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/dtefactura/'+id+'/'+cedible+'/Pdfdin' + queryString);
+	$("#myModalpdf").modal('show');
 }

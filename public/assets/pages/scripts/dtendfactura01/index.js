@@ -141,12 +141,12 @@ $(document).ready(function () {
             $('td', row).eq(10).html(aux_text);
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"\")'>" +
-                data.nrodocto_factura +
-            "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(" + data.nrodocto_factura + ",\"_cedible\")'>" +
-                data.nrodocto_factura +
-            "</a>";
+            `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick="genpdfFACDin('${data.dte_id_fac}',0)">
+                ${data.nrodocto_factura}
+            </a>,
+            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick="genpdfFACDin('${data.dte_id_fac}',1)">
+                ${data.nrodocto_factura}
+            </a>`;
             $('td', row).eq(11).html(aux_text);
 
 

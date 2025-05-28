@@ -87,7 +87,6 @@ function ajaxRequest(data,url,funcion) {
 		success: function (respuesta) {
 			if(funcion=='procesar'){
 				if (respuesta.mensaje == "ok") {
-                    //genpdfFAC(respuesta.nrodocto,"_U");
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {

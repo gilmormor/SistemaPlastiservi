@@ -530,4 +530,45 @@ class SoapController extends Controller
         }
     }
 
+        public function consulta_TXTDTE($RutEmpresa,$TipoDocto,$NroDocto)
+    {
+        try{
+            // Configuración del cliente SOAP
+            $options = array(
+                'trace' => 1,
+                'connection_timeout' => 30, // tiempo de espera de conexión en segundos
+                // Aumentar el tiempo de timeout
+                'timeout' => 120 // tiempo de espera total en segundos
+            );
+            $soapclient = new SoapClient(env('APP_URLDTECONSULTA'), $options);
+            $response = $soapclient->Consulta_TXTDTE([
+                "RutEmpresa" => $RutEmpresa,
+                "TipoDocto" => $TipoDocto,
+                "FolioDocto" => $NroDocto,
+                "Usuario" => "PLASTISERVI",
+                "PWD" => "PLASTI_2025."
+            ]);
+
+            // Verificar el status de la solicitud HTTP
+            $http_status = $soapclient->__getLastResponseHeaders();
+
+            // Extraer el status HTTP
+            preg_match('/^HTTP\/1\.\d (\d+)/', $http_status, $matches);
+            $status_code = isset($matches[1]) ? intval($matches[1]) : null;
+
+            // Verificar el status 200 de la solicitud HTTP
+            if ($status_code === 200) {
+                // Si el status es 200, la solicitud se completó exitosamente
+                // Procesar la respuesta del servidor aquí
+                return $response->Consulta_TXTDTEResult;
+            } else {
+                // Si el status no es 200, hubo un error en la solicitud
+                return "Hubo un error en la solicitud HTTP. Status: $http_status";
+            }
+
+        }catch(Exception $e){
+            return $e->getMessage();
+        }
+    }
+
 }

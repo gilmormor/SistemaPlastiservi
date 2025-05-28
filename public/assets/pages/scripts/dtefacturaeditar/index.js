@@ -202,10 +202,10 @@ $(document).ready(function () {
                 aux_text = "";
                 if(data.nrodocto != null){
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFAC('${id_str}','')">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.id}',0)">
                         ${data.nrodocto}
                     </a>
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFAC('${id_str}','_cedible')">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.id}',1)">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">

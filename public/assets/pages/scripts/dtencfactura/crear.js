@@ -473,7 +473,7 @@ function llenarDatosCliente(respuesta){
 	let id_str = respuesta.dte[0].nrodocto.toString();
 	id_str = respuesta.dte[0].nombrepdf + id_str.padStart(8, "0");
 
-	aux_txt = 	`DTE: <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="DTE" onclick="genpdfFAC('${id_str}','')">
+	aux_txt = 	`DTE: <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="DTE" onclick="genpdfFACDin('${respuesta.dte[0].id}',0)">
 					${respuesta.dte[0].nrodocto}
 				</a>`;
 	$("#dtencdet").html(aux_txt);

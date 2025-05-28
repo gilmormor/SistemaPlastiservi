@@ -145,21 +145,21 @@ $(document).ready(function () {
             let id_str = data.nrodocto_factura.toString();
             id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick='genpdfFAC(\"" + id_str + "\",\"\")'>" +
-                data.nrodocto_factura +
-            "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick='genpdfFAC(\"" + id_str + "\",\"_cedible\")'>" +
-                data.nrodocto_factura +
-            "</a>";
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.dte_id_fac}',0)">
+                ${data.nrodocto_factura}
+            </a>,
+            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura Cedible" onclick="genpdfFACDin('${data.dte_id_fac}',1)">
+                ${data.nrodocto_factura}
+            </a>`;
             $('td', row).eq(11).html(aux_text);
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito' onclick='genpdfNC(" + data.nrodocto + ",\"\")'>" +
-                data.nrodocto +
-            "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito Cedible' onclick='genpdfNC(" + data.nrodocto + ",\"_cedible\")'>" +
-                data.nrodocto +
-            "</a>";
+            `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito' onclick="genpdfFACDin('${data.id}',0)">
+                ${data.nrodocto}
+            </a>,
+            <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Crédito Cedible' onclick="genpdfFACDin('${data.id}',1)">
+                ${data.nrodocto}
+            </a>`;
             $('td', row).eq(12).html(aux_text);
 
 

@@ -16,7 +16,7 @@
         <div class="box box-danger">
             <div class="box-header with-border">
                 <h3 class="box-title">Editar Factura:
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfFAC('{{$data->foliocontrol->nombrepdf . str_pad($data->nrodocto, 8, '0', STR_PAD_LEFT)}}','')" data-original-title="Ver PDF Factura">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfFACDin('{{$data->id}}',0)" data-original-title="Ver PDF Factura">
                         {{$data->nrodocto}}
                         <a onclick="volverSubirDteSisCob({{$data->id}})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip">
                             <span class="fa fa-upload text-yellow"></span>

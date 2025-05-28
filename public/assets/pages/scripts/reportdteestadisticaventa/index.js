@@ -72,10 +72,10 @@ function consultarpage(aux_data){
                 id_str = data.nombrepdf + id_str.padStart(8, "0");
                 if(data.nrodocto != null){
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc}" onclick="genpdfFAC('${id_str}','')">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.foliocontrol_desc}" onclick="genpdfFACDin('${data.id}',0)">
                         ${data.nrodocto}
                     </a>
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible:${data.nrodocto}" onclick="genpdfFAC('${id_str}','_cedible')">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible:${data.nrodocto}" onclick="genpdfFACDin('${data.id}',1)">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>`;
                 }
@@ -83,7 +83,7 @@ function consultarpage(aux_data){
                     let id_str = data.dteorigen_nrodocto.toString();
                     id_str = data.foliocontrolorigen_nombrepdf + id_str.padStart(8, "0");
                     aux_text += 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="DTE Origen" onclick="genpdfFAC('${id_str}','')">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="DTE Origen" onclick="genpdfFACDin('${data.dte_id_origen}',0)">
                         ${data.foliocontrolorigen_doc} ${data.dteorigen_nrodocto}
                     </a>`;
                 }

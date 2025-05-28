@@ -67,7 +67,7 @@ $(document).ready(function () {
                     let id_str = data.dteorigen_nrodocto.toString();
                     id_str = data.nombrepdf + id_str.padStart(8, "0");
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="PDF Origen" onclick="genpdfFAC('${id_str}','')">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="PDF Origen" onclick="genpdfFACDin('${data.dteorigen_id}',0)">
                         ${data.doc} ${data.dteorigen_nrodocto}
                     </a>`;
                 }
@@ -76,9 +76,9 @@ $(document).ready(function () {
                 aux_text = "";
                 if(data.nrodocto != null){
                     aux_text = 
-                    "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='PDF Nota Crédito' onclick='genpdfNC(" + data.nrodocto + ",\"\")'>" +
-                        data.nrodocto +
-                    "</a>";
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='PDF Nota Crédito' onclick="genpdfFACDin('${data.id}',0)">
+                        ${data.nrodocto}
+                    </a>`;
                 }
                 $('td', row).eq(6).html(aux_text);
 
