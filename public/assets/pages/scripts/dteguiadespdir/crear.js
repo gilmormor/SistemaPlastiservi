@@ -303,9 +303,6 @@ $("#rut").focus(function(){
 })
 
 
-function verGD(nrodocto){
-	genpdfGD(nrodocto,"","");
-}
 $("#fchemis").change(function(){
 	let aux_fecha = $(this).val();
 	aux_fecha = aux_fecha.split("/").reverse().join("/");

@@ -136,7 +136,7 @@
     </div>
     <div class="form-group col-xs-12 col-sm-3">
         <label for="aux_regionnombre" class="control-label requerido" data-toggle='tooltip' title="Descripción Region">Region</label>
-        <input type="text" name="aux_regionnombre" id="aux_regionnombre" class="form-control" value="{{old('aux_regionnombre', $aux_regionnombre ?? '')}}" maxlength="40" required readonly/>
+        <input type="text" name="aux_regionnombre" id="aux_regionnombre" class="form-control" value="{{old('aux_regionnombre', $aux_regionnombre ?? '')}}" maxlength="65" required readonly/>
     </div>
 
     <div class="form-group col-xs-12 col-sm-2" style="display:none;">

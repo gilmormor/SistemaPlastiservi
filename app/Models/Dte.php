@@ -2177,6 +2177,11 @@ class Dte extends Model
             $aux_condnrodoctofac = "dteorigen.nrodocto = $request->nrodoctofac";
         }
 
+        if(!isset($request->codref) or empty($request->codref)){
+            $aux_condcodref = " true";
+        }else{
+            $aux_condcodref = "dtencnd.codref = $request->codref";
+        }
 
 
         $user = Usuario::findOrFail(auth()->id());
@@ -2192,7 +2197,8 @@ class Dte extends Model
         clientebloqueado.descripcion as clientebloqueado_descripcion,
         dteorigen.id as dteorigen_id,dteorigen.nrodocto as dteorigen_nrodocto,foliocontrol.doc,foliocontrol.nombrepdf,
         dte.updated_at, dteorigen.updated_at as dteorigen_updated_at,dte.mnttotal,
-        dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
+        dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
+        dtencnd.codref
         FROM dte INNER JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         LEFT JOIN dte as dteorigen
@@ -2207,6 +2213,8 @@ class Dte extends Model
         ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         LEFT JOIN dteanul
         ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+        INNER JOIN dtencnd
+        ON dtencnd.dte_id = dte.id
         WHERE dte.foliocontrol_id = $request->foliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond
@@ -2217,6 +2225,7 @@ class Dte extends Model
         AND $aux_aprobstatus
         AND $aux_condsucurArray
         AND $aux_condnrodoctofac
+        AND $aux_condcodref
         GROUP BY dte.id
         ORDER BY dte.id asc;";
         //dd($sql);
@@ -3554,7 +3563,7 @@ class Dte extends Model
         SUM(despachoorddet.cantdesp * (notaventadetalle.totalkilos / notaventadetalle.cant)) as aux_totalkg,
         sum(round((despachoorddet.cantdesp * notaventadetalle.preciounit) * ((notaventa.piva+100)/100))) as subtotal,
         despachoord.updated_at,'' as rutacrear,
-        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
             FROM dteoc INNER JOIN dte
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp

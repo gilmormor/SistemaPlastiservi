@@ -109,9 +109,9 @@ function configTablaDteGuiaDesp(){
             $('td', row).eq(6).html(aux_text);
 
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\"," + aux_venmodant + ")'>"+
-                    + data.nrodocto +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0)">
+                    ${data.nrodocto}
+                </a>`;
             $('td', row).eq(7).html(aux_text);
            
             aux_text = 

@@ -80,6 +80,7 @@ $(document).ready(function () {
                         aux_nroguia = cadena.split(";")[0]; 
                         aux_ocid = cadena.split(";")[1]; 
 						aux_folderNamefile = cadena.split(";")[2];
+						aux_dte_id = cadena.split(";")[3];
 					}
                     aux_title = `Orden de Compra ${data.oc_id}, tiene Guia de despacho generada previamente: ${aux_nroguia}`;
                     colorinfo = `text-red`;
@@ -88,8 +89,8 @@ $(document).ready(function () {
                             <i class="fa fa-fw fa-question-circle ${colorinfo}"></i>
                         </a>`;
 
-                    aux_text += 
-                    `<a class="btn-accion-tabla btn-sm tooltipsC" onclick="genpdfGD('${aux_nroguia}','')" data-original-title="Guia despacho:${aux_nroguia}" style='color:#bc3c3c'>
+                    aux_text +=  
+                    `<a class="btn-accion-tabla btn-sm tooltipsC" onclick="genpdfFACDin('${aux_dte_id}',0)" data-original-title="Guia despacho:${aux_nroguia}" style='color:#bc3c3c'>
                         ${aux_nroguia}
                     </a>,`;
 

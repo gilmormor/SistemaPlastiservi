@@ -242,9 +242,9 @@ function llenarselectProd(i,dte_id,nrodocto){
 	$("#selectprod").val(arrdte_id.toString());
 	for (i = 0; i < arrdte_id.length; i++) {
 		aux_text = 
-		"<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\",\"\")'>"+
-			+ data.nrodocto +
-		"</a>";
+		`<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0)">
+			${data.nrodocto}
+		</a>`;
 
 	}
 

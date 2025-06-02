@@ -118,6 +118,11 @@ function consultaindex($dte_id){
     ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
     WHERE dtedte1.dte_id = dte.id
     GROUP BY dtedte1.dte_id) AS nrodocto_guiadesp,
+    (SELECT GROUP_CONCAT(DISTINCT dte1.id) 
+    FROM dte AS dte1 INNER JOIN dtedte AS dtedte1
+    ON dte1.id = dtedte1.dter_id AND ISNULL(dte1.deleted_at) and isnull(dtedte1.deleted_at)
+    WHERE dtedte1.dte_id = dte.id
+    GROUP BY dtedte1.dte_id) AS dte_id_guiadesp,
     foliocontrol.tipodocto,foliocontrol.nombrepdf,dte.updated_at,dtefac.updated_at as dtefac_updated_at
     FROM dte INNER JOIN dtedte
     ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)

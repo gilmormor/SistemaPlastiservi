@@ -43,9 +43,9 @@ $(document).ready(function () {
             $(row).attr('updated_at', data.updated_at);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>" +
-                    + data.id +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0)">
+                    ${data.id}
+                </a>`;
             $('td', row).eq(0).html(aux_text);
             if(data.dtedev_obs != null){
 

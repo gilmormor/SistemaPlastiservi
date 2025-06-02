@@ -127,7 +127,7 @@ class DespachoSol extends Model
             WHERE despachosol_id = despachosol.id
             ORDER by id DESC LIMIT 1) AS obsdev,
         despachosol.updated_at,
-        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
             FROM dteoc INNER JOIN dte
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp
@@ -693,7 +693,7 @@ class DespachoSol extends Model
                 IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
                 vista_despsoltotales.totalkilos,
                 vista_despsoltotales.subtotalsoldesp,despachosol.updated_at,
-                (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+                (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
                     FROM dteoc INNER JOIN dte
                     ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
                     INNER JOIN dteguiadesp

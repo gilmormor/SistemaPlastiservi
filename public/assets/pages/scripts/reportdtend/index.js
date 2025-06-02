@@ -35,9 +35,10 @@ $(document).ready(function () {
                 {data: 'nombre_comuna'}, // 4
                 {data: 'dteorigen_nrodocto'}, // 5
                 {data: 'nrodocto'}, // 6
-                {data: 'dteanul_obs',className:"ocultar"}, //7
-                {data: 'dteanulcreated_at',className:"ocultar"}, //8
-                {data: 'clientebloqueado_descripcion',className:"ocultar"}, //9
+                {data: 'codref'}, // 7
+                {data: 'dteanul_obs',className:"ocultar"}, //8
+                {data: 'dteanulcreated_at',className:"ocultar"}, //9
+                {data: 'clientebloqueado_descripcion',className:"ocultar"}, //10
                 {defaultContent : ""}
             ],
             "language": {
@@ -224,6 +225,7 @@ function datosFac(){
         filtro            : 1,
         nrodoctofac       : $("#nrodoctofac").val(),
         nrodocto          : $("#nrodocto").val(),
+        codref            : $("#codref").val(),
         _token            : $('input[name=_token]').val()
     };
 /*
@@ -262,6 +264,7 @@ function datosFac(){
     "&filtro="+data1.filtro +
     "&nrodoctofac="+data1.nrodoctofac +
     "&nrodocto="+data1.nrodocto +
+    "&codref="+data1.codref +
     "&_token="+data1._token
 
     var data = {

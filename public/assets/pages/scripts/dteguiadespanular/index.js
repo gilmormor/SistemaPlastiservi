@@ -169,7 +169,7 @@ function ajaxRequest(data,url,funcion) {
 						},
 					}).then((value) => {
 						if (value) {
-							genpdfGD(respuesta.nrodocto,"_U");
+							genpdfFACDin("'" + data.id + "'",0);
 						}
 						$("#fila"+datatemp.nfila).remove();
 					});
@@ -177,7 +177,7 @@ function ajaxRequest(data,url,funcion) {
                     $("#fila"+datatemp.nfila).remove();
                     totalizarpagina();
                     totalizarTabla();
-                    genpdfGD(respuesta.nrodocto,"_U");
+                    genpdfFACDin("'" + data.id + "'",0);
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);

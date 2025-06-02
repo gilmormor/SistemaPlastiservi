@@ -267,7 +267,7 @@
                                     <?php 
                                         $j++;
                                     ?>
-                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$dteguiadespnv->dte->nrodocto}}" onclick="genpdfGD('{{$dteguiadespnv->dte->nrodocto}}','')">
+                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Guia despacho: {{$dteguiadespnv->dte->nrodocto}}" onclick="genpdfFACDin('{{$dteguiadespnv->dte->id}}',0)">
                                         {{$dteguiadespnv->dte->nrodocto}}
                                         @if ($j < count($data->dteguiadespnvs))
                                             ,

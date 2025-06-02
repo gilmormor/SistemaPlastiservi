@@ -87,19 +87,19 @@ $(document).ready(function () {
                     "</a>";
                 $('td', row).eq(6).html(aux_text);            
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"\")'>"+
-                        + data.nrodocto +
-                    "</a>";
+                    `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0)">
+                        ${data.nrodocto}
+                    </a>`;
                 $('td', row).eq(7).html(aux_text);
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Cedible: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"_cedible\")'>"+
-                        + data.nrodocto +
-                    "</a>";
+                    `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Cedible: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',1)">
+                        ${data.nrodocto}
+                    </a>`;
                 $('td', row).eq(8).html(aux_text);
                 aux_text = 
-                    "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Unidas: " + data.nrodocto + "' onclick='genpdfGD(" + data.nrodocto + ",\"_U\")'>"+
-                        + data.nrodocto +
-                    "</a>";
+                    `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Unidas: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0)">
+                        ${data.nrodocto}
+                    </a>`;
                 $('td', row).eq(9).html(aux_text);
                 
                 aux_text = 

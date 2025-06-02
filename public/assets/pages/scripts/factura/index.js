@@ -40,9 +40,9 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Factura: " + data.id + "' onclick='genpdfGD(" + data.id + ",1)'>"+
-                    + data.id +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Factura: ${data.id}' onclick="genpdfFACDin('${data.id}',0)">
+                    ${data.id}
+                </a>`;
             $('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
@@ -71,14 +71,14 @@ $(document).ready(function () {
                     data.despachoord_id + 
                 "</a>";
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.guiadesp_id + "' onclick='genpdfGD(" + data.guiadesp_id + ",\"\")'>"+
-                    + data.guiadesp_id +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: ${data.guiadesp_id}' onclick="genpdfFACDin('${data.guiadesp_id}',0)">
+                    ${data.guiadesp_id}
+                </a>`;
             $('td', row).eq(7).html(aux_text);
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Cedible: " + data.guiadesp_id + "' onclick='genpdfGD(" + data.guiadesp_id + ",\"_cedible\")'>"+
-                    + data.guiadesp_id +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho Cedible: ${data.guiadesp_id}' onclick="genpdfFACDin('${data.guiadesp_id}',1)">
+                    ${data.guiadesp_id}
+                </a>`;
             $('td', row).eq(8).html(aux_text);
 
             $('td', row).eq(6).html(aux_text);            
@@ -185,12 +185,12 @@ function ajaxRequest(data,url,funcion) {
 						},
 					}).then((value) => {
 						if (value) {
-							genpdfGD(respuesta.nrodocto,"_U");
+							genpdfFACDin("'" + data.id + "'",0);
 						}
 						$("#fila"+datatemp.nfila).remove();
 					});
                     */
-                    genpdfGD(respuesta.nrodocto,"_U");
+                    genpdfFACDin("'" + data.id + "'",0);
                     $("#fila"+datatemp.nfila).remove();
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {

@@ -414,9 +414,6 @@ function llenarItemFact(data){
 }
 
 
-function verGD(nrodocto){
-	genpdfGD(nrodocto,"","");
-}
 function blanquearDatos(){
 	$("#dte_id").val("");
 	$("#foliocontrol_id").val("");

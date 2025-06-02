@@ -110,10 +110,10 @@ $(document).ready(function () {
                 if(data.nrodocto){
                     aux_indtra = indtrasladoObj(data.indtraslado);
                     aux_text = 
-                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto} ${aux_indtra.desc} Usuario: ${data.usuario}" onclick="genpdfGD('${data.nrodocto}','')">
+                        `<a class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho: ${data.nrodocto} ${aux_indtra.desc} Usuario: ${data.usuario}" onclick="genpdfFACDin('${data.id}',0)">
                             ${data.nrodocto} ${aux_indtra.letra}
                         </a>
-                        <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')" style="padding-left: 0px;">
+                        <a class="btn-accion-tabla btn-sm tooltipsC" title="Cedible: ${data.nrodocto}" onclick="genpdfFACDin('${data.id}',1)" style="padding-left: 0px;">
                             <i class="fa fa-fw fa-file-pdf-o"></i>
                         </a>`;
                         if(data.guiaorigenprecio_nrodocto != null){

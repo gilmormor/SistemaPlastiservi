@@ -40,9 +40,9 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
             aux_text = 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: " + data.id + "' onclick='genpdfGD(" + data.id + ",1)'>"+
-                    + data.id +
-                "</a>";
+                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia despacho: ${data.id}' onclick="genpdfFACDin('${data.id}',0)">
+                    ${data.id}
+                </a>`;
             $('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(1).attr('data-order',data.fechahora);
@@ -191,7 +191,7 @@ function ajaxRequest(data,url,funcion) {
 						},
 					}).then((value) => {
 						if (value) {
-							genpdfGD(respuesta.nrodocto,"_U");
+							genpdfFACDin("'"  + data.id + "'",0);
 						}
 						$("#fila"+datatemp.nfila).remove();
 					});
@@ -199,7 +199,7 @@ function ajaxRequest(data,url,funcion) {
                     $("#fila"+datatemp.nfila).remove();
                     totalizarpagina();
                     totalizarTabla();
-                    genpdfGD(respuesta.nrodocto,"_U");
+                    genpdfFACDin("'"  + data.id + "'",0);
 					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 				} else {
 					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);

@@ -116,12 +116,13 @@ $(document).ready(function () {
             $('td', row).eq(8).html(aux_text);
 
             aux_text = "";
-            let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(','); 
+            let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(',');
+            let arr_dte_id_fac = data.dte_id_fac.split(',');
             for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
                 aux_text += 
-                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick='genpdfGD(" + arr_nrodocto_guiadesp[i] + ",\"\")'>" +
-                    arr_nrodocto_guiadesp[i] +
-                "</a>";
+                `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick="genpdfFACDin('${arr_dte_id_fac[i]}',0)">
+                    ${arr_nrodocto_guiadesp[i]}
+                </a>`;
                 if((i+1) < arr_nrodocto_guiadesp.length){
                     aux_text += ",";
                 }
@@ -132,9 +133,9 @@ $(document).ready(function () {
             let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
             for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
                 aux_text += 
-                "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick='genpdfGD(" + arr_nrodocto_guiadespced[i] + ",\"_cedible\")'>" +
-                    arr_nrodocto_guiadespced[i] +
-                "</a>";
+                `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick="genpdfFACDin('${arr_dte_id_fac[i]}',1)">
+                    ${arr_nrodocto_guiadespced[i]}
+                </a>`;
                 if((i+1) < arr_nrodocto_guiadespced.length){
                     aux_text += ",";
                 }

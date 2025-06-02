@@ -2516,7 +2516,7 @@ function consulta($request,$aux_sql,$orden){
                 WHERE notaventa_id=notaventa.id) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
         tipoentrega.nombre as tipentnombre,tipoentrega.icono,
-        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
             FROM dteoc INNER JOIN dte
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp
@@ -2630,7 +2630,7 @@ function consulta($request,$aux_sql,$orden){
         sum(cant-if(isnull(cantsoldesp),0,cantsoldesp)) as saldocant,
         sum(totalkilos-if(isnull(kgsoldesp),0,kgsoldesp)) as saldokg,
         sum(subtotal-if(isnull(subtotalsoldesp),0,subtotalsoldesp)) as saldoplata,
-        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file) as nrodocto
+        (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
             FROM dteoc INNER JOIN dte
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp
@@ -2946,6 +2946,7 @@ function reporte1($request){
                     $aux_nroguia = $aux_arraynrodocto[0]; 
                     $aux_ocid = $aux_arraynrodocto[1]; 
                     $aux_folderNamefile = $aux_arraynrodocto[2];
+                    $aux_dte_id = $aux_arraynrodocto[3];
                 }
                 $aux_title = "Orden de Compra $data->oc_id, tiene Guia de despacho generada previamente: $aux_nroguia";
                 $colorinfo = "text-red";
@@ -2954,7 +2955,7 @@ function reporte1($request){
                         <i class='fa fa-fw fa-question-circle $colorinfo'></i>
                     </a>";
                 $aux_text .= 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfGD(\"$aux_nroguia\",\"\")' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfFACDin(\"$aux_dte_id\",0)' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
                      $aux_nroguia
                 </a>,";
                 $aux_text .= 
@@ -3100,6 +3101,7 @@ function reportesoldesp1($request){
                     $aux_nroguia = $aux_arraynrodocto[0]; 
                     $aux_ocid = $aux_arraynrodocto[1]; 
                     $aux_folderNamefile = $aux_arraynrodocto[2];
+                    $aux_dte_id = $aux_arraynrodocto[3];
                 }
                 $aux_title = "Orden de Compra $data->oc_id, tiene Guia de despacho generada previamente: $aux_nroguia";
                 $colorinfo = "text-red";
@@ -3108,7 +3110,7 @@ function reportesoldesp1($request){
                         <i class='fa fa-fw fa-question-circle $colorinfo'></i>
                     </a>";
                 $aux_text .= 
-                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfGD(\"$aux_nroguia\",\"\")' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
+                "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfFACDin(\"$aux_dte_id\",0)' data-original-title='Guia despacho:$aux_nroguia' style='color:#bc3c3c'>
                      $aux_nroguia
                 </a>,";
                 $aux_text .= 

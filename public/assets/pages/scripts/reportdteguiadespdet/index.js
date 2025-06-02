@@ -86,10 +86,10 @@ function consultarpage(aux_data){
                 aux_indtra = indtrasladoObj(data.indtraslado);
                 if(data.nrodocto != null){
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.nrodocto} ${aux_indtra.desc}" onclick="genpdfGD('${data.nrodocto}','')">
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${data.nrodocto} ${aux_indtra.desc}" onclick="genpdfFACDin('${data.id}',0)">
                         ${data.nrodocto} ${aux_indtra.letra}
                     </a>
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible:${data.nrodocto}" onclick="genpdfGD('${data.nrodocto}','_cedible')">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible:${data.nrodocto}" onclick="genpdfFACDin('${data.id}',1)">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>`;
                 }

@@ -460,10 +460,6 @@ function llenarItemFact(data,dte){
 }
 
 
-function verGD(nrodocto){
-	genpdfGD(nrodocto,"","");
-}
-
 function blanquearDatos(){
 	$("#rut").val("");
 	$("#dte_id").val("");

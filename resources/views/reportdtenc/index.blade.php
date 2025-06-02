@@ -224,6 +224,20 @@ Nota Crédito
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-md-6 col-sm-6">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="codref" title="Cod Referencia">Cod Referencia</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="codref" id="codref" class="selectpicker form-control" required>
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">1 Anula Documento de Referencia</option>
+                                            <option value="2">2 Corrige Texto Documento Referencia</option>
+                                            <option value="3">3 Corrige montos</option>
+                                            <option value="4">4 Devolucion o diferencia mercadería</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
@@ -255,6 +269,7 @@ Nota Crédito
                             <th class='tooltipsC' title='Comuna'>Comuna</th>
                             <th class='tooltipsC' title='DTE Origen'>DTE Origen</th>
                             <th class='tooltipsC' title='PDF Nota Credito'>DTE NC</th>
+                            <th class='tooltipsC' title='Cod Referencia'>CodRef</th>
                             <th class="ocultar">dteanul_obs</th>
                             <th class="ocultar">dteanulcreated_at</th>
                             <th class="ocultar">Obs Bloqueo</th>
