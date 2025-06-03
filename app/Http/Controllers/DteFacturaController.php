@@ -1229,7 +1229,7 @@ class DteFacturaController extends Controller
                 $aux_cedible = "_cedible";
             }
             if (strpos($base64, '%PDF') === 0) {
-                $nombreArchPDF =  $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT) . ".pdf";
+                $nombreArchPDF =  $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT). $aux_cedible . ".pdf";
                 $pdfContent = $base64;
                 return response($pdfContent)
                     ->header('Content-Type', 'application/pdf')
