@@ -1226,10 +1226,12 @@ class DteFacturaController extends Controller
             }else{
                 $base64 = $repuesta["consulta_TXTDTE"]->PDFCedible;
             }
-
             if (strpos($base64, '%PDF') === 0) {
+                $nombreArchPDF =  $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT) . ".pdf";
                 $pdfContent = $base64;
-                return response($pdfContent)->header('Content-Type', 'application/pdf');
+                return response($pdfContent)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'inline; filename="'.$nombreArchPDF.'"');
             } else {
                 return response('Contenido no válido de PDF', 500);
             }
