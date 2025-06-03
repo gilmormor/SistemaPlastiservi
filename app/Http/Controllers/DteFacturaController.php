@@ -1221,10 +1221,12 @@ class DteFacturaController extends Controller
             if($repuesta["id"] == 0){
                 return response($repuesta["mensaje"], 500);
             }
+            $aux_cedible = "";
             if($cedible == 0){
                 $base64 = $repuesta["consulta_TXTDTE"]->PDF;
             }else{
                 $base64 = $repuesta["consulta_TXTDTE"]->PDFCedible;
+                $aux_cedible = "_cedible";
             }
             if (strpos($base64, '%PDF') === 0) {
                 $nombreArchPDF =  $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT) . ".pdf";
