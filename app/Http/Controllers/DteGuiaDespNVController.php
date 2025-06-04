@@ -358,9 +358,9 @@ class DteGuiaDespNVController extends Controller
 
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
-            if($respuesta["id"] == 1){
+            /* if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            }
+            } */
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 return redirect('dteguiadespnv')->with([
                     'mensaje'=>"Guia Despacho creada con exito. Quedan $aux_foliosdisp folios disponibles!" ,

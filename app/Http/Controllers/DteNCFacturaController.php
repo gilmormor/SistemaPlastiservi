@@ -237,9 +237,9 @@ class DteNCFacturaController extends Controller
 
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
-            if($respuesta["id"] == 1){
+            /* if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            }
+            } */
             Dte::subirSisCobranza($dte);
             Event(new GuardarDteNC($dteNew)); //ENVIAR CORREO A CONTABILIDAD AVISANDO QUE HAY UNA NC
             return redirect('dtencfactura')->with([

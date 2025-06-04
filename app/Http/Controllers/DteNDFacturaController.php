@@ -226,9 +226,9 @@ class DteNDFacturaController extends Controller
             $foliocontrol->save();
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
-            if($respuesta["id"] == 1){
+            /* if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            }
+            } */
             Dte::subirSisCobranza($dte);
             Event(new GuardarDteND($dteNew));//ENVIAR CORREO A CONTABILIDAD AVISANDO QUE HAY UNA ND
             return redirect('dtendfactura')->with([

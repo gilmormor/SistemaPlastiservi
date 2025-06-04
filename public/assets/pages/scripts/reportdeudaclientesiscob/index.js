@@ -165,7 +165,7 @@ function configurarTabla(aux_tabla,datos){
                 <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.dte_id}',1)">
                     <i class="fa fa-fw fa-file-pdf-o"></i>
                 </a>
-                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">
+                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="XMLDownLoad('${data.dte_id}')">
                     <i class="fa fa-fw fa-cloud-download"></i>
                 </a>
                 <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_titlehand}">

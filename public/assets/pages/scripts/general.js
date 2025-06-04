@@ -3266,6 +3266,15 @@ function ajaxRequestGeneral(data,url,funcion) {
 				}
 				Biblioteca.notificaciones(aux_mensaje, 'Plastiservi', aux_tipoaler);
 			}
+			if(funcion == "XMLDownLoad"){
+				var blob = respuesta;
+				var a = document.createElement('a');
+				a.href = window.URL.createObjectURL(blob);
+				a.download = nameFile;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+			}
 
 		},
 		error: function () {
@@ -4182,32 +4191,61 @@ function genpdfFACDin(id,cedible,aux_venmodant = "",aux_slug = "ver-pdf-factura"
 		slug: aux_slug,
 		_token: $('input[name=_token]').val()
 	};
+	$("#venmodant").val("");
+	if(aux_venmodant!=""){
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/dtefactura/'+id+'/'+cedible+'/Pdfdin' + queryString);
+	$("#myModalpdf").modal('show');
+
+}
+
+function XMLDownLoad(id){ //GENERAR PDF Solicitud de Despacho	
+	var urlDescarga = '/dtefactura/XMLDownLoad'; // Ajusta la URL según tu configuración
+	var data = {
+		id : id,
+		_token: $('input[name=_token]').val()
+	};
 	$.ajax({
-		url: '/generales_valpermiso',
 		type: 'POST',
+		url: urlDescarga,
 		data: data,
-		success: function (respuesta) {
-			//console.log(respuesta);
-			if(respuesta.resp){
-				$("#venmodant").val("");
-				if(aux_venmodant!=""){
-					$("#" + aux_venmodant).modal('hide');
-					$("#venmodant").val(aux_venmodant);
-				}
-				let queryString = '?timestamp=' + new Date().getTime();
-				$('#contpdf').attr('src', '/dtefactura/'+id+'/'+cedible+'/Pdfdin' + queryString);
-				$("#myModalpdf").modal('show');
-			}else{
-				swal({
-					title: respuesta.mensaje,
-					text:  respuesta.mensaje2,
-					icon: 'error',
-					buttons: {
-						confirm: "Cerrar",
-					},
-				}).then((value) => {
-				});
+		xhrFields: {
+			responseType: 'blob' // Establece responseType como blob
+		},
+		success: function(data, textStatus, jqXHR) {
+			// Obtener nombre de archivo desde la cabecera 'Content-Disposition'
+			var disposition = jqXHR.getResponseHeader('Content-Disposition');
+			let filename = 'archivo.xml'; // valor por defecto
+			if (disposition && disposition.indexOf('filename=') !== -1) {
+				filename = disposition.split('filename=')[1].replace(/['"]/g, '').trim();
 			}
+
+			var blob = data;
+			var a = document.createElement('a');
+			a.href = window.URL.createObjectURL(blob);
+			//a.download = nameFile;
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(a.href); // Limpia la memoria
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			if(errorThrown == "Not Found"){
+					errorThrown = 'Archivo no existe!';
+			}
+			swal({
+				title: "Error al descargar el archivo",
+				text: "Archivo no existe!",
+				icon: 'info',
+				buttons: {
+					confirm: "Aceptar"
+				},
+			});
+			console.log('Error al descargar el archivo: ' + errorThrown);
 		}
 	});
 }

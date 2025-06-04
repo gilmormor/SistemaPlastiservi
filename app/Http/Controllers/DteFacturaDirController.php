@@ -316,9 +316,9 @@ class DteFacturaDirController extends Controller
 
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
-            if($respuesta["id"] == 1){
+            /* if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            }
+            } */
             Dte::subirSisCobranza($dte);
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";

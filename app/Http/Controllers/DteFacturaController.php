@@ -444,9 +444,9 @@ class DteFacturaController extends Controller
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
-            if($respuesta["id"] == 1){
+            /* if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-            }
+            } */
             Dte::subirSisCobranza($dte);
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";
@@ -1214,8 +1214,12 @@ class DteFacturaController extends Controller
 
     public function Pdfdin($id,$cedible)
     {
-        if(can('ver-pdf-factura',false)){
-            $dte = Dte::findOrFail($id);
+        $dte = Dte::findOrFail($id);
+        $aux_permiso = 'ver-pdf-factura';
+        if($dte->foliocontrol->tipodocto == 52){
+            $aux_permiso = 'ver-pdf-guia-despacho';
+        }
+        if(can($aux_permiso,false)){
             $repuesta = Dte::consultarpdfdteBes($dte);
             //dd($repuesta);
             if($repuesta["id"] == 0){
@@ -1237,6 +1241,28 @@ class DteFacturaController extends Controller
             } else {
                 return response('Contenido no válido de PDF', 500);
             }
+        }else{
+            //return false;            
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
+        }
+    }
+    public function XMLDownLoad(Request $request)
+    {
+        if(can('descargar-xml',false)){
+            $dte = Dte::findOrFail($request->id);
+            $repuesta = Dte::consultarpdfdteBes($dte);
+            $aux_xml = $repuesta["consulta_TXTDTE"]->XML;
+            $nombreArchXML =  $dte->foliocontrol->nombrepdf . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT). ".xml";
+            return response($aux_xml, 200)
+                ->header('Content-Type', 'text/plain')
+                ->header('Content-Disposition', 'attachment; filename=' . $nombreArchXML);
+            return [
+                "nomarc" => $nombreArchXML,
+                "xml" => response($aux_xml, 200)
+                ->header('Content-Type', 'text/plain')
+                ->header('Content-Disposition', 'attachment; filename=' . $nombreArchXML)
+            ];
         }else{
             //return false;            
             $pdf = PDF::loadView('generales.pdfmensajesinacceso');

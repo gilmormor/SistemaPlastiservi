@@ -1828,10 +1828,12 @@ class Dte extends Model
     }
 
     public static function guardarPdfXmlSii($aux_folio,$foliocontrol,$Carga_TXTDTE){
-        $nombreArchPDF =  $foliocontrol->nombrepdf . str_pad($aux_folio, 8, "0", STR_PAD_LEFT);
+        //EN COMENTARIO DESDE EL 04/06/2025, YA QUE LOS ARCHIVOS LOS ESTOY IMPORTANDO DESDE EL WEBSERVISE DE LA EMPRESA BES
+        //A TRAVES DE APP_URLDTECONSULTA DECLARADO EN .env
+        /* $nombreArchPDF =  $foliocontrol->nombrepdf . str_pad($aux_folio, 8, "0", STR_PAD_LEFT);
         Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.xml', $Carga_TXTDTE->XML);
         Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '.pdf', $Carga_TXTDTE->PDF);
-        Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible);
+        Storage::disk('public')->put('/facturacion/dte/procesados/' . $nombreArchPDF . '_cedible.pdf', $Carga_TXTDTE->PDFCedible); */
     }
 
     public static function dteSolicitarFolio($dte){

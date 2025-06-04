@@ -897,7 +897,7 @@ class DteGuiaDespController extends Controller
             $dteini->nrodocto = $dte->nrodocto;
             $dteini->stasubsii = 1;
             if($dteini->save()){
-                Dte::guardarPdfXmlSii($dteini->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
+                /* Dte::guardarPdfXmlSii($dteini->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]); */
                 return response()->json([
                     'id' => 1,
                     'dte_id' => $request->dte_id,
@@ -1512,9 +1512,9 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
 
         $dte = Dte::findOrFail($dteNew->id);
         $respuesta = Dte::subirDteSii($dte);
-        if($respuesta["id"] == 1){
+        /* if($respuesta["id"] == 1){
             Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
-        }
+        } */
 
 
     }else{

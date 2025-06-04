@@ -171,7 +171,7 @@ $(document).ready(function () {
                         `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia Despacho" onclick="genpdfFACDin('${arr_dte_id_guiadesp[i]}',0)">
                             ${arr_nrodocto_guiadesp[i]}
                         </a>
-                        <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Guia" onclick="descArcTXT('${id_strgd}.xml')">
+                        <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Guia" onclick="XMLDownLoad('${arr_dte_id_guiadesp[i]}')">
                             <i class="fa fa-fw fa-cloud-download"></i>
                         </a>`;
                         if((i+1) < arr_nrodocto_guiadesp.length){
@@ -210,7 +210,7 @@ $(document).ready(function () {
                     <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.id}',1)">
                         <i class="fa fa-fw fa-file-pdf-o"></i>
                     </a>
-                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="descArcTXT('${id_str}.xml')">
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="XMLDownLoad('${data.id}')">
                         <i class="fa fa-fw fa-cloud-download"></i>
                     </a>
                     <a id="stasubcob${data.id}" name="stasubcob${data.id}" onclick="volverSubirDteSisCob(${data.id})" class="btn-accion-tabla btn-sm tooltipsC" title="Subir DTE a Sistema Cobranza" data-toggle="tooltip"">
