@@ -350,13 +350,18 @@ function consultaSQL($idconsulta,$usuario_id){
 }
 
 function consulta($usuario_id){
-    $sql = "SELECT id,count(*) as contador,mensaje,mensajetitle,rutadestino,icono
-    FROM notificaciones
-    WHERE usuariodestino_id = $usuario_id
-    and status = 1
-    and isnull(notificaciones.deleted_at)
-    GROUP BY mensaje,icono;";
+    if(isset($usuario_id) and $usuario_id > 0 and $usuario_id != null and $usuario_id != ""){
+        $sql = "SELECT id,count(*) as contador,mensaje,mensajetitle,rutadestino,icono
+            FROM notificaciones
+            WHERE usuariodestino_id = $usuario_id
+            and status = 1
+            and isnull(notificaciones.deleted_at)
+            GROUP BY mensaje,icono;";
 
-    $datas = DB::select($sql);
-    return $datas;
+        $datas = DB::select($sql);
+        return $datas;
+
+    }else{
+        return false;
+    }
 }
