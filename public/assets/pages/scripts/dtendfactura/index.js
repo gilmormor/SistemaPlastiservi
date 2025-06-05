@@ -117,10 +117,10 @@ $(document).ready(function () {
 
             aux_text = "";
             let arr_nrodocto_guiadesp = data.nrodocto_guiadesp.split(',');
-            let arr_dte_id_fac = data.dte_id_fac.split(',');
+            let arr_dte_id_guiadesp = data.dte_id_guiadesp.split(','); 
             for (let i = 0; i < arr_nrodocto_guiadesp.length; i++){
                 aux_text += 
-                `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick="genpdfFACDin('${arr_dte_id_fac[i]}',0)">
+                `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho' onclick="genpdfFACDin('${arr_dte_id_guiadesp[i]}',0)">
                     ${arr_nrodocto_guiadesp[i]}
                 </a>`;
                 if((i+1) < arr_nrodocto_guiadesp.length){
@@ -133,7 +133,7 @@ $(document).ready(function () {
             let arr_nrodocto_guiadespced = data.nrodocto_guiadesp.split(','); 
             for (let i = 0; i < arr_nrodocto_guiadespced.length; i++){
                 aux_text += 
-                `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick="genpdfFACDin('${arr_dte_id_fac[i]}',1)">
+                `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho cedible' onclick="genpdfFACDin('${arr_dte_id_guiadesp[i]}',1)">
                     ${arr_nrodocto_guiadespced[i]}
                 </a>`;
                 if((i+1) < arr_nrodocto_guiadespced.length){
@@ -145,21 +145,21 @@ $(document).ready(function () {
             let id_str = data.nrodocto_factura.toString();
             id_str = data.nombrepdf + id_str.padStart(8, "0");
             aux_text = 
-            `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick="genpdfFACDin('${data.id}',0)">
+            `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura' onclick="genpdfFACDin('${data.dte_id_fac}',0)">
                 ${data.nrodocto_factura}
             </a>,
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick="genpdfFACDin('${data.id}',1)">
+            <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Factura Cedible' onclick="genpdfFACDin('${data.dte_id_fac}',1)">
                 ${data.nrodocto_factura}
             </a>`;
             $('td', row).eq(11).html(aux_text);
 
             aux_text = 
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Débito' onclick='genpdfND(" + data.nrodocto + ",\"\")'>" +
-                data.nrodocto +
-            "</a>," +
-            "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Débito Cedible' onclick='genpdfND(" + data.nrodocto + ",\"_cedible\")'>" +
-                data.nrodocto +
-            "</a>";
+            `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Débito' onclick="genpdfFACDin('${data.id}',0)">
+                ${data.nrodocto}
+            </a>,
+            <a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Nota Débito Cedible' onclick="genpdfFACDin('${data.id}',1)">
+                ${data.nrodocto}
+            </a>`;
             $('td', row).eq(12).html(aux_text);
 
             if(data.clientebloqueado_descripcion != null){

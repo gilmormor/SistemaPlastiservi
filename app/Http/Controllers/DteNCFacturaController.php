@@ -427,6 +427,7 @@ function consultaindex($dte_id){
                         GROUP_CONCAT(DISTINCT dteguiadesp.despachoord_id) AS despachoord_id,
                         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
                         GROUP_CONCAT(DISTINCT dter.nrodocto) AS nrodocto_guiadesp,
+                        GROUP_CONCAT(DISTINCT dter.id) AS dte_id_guiadesp,
                         foliocontrol.nombrepdf,foliocontrol.tipodocto
                         FROM dte LEFT JOIN dtedte
                         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
@@ -455,6 +456,7 @@ function consultaindex($dte_id){
                 $dteDocs[$i]->dter_id = $guia[0]->dter_id ? $guia[0]->dter_id : "";
                 $dteDocs[$i]->nombrepdf = $guia[0]->nombrepdf;
                 $dteDocs[$i]->nrodocto_guiadesp = $guia[0]->nrodocto_guiadesp ? $guia[0]->nrodocto_guiadesp : "";
+                $dteDocs[$i]->dte_id_guiadesp = $guia[0]->dte_id_guiadesp ? $guia[0]->dte_id_guiadesp : "";
                 //dd($dteDocs[$i]);    
             }else{
                 $dteDocs[$i]->dte_id_fac = "";
@@ -468,6 +470,7 @@ function consultaindex($dte_id){
                 $dteDocs[$i]->dter_id = "";
                 $dteDocs[$i]->nombrepdf = "";
                 $dteDocs[$i]->nrodocto_guiadesp = "";
+                $dteDocs[$i]->dte_id_guiadesp = "";
             }
             $nrodocto_guiadesp = 0;
         }
