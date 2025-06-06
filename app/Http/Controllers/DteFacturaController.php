@@ -1214,6 +1214,9 @@ class DteFacturaController extends Controller
 
     public function Pdfdin($id,$cedible)
     {
+        if($id == "null" or $id == null or $id == "" or $id == 0){
+            return response('Id no valido.', 500);
+        }
         $dte = Dte::findOrFail($id);
         $aux_permiso = 'ver-pdf-factura';
         if($dte->foliocontrol->tipodocto == 52){
@@ -1221,7 +1224,6 @@ class DteFacturaController extends Controller
         }
         if(can($aux_permiso,false)){
             $repuesta = Dte::consultarpdfdteBes($dte);
-            //dd($repuesta);
             if($repuesta["id"] == 0){
                 return response($repuesta["mensaje"], 500);
             }

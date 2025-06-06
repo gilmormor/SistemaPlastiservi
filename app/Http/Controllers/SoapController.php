@@ -530,7 +530,7 @@ class SoapController extends Controller
         }
     }
 
-        public function consulta_TXTDTE($RutEmpresa,$TipoDocto,$NroDocto)
+    public function consulta_TXTDTE($RutEmpresa,$TipoDocto,$NroDocto)
     {
         try{
             // Configuración del cliente SOAP
