@@ -1094,7 +1094,8 @@ class DespachoSolController extends Controller
 
             }
             $despachosol->aprorddesp = null;
-            $despachosol->aprorddespfh = null;        
+            $despachosol->aprorddespfh = null;
+            $despachosol->updated_at = date("Y-m-d H:i:s");
             if ($despachosol->save()) {
                 event(new DevolverSolDesp($despachosol,$request));
                 DespachoSolEnvOrdDesp::delsolenvord($despachosol);
@@ -1434,9 +1435,18 @@ class DespachoSolController extends Controller
                     $despchosoldet->save();
                 }
             }
-            event(new CerrarSolDesp($despachosol,$request));
-            DespachoSolEnvOrdDesp::delsolenvord($despachosol);
-            return response()->json(['mensaje' => 'ok']);
+            $despachosol->updated_at = date("Y-m-d H:i:s");
+            if ($despachosol->save()) {
+                event(new CerrarSolDesp($despachosol,$request));
+                DespachoSolEnvOrdDesp::delsolenvord($despachosol);
+                return response()->json(['mensaje' => 'ok']);
+            } else {
+                return response()->json([
+                    "status" => "0",
+                    'mensaje' => 'Error al guardar en despachosol',
+                    'tipo_alert' => 'error'
+                ]);
+            }
         } else {
             abort(404);
         }

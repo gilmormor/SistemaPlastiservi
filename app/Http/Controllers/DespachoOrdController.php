@@ -2168,15 +2168,18 @@ class DespachoOrdController extends Controller
         $tipo_alert = 'error';
 
         $despachosol->updated_at = date("Y-m-d H:i:s");
-        if(isset($despachosol->despachosolenvorddesp)){
-            $despachosol->despachosolenvorddesp->staenvdesp = 0;
-            $despachosol->despachosolenvorddesp->obs = $request->obs;
-            if($despachosol->despachosolenvorddesp->save()){
-                $error = 0;
-                $mensaje = 'Procesado con exito.';
-                $tipo_alert = 'success';
+        if($despachosol->save()){
+            if(isset($despachosol->despachosolenvorddesp)){
+                $despachosol->despachosolenvorddesp->staenvdesp = 0;
+                $despachosol->despachosolenvorddesp->obs = $request->obs;
+                if($despachosol->despachosolenvorddesp->save()){
+                    $error = 0;
+                    $mensaje = 'Procesado con exito.';
+                    $tipo_alert = 'success';
+                }
             }
         }
+        
         /* if (DespachoSolEnvOrdDesp::delsolenvord($despachosol)) {
             $error = 0;
             $mensaje = 'Procesado con exito.';

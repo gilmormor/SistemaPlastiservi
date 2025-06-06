@@ -989,8 +989,10 @@ function consultaorddesp($request){
             despachoord.guiadespacho,despachoord.guiadespachofec,despachoord.numfactura,despachoord.fechafactura,
             despachoordanul.id as despachoordanul_id,
             notaventacerrada.id as notaventacerrada_id,
-            dteguia.id as dteguia_id,
-            dtefactura.id as dtefactura_id
+            0 as dteguia_id,
+            0 as dtefactura_id
+            /* dteguia.id as dteguia_id,
+            dtefactura.id as dtefactura_id */
             FROM despachoord INNER JOIN despachoorddet
             ON despachoord.id=despachoorddet.despachoord_id
             INNER JOIN notaventa
@@ -1013,10 +1015,10 @@ function consultaorddesp($request){
             ON vista_sumrecorddespdet.despachoorddet_id=despachoorddet.id
             left join notaventacerrada
             on notaventacerrada.notaventa_id=notaventa.id and isnull(notaventacerrada.deleted_at)
-            LEFT JOIN dte AS dteguia
+            /* LEFT JOIN dte AS dteguia
             ON dteguia.nrodocto = despachoord.guiadespacho
             LEFT JOIN dte AS dtefactura
-            ON dtefactura.nrodocto = despachoord.numfactura
+            ON dtefactura.nrodocto = despachoord.numfactura */
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condFechaFac
@@ -1037,7 +1039,7 @@ function consultaorddesp($request){
             and $aux_conddespachoord_id
             and isnull(despachoord.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             AND despachoorddet.cantdesp>if(isnull(vista_sumrecorddespdet.cantrec),0,vista_sumrecorddespdet.cantrec)
-            GROUP BY despachoord.id desc;";
+            GROUP BY despachoord.id;";
             
             //Linea en comentario para poder mostrar todos los registros incluso las notas de venta que  que fueron cerradas de manera forzada
             //and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
