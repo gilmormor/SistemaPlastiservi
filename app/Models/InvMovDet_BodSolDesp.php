@@ -10,6 +10,9 @@ class InvMovDet_BodSolDesp extends Model
     protected $fillable = [
         'invmovdet_id',
         'despachosoldet_invbodegaproducto_id',
+        'cant',
+        'cantkg',
+        'tipo'
     ];
 
     //RELACION INVERSA InvMov

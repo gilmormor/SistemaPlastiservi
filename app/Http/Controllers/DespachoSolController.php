@@ -1076,7 +1076,10 @@ class DespachoSolController extends Controller
                             $invmovdet = InvMovDet::create($array_invmovdet);
                             $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
                                 'invmovdet_id' => $invmovdet->id,
-                                'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id
+                                'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id,
+                                'cant' => $invmovdet->cant,
+                                'cantkg' => $invmovdet->cantkg,
+                                'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
                             ]);
                         }
                     }
@@ -1409,7 +1412,10 @@ class DespachoSolController extends Controller
                     $invmovdet = InvMovDet::create($array_invmovdet);
                     $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
                         'invmovdet_id' => $invmovdet->id,
-                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto_id
+                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto_id,
+                        'cant' => $invmovdet->cant,
+                        'cantkg' => $invmovdet->cantkg,
+                        'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
                     ]);
                 }
             }
@@ -1658,8 +1664,11 @@ class DespachoSolController extends Controller
                                             $invmovdet = InvMovDet::create($array_invmovdet);
                                             $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
                                                 'invmovdet_id' => $invmovdet->id,
-                                                'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id
-                                                ]);
+                                                'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id,
+                                                'cant' => $invmovdet->cant,
+                                                'cantkg' => $invmovdet->cantkg,
+                                                'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
+                                            ]);
                                         }
                                     }
                                 }

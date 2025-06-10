@@ -116,7 +116,8 @@ class PickingController extends Controller
         $data->plazoentrega = $newDate = date("d/m/Y", strtotime($data->plazoentrega));
         $data->fechaestdesp = $newDate = date("d/m/Y", strtotime($data->fechaestdesp));
         $detalles = $data->despachosoldets()->get();
-        $arrayBodegasPicking = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+        //$arrayBodegasPicking = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+        $arrayBodegasPicking = [];
         //dd($arrayBodegasPicking);
 
         /*
@@ -148,7 +149,7 @@ class PickingController extends Controller
         //dd($sucurArray);
         //Aqui si estoy filtrando solo las categorias de asignadas al usuario logueado
         //******************* */
-        $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
+        /* $clientedirecs = Cliente::where('rut', $clienteselec[0]->rut)
         ->join('clientedirec', 'cliente.id', '=', 'clientedirec.cliente_id')
         ->join('cliente_sucursal', 'cliente.id', '=', 'cliente_sucursal.cliente_id')
         ->whereIn('cliente_sucursal.sucursal_id', $sucurArray)
@@ -164,16 +165,17 @@ class PickingController extends Controller
                     'cliente.direccion',
                     'clientedirec.id',
                     'clientedirec.direcciondetalle'
-                ])->get();
+                ])->get(); */
         //dd($clientedirecs);
+        $clientedirecs = [];
         $clienteDirec = $data->notaventa->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
         $formapagos = FormaPago::orderBy('id')->get();
         $plazopagos = PlazoPago::orderBy('id')->get();
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
-        $productos = Producto::productosxUsuario();
-
+        //$productos = Producto::productosxUsuario();
+        $productos = [];
         $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
@@ -405,8 +407,12 @@ class PickingController extends Controller
                 $invmovdet = InvMovDet::create($array_invmovdet);
                 $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
                     'invmovdet_id' => $invmovdet->id,
-                    'despachosoldet_invbodegaproducto_id' => $request->despachosoldet_invbodegaproducto_id[$j]
-                    ]);
+                    'despachosoldet_invbodegaproducto_id' => $request->despachosoldet_invbodegaproducto_id[$j],
+                    'cant' => $invmovdet->cant,
+                    'cantkg' => $invmovdet->cantkg,
+                    'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
+
+                ]);
 
                 
                 $aux_sucursal_id_producto = $invbodegaproducto->invbodega->sucursal_id; 
@@ -504,8 +510,11 @@ class PickingController extends Controller
                 $despachosoldet_invbodegaproducto->save();
                 $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
                     'invmovdet_id' => $invmovdet->id,
-                    'despachosoldet_invbodegaproducto_id' => $request->despachosoldet_invbodegaproducto_id[$j]
-                    ]);
+                    'despachosoldet_invbodegaproducto_id' => $request->despachosoldet_invbodegaproducto_id[$j],
+                    'cant' => $invmovdet->cant,
+                    'cantkg' => $invmovdet->cantkg,
+                    'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
+                ]);
             }
             //FIN PROCESO PARA AGREGAR PICKING A SOLICITUD DESPACHO EXISTENTE
         }

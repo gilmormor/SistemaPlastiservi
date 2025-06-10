@@ -371,9 +371,12 @@ class DespachoOrdAnulGuiaFactController extends Controller
                             /***ENTRADA A PICKING POR ANULAR GUIA DESPACHO */
                             foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
                                 if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
-                                    $invmovdet_bodorddesp = InvMovDet_BodSolDesp ::create([
+                                    $invmovdet_bodorddesp = InvMovDet_BodSolDesp::create([
                                         'invmovdet_id' => $invmovdet->id,
-                                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                        'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id,
+                                        'cant' => $invmovdet->cant,
+                                        'cantkg' => $invmovdet->cantkg,
+                                        'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
                                     ]);
                                     break;
                                 }
@@ -529,9 +532,12 @@ class DespachoOrdAnulGuiaFactController extends Controller
                                 /***ENTRADA A PICKING POR ANULAR GUIA DESPACHO */
                                 foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
                                     if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
-                                        $invmovdet_bodorddesp = InvMovDet_BodSolDesp ::create([
+                                        $invmovdet_bodorddesp = InvMovDet_BodSolDesp::create([
                                             'invmovdet_id' => $invmovdet->id,
-                                            'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                            'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id,
+                                            'cant' => $invmovdet->cant,
+                                            'cantkg' => $invmovdet->cantkg,
+                                            'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
                                         ]);
                                         break;
                                     }

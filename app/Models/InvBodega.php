@@ -52,9 +52,9 @@ class InvBodega extends Model
                 //dd($detalle->despachoorddets);
                 foreach($detalle->despachoorddets as $despachoorddet){
                     //dd($despachoorddet);
-                    if($despachoorddet->id == 21365){
+                    /* if($despachoorddet->id == 21365){
                         //dd($despachoorddet);
-                    }
+                    } */
                     if($despachoorddet->despachoord->despachoordanul == null){
                         //dd($despachoorddet->despachoorddet_invbodegaproductos);
                         foreach($despachoorddet->despachoorddet_invbodegaproductos as $despachoorddet_invbodegaproducto){                        
@@ -67,11 +67,11 @@ class InvBodega extends Model
                                     
                                     //dd($invmovdet_bodorddesp->invmovdet);
                                     if($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->tipo == 1){
-                                        if($invmovdet_bodorddesp->id == 15889){
+                                        /* if($invmovdet_bodorddesp->id == 15889){
                                             //dd($invmovdet_bodorddesp->invmovdet->cant);
                                             //dd($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->tipo);
                                             //dd($invmovdet_bodorddesp);
-                                        }
+                                        } */
         
                                         //dd($invmovdet_bodorddesp->invmovdet);
                                         $aux_stock += $invmovdet_bodorddesp->invmovdet->cant;

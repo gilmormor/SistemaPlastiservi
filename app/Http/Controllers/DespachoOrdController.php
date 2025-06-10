@@ -1204,9 +1204,12 @@ class DespachoOrdController extends Controller
                         /***BUSCO LA BODEGA QUE TIENE PICKING */
                         foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
                             if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
-                                $invmovdet_bodsoldesp = InvMovDet_BodSolDesp ::create([
+                                $invmovdet_bodsoldesp = InvMovDet_BodSolDesp::create([
                                     'invmovdet_id' => $invmovdet->id,
-                                    'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                    'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id,
+                                    'cant' => $invmovdet->cant,
+                                    'cantkg' => $invmovdet->cantkg,
+                                    'tipo' => $invmovdet->invbodegaproducto->invbodega->tipo
                                 ]);
                                 break;
                             }
