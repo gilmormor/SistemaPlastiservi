@@ -491,7 +491,7 @@ function llenarItemFact(data){
 				'<input type="text" name="producto_id[]" id="producto_id' + (i+1) + '" class="form-control" value="' + data[i].producto_id +'" style="display:none;"/>' +
 			'</td>' +
 			'<td name="nrodoctoTD' + (i+1) + '" id="nrodoctoTD' + (i+1) + '" style="text-align:right">' +
-				'<a id="nrodocto' + (i+1) + '" name="nrodocto' + (i+1) + '" class="btn-accion-tabla btn-sm verguiasii" title="Editar valor" data-toggle="tooltip" nomcampo="nrodocto" valor="' + data[i].nrodocto + '" title="Guia Despacho: ' + data[i].nrodocto + '" onclick="verGD(' + data[i].fact_dte_id + ')">' +
+				'<a id="nrodocto' + (i+1) + '" name="nrodocto' + (i+1) + '" class="btn-accion-tabla btn-sm verguiasii" title="Ver Guia Despacho" data-toggle="tooltip" nomcampo="nrodocto" valor="' + data[i].nrodocto + '" title="Guia Despacho: ' + data[i].nrodocto + '" onclick="genpdfFACDin(' + data[i].id + ',0)">' +
 					data[i].nrodocto + 
 				'</a>' +
 			'</td>' +

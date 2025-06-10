@@ -72,6 +72,7 @@ function configTablaDteGuiaDesp(){
             aux_fecha = data.fchemis.substring(8, 10) + "/" + data.fchemis.substring(5, 7) + "/" + data.fchemis.substring(0, 4);
             $('td', row).eq(1).html(aux_fecha);
             aux_venmodant = "\"myModalBuscardteguiadesp\"";
+            aux_venmodant1 = "myModalBuscardteguiadesp";
 			codigo = data.cotizacion_id;
 			if( codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)){
 				aux_text = "";
@@ -127,7 +128,7 @@ function configTablaDteGuiaDesp(){
             $('td', row).eq(6).html(aux_text);
 
             aux_text = 
-                `<a class='btn-accion-tabla btn-sm tooltipsC' title='Guia Despacho: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0,'${aux_venmodant}')">
+                `<a class='btn-accion-tabla btn-sm' title='Guia Despacho: ${data.nrodocto}' onclick="genpdfFACDin('${data.id}',0,'${aux_venmodant1}')">
                     ${data.nrodocto}
                 </a>`;
             $('td', row).eq(7).html(aux_text);

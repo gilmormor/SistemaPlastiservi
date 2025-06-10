@@ -66,7 +66,7 @@ $(document).ready(function () {
             `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Guia despacho" onclick="genpdfFACDin('${data.id}',0)">
                 ${data.nrodocto}
             </a>:
-            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.id}',0)">
+            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.id}',1)">
                 ${data.nrodocto}
             </a>`;
             $('td', row).eq(5).html(aux_text);
