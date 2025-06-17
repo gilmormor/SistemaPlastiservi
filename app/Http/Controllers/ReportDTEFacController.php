@@ -61,7 +61,7 @@ class ReportDTEFacController extends Controller
     public function exportPdf(Request $request)
     {
         $datas = Dte::reportdtefac($request);
-        //dd($datas);
+        //dd($request);
 
         $empresa = Empresa::orderBy('id')->get();
         $usuario = Usuario::findOrFail(auth()->id());

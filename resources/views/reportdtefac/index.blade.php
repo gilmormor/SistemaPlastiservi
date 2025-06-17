@@ -262,6 +262,7 @@ DTE Facturacion
                                             <option value="0">Todos</option>
                                             <option value="1">Factura con Nota de Venta</option>
                                             <option value="2">Factura Directa</option>
+                                            <option value="3">Factura Exenta</option>
                                         </select>
                                     </div>
                                 </div>

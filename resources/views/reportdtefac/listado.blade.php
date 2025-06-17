@@ -25,6 +25,7 @@
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Estatus: {{$request->aprobstatusdesc}}</p>
 					<p>Desde: {{$request->fechad}} Hasta: {{$request->fechah}}</p>
+					<p>Tipo Fact: {{$request->tipofactTitulo}}</p>
 				</div>
 			</td>
 		</tr>

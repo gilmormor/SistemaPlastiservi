@@ -1157,6 +1157,9 @@ class Dte extends Model
                 case 2:
                     $aux_tipoFactura = " ISNULL(notaventa.id)";
                     break;
+                case 3:
+                    $aux_tipoFactura = " foliocontrol_id = 7";
+                    break;
             }
         }
 
