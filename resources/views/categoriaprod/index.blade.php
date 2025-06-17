@@ -27,6 +27,7 @@ Categoria Productos
                         <tr>
                             <th class="width30">ID</th>
                             <th>Nombre</th>
+                            <th>Sucursal</th>
                             <th class="width70">Acción</th>
                         </tr>
                     </thead>

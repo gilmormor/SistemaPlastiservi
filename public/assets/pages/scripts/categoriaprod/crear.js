@@ -54,6 +54,11 @@ $(document).ready(function () {
     }else{
         $("#aux_stadespsinstock").prop("checked", false);    
     }
+    if($("#requiere_fabricacion").val() == '1'){
+        $("#aux_requiere_fabricacion").prop("checked", true);
+    }else{
+        $("#aux_requiere_fabricacion").prop("checked", false);
+    }
 
 });
 
@@ -93,6 +98,14 @@ $("#aux_stadespsinstock").change(function() {
     $("#stadespsinstock").val('0');
     if(estaSeleccionado){
         $("#stadespsinstock").val('1');
+    }
+});
+
+$("#aux_requiere_fabricacion").change(function() {
+    estaSeleccionado = $("#aux_requiere_fabricacion").is(":checked");
+    $("#requiere_fabricacion").val('0');
+    if(estaSeleccionado){
+        $("#requiere_fabricacion").val('1');
     }
 });
 

@@ -35,9 +35,12 @@ class CategoriaProdController extends Controller
         $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
         $sql = "SELECT categoriaprod.id,categoriaprod.nombre,categoriaprod.descripcion,categoriaprod.precio,
                 categoriaprod.areaproduccion_id,categoriaprod.sta_precioxkilo,categoriaprod.unidadmedida_id,
-                categoriaprod.unidadmedidafact_id
+                categoriaprod.unidadmedidafact_id,
+                GROUP_CONCAT(DISTINCT sucursal.nombre) AS sucursal_nombre
                 FROM categoriaprod INNER JOIN categoriaprodsuc
                 ON categoriaprod.id=categoriaprodsuc.categoriaprod_id AND ISNULL(categoriaprod.deleted_at)
+                INNER JOIN sucursal
+                ON sucursal.id = categoriaprodsuc.sucursal_id
                 WHERE categoriaprodsuc.sucursal_id IN ($sucurcadena)
                 AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu)
                 GROUP BY categoriaprod.id;";

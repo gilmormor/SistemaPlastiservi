@@ -431,6 +431,7 @@ function insertarTabla(){
 
 
     var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '" class="prod_id' + $("#producto_idM").val() + '">'+
+			'<input type="text" name="producto_nombre[]" id="producto_nombre'+ aux_nfila + '" class="form-control" value="'+ aux_nombre +'" style="display:none;"/>'+
 			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;" categoriaprod_id="' + $("#categoriaprod_id").val() + '" class="filaproducto_id" fila="'+ aux_nfila + '">'+ 
 					aux_productoId + aux_botonAcuTec +
 			'</td>'+
@@ -455,7 +456,7 @@ function insertarTabla(){
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="cant[]" id="cant'+ aux_nfila + '" class="form-control" value="'+ $("#cantM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="unidadmedida_nomnreTD'+ aux_nfila + '" id="unidadmedida_nomnreTD'+ aux_nfila + '">'+ 
+			'<td name="unidadmedida_nombreTD'+ aux_nfila + '" id="unidadmedida_nombreTD'+ aux_nfila + '">'+ 
 				$("#unidadmedida_idM option:selected").html()+
 			'</td>'+
 			'<td name="nombreProdTD'+ aux_nfila + '" id="nombreProdTD'+ aux_nfila + '" categoriaprod_nombre="' + aux_nombre +'">'+ 
@@ -464,22 +465,22 @@ function insertarTabla(){
 			'<td style="display:none;">'+ 
 				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="'+ $("#unidadmedida_idM option:selected").attr('value') + '" style="display:none;"/>'+
 			'</td>'+
-			'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
+			'<td style="display:none;" name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
 				$("#cla_nombreM").val()+
 			'</td>'+
-			'<td name="diamextmmTD'+ aux_nfila + '" id="diamextmmTD'+ aux_nfila + '" style="text-align:right">'+ 
+			'<td name="diamextmmTD'+ aux_nfila + '" id="diamextmmTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 				$("#diamextmmM").val()+
 			'</td>'+
 			'<td style="display:none;">'+ 
 				'<input type="text" name="diamextmm[]" id="diamextmm'+ aux_nfila + '" class="form-control" value="'+ $("#diamextmmM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
+			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 				$("#largoM").attr('valor')+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ $("#largoM").attr('valor') +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
+			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 				MASKLA($("#espesor1M").attr('valor'),3)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
@@ -493,7 +494,7 @@ function insertarTabla(){
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ $("#pesoM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '">'+ 
+			'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '" style="display:none;">'+ 
 				$("#tipounionM").val()+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
@@ -553,15 +554,15 @@ function insertarTabla(){
 			'</td>'+
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
-			'<td colspan="14" style="text-align:right"><b>Neto</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0,00</td>'+
 		'</tr>'+
 		'<tr id="triva" name="triva">'+
-			'<td colspan="14" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0,00</td>'+
 		'</tr>'+
 		'<tr id="trtotal" name="trtotal">'+
-			'<td colspan="14" style="text-align:right"><b>Total</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>Total</b></td>'+
 			'<td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>'+
 		'</tr>';
 	
@@ -707,7 +708,8 @@ function ajaxRequest(data,url,funcion) {
 				//console.log(respuesta);
 			}
 			if(funcion=='buscaratxcampos'){
-				if(respuesta.length > 0){
+				//console.log(respuesta);
+				if(respuesta["acuerdotecnico"].length > 0){
 					//console.log(respuesta);
 					/*
 					Swal.fire({
@@ -718,7 +720,7 @@ function ajaxRequest(data,url,funcion) {
 					  })*/
 					swal({
 						title: 'Acuerdo técnico ya existe',
-						text: 'Producto Cod: ' + respuesta[0].producto_id + ', ' + respuesta[0].producto_nombre,
+						text: 'Producto Cod: ' + respuesta["acuerdotecnico"][0].producto_id + ', ' + respuesta["acuerdotecnico"][0].producto_nombre,
 						icon: 'warning',
 						buttons: {
 							cancel: "Cerrar",
@@ -726,7 +728,7 @@ function ajaxRequest(data,url,funcion) {
 						},
 						}).then((value) => {
 							if(value){
-								genpdfAcuTec(respuesta[0].id,$("#cliente_id").val(),1);
+								genpdfAcuTec(respuesta["acuerdotecnico"][0].id,$("#cliente_id").val(),1);
 							}
 							/*
 							fila = $(this).closest("tr");
@@ -746,18 +748,52 @@ function ajaxRequest(data,url,funcion) {
 					$("#acuerdotecnico" + datatemp.nfila).val(datatemp.objtxt); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
 					//alert($("#acuerdotecnico" + i).val());
 					$("#icoat" + datatemp.nfila).attr('class','fa fa-cog text-aqua');
-					$("#nombreProdTD" + datatemp.nfila).html($("#at_desc").val());
+					//$("#nombreProdTD" + datatemp.nfila).html($("#at_desc").val());
+					$("#nombreProdTD" + datatemp.nfila).html(respuesta["producto"]["nombre"]);
+					$("#producto_nombre" + datatemp.nfila).val(respuesta["producto"]["nombre"]);
 					$("#diamextmmTD" + datatemp.nfila).html($("#at_ancho").val());
 					$("#ancho" + datatemp.nfila).val($("#at_ancho").val());
 					$("#longTD" + datatemp.nfila).html($("#at_largo").val());
 					$("#espesorTD" + datatemp.nfila).html($("#at_espesor").val());
 					$("#cla_nombreTD" + datatemp.nfila).html($("#at_claseprod_id option:selected").html());
-					$("#unidadmedida_nomnreTD" + datatemp.nfila).html($("#at_unidadmedida_id option:selected").html());
+					$("#unidadmedida_nombreTD" + datatemp.nfila).html($("#at_unidadmedida_id option:selected").html());
 					$("#unidadmedida_id" + datatemp.nfila).val($("#at_unidadmedida_id option:selected").val());
 					//console.log($("#at_unidadmedida_id option:selected").html());
 					//console.log($("#at_unidadmedida_id option:selected").val());
 					//$("#editarRegistro" + datatemp.nfila).hide();
 					//console.log($("#at_impreso").val());
+					aux_totalkilos = ($("#cant" + datatemp.nfila).val() * respuesta["producto"]["peso"]).toFixed(2);
+					aux_peso = respuesta["producto"]["peso"];
+					$("#pesoTD" + datatemp.nfila).html(aux_peso);
+					$("#peso" + datatemp.nfila).val(aux_peso);
+					//$("#precioxkiloTD" + datatemp.nfila).html(aux_peso);
+					$("#totalkilosTD" + datatemp.nfila).html(MASKLA(aux_totalkilos,4));
+					$("#totalkilos" + datatemp.nfila).val(aux_totalkilos);
+					aux_precioxkilo = $("#precioxkilo" + datatemp.nfila).val();
+					aux_subtotal = Math.round(aux_precioxkilo * aux_totalkilos);
+					$("#subtotalCFTD" + datatemp.nfila).html(MASKLA(aux_subtotal,0));
+					$("#subtotal" + datatemp.nfila).val(aux_subtotal);
+					aux_preciounit = $("#preciounit" + datatemp.nfila).val();
+					aux_cant = $("#cant" + datatemp.nfila).val();
+				if($("#unidadmedida_id" + datatemp.nfila).val() != 7){
+						aux_subtotal = Math.round(aux_preciounit * aux_cant);
+						$("#subtotalCFTD" + datatemp.nfila).html(MASKLA(aux_subtotal,0));
+						$("#subtotal" + datatemp.nfila).val(aux_subtotal);
+						aux_precioxkilo = (aux_subtotal / aux_totalkilos);
+						aux_precioxkilo = aux_precioxkilo.toFixed(2);
+						$("#precioxkiloTD" + datatemp.nfila).html(MASKLA(aux_precioxkilo,2));
+						$("#precioxkilo" + datatemp.nfila).val(aux_precioxkilo);
+							
+					}else{
+						aux_preciounit = aux_subtotal / aux_cant;
+						$("#preciounitTD" + datatemp.nfila).html(MASKLA(aux_preciounit,4));
+						$("#preciounit" + datatemp.nfila).val(aux_preciounit);
+					}
+					
+					/* aux_subtotal = $("#subtotal" + datatemp.nfila).val();
+					aux_precioxkilo = (aux_subtotal / aux_totalkilos).toFixed(2);
+					$("#precioxkiloTD" + datatemp.nfila).html(aux_precioxkilo);
+					$("#precioxkilo" + datatemp.nfila).val(aux_precioxkilo); */
 					if($("#at_impreso").val() == 1){
 						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'inline'});
 					}else{
@@ -765,6 +801,7 @@ function ajaxRequest(data,url,funcion) {
 						$("#at_imagen" + datatemp.nfila).val("");
 						$("#imagen" + datatemp.nfila).val("");
 					}
+					editarRegistro(datatemp.nfila,1);
 				}
 			}
 		},
@@ -1401,6 +1438,7 @@ $("#btnAceptarAcuTecTemp").click(function(event)
 		aux_nfila = $("#aux_numfilaAT").val();
 		data.objtxt = guardado;
 		data.nfila = aux_nfila;
+		data.producto_id = $("#producto_id" + aux_nfila).val();
 		data._token = $('input[name=_token]').val();
 
 
@@ -1973,7 +2011,7 @@ function insertarItem(){
 					'<td style="text-align:right;display:none;">'+ 
 						'<input type="text" name="cant[]" id="cant'+ aux_nfila + '" class="form-control" value="'+ aux_cant +'" style="display:none;"/>'+
 					'</td>'+
-					'<td name="unidadmedida_nomnreTD'+ aux_nfila + '" id="unidadmedida_nomnreTD'+ aux_nfila + '">'+ 
+					'<td name="unidadmedida_nombreTD'+ aux_nfila + '" id="unidadmedida_nombreTD'+ aux_nfila + '">'+ 
 						aux_unidadmedida_nombre +
 					'</td>'+
 					'<td name="nombreProdTD'+ aux_nfila + '" id="nombreProdTD'+ aux_nfila + '" categoriaprod_nombre="' + aux_nombre +'">'+ 
@@ -1982,22 +2020,22 @@ function insertarItem(){
 					'<td style="display:none;">'+ 
 						'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="'+ aux_unidamedida_id + '" style="display:none;"/>'+
 					'</td>'+
-					'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
+					'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '" style="display:none;">'+ 
 						producto.cla_nombre +
 					'</td>'+
-					'<td name="diamextmmTD'+ aux_nfila + '" id="diamextmmTD'+ aux_nfila + '" style="text-align:right">'+ 
+					'<td name="diamextmmTD'+ aux_nfila + '" id="diamextmmTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 						aux_diametro +
 					'</td>'+
 					'<td style="display:none;">'+ 
 						'<input type="text" name="diamextmm[]" id="diamextmm'+ aux_nfila + '" class="form-control" value="'+ aux_diametro +'" style="display:none;"/>'+
 					'</td>'+
-					'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
+					'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 						aux_largo+
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
 						'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ aux_largo +'" style="display:none;"/>'+
 					'</td>'+
-					'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
+					'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 						MASKLA(aux_espesor,3)+
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
@@ -2011,7 +2049,7 @@ function insertarItem(){
 					'<td style="text-align:right;display:none;">'+ 
 						'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ producto.peso +'" style="display:none;"/>'+
 					'</td>'+
-					'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '">'+ 
+					'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '" style="display:none;">'+ 
 						producto.tipounion +
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
@@ -2078,15 +2116,15 @@ function insertarItem(){
 	});
 	htmlTags = 
 		'<tr id="trneto" name="trneto">'+
-			'<td colspan="14" style="text-align:right"><b>Neto</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0,00</td>'+
 		'</tr>'+
 		'<tr id="triva" name="triva">'+
-			'<td colspan="14" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0,00</td>'+
 		'</tr>'+
 		'<tr id="trtotal" name="trtotal">'+
-			'<td colspan="14" style="text-align:right"><b>Total</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>Total</b></td>'+
 			'<td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>'+
 		'</tr>';
 	$('#tabla-data tbody').append(htmlTags);

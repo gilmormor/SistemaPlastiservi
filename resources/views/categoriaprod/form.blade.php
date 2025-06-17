@@ -180,6 +180,17 @@
 </div>
 <input type="hidden" name="stadespsinstock" id="stadespsinstock" value="{{old('stadespsinstock', $data->stadespsinstock ?? '0')}}">
 
+<div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_requiere_fabricacion" name="aux_requiere_fabricacion">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Requiere fabricacion previa? (Fabricacion contra pedido)
+        </label>
+    </div>
+</div>
+<input type="hidden" name="requiere_fabricacion" id="requiere_fabricacion" value="{{old('requiere_fabricacion', $data->requiere_fabricacion ?? '0')}}">
+
 
 <div class="col-md-6">
     <div class="box box-primary">

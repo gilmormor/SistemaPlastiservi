@@ -297,7 +297,11 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $cotizaciondetalle->descuento = $request->descuento[$i];
                     $cotizaciondetalle->preciounit = $request->preciounit[$i];
-                    $cotizaciondetalle->peso = $producto->peso;
+                    if(isset($producto->acuerdotecnico->at_peso)){
+                        $cotizaciondetalle->peso = $producto->acuerdotecnico->at_peso;
+                    }else{
+                        $cotizaciondetalle->peso = $producto->peso;
+                    }
                     $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
                     $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                     $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
@@ -331,6 +335,27 @@ class CotizacionController extends Controller
                             $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                             $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                            $at = new AcuerdoTecnico();
+                            $at->producto = $producto;
+                            $at->at_formatofilm = $acuerdotecnicotemp->at_formatofilm;
+                            $at->at_unidadmedida_id = $acuerdotecnicotemp->at_unidadmedida_id;
+                            $at->at_espesor = $acuerdotecnicotemp->at_espesor;
+                            $at->at_peso = 0;
+                            $at->at_ancho = $acuerdotecnicotemp->at_ancho;
+                            $at->at_largo = $acuerdotecnicotemp->at_largo;
+                            $at->at_espesor = $acuerdotecnicotemp->at_espesor;
+                            $at->materiaprima = MateriaPrima::findOrFail($acuerdotecnicotemp->at_materiaprima_id);
+                            $aux_peso = pesounitat($at);
+                            $acuerdotecnicotemp1 = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
+                            $acuerdotecnicotemp1->at_peso = $aux_peso;
+                            $acuerdotecnicotemp1->save();
+                            $cotizaciondetalle->update(['peso' => $aux_peso]);
+    
+                            /* $acuerdotecnicotemp1 = $acuerdotecnicotemp;
+                            $acuerdotecnicotemp1->producto = $producto;
+                            $aux_peso = pesounitat($acuerdotecnicotemp1);
+                            $acuerdotecnicotemp->update(['at_peso' => $aux_peso]);
+                            $cotizaciondetalle->update(['peso' => $aux_peso]); */
                             $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
                                 "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
                                 "cliente_id" => $request->cliente_id,
@@ -458,6 +483,7 @@ class CotizacionController extends Controller
     public function actualizar(ValidarCotizacion $request, $id)
     {
         can('guardar-cotizacion');
+        //dd($request);
         $cotizacion = Cotizacion::findOrFail($id);
         if($cotizacion->updated_at != $request->updated_at){
             return redirect('cotizacion')->with([
@@ -558,7 +584,16 @@ class CotizacionController extends Controller
                 $imagen = "imagen" . ($i+1);
                 $idcotizaciondet = $request->cotdet_id[$i]; 
                 $producto = Producto::findOrFail($request->producto_id[$i]);
+                /* if(isset($producto->acuerdotecnico->at_peso)){
+                    $aux_peso = $producto->acuerdotecnico->at_peso;
+                }else{
+                    if(isset($producto->peso)){
+                        $aux_peso = $producto->peso;
+                    }
+                    $aux_peso = $producto->peso;
+                } */
                 //$acuerdotecnico_id = null;
+                $aux_peso = $request->peso[$i];
                 if($producto->tipoprod == 1){
                     if($request->acuerdotecnico[$i] != "null")
                     {
@@ -605,6 +640,23 @@ class CotizacionController extends Controller
                         if($aux_at_formatofilm == "" or is_null($aux_at_formatofilm)){
                             $arrayAT["at_formatofilm"] = 0;
                         }
+
+                        $arrayATObj = (object) $arrayAT;
+                        $arrayATObj->producto_id = $request->producto_id[$i];
+                        $at_nombreproducto = nombreProductoAT($arrayATObj);
+                        $at = new AcuerdoTecnico();
+                        $at->producto = $producto;
+                        $at->at_formatofilm = $arrayAT["at_formatofilm"];
+                        $at->at_unidadmedida_id = $request->unidadmedida_id[$i];
+                        $at->at_espesor = $arrayAT["at_espesor"];
+                        $at->at_peso = 0;
+                        $at->at_ancho = $arrayAT["at_ancho"];
+                        $at->at_largo = $arrayAT["at_largo"];
+                        $at->at_espesor = $arrayAT["at_espesor"];
+                        $at->materiaprima = MateriaPrima::findOrFail($arrayAT["at_materiaprima_id"]);
+                        $aux_peso = pesounitat($at);
+                        //dd($aux_peso);
+    
                         /*
                         $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
                             ['id' => $acuerdotecnico_id],
@@ -657,10 +709,12 @@ class CotizacionController extends Controller
                     $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                     $cotizaciondetalle->descuento = $request->descuento[$i];
                     $cotizaciondetalle->preciounit = $request->preciounit[$i];
-                    $cotizaciondetalle->peso = $request->peso[$i];
+                    $cotizaciondetalle->peso = $aux_peso;
+                    //$cotizaciondetalle->peso = $request->peso[$i];
                     $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
                     $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
-                    $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
+                    //$cotizaciondetalle->totalkilos = $request->totalkilos[$i];
+                    $cotizaciondetalle->totalkilos = $request->cant[$i] * $aux_peso;
                     $cotizaciondetalle->subtotal = $request->subtotal[$i];
 
                     $cotizaciondetalle->producto_nombre = $producto->nombre;
@@ -677,8 +731,10 @@ class CotizacionController extends Controller
 
                     if($producto->tipoprod == 1){
                         if($request->acuerdotecnico[$i] != "null"){
+                            $arrayAT["at_desc"] = $at_nombreproducto;
                             $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                             $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
+                            $arrayAT["at_peso"] = $aux_peso;                
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
                             if($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
                                 $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
@@ -700,6 +756,16 @@ class CotizacionController extends Controller
                     //dd($idDireccion);
                 }else{
                     //dd($idDireccion);
+                    $cotizaciondetalle = CotizacionDetalle::findOrFail($request->cotdet_id[$i]);
+                    /* if(isset($cotizaciondetalle->producto->acuerdotecnico)){
+                        $aux_peso = $cotizaciondetalle->producto->acuerdotecnico->at_peso;
+                    }else{
+                        if(isset($cotizaciondetalle->acuerdotecnicotemp)){
+                            $aux_peso = $cotizaciondetalle->acuerdotecnicotemp->at_peso;
+                        }else{
+                            $aux_peso = $cotizaciondetalle->producto->peso;
+                        }
+                    } */
                     DB::table('cotizaciondetalle')->updateOrInsert(
                         ['id' => $request->cotdet_id[$i], 'cotizacion_id' => $id],
                         [
@@ -710,10 +776,10 @@ class CotizacionController extends Controller
                             'unidadmedida_id' => $request->unidadmedida_id[$i],
                             'descuento' => $request->descuento[$i],
                             'preciounit' => $request->preciounit[$i],
-                            'peso' => $producto->peso,
+                            'peso' => $aux_peso,
                             'precioxkilo' => $request->precioxkilo[$i],
                             'precioxkiloreal' => $request->precioxkiloreal[$i],
-                            'totalkilos' => $request->totalkilos[$i],
+                            'totalkilos' => $request->cant[$i] * $aux_peso,
                             'subtotal' => $request->subtotal[$i],
                             'producto_nombre' => $producto->nombre,
                             'espesor' => $request->espesor[$i],
@@ -726,10 +792,11 @@ class CotizacionController extends Controller
                             'color_id' => $producto->color_id
                         ]
                     );
-                    $cotizaciondetalle = CotizacionDetalle::findOrFail($request->cotdet_id[$i]);
                     if(($producto->tipoprod == 1) and ($request->acuerdotecnico[$i] != "null")){
+                        $arrayAT["at_desc"] = $at_nombreproducto;
                         $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                         $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
+                        $arrayAT["at_peso"] = $aux_peso;
                         if($cotizaciondetalle->acuerdotecnicotemp_id == null){
                             $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
                             if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
@@ -1218,9 +1285,9 @@ class CotizacionController extends Controller
             //$rut = number_format( substr ( $cotizacion->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $cotizacion->cliente->rut, strlen($cotizacion->cliente->rut) -1 , 1 );
             //dd($empresa[0]['iva']);
             //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
-            if(env('APP_DEBUG')){
+            /* if(env('APP_DEBUG')){
                 return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
-            }
+            } */
             //return view('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));
             if($aux_staacutec){
                 $pdf = PDF::loadView('cotizacion.listado', compact('cotizacion','cotizacionDetalles','empresa'));

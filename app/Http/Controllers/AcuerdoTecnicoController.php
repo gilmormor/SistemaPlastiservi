@@ -7,6 +7,8 @@ use App\Models\AcuerdoTecnicoTemp;
 use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\Empresa;
+use App\Models\MateriaPrima;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -146,8 +148,21 @@ class AcuerdoTecnicoController extends Controller
             and at_etiqplastiservi = $request->at_etiqplastiservi
             and isnull(acuerdotecnico.deleted_at)";
             $datas = DB::select($sql);
-            //dd($datas);
-            return $datas;
+            $respuesta["acuerdotecnico"] = $datas;
+            $respuesta["producto"]["nombre"] = nombreProductoAT($request);
+            $at = new AcuerdoTecnico();
+            $at->producto = Producto::findOrFail($request->producto_id);
+            $at->at_formatofilm = $request->at_formatofilm;
+            $at->at_unidadmedida_id = $request->at_unidadmedida_id;
+            $at->at_espesor = $request->at_espesor;
+            $at->at_peso = 0;
+            $at->at_ancho = $request->at_ancho;
+            $at->at_largo = $request->at_largo;
+            $at->at_espesor = $request->at_espesor;
+            $at->materiaprima = MateriaPrima::findOrFail($request->at_materiaprima_id);
+            $respuesta["producto"]["peso"] = pesounitat($at);
+            //dd($respuesta);
+            return $respuesta;
             //return datatables($datas)->toJson();
     
 
@@ -222,9 +237,9 @@ class AcuerdoTecnicoController extends Controller
 
             //dd($tablas['certificado']);
             //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
-            if(env('APP_DEBUG')){
+            /* if(env('APP_DEBUG')){
                 return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
-            }
+            } */
             $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream(str_pad("IdProd_" . $acuerdotecnico->producto_id . " IdAT_" . $acuerdotecnico->id, 5, "0", STR_PAD_LEFT) . $aux_nombreCliente . '.pdf');
