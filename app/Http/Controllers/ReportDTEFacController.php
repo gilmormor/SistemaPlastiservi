@@ -14,6 +14,7 @@ use App\Models\TipoEntrega;
 use App\Models\Vendedor;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 
 class ReportDTEFacController extends Controller
 {
@@ -75,9 +76,14 @@ class ReportDTEFacController extends Controller
         if($datas){
             
             if(env('APP_DEBUG')){
-                return view('reportdtefac.listado', compact('datas','empresa','usuario','request'));
+                //return view('reportdtefac.listado', compact('datas','empresa','usuario','request'));
             }
-            
+            $pdf = SnappyPdf::loadView('reportdtefac.listado', compact(
+                'datas','empresa','usuario','request'
+            ));
+            $pdf->setPaper('a4', 'landscape');
+
+            return $pdf->inline("reportdtefac.pdf");
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             //$pdf = PDF::loadView('reportinvstockvend.listado', compact('datas','empresa','usuario','request'))->setPaper('a4', 'landscape');
