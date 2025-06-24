@@ -12,6 +12,8 @@ $(document).ready(function () {
         form = $(this);
         var loc = window.location;
         //alert(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+"/editar");
+        /* console.log(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+updated_at+"/editar");
+        return false; */
         window.location = loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+updated_at+"/editar";
     });
 });
@@ -166,7 +168,7 @@ function ajaxRequest(data,url,funcion,form = false) {
             }
             if(funcion=='btnaprobar'){
                 if ('error' in respuesta){
-                    console.log(respuesta);
+                    //console.log(respuesta);
                     if (respuesta.error == 0){
                         form.parents('tr').remove();
                     }

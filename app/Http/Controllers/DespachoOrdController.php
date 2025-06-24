@@ -1484,13 +1484,13 @@ class DespachoOrdController extends Controller
             ];    
             //dd($empresa[0]['iva']);
             if($stareport == '1'){
-                if(env('APP_DEBUG')){
+                /* if(env('APP_DEBUG')){
                     if($aux_staacutec == false){
                         return view('despachoord.reporte', compact('despachoord','despachoorddets','empresa','datosArray'));
                     }else{
                         return view('despachoord.reporteat', compact('despachoord','despachoorddets','empresa','datosArray'));
                     }
-                }
+                } */
                 if($aux_staacutec == false){
                     $pdf = PDF::loadView('despachoord.reporte', compact('despachoord','despachoorddets','empresa','datosArray'));
                 }else{

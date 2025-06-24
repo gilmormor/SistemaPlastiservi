@@ -6,8 +6,10 @@ $(document).ready(function () {
     configurarTabla('#tabla-data-pendientesoldesp');
 
     function configurarTabla(aux_tabla){
+    }
+
         data = datosdespachosol();
-        $(aux_tabla).DataTable({
+        let table =$('#tabla-data-pendientesoldesp').DataTable({
             'paging'      : true, 
             'lengthChange': true,
             'ordering'    : true,
@@ -18,6 +20,12 @@ $(document).ready(function () {
             'ajax'        : "/despachosol/listardespachosolpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             "order": [[ 1, "desc" ]],
             'columns'     : [
+                {
+                    className: 'dt-control',
+                    orderable: false,
+                    data: null,
+                    defaultContent: '<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>'
+                },
                 {data: 'id'},
                 {data: 'fechahora'},
                 {data: 'fechaestdesp'},
@@ -49,22 +57,22 @@ $(document).ready(function () {
                 $(row).attr('id','fila' + data.id);
                 $(row).attr('name','fila' + data.id);    
 
-                $('td', row).eq(0).attr('style','text-align:center');
+                $('td', row).eq(1).attr('style','text-align:center');
                 aux_text = 
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Solicitud de Despacho" onclick="genpdfSD(${data.id},1)">
                     ${data.id}
                 </a>`;
-                $('td', row).eq(0).html(aux_text);
+                $('td', row).eq(1).html(aux_text);
 
-                $('td', row).eq(1).attr('id','fechahora'+data.id);
-                $('td', row).eq(1).attr('name','fechahora'+data.id);
-                $('td', row).eq(1).attr('data-order',data.fechahora);
+                $('td', row).eq(2).attr('id','fechahora'+data.id);
+                $('td', row).eq(2).attr('name','fechahora'+data.id);
+                $('td', row).eq(2).attr('data-order',data.fechahora);
                 aux_fecha = new Date(data.fechahora);
-                $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+                $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
-                $('td', row).eq(2).attr('id','fechaestdespTD'+data.id);
-                $('td', row).eq(2).attr('name','fechaestdespTD'+data.id);
-                $('td', row).eq(2).attr('data-order',data.fechaestdesp);
+                $('td', row).eq(3).attr('id','fechaestdespTD'+data.id);
+                $('td', row).eq(3).attr('name','fechaestdespTD'+data.id);
+                $('td', row).eq(3).attr('data-order',data.fechaestdesp);
                 aux_fecha = new Date(data.fechaestdesp + " 00:00:00");
 
                 aux_text = 
@@ -78,12 +86,12 @@ $(document).ready(function () {
                 <a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar Fecha ED" onclick="savefeced(${data.id},${data.id})" style="display:none" updated_at="${data.updated_at}">
                     <i class="fa fa-fw fa-save text-red"></i>
                 </a>`;
-                $('td', row).eq(2).html(aux_text);
+                $('td', row).eq(3).html(aux_text);
 
                 if(data.razonsocial.length > 30){
-                    $('td', row).eq(3).attr('class',"btn-accion-tabla");
-                    $('td', row).eq(3).attr('title',data.razonsocial);
-                    $('td', row).eq(3).html(data.razonsocial.substring(0, 30));    
+                    $('td', row).eq(4).attr('class',"btn-accion-tabla");
+                    $('td', row).eq(4).attr('title',data.razonsocial);
+                    $('td', row).eq(4).html(data.razonsocial.substring(0, 30));    
                 }
 
                 if(data.oc_file == "" ||  data.oc_file === null){
@@ -91,28 +99,28 @@ $(document).ready(function () {
                 }else{
                     aux_enlaceoc = `<a onclick="verpdf2('${data.oc_file}',2)" class="btn-accion-tabla btn-sm tooltipsC" title="Orden de Compra">${data.oc_id}</a>`;
                 }
-                $('td', row).eq(5).html(aux_enlaceoc);
+                $('td', row).eq(6).html(aux_enlaceoc);
 
                 aux_text =
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta" onclick="genpdfNV(${data.notaventa_id},1)">
                     ${data.notaventa_id}
                 </a>`;
-                $('td', row).eq(6).html(aux_text);
+                $('td', row).eq(7).html(aux_text);
 
                 aux_subtotalkilos = data.totalkilos - data.totalkilosdesp;
 
-                $('td', row).eq(8).attr('class','kgpend');
-                $('td', row).eq(8).attr('style','text-align:right');
-                $('td', row).eq(8).attr('data-order',aux_subtotalkilos);
-                $('td', row).eq(8).attr('data-search',aux_subtotalkilos);
-                $('td', row).eq(8).html(MASKLA(aux_subtotalkilos, 2));
+                $('td', row).eq(9).attr('class','kgpend');
+                $('td', row).eq(9).attr('style','text-align:right');
+                $('td', row).eq(9).attr('data-order',aux_subtotalkilos);
+                $('td', row).eq(9).attr('data-search',aux_subtotalkilos);
+                $('td', row).eq(9).html(MASKLA(aux_subtotalkilos, 2));
 
                 aux_subtotal = data.subtotalsoldesp - data.subtotaldesp;
-                $('td', row).eq(9).attr('class','dinpend');
-                $('td', row).eq(9).attr('style','text-align:right');
-                $('td', row).eq(9).attr('data-order',aux_subtotal);
-                $('td', row).eq(9).attr('data-search',aux_subtotal);
-                $('td', row).eq(9).html(MASKLA(aux_subtotal, 0));
+                $('td', row).eq(10).attr('class','dinpend');
+                $('td', row).eq(10).attr('style','text-align:right');
+                $('td', row).eq(10).attr('data-order',aux_subtotal);
+                $('td', row).eq(10).attr('data-search',aux_subtotal);
+                $('td', row).eq(10).html(MASKLA(aux_subtotal, 0));
 
                 aux_ruta_crearord = $("#aux_ruta_crearord").val();
                 aux_ruta = aux_ruta_crearord.substring(0, aux_ruta_crearord.length - 1);
@@ -139,7 +147,7 @@ $(document).ready(function () {
                         <i class='fa fa-fw fa-file-pdf-o'></i>
                     </a>`;    
                 }
-                $('td', row).eq(10).html(aux_text);
+                $('td', row).eq(11).html(aux_text);
 
                 /* if(aux_clienteBloqueado == ""){
                     aux_text = `<a href="${aux_ruta + data.id}" target="_blank" class="btn-accion-tabla tooltipsC" title="Hacer orden despacho: ${data.tipentnombre}">
@@ -222,11 +230,10 @@ $(document).ready(function () {
                                     </button>
                                 </a>`;
             }
-                $('td', row).eq(11).html(aux_text);
+                $('td', row).eq(12).html(aux_text);
                 
             }
         });
-    }
 
     
     $('#tabla-data-pendientesoldesp').on('draw.dt', function () {
@@ -292,7 +299,104 @@ $(document).ready(function () {
 
     configurarTabla('.tablas');
 
+    // Add event listener for opening and closing details
+    table.on('click', 'td.dt-control', function (e) {
+        let tr = e.target.closest('tr');
+        let row = table.row(tr);
+    
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            $(this).html('<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>');
+        }
+        else {
+            // Open this row
+            row.child(format(row.data())).show();
+            $(this).html('<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-bottom text-aqua" title="Mostrar Detalle"></i>');
+        }
+    });
+    
+
 });
+
+// Función para decodificar entidades HTML con jQuery
+function decodeHtml(html) {
+    return $('<textarea/>').html(html).text();
+}
+
+// Formatting function for row details - modify as you need
+function format(d) {
+    // Descomponer el campo nvdetalle
+    //console.log(d);
+    //console.log(d.nvdetalle);
+    const detalleArray = decodeHtml(d.nvdetalle).split(';').map(detalle => {
+        const [producto_id, cant, precio,subtotal,cantsoldesp,producto_nombre,requiere_fabricacion,id] = detalle.split('|');
+        return {
+            producto_id: parseInt(producto_id),
+            cant: parseInt(cant),
+            cantsoldesp: parseInt(cantsoldesp),
+            precio: parseFloat(precio),
+            subtotal: parseInt(subtotal),
+            producto_nombre: producto_nombre,
+            requiere_fabricacion: requiere_fabricacion,
+            acuerdotecnico_id: id
+        };
+    });
+    // Generar tabla HTML
+    let tableHtml = `<div style="display: flex; align-items: flex-start;"> <!-- Contenedor Flex (flecha al principio) -->
+            <div style="margin-left: 20px;">&#8627;</div> <!-- Flecha desplazada un poco a la derecha -->
+            <div class="table-responsive">
+            <table class="table table-bordered table-striped AllDataTables table-hover table-condensed" style="width: auto; margin-left: 5px;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;" title="Id Producto">ID Prod</th>
+                        <th>Nombre Producto</th>
+                        <th style="text-align: center;" title="Cantidad">Cant</th>
+                        <th style="text-align: center;">Desp</th>
+                        <th style="text-align: center;">Saldo</th>
+                        <th style="text-align: right;">Precio</th>
+                        <th style="text-align: right;">Subtotal</th>
+                        <th style="text-align: center;">Fabr</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    // Recorrer los detalles y agregar filas a la tabla
+    detalleArray.forEach(detalle => {
+        aux_producto_id = detalle.producto_id;
+        if(detalle.acuerdotecnico_id != 0){
+            aux_producto_id = 
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${detalle.acuerdotecnico_id},${d.cliente_id},"")'>
+                ${detalle.producto_id}
+            </a>`;    
+        }
+        tableHtml += `
+            <tr>
+                <td style="text-align: center;">${aux_producto_id}</td>
+                <td>${detalle.producto_nombre}</td>
+                <td style="text-align: center;">${detalle.cant}</td>
+                <td style="text-align: center;">${detalle.cantsoldesp}</td>
+                <td style="text-align: center;">${detalle.cant - detalle.cantsoldesp}</td>
+                <td style="text-align: right;">${detalle.precio.toFixed(2)}</td>
+                <td style="text-align: right;">${detalle.subtotal.toFixed(2)}</td>
+                <td style="text-align: center;">${detalle.requiere_fabricacion}</td>
+            </tr>
+        `;
+    });
+
+    // Cerrar la tabla
+    tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- Fin del contenedor Flex -->
+    `;
+
+    // Devolver la tabla HTML
+    return tableHtml;
+    
+}
 
 function configurarTabla(aux_tabla){
     $(aux_tabla).DataTable({
@@ -660,7 +764,7 @@ $(document).on("click", ".btndevsol", function(event){
     fila = $(this).closest("tr");
     form = $(this);
     //console.log($(this).attr("updated_at"))
-    id = fila.find('td:eq(0)').text();
+    id = fila.find('td:eq(1)').text();
     $('.modal-title').html('Devolver Solicitud Despacho');
     $("#despachosol_id").val(id);
     $("#nfilaDel").val(form.attr('fila'));
@@ -680,7 +784,7 @@ $(document).on("click", ".btncerrarsol", function(event){
     event.preventDefault();
     fila = $(this).closest("tr");
     form = $(this);
-    id = fila.find('td:eq(0)').text();
+    id = fila.find('td:eq(1)').text();
     $('.modal-title').html('Cerrar Solicitud Despacho');
     $("#despachosol_id").val(id);
     $("#nfilaDel").val(form.attr('fila'));
@@ -711,7 +815,7 @@ $("#btnGuardarDSD").click(function(event){
             /*
             fila = $(this).closest("tr");
             form = $(this);
-            id = fila.find('td:eq(0)').text();
+            id = fila.find('td:eq(1)').text();
                 //alert(id);
             */
             if ($("#status[updated_at]").length > 0) {

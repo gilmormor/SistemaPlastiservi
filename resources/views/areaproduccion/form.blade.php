@@ -36,8 +36,20 @@
                 <option
                     value="{{$sucursal->id}}"
                     {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
-                    >{{$sucursal->nombre}}
-                </option>
+                    >{{$sucursal->nombre}}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+<div class="form-group">
+    <label for="etapaprod_id" class="col-lg-3 control-label requerido">Etapa Producción</label>
+    <div class="col-lg-9">
+        <select name="etapaprod_id[]" id="etapaprod_id" class="form-control select2" multiple required>
+            @foreach($tablas['etapaprods'] as $etapaprod)
+                <option
+                    value="{{$etapaprod->id}}"
+                    {{is_array(old('etapaprod_id')) ? (in_array($etapaprod->id, old('etapaprod_id')) ? 'selected' : '') : (isset($data) ? ($data->etapaprods->firstWhere('id', $etapaprod->id) ? 'selected' : '') : '')}}
+                    >{{$etapaprod->nombre}}</option>
             @endforeach
         </select>
     </div>

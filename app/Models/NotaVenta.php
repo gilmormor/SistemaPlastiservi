@@ -51,6 +51,7 @@ class NotaVenta extends Model
         'aprobusu_id',
         'aprobfechahora',
         'visto',
+        'requiere_fabricacion',
         'usuariodel_id',
         'stadestino'
     ];
@@ -178,6 +179,19 @@ class NotaVenta extends Model
     public function clientedesbloqueado()
     {
         return $this->hasOne(ClienteDesBloqueado::class,'notaventa_id');
+    }
+
+    //RELACION UNO A UNO OtNotaVenta
+    public function otnotaventa()
+    {
+        return $this->hasOne(OtNotaVenta::class,'notaventa_id')
+                    ->whereDoesntHave('ot.otanul');
+    }
+
+    //RELACION DE UNO A MUCHOS DespachoSol
+    public function despachosols()
+    {
+        return $this->hasMany(DespachoSol::class,'notaventa_id')->whereDoesntHave('despachosolanul');
     }
     
     

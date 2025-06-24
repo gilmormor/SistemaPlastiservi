@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarProducto;
+use App\Models\AcuerdoTecnico;
 use App\Models\AreaProduccionSucLinea;
 use App\Models\CategoriaProd;
 use App\Models\CategoriaProd_Giro;
@@ -13,6 +14,7 @@ use App\Models\Empresa;
 use App\Models\GrupoProd;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
+use App\Models\NotaVentaDetalle;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Http\Request;
@@ -345,6 +347,12 @@ class ProductoController extends Controller
                 }
                 //dd($respuesta);
                 $producto = Producto::findOrFail($request->id);
+                //dd($request->id);
+                $atributoProd = $producto->atributosProducto($producto->id);
+                $aux_producto_nombre = $atributoProd["nombre"];
+                $respuesta["nombre"] = $aux_producto_nombre;
+                //dd($aux_producto_nombre);
+
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();
                 //$respuesta['areaproduccion'] = $producto->categoriaprod->areaproduccion->toArray();
                 $respuesta['areaproduccionsucs'] = $producto->categoriaprod->areaproduccion->areaproduccionsucs->toArray();
@@ -353,6 +361,7 @@ class ProductoController extends Controller
                 if($producto->acuerdotecnico){
                     $respuesta['at_color_nombre'] = $producto->acuerdotecnico->color->descripcion;
                     $respuesta['at_materiaprima_nombre'] = $producto->acuerdotecnico->materiaprima->descfact;
+                    $respuesta['at_unidadmedida_nombre'] = $producto->acuerdotecnico->unidadmedida->nombre;
                 }
                 //dd($respuesta['bodegas']);
                 foreach ($respuesta['bodegas'] as &$bodega) {

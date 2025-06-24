@@ -77,6 +77,17 @@ class AreaProduccionSucLineaController extends Controller
         $data = AreaProduccionSucLinea::findOrFail($id);
         $tablas = array();
         $tablas['areaproduccionsucs'] = AreaProduccionSuc::orderBy('id')->get();
+        $areaproduccionsucs = [];
+        foreach ($tablas['areaproduccionsucs'] as $areaproduccionsuc) {
+            $areaproduccionsucs[] = [
+                "areaproduccionsuc_id" => $areaproduccionsuc->id,
+                "areaproduccion_nombre" => isset($areaproduccionsuc->areaproduccion->nombre) ? $areaproduccionsuc->areaproduccion->nombre : "no existe",
+                "sucursal_nombre" => $areaproduccionsuc->sucursal->nombre
+            ];
+        }
+        $tablas['areaproduccionsucs'] = $areaproduccionsucs;
+        dd($tablas['areaproduccionsucs']);
+        //dd($tablas['areaproduccionsucs']);
         return view('areaproduccionsuclinea.editar', compact('data','tablas'));
     }
 

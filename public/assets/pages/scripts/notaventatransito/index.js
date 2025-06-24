@@ -30,6 +30,10 @@ $(document).ready(function () {
             aux_icono = "";
             aux_color = "";
             //console.log(data.aprobstatus);
+            $('td', row).eq(1).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha) + " " + data.fechahora.substr(11, 8));
+
             if (data.aprobstatus=='1'){
                 aux_mensaje = "Aprobado Vendedor";
                 aux_icono = "glyphicon glyphicon-thumbs-up";
