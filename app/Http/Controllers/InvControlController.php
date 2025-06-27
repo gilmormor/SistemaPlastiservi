@@ -217,10 +217,17 @@ class InvControlController extends Controller
                             
                             $invmov = InvMov::create($invmov_array);
                             //LE ASIGNO 0 A TODOS LOS REGISTROS DE LA TABLA InvBodegaProducto PARA INICIALIZAR STOCK
-                            InvBodegaProducto::query()->update([
+                            /* InvBodegaProducto::query()->update([
                                 'stock' => 0,
                                 'stockkg' => 0,
-                            ]);
+                            ]); */
+                            DB::table('invbodegaproducto')
+                                ->join('invbodega', 'invbodegaproducto.invbodega_id', '=', 'invbodega.id')
+                                ->where('invbodega.sucursal_id', $aux_sucursal_id)
+                                ->update([
+                                    'invbodegaproducto.stock' => 0,
+                                    'invbodegaproducto.stockkg' => 0
+                                ]);
                             foreach ($invmovdets as $invmovdet) {            
                                 $array_invmovdet = $invmovdet->attributesToArray();
                                 //dd($array_invmovdet);
