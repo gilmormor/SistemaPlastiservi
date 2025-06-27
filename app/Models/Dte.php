@@ -798,19 +798,21 @@ class Dte extends Model
             $filtroNoMostrarGuiasUsadas = "true";
             $filtroNoMostrarDTeAnuladas = "true";
             $otrosCampos = ",dtedte.dter_id,
-                            (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
-                            FROM dtedte as dtedte1 INNER JOIN dte as dte1
-                            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
-                            WHERE dtedte1.dter_id = dte.id
-                            AND (dte1.foliocontrol_id = 1) 
-                            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
-                            (SELECT GROUP_CONCAT(DISTINCT dte1.id) AS id
-                            FROM dtedte as dtedte1 INNER JOIN dte as dte1
-                            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
-                            WHERE dtedte1.dter_id = dte.id
-                            AND (dte1.foliocontrol_id = 1) 
-                            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_dte_id,
-                            dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
+                            (SELECT dte1.nrodocto
+                                FROM dtedte as dtedte1 INNER JOIN dte as dte1
+                                ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+                                WHERE dtedte1.dter_id = dte.id
+                                AND (dte1.foliocontrol_id = 1) 
+                                AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))
+                                ORDER BY dtedte1.id DESC LIMIT 1) as fact_nrodocto,
+                            (SELECT dte1.id
+                                FROM dtedte as dtedte1 INNER JOIN dte as dte1
+                                ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+                                WHERE dtedte1.dter_id = dte.id
+                                AND (dte1.foliocontrol_id = 1) 
+                                AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))
+                                ORDER BY dtedte1.id DESC LIMIT 1) as fact_dte_id,
+                                dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
              ";
             $unionOtrasTablas = " LEFT JOIN dtedte
                                 ON dtedte.dter_id = dte.id AND isnull(dtedte.deleted_at)
@@ -961,6 +963,7 @@ class Dte extends Model
         AND $aux_condFiltrarxUsuario
         AND $aux_condindtraslado
         AND $aux_condareaproduccion_id
+        GROUP BY dte.nrodocto,dtedet.id
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
         $arrays = DB::select($sql);
