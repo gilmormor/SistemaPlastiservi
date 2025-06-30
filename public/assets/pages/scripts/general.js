@@ -1790,7 +1790,7 @@ $("#producto_idM").blur(function(){
 		//totalizar();
 		aux_actionform = $("#form-general").attr("action");
 		aux_mostrarTodo = 1; // BUSCO TODOS LOS PRODUCTOS
-		if(aux_actionform.includes("notaventa")){
+		if(typeof aux_actionform !== 'undefined' && aux_actionform.includes("notaventa")){
 			aux_mostrarTodo = 0; // BUSCO SOLO LOS PRODUCTOS tipoprod = 0
 		}
 		aux_cliente_id = null;

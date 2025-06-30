@@ -1921,13 +1921,22 @@ class DespachoOrdController extends Controller
                             }    
                         }
                         $aux_enlacefactura = "";
-                        if(isset($dteguiadesp->dte->dtedter->dte->nrodocto)){
-                            $dtefac = $dteguiadesp->dte->dtedter->dte;
-                            $nrodocto_str = $dtefac->foliocontrol->nombrepdf . str_pad($dtefac->nrodocto, 8, "0", STR_PAD_LEFT);
-                            $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dtefac->id\",0,\"myModalTablaOD\")' data-original-title='Factura'>
-                                FC:$dtefac->nrodocto
-                            </a>";
-    
+                        foreach ($dteguiadesp->dte->dtedters as $dtedter) {
+                            if(isset($dtedter->dte->nrodocto)){
+                                $dtefac = $dtedter->dte;
+                                $aux_enlacefactura .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dtefac->id\",0,\"myModalTablaOD\")' data-original-title='Factura'>
+                                    FC:$dtefac->nrodocto
+                                </a>";
+                                foreach ($dtefac->dtedters as $facdtedter) {
+                                    $dtendnc = $facdtedter->dte;
+                                    $foliocontrol_desc = $dtendnc->foliocontrol->desc . ' FC:' . $dtefac->nrodocto;
+                                    $foliocontrol_doc = $dtendnc->foliocontrol->doc;
+                                    $aux_enlacefactura .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$facdtedter->dte_id\",0,\"myModalTablaOD\")' data-original-title='$foliocontrol_desc'>
+                                        $foliocontrol_doc:$dtendnc->nrodocto
+                                    </a>";
+
+                                }
+                            }
                         }
     
 
