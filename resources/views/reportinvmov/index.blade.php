@@ -132,9 +132,9 @@ Movimiento de Inventario
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Buscar por contenido">
+                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Buscar por descripcion">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                    <label for="buscarxdesc" class="control-label">Contenido</label>
+                                    <label for="buscarxdesc" class="control-label">Descripción</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
                                     <input type="text" name="buscarxdesc" id="buscarxdesc" class="form-control" tipoval="texto"/>
