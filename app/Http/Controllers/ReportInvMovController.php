@@ -117,6 +117,10 @@ function consultainvmov($request){
     if(!empty($request->invbodega_id)){
         $aux_condinvbodega_id = "invmovdet.invbodega_id='$request->invbodega_id'";
     }
+    $aux_condbuscarxdesc = " true";
+    if(!empty($request->buscarxdesc)){
+        $aux_condbuscarxdesc = "invmov.desc LIKE '%$request->buscarxdesc%'";
+    }
     $sql = "SELECT invmov.id,invmovdet.id as invmovdet_id,invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,
             invmov.idmovmod,invmovmodulo.nombre as invmovmodulo_nombre,
             CONCAT (invbodega.nombre, ' / ' , sucursal.abrev) as invbodega_nombre,sucursal.nombre as sucursal_nombre,
@@ -145,6 +149,7 @@ function consultainvmov($request){
             and $aux_condareaproduccion_id
             and $aux_condproducto_idPxP
             and $aux_condinvbodega_id
+            and $aux_condbuscarxdesc
             ORDER BY invbodega.orden,invmov.fechahora;";
     //dd($sql);
     $datas = DB::select($sql);

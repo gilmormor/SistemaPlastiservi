@@ -103,6 +103,7 @@ function datosInvmov(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         producto_idPxP    : $("#producto_idPxP").val(),
         invbodega_id      : $("#invbodega_id").val(),
+        buscarxdesc       : $("#buscarxdesc").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -112,7 +113,8 @@ function datosInvmov(){
     "&fechah="+data1.fechah +
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&producto_idPxP="+data1.producto_idPxP +
-    "&invbodega_id="+data1.invbodega_id
+    "&invbodega_id="+data1.invbodega_id +
+    "&buscarxdesc="+data1.buscarxdesc
 
     var data = {
         data1 : data1,
