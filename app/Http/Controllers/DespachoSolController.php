@@ -2803,7 +2803,22 @@ function consulta($request,$aux_sql,$orden){
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
                 $producto = Producto::findOrFail($productoIds[$index]);
                 //dd($producto->invbodegaproductos);
-                list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);
+                //Esta linea me estaba dando error porque a veces no venian los 8 elementos 
+                //list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);
+
+                // Asegurar que haya al menos 8 elementos, con valores por defecto
+                $datos = array_pad(explode('|', $detalle), 8, 0);
+                list(
+                    $producto_id,
+                    $cant,
+                    $precio,
+                    $subtotal,
+                    $cantsoldesp,
+                    $requiere_fabricacion,
+                    $id,
+                    $totalkilos
+                ) = $datos;
+
                 $bodegas = [];
                 foreach($producto->invbodegaproductos as $invbodegaproducto){
                     if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)){
@@ -2838,7 +2853,7 @@ function consulta($request,$aux_sql,$orden){
                 $detalleArrayFinal[] = $detalleFinal;
             }
             $data->statusstockreg = $aux_statusstockReg;
-            //dd($detalleArrayFinal);
+            dd($detalleArrayFinal); statusstockreg
             //dd(implode(';', $detalleArrayFinal));
     
             // Reconstruir el campo detallenv con los nuevos valores
