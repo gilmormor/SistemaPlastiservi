@@ -2853,7 +2853,7 @@ function consulta($request,$aux_sql,$orden){
                 $detalleArrayFinal[] = $detalleFinal;
             }
             $data->statusstockreg = $aux_statusstockReg;
-            dd($detalleArrayFinal); statusstockreg
+            //dd($detalleArrayFinal);
             //dd(implode(';', $detalleArrayFinal));
     
             // Reconstruir el campo detallenv con los nuevos valores
