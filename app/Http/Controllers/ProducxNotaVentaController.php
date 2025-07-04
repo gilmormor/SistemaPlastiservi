@@ -81,7 +81,7 @@ class ProducxNotaVentaController extends Controller
                 $totalsumcant += $data->sumcant;
                 
                 $producto = Producto::findOrFail($data->producto_id);
-                $porcentajeKg = ($data->sumtotalkilos * 100) / $aux_totalkilosP;
+                $porcentajeKg = ($data->sumtotalkilos * 100) / ($aux_totalkilosP > 0 ? $aux_totalkilosP : 1);
                 $aux_totalporcenkg += $porcentajeKg;
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' class='btn-accion-tabla tooltipsC'>
