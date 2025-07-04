@@ -2809,7 +2809,6 @@ function consulta($request,$aux_sql,$orden){
             $aux_ContProdConStock = 0;
             $aux_ContProd = 0;
             foreach ($detalleArray as $index => $detalle) {
-                $aux_ContProd++;
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
                 $producto = Producto::findOrFail($productoIds[$index]);
                 //dd($producto->invbodegaproductos);
@@ -2830,7 +2829,7 @@ function consulta($request,$aux_sql,$orden){
                 ) = $datos;
 
                 $bodegas = [];
-                $aux_StaStockCompleto = 0;
+                $aux_statusstockReg = 0;
                 foreach($producto->invbodegaproductos as $invbodegaproducto){
                     if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)){
                         if($invbodegaproducto->stock){
@@ -2845,15 +2844,16 @@ function consulta($request,$aux_sql,$orden){
                         if(($aux_statusstockReg) == 0 or ($aux_statusstockReg == 1)){
                             if($invbodegaproducto->stock){
                                 $aux_statusstockReg = 1;
+                                //break;
                             }
                             if($invbodegaproducto->stock >= ($cant - $cantsoldesp)){
                                 $aux_statusstockReg = 2;
-                                $aux_StaStockCompleto = 1;
+                                //break;
                             }
                         }
                     }
                 }
-                if($aux_StaStockCompleto == 1){
+                if($aux_statusstockReg == 2){
                     $aux_ContProdConStock++;
                 }
                 //dd($bodegas);
@@ -2866,6 +2866,7 @@ function consulta($request,$aux_sql,$orden){
                 //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
                 $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos, $bodegasStock, $aux_statusstock]);
                 $detalleArrayFinal[] = $detalleFinal;
+                $aux_ContProd++;
             }
             if($aux_ContProdConStock >= $aux_ContProd){
                 $aux_statusstockReg = 3; // Stock Completo
