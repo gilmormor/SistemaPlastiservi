@@ -231,6 +231,20 @@ Notas de Venta
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Flag de Stock">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Flag de Stock</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="FlagStock" id="FlagStock" class="selectpicker form-control">
+                                            <option value="">Seleccione...</option>
+                                            <option value="0" data-content="<span class='text-red'><i class='glyphicon glyphicon-flag'></i> Sin Stock</span>"></option>
+                                            <option value="1" data-content="<span class='text-yellow'><i class='glyphicon glyphicon-flag'></i> Con Stock, pero no es suficiente</span>"></option>
+                                            <option value="2" data-content="<span class='text-blue'><i class='glyphicon glyphicon-flag'></i> Algunos con Stock</span>"></option>
+                                            <option value="3" data-content="<span class='text-green'><i class='glyphicon glyphicon-flag'></i> Stock Total</span>"></option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-3 col-sm-12 text-center">
@@ -267,14 +281,14 @@ Notas de Venta
                 </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan='7' style='text-align:right'>Total página</th>
+                            <th colspan='9' style='text-align:right'>Total página</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
                             <th id='totaldinero' name='totaldinero' style='text-align:right'>0,00</th>
                             <th style='text-align:right'></th>
                         </tr>
             
                         <tr>
-                            <th colspan='7' style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan='9' style='text-align:right'>TOTAL GENERAL</th>
                             <th style='text-align:right' id='totalgenkg' name='totalgenkg'>0,00</th>
                             <th style='text-align:right' id='totalgendin' name='totalgendin'>0,00</th>
                             <th style='text-align:right'></th>

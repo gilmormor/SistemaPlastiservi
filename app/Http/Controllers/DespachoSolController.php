@@ -2503,6 +2503,12 @@ function consulta($request,$aux_sql,$orden){
         $aux_condmodulo_id = " and clientedesbloqueadomodulo.modulo_id = $request->modulo_id";
     }
 
+    $aux_condFlagStock = "";
+    if(isset($request->FlagStock)){
+        $aux_condFlagStock = $request->FlagStock;
+    }
+
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
     if($aux_sql==1){
@@ -2780,6 +2786,7 @@ function consulta($request,$aux_sql,$orden){
     if($aux_sql==1){
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
+        $newDatas = [];
         foreach ($datas as &$data) {
             //dd($data->nvdetalle);
     
@@ -2799,7 +2806,10 @@ function consulta($request,$aux_sql,$orden){
             //dd($detalleArray);
             $aux_statusstock = 0;
             $aux_statusstockReg = 0;
+            $aux_ContProdConStock = 0;
+            $aux_ContProd = 0;
             foreach ($detalleArray as $index => $detalle) {
+                $aux_ContProd++;
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
                 $producto = Producto::findOrFail($productoIds[$index]);
                 //dd($producto->invbodegaproductos);
@@ -2820,6 +2830,7 @@ function consulta($request,$aux_sql,$orden){
                 ) = $datos;
 
                 $bodegas = [];
+                $aux_StaStockCompleto = 0;
                 foreach($producto->invbodegaproductos as $invbodegaproducto){
                     if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)){
                         if($invbodegaproducto->stock){
@@ -2837,9 +2848,13 @@ function consulta($request,$aux_sql,$orden){
                             }
                             if($invbodegaproducto->stock >= ($cant - $cantsoldesp)){
                                 $aux_statusstockReg = 2;
+                                $aux_StaStockCompleto = 1;
                             }
                         }
                     }
+                }
+                if($aux_StaStockCompleto == 1){
+                    $aux_ContProdConStock++;
                 }
                 //dd($bodegas);
                 if(count($bodegas) > 0){
@@ -2852,16 +2867,23 @@ function consulta($request,$aux_sql,$orden){
                 $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos, $bodegasStock, $aux_statusstock]);
                 $detalleArrayFinal[] = $detalleFinal;
             }
+            if($aux_ContProdConStock >= $aux_ContProd){
+                $aux_statusstockReg = 3; // Stock Completo
+            }
             $data->statusstockreg = $aux_statusstockReg;
             //dd($detalleArrayFinal);
             //dd(implode(';', $detalleArrayFinal));
     
             // Reconstruir el campo detallenv con los nuevos valores
             $data->nvdetalle = implode(';', $detalleArrayFinal);
+            //AQUI SE FILTRA POR EL STOCK
+            if(($aux_condFlagStock != "") and ($aux_condFlagStock == $aux_statusstockReg)){
+                $newDatas [] = $data;
+            }
         }
-       
-
-        
+    }
+    if($aux_condFlagStock != ""){
+        $datas = $newDatas;
     }
     //dd($datas);
     filtrarclientesbloqueados($request,$datas);

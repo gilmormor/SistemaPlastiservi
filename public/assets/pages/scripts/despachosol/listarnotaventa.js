@@ -90,7 +90,10 @@ $(document).ready(function () {
                 aux_flag = `<i class="btn-accion-tabla btn-sm glyphicon glyphicon-flag text-yellow" title="Con Stock, pero no es suficiente"></i>`;
             }
             if(data.statusstockreg == 2){
-                aux_flag = `<i class="btn-accion-tabla btn-sm glyphicon glyphicon-flag text-green" title="Con Stock"></i>`;
+                aux_flag = `<i class="btn-accion-tabla btn-sm glyphicon glyphicon-flag text-blue" title="Algunos con Stock"></i>`;
+            }
+            if(data.statusstockreg == 3){
+                aux_flag = `<i class="btn-accion-tabla btn-sm glyphicon glyphicon-flag text-green" title="Stock Total"></i>`;
             }
             $('td', row).eq(1).html(aux_flag);
             $('td', row).eq(1).attr('data-order',data.statusstockreg);
@@ -504,6 +507,7 @@ function datoslnv1(){
         filtro            : 0,
         modulo_id         : 4,
         statusBloqueo     : $("#statusBloqueo").val(),
+        FlagStock         : $("#FlagStock").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -524,6 +528,7 @@ function datoslnv1(){
             "&sucursal_id=" + data1.sucursal_id +
             "&modulo_id=" + data1.modulo_id +
             "&statusBloqueo=" + data1.statusBloqueo +
+            "&FlagStock=" + data1.FlagStock +
             "&aux_titulo=" + aux_titulo;
     
     var data = {
