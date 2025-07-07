@@ -481,7 +481,10 @@ function datoslnv(){
         plazoentrega      : $("#plazoentrega").val(),
         producto_id       : $("#producto_idPxP").val(),
         filtro            : 0,
+        modulo_id         : 4,
+        statusBloqueo     : $("#statusBloqueo").val(),
         sucursal_id       : $("#sucursal_id").val(),
+        FlagStock         : $("#FlagStock").val(),
         _token            : $('input[name=_token]').val()
     };
     return data;
@@ -701,8 +704,11 @@ function btnpdf(numrep){
             "&comuna_id=" + data.comuna_id +
             "&plazoentrega=" + data.plazoentrega +
             "&producto_id=" + data.producto_id +
+            "&sucursal_id=" + data.sucursal_id +
             "&filtro=" + data.filtro +
+            "&modulo_id=" + data.modulo_id +
             "&statusBloqueo=" + data.statusBloqueo +
+            "&FlagStock=" + data.FlagStock +
             "&numrep=" + numrep;
     if(numrep==1){
         aux_titulo = 'Nota de Venta Pendientes';

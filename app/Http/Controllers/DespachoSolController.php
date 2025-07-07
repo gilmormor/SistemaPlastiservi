@@ -2187,7 +2187,14 @@ class DespachoSolController extends Controller
         if(isset($_GET["statusBloqueo"])){
             $request->statusBloqueo = $_GET["statusBloqueo"];
         }
-        
+        if(isset($_GET["sucursal_id"])){
+            $request->sucursal_id = $_GET["sucursal_id"];
+        }
+
+        if(isset($_GET["FlagStock"])){
+            $request->FlagStock = $_GET["FlagStock"];
+        }
+        //dd($request);
 
 
         $datas = consulta($request,$request->aux_sql,$request->aux_orden);
@@ -2343,6 +2350,7 @@ class DespachoSolController extends Controller
 
 
 function consulta($request,$aux_sql,$orden){
+    //dd($request,$aux_sql,$orden);
     //dd($request);
     if($orden==1){
         $aux_orden = "notaventadetalle.notaventa_id desc";
@@ -2781,7 +2789,6 @@ function consulta($request,$aux_sql,$orden){
         ORDER BY $aux_orden;";
         //dd($sql);
     }
-
     $datas = DB::select($sql);
     if($aux_sql==1){
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
@@ -2807,6 +2814,8 @@ function consulta($request,$aux_sql,$orden){
             $aux_statusstock = 0;
             $aux_statusstockReg = 0;
             $aux_ContProdConStock = 0;
+            $aux_ContProdSinStock = 0;
+            $aux_ContProdStockParcial = 0;
             $aux_ContProd = 0;
             foreach ($detalleArray as $index => $detalle) {
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
@@ -2829,6 +2838,9 @@ function consulta($request,$aux_sql,$orden){
                 ) = $datos;
 
                 $bodegas = [];
+                $aux_staStock0 = 0; //SIN STOCK
+                $aux_staStock1 = 0; //STOCK PARCIAL
+                $aux_staStock3 = 0; //STOCK COMPLETO
                 $aux_statusstockReg = 0;
                 foreach($producto->invbodegaproductos as $invbodegaproducto){
                     if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)){
@@ -2838,8 +2850,15 @@ function consulta($request,$aux_sql,$orden){
                         if($invbodegaproducto->stock > 0){
                             $aux_statusstock = 1;
                         }
-                        if($invbodegaproducto->stock > ($cant - $cantsoldesp)){
+                        if($invbodegaproducto->stock < ($cant - $cantsoldesp)){
+                            $aux_staStock0 = 1;
+                        }
+                        if(($invbodegaproducto->stock > 0) and ($invbodegaproducto->stock < $cant - $cantsoldesp)){
+                            $aux_staStock1 = 1;
+                        }
+                        if($invbodegaproducto->stock >= ($cant - $cantsoldesp)){
                             $aux_statusstock = 2;
+                            $aux_staStock3 = 1;
                         }
                         if(($aux_statusstockReg) == 0 or ($aux_statusstockReg == 1)){
                             if($invbodegaproducto->stock){
@@ -2848,14 +2867,34 @@ function consulta($request,$aux_sql,$orden){
                             }
                             if($invbodegaproducto->stock >= ($cant - $cantsoldesp)){
                                 $aux_statusstockReg = 2;
+                                $aux_staStock3 = 1;
                                 //break;
                             }
                         }
                     }
                 }
-                if($aux_statusstockReg == 2){
+                if($aux_staStock3 == 1){
+                    $aux_statusstock = 2; // Stock Completo
                     $aux_ContProdConStock++;
+                }else{
+                    if($aux_staStock1 == 1){
+                        $aux_statusstock = 1; //Stock Parcial
+                        $aux_ContProdStockParcial++;
+                    }else{
+                        if($aux_staStock0 == 1){
+                            $aux_statusstock = 0; // Sin Stock
+                            $aux_ContProdSinStock++;
+                        }
+                    }
                 }
+
+                /* if($aux_staStock0 == 0){
+                    $aux_ContProdSinStock++;
+                }
+                if(($aux_statusstockReg == 2) and ($aux_staStock0 == 0) and ($aux_staStock1 == 0) and ($aux_staStock3 == 1)){
+                    $aux_ContProdConStock++;
+                } */
+
                 //dd($bodegas);
                 if(count($bodegas) > 0){
                     $bodegasStock = implode(',', $bodegas);
@@ -2867,6 +2906,16 @@ function consulta($request,$aux_sql,$orden){
                 $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos, $bodegasStock, $aux_statusstock]);
                 $detalleArrayFinal[] = $detalleFinal;
                 $aux_ContProd++;
+            }
+            //dd("Total registros: " . $aux_ContProd . " Con Stock: " . $aux_ContProdConStock . " Stock Parcial: " . $aux_ContProdStockParcial . " Sin Stock: " . $aux_ContProdSinStock);
+            if($aux_ContProdSinStock >= $aux_ContProd){
+                $aux_statusstockReg = 0; // Sin Stock
+            }
+            if($aux_ContProdConStock == 0 and $aux_ContProdStockParcial > 0 and $aux_ContProdSinStock < $aux_ContProd){
+                $aux_statusstockReg = 1; // Con Stock pero no es suficiente
+            }
+            if($aux_ContProdConStock > 0 and ($aux_ContProdSinStock > 0 or $aux_ContProdStockParcial > 0)){
+                $aux_statusstockReg = 2; // Algunos con Stock
             }
             if($aux_ContProdConStock >= $aux_ContProd){
                 $aux_statusstockReg = 3; // Stock Completo
