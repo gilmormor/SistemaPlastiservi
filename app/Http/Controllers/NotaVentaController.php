@@ -1759,7 +1759,7 @@ class NotaVentaController extends Controller
                 ON notaventa.id = notaventadetalle.notaventa_id and isnull(notaventadetalle.deleted_at)
                 LEFT JOIN notaventacerrada
                 ON notaventa.id = notaventacerrada.notaventa_id and isnull(notaventacerrada.deleted_at)
-                WHERE notaventadetalle.notaventa_id = $aux_notaventa_id
+                WHERE notaventadetalle.notaventa_id ='$aux_notaventa_id'
                 and isnull(notaventa.deleted_at)
                 GROUP BY notaventadetalle.notaventa_id;";
         $datas = DB::select($sql);
