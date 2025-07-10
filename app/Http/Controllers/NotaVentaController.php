@@ -1749,6 +1749,7 @@ class NotaVentaController extends Controller
 
     public function buscarNVActiva(Request $request){
         //dd($request);
+        $aux_notaventa_id = trim($request->id); // elimina espacios en blanco alrededor
         $sql = "SELECT notaventa.*,SUM(notaventadetalle.cant - (SELECT cantsoldesp
                     FROM vista_sumsoldespdet
                     WHERE notaventadetalle_id=notaventadetalle.id)) AS pendDesp,
@@ -1758,14 +1759,14 @@ class NotaVentaController extends Controller
                 ON notaventa.id = notaventadetalle.notaventa_id and isnull(notaventadetalle.deleted_at)
                 LEFT JOIN notaventacerrada
                 ON notaventa.id = notaventacerrada.notaventa_id and isnull(notaventacerrada.deleted_at)
-                WHERE notaventadetalle.notaventa_id = $request->id
+                WHERE notaventadetalle.notaventa_id = $aux_notaventa_id
                 and isnull(notaventa.deleted_at)
                 GROUP BY notaventadetalle.notaventa_id;";
         $datas = DB::select($sql);
         //dd($datas[0]->sumcant);
         if(count($datas) > 0){
             $cliente = Cliente::findOrFail($datas[0]->cliente_id);
-            $aux_cantdesp = NotaVenta::consultatotcantod($request->id);
+            $aux_cantdesp = NotaVenta::consultatotcantod($aux_notaventa_id);
             if(($aux_cantdesp >= $datas[0]->sumcant) and isset($request->sta_cerrarNV) and $request->sta_cerrarNV == 1){
             //if(($datas[0]->pendDesp <= 0) and ($datas[0]->pendDesp !== null)){
                 return [
