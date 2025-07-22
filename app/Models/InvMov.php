@@ -223,7 +223,7 @@ class InvMov extends Model
         }
         $aux_areaproduccion_idSucursalCond = " categoriaprod.areaproduccion_id in (SELECT areaproduccion_id from areaproduccionsuc where sucursal_id in ($sucurArray)) ";
         $sql = "SELECT invbodegaproducto.producto_id, CONCAT(producto.nombre,'',IF(!isnull(at_unidadmedida.nombre),CONCAT(': ',at_unidadmedida.nombre),'')) as producto_nombre, 
-        if(isnull(acuerdotecnico.id),producto.diametro,at_ancho) as diametro,
+        REPLACE(REPLACE(if(isnull(acuerdotecnico.id),producto.diametro,at_ancho), '\"', ''), '\'', '') as diametro,
         if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
         if(isnull(acuerdotecnico.id),producto.peso,at_espesor) as peso,
         producto.long,
