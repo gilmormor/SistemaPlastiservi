@@ -935,7 +935,7 @@ class CotizacionController extends Controller
             */
             if ($cotizacion->save()) {
                 if($aux_statusAcuTec){
-                    //Event(new AvisoRevisionAcuTec($cotizacion));
+                    Event(new AvisoRevisionAcuTec($cotizacion));
                 }    
                 return response()->json([
                     'error' => 0,
