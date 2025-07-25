@@ -237,6 +237,7 @@ Pesaje
                                     <thead>
                                         <tr>
                                             <th class="width70 tooltipsC" title="Fecha" style='text-align:center'>Fecha</th>
+                                            <th class="width40 tooltipsC" title="Id Pesaje" style='text-align:center'>Id</th>
                                             <th class="width70 tooltipsC" title="Peso Total Norma" style="text-align:right;">Nominal</th>
                                             <th class="width70 tooltipsC" title="Peso Total Producto en Balanza" style="text-align:right;">PesoTubo</th>
                                             <th class="width70 tooltipsC" title="Diferencia Kg" style="text-align:right;">DifKg</th>
@@ -249,6 +250,7 @@ Pesaje
                                         <tr>
                                         </tr>
                                         <tr>
+                                            <th class="width40"></th>
                                             <th style='text-align:right' id='Total' name='Total'>Total</th>
                                             <th id='totalFecnominal' name='totalFecnominal' style='text-align:right'>0</th>
                                             <th id='totalFecpesotubo' name='totalFecpesotubo' style='text-align:right'>0</th>

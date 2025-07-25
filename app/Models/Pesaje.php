@@ -97,9 +97,12 @@ class Pesaje extends Model
                 $aux_orderby = "ORDER BY categoriaprodgrupo.id ASC";
             }
         }
+        $aux_campopesaje_id = "";
         if($request->agruFecha == 1){
             $aux_groupby = "GROUP BY pesaje.fechahora";
             $aux_orderby = "ORDER BY pesaje.fechahora ASC";
+            $aux_campopesaje_id = "
+                    ,GROUP_CONCAT(DISTINCT pesaje.id) AS grupopesaje_id";
         }
 
         if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
@@ -125,6 +128,7 @@ class Pesaje extends Model
         sum(pesajedet.pesobaltotal - pesajedet.tara) pesototalprodbal,
         sum(pesajedet.cant * pesajedet.pesounitnom) as pesototalnorma,
         sum(((pesajedet.pesobaltotal - pesajedet.tara)) - (pesajedet.cant * pesajedet.pesounitnom)) AS difkg
+        $aux_campopesaje_id
         FROM pesaje INNER JOIN pesajedet
         ON pesaje.id = pesajedet.pesaje_id AND ISNULL(pesaje.deleted_at) AND ISNULL(pesajedet.deleted_at)
         INNER JOIN producto
