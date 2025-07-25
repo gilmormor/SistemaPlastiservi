@@ -52,6 +52,12 @@ $(document).ready(function () {
         },
         "createdRow": function ( row, data, index ) {
             $('td', row).eq(0).attr('style','text-align:center');
+            aux_text = 
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Ver PDF Pesaje Id: ${data.pesaje_id}' onclick='genpdfPESAJE(${data.pesaje_id},1)'>
+                        ${data.producto_id}
+                    </a>`;
+            $('td', row).eq(0).html(aux_text);
+
             $('td', row).eq(3).attr('style','text-align:center');
             $('td', row).eq(4).attr('style','text-align:center');
 
@@ -158,7 +164,7 @@ $(document).ready(function () {
                 aux_text = "";
                 for (let i = 0; i < arr_grupopesaje_id.length; i++) {
                     aux_text += 
-                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Pesaje' onclick='genpdfPESAJE(${arr_grupopesaje_id[i]},1)'>
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Ver PDF Pesaje Id:${arr_grupopesaje_id[i]}' onclick='genpdfPESAJE(${arr_grupopesaje_id[i]},1)'>
                         ${arr_grupopesaje_id[i]}
                     </a>`;
                     // Agrega la coma solo si NO es el último elemento

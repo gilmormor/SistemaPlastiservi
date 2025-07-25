@@ -118,7 +118,7 @@ class Pesaje extends Model
         }
     
 
-        $sql = "SELECT pesaje.*,pesajedet.*,producto.nombre AS producto_nombre,producto.diametro,claseprod.cla_nombre,
+        $sql = "SELECT pesaje.id as pesaje_id,pesaje.*,pesajedet.*,producto.nombre AS producto_nombre,producto.diametro,claseprod.cla_nombre,
         producto.long,producto.tipounion,pesajecarro.nombre AS pesajecarro_nombre,
         areaproduccionsuclinea.nombre AS areaproduccionsuclinea_nombre,turno.nombre AS turno_nombre,
         categoriaprodgrupo.nombre as categoriaprodgrupo_nombre, 
