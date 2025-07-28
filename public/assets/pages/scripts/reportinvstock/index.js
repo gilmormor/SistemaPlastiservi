@@ -343,3 +343,291 @@ function tablascolsultainv(id){
         $(".selectpicker").selectpicker('refresh');
     }
 }
+
+function exportarExcel() {
+    data = datosinvstock();
+    var newUrl = "invcontrolpage/" + data.data2;
+    // Obtener todos los registros mediante una solicitud AJAX
+    $.ajax({
+        url: "invcontrolpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        type: 'POST',
+        dataType: 'json',
+        success: function(data) {
+        //return 0;
+        //console.log(data);
+        if(data.data.length == 0){
+            swal({
+                title: 'Información no encontrada!',
+                text: "",
+                icon: 'warning',
+                buttons: {
+                    confirm: "Aceptar"
+                },
+            }).then((value) => {
+                if (value) {
+                    //ajaxRequest(data,ruta,'accionnotaventa');
+                }
+            });
+            return 0;
+        }
+
+        //console.log(data);
+        // Crear una matriz para los datos de Excel
+        var datosExcel = [];
+        // Agregar los datos de la tabla al arreglo
+        aux_vendedor_id = "";
+        count = 0;
+
+        cellLengthRazonSoc = 0;
+        cellLengthProducto = 0;
+        filainifusionar = -1
+        //console.log(data);
+        aux_mesanno = $("#annomes").val();
+        datosExcel.push(["Stock Productos","","","","","","","","","","",fechaactual()]);
+        datosExcel.push(["Fecha: " + aux_mesanno,"","","","","","","",""]);
+        aux_totalStock = 0;
+        aux_totalkg = 0;
+        datosExcel.push(["","","","","","","","",""]);
+        datosExcel.push(["Cod","Producto","Categoria","Clase/Sello","Diam/Ancho","L","Peso/Esp","TU","Bodega","Ini","Stock","Kg"]);
+        data.data.forEach(function(registro) {
+            aux_totalStock += registro.stock;
+            if(registro.peso <= 0){
+                stockKg = registro.stockkg;
+            }else{
+                stockKg = registro.stock * registro.peso;
+            }
+            aux_totalkg += stockKg;
+            filainifusionar++;
+
+            var filaExcel = [
+                registro.producto_id,
+                registro.producto_nombre,
+                registro.categoria_nombre,
+                registro.cla_nombre,
+                registro.diametro,
+                registro.largo,
+                registro.peso,
+                registro.tipounion,
+                registro.invbodega_nombre,
+                registro.stockini,
+                registro.stock,
+                stockKg
+            ];
+            count++;
+
+            datosExcel.push(filaExcel);
+        });
+        datosExcel.push(["","","","","","","","","","Total: ",aux_totalStock,aux_totalkg]);
+
+        createExcel(datosExcel);
+
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+
+
+    // Llamar a la función para crear el archivo Excel
+
+}
+
+function createExcel(datosExcel) {
+    // Crear un nuevo libro de trabajo y una nueva hoja
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Datos");
+
+    // Insertar los datos en la hoja de trabajo
+    worksheet.addRows(datosExcel);
+
+    // Establecer negrita en la celda A1
+    //worksheet.getCell("A5").font = { bold: true };
+
+
+    // Ajustar automáticamente el ancho de la columna B al contenido
+    ajustarcolumnaexcel(worksheet,"B");
+    ajustarcolumnaexcel(worksheet,"C");
+    ajustarcolumnaexcel(worksheet,"D");
+    ajustarcolumnaexcel(worksheet,"E");
+    ajustarcolumnaexcel(worksheet,"F");
+    //ajustarcolumnaexcel(worksheet,"G");
+    ajustarcolumnaexcel(worksheet,"H");
+    ajustarcolumnaexcel(worksheet,"I");
+    ajustarcolumnaexcel(worksheet,"J");
+    ajustarcolumnaexcel(worksheet,"K");
+    //ajustarcolumnaexcel(worksheet,"L");
+
+    //Establecer negrilla a titulo de columnas Fila 4
+    const row6 = worksheet.getRow(4);
+    for (let i = 1; i <= 12; i++) {
+        cell = row6.getCell(i);
+        cell.font = { bold: true };
+        cell.autosize = true;
+    }
+
+    // Obtén el objeto de la columna y establece la propiedad hidden en true
+    /* columnhidden = worksheet.getColumn("H");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("I");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("J");
+    columnhidden.hidden = true;
+    columnhidden = worksheet.getColumn("K");
+    columnhidden.hidden = true; */
+    /*
+    columnhidden = worksheet.getColumn("N");
+    columnhidden.hidden = true;
+    */
+
+    //AJUSTAR EL TEXTO CELDAS A4:AI4
+    // Supongamos que deseas ajustar el texto en la fila 4 y hacer que las celdas en negrita
+    // Supongamos que deseas ajustar el texto en la fila 4 y hacer que las celdas en negKita
+    // Supongamos que deseas ajustar el texto en la fila 4 y hacer que las celdas en negLita
+    fila = 4;
+
+    // Iterar a través de las celdas en la fila y configurar el formato
+    for (let i = 1; i <= 12; i++) {
+        columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
+        const celda = worksheet.getCell(`${columna}${fila}`);
+        celda.alignment = { wrapText: true, vertical: 'middle' };
+        celda.autosize = true;
+    }    
+
+
+    // Recorrer la columna 7 y dar formato con punto para separar los miles
+    const columnG = worksheet.getColumn(6);
+    columnG.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Recorrer la columna R y dar formato con punto para separar los miles
+    const columnR = worksheet.getColumn(7);
+    columnR.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    const columnJ = worksheet.getColumn(10);
+    columnJ.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    const columnK = worksheet.getColumn(11);
+    columnK.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    const columnL = worksheet.getColumn(12);
+    columnL.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
+    for (let i = 4; i <= datosExcel.length; i++) {
+        const cell8 = worksheet.getCell(i, 8);
+        cell8.alignment = { horizontal: "center", vertical: "middle" };
+        /* const cell9 = worksheet.getCell(i, 9);
+        cell9.alignment = { horizontal: "center", vertical: "middle" }; */
+        /* const cell10 = worksheet.getCell(i, 10);
+        cell10.alignment = { horizontal: "center", vertical: "middle" }; */
+
+        const cell = worksheet.getCell(i, 13);
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    }
+
+
+    //Negrita Columna Titulo
+    const row1 = worksheet.getRow(1);
+    cell = row1.getCell(1);
+    cell.font = { bold: true, size: 20 };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Titulo Kg
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(6);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Titulo Monto
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(7);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Titulo Monto
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(10);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Titulo Monto
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(11);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+    //Titulo Monto
+    rowX = worksheet.getRow(4);
+    cell = rowX.getCell(12);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Fecha Reporte
+    const row2 = worksheet.getRow(1);
+    cell = row2.getCell(10);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+
+
+    //Fusionar celdas de Titulo
+    const startCol = 0;
+    const endCol = 11;
+    worksheet.mergeCells(1, startCol, 1, endCol);
+
+    //Negrita Columna Sucursal
+    const row3 = worksheet.getRow(2);
+    cell = row3.getCell(1);
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    
+    //Fusionar celdas Sucursal
+    const startCol1 = 0;
+    const endCol1 = 11;
+    worksheet.mergeCells(2, startCol1, 2, endCol1);
+
+    // Establecer negrita a totales
+    row = worksheet.getRow(datosExcel.length);
+    for (let i = 1; i <= 12; i++) {
+        cell = row.getCell(i);
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "right" };
+        cell.numFmt = "#,##0.00";
+    }
+
+    cell = row.getCell(7);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+
+    // Guardar el archivo
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+      // Crear un objeto Blob para el archivo Excel
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+      // Crear un enlace de descarga
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "invstock.xlsx";
+      a.click();
+
+      // Limpiar el objeto Blob
+      window.URL.revokeObjectURL(url);
+    });
+}

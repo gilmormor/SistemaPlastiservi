@@ -35,6 +35,7 @@
 			<thead>
 				<tr>
 					<th width="20px">Fecha</th>
+					<th width="20px">Id Pesaje</th>
 					<th class="textcenter" width="50px">Nominal</th>
 					<th class="textcenter" width="50px">PesoTubo</th>
 					<th class="textcenter" width="20px">DifKg</th>
@@ -55,6 +56,7 @@
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{date('d/m/Y', strtotime($pesajedet->fechahora))}}</td>
+						<td width="20px">{{$pesajedet->grupopesaje_id}}</td>
 						<td class="textright">{{number_format($pesajedet->pesototalnorma, 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($pesajedet->pesototalprodbal, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($pesajedet->difkg, 2, ",", ".")}}</td>
@@ -64,6 +66,7 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr>
+					<th style='text-align:right'></th>
 					<th style='text-align:right'>Total</th>
 					<th style='text-align:right'>{{number_format($total_pesototalnorma, 2, ",", ".")}}</th>
 					<th style='text-align:right'>{{number_format($total_pesototalprodbal, 2, ",", ".")}}</th>

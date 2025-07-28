@@ -52,6 +52,12 @@ $(document).ready(function () {
         },
         "createdRow": function ( row, data, index ) {
             $('td', row).eq(0).attr('style','text-align:center');
+            aux_text = 
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Ver PDF Pesaje Id: ${data.pesaje_id}' onclick='genpdfPESAJE(${data.pesaje_id},1)'>
+                        ${data.producto_id}
+                    </a>`;
+            $('td', row).eq(0).html(aux_text);
+
             $('td', row).eq(3).attr('style','text-align:center');
             $('td', row).eq(4).attr('style','text-align:center');
 
@@ -136,6 +142,7 @@ $(document).ready(function () {
         ],
         'columns'     : [
             {data: 'fechahora'},
+            {data: 'grupopesaje_id'},
             {data: 'pesototalnorma'},
             {data: 'pesototalprodbal'},
             {data: 'difkg'},
@@ -152,26 +159,45 @@ $(document).ready(function () {
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(0).html(fechaddmmaaaa(aux_fecha));
 
-            $('td', row).eq(1).attr('style','text-align:right');
-            $('td', row).eq(1).attr('data-search',data.pesototalnorma);
-            $('td', row).eq(1).attr('data-order',data.pesototalnorma);
-            $('td', row).eq(1).html(MASKLA(data.pesototalnorma,2));
+            if(data.grupopesaje_id != null){
+                let arr_grupopesaje_id = data.grupopesaje_id.split(','); 
+                aux_text = "";
+                for (let i = 0; i < arr_grupopesaje_id.length; i++) {
+                    aux_text += 
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Ver PDF Pesaje Id:${arr_grupopesaje_id[i]}' onclick='genpdfPESAJE(${arr_grupopesaje_id[i]},1)'>
+                        ${arr_grupopesaje_id[i]}
+                    </a>`;
+                    // Agrega la coma solo si NO es el último elemento
+                    if (i < arr_grupopesaje_id.length - 1) {
+                        aux_text += ",";
+                    }
+                }
+            }else{
+                aux_text = "";
+            }
+            $('td', row).eq(1).html(aux_text);
+
 
             $('td', row).eq(2).attr('style','text-align:right');
-            $('td', row).eq(2).attr('data-search',data.pesototalprodbal);
-            $('td', row).eq(2).attr('data-order',data.pesototalprodbal);
-            $('td', row).eq(2).html(MASKLA(data.pesototalprodbal,2));
+            $('td', row).eq(2).attr('data-search',data.pesototalnorma);
+            $('td', row).eq(2).attr('data-order',data.pesototalnorma);
+            $('td', row).eq(2).html(MASKLA(data.pesototalnorma,2));
 
             $('td', row).eq(3).attr('style','text-align:right');
-            $('td', row).eq(3).attr('data-search',data.difkg);
-            $('td', row).eq(3).attr('data-order',data.difkg);
-            $('td', row).eq(3).html(MASKLA(data.difkg,2));
+            $('td', row).eq(3).attr('data-search',data.pesototalprodbal);
+            $('td', row).eq(3).attr('data-order',data.pesototalprodbal);
+            $('td', row).eq(3).html(MASKLA(data.pesototalprodbal,2));
+
+            $('td', row).eq(4).attr('style','text-align:right');
+            $('td', row).eq(4).attr('data-search',data.difkg);
+            $('td', row).eq(4).attr('data-order',data.difkg);
+            $('td', row).eq(4).html(MASKLA(data.difkg,2));
 
             aux_var = (data.difkg / data.pesototalnorma) * 100;
-            $('td', row).eq(4).attr('style','text-align:right');
-            $('td', row).eq(4).attr('data-search',aux_var);
-            $('td', row).eq(4).attr('data-order',aux_var);
-            $('td', row).eq(4).html(MASKLA(aux_var.toFixed(5),5));
+            $('td', row).eq(5).attr('style','text-align:right');
+            $('td', row).eq(5).attr('data-search',aux_var);
+            $('td', row).eq(5).attr('data-order',aux_var);
+            $('td', row).eq(5).html(MASKLA(aux_var.toFixed(5),5));
         }
     });
 
