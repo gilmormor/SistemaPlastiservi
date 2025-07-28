@@ -200,7 +200,12 @@ class NotaVenta extends Model
         return $this->belongsTo(CentroEconomico::class);
     }
     
-    
+    //Relacion inversa a Usuario
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+
     
     public static function consulta($request,$aux_consulta){
         $user = Usuario::findOrFail(auth()->id());

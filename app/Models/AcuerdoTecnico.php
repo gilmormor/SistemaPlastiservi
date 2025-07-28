@@ -79,6 +79,7 @@ class AcuerdoTecnico extends Model
         'at_certificados',
         'at_otrocertificado',
         'at_formatofilm',
+        'at_firmado',
         'usuariodel_id'
     ];    
 
@@ -154,6 +155,12 @@ class AcuerdoTecnico extends Model
     public function producto()
     {
         return $this->belongsTo(Producto::class);
+    }
+
+    //RELACION DE UNO A MUCHOS acuerdotecnicocvalatdet
+    public function acuerdotecnicocvalatdets()
+    {
+        return $this->hasMany(AcuerdoTecnicoCValAtDet::class,"acuerdotecnico_id");
     }
 
     public static function buscaratxcampos($request)

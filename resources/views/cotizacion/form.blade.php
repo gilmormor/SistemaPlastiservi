@@ -326,10 +326,17 @@
                                     $aux_categoria_nombre = $CotizacionDetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
+                                    //dd($CotizacionDetalle->acuerdotecnicotemp);
                                     if ($CotizacionDetalle->acuerdotecnicotemp != null){
                                         $AcuTec = $CotizacionDetalle->acuerdotecnicotemp;
                                         $aux_staAT = true;
+                                        foreach ($CotizacionDetalle->acuerdotecnicotemp->acuerdotecnicotempcvalatdets as $cvalatdet) {
+                                            $campo = 'at_cvalatdet' . $cvalatdet->cvalatdet_id;
+                                            $valor = $cvalatdet->valor;
 
+                                            // Agregas el atributo dinámicamente al objeto
+                                            $CotizacionDetalle->acuerdotecnicotemp->$campo = $valor;
+                                        }
                                     }
                                     if ($CotizacionDetalle->producto->acuerdotecnico != null){
                                         $AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
@@ -382,6 +389,7 @@
                                                     <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
                                                 </a>
                                                 <?php 
+                                                    $data_initial_preview = "";
                                                     if($CotizacionDetalle->acuerdotecnicotemp == null){
                                                         $aux_imagen = "";
                                                     }else{
@@ -390,7 +398,7 @@
                                                     }
                                                 ?>
                                                 <div id="div_at_imagen{{$aux_nfila}}" name="div_at_imagen{{$aux_nfila}}" style="display: none;">
-                                                    <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept="*"/>
+                                                    <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept=".jpg,.jpeg,.png,.pdf, application/pdf"/>
                                                     <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_impresofoto ?? '')}}">
                                                 </div>
                                             </div>

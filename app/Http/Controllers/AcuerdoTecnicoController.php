@@ -6,6 +6,8 @@ use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnicoTemp;
 use App\Models\Certificado;
 use App\Models\Cliente;
+use App\Models\CValAt;
+use App\Models\CValAtDet;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -219,11 +221,12 @@ class AcuerdoTecnicoController extends Controller
                 $certificado_array[] = $aux_certificado->descripcion;
             }
             $tablas['certificados'] = implode(", ", $certificado_array);
+            $tablas['cvalats'] = CValAt::orderBy('orden')->get();
 
             //dd($tablas['certificado']);
             //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
             if(env('APP_DEBUG')){
-                return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
+                //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
             }
             $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
             //return $pdf->download('cotizacion.pdf');
@@ -235,6 +238,20 @@ class AcuerdoTecnicoController extends Controller
         }
         
         
+    }
+
+    public function obtenerCamposValidacion(Request $request)
+    {
+        //$items = CValAtDet::orderBy('orden')->get(['id','cvalat_id', 'nombre']);
+        $items = CValAt::with(['cvalatdets' => function($query) {
+                $query->select('id', 'cvalat_id', 'nombre', 'orden')
+                    ->orderBy('orden'); // Ordena los hijos por 'orden'
+            }])
+            ->orderBy('orden') // Ordena los padres por 'orden'
+            ->get(['id', 'nombre', 'orden']);
+
+        //dd($items);
+        return response()->json($items);
     }
 
 }

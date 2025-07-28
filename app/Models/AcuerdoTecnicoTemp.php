@@ -79,6 +79,7 @@ class AcuerdoTecnicoTemp extends Model
         'at_otrocertificado',
         'at_aprobado',
         'at_formatofilm',
+        'at_firmado',
         'usuariodel_id'
     ];
 
@@ -153,8 +154,17 @@ class AcuerdoTecnicoTemp extends Model
     {
         return $this->belongsTo(UnidadMedida::class,"at_unidadmedida_id");
     }
-    
-    
+    //RELACION DE UNO A MUCHOS acuerdotecnicotempvalat
+    public function acuerdotecnicotempcvalatdets()
+    {
+        return $this->hasMany(AcuerdoTecnicoTempCValAtDet::class,"acuerdotecnicotemp_id");
+    }
+    //RELACION DE UNO A MUCHOS acuerdotecnicotempvalat
+    public function acuerdotecnicocvalatdets()
+    {
+        return $this->hasMany(AcuerdoTecnicoTempCValAtDet::class,"acuerdotecnicotemp_id");
+    }
+
     public static function setImagen($foto,$id,$request,$at_imagen,$imagen, $actual = false){
         //dd($foto);
         if ($foto) {
@@ -182,6 +192,32 @@ class AcuerdoTecnicoTemp extends Model
         } else {
             if ($actual and ($imagen == "" or is_null($imagen))) {
                 Storage::disk('public')->delete("imagenes/attemp/$actual");
+                return "del";
+            }else{
+                return false;
+            }
+        }
+    }
+
+        public static function setAtFirmado($foto,$id,$request,$at_imagen,$imagen, $actual = false){
+        //dd($foto);
+        if ($foto) {
+            if ($actual) {
+                Storage::disk('public')->delete("imagenes/attempfirm/$actual");
+            }
+            //dd($at_imagen);
+            $file = $request->file($at_imagen);
+            $nombre = $file->getClientOriginalName();
+            $info = new SplFileInfo($nombre);
+            $ext = strtolower($info->getExtension()); //Obtener extencion de un archivo
+            //$imageName = Str::random(10) . '.jpg';
+            $imageName = 'attempfirm' . $id . '.' . $ext;
+            $file->move(public_path() . "/storage/imagenes/attempfirm/" , $imageName);
+            //$request->file('')
+            return $imageName;
+        } else {
+            if ($actual and ($imagen == "" or is_null($imagen))) {
+                Storage::disk('public')->delete("imagenes/attempfirm/$actual");
                 return "del";
             }else{
                 return false;

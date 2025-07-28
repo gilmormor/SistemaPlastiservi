@@ -8,6 +8,8 @@ use App\Http\Requests\ValidarCotizacion;
 use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnicoTemp;
 use App\Models\AcuerdoTecnicoTemp_Cliente;
+use App\Models\AcuerdoTecnicoTempCodigo;
+use App\Models\AcuerdoTecnicoTempCValAtDet;
 use App\Models\AcuerdoTecnicoTempEdit;
 use App\Models\AcuerdoTecTemp;
 use App\Models\CategoriaProd;
@@ -42,6 +44,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class CotizacionController extends Controller
@@ -227,145 +230,168 @@ class CotizacionController extends Controller
     public function guardar(ValidarCotizacion $request)
     {
         can('guardar-cotizacion');
-        $cont_producto = count($request->producto_id);
-        if($cont_producto <=0 ){
-            return redirect('notaventa')->with([
-                'mensaje'=>'Cotización sin items, no se guardó.',
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        //dd($request);
-        $aux_rut=str_replace('.','',$request->rut);
-        $request->rut = str_replace('-','',$aux_rut);
-        //dd($request);
-        if(!empty($request->razonsocialCTM)){
-            $array_clientetemp = [
-                'rut' => $request->rut,
-                'razonsocial' => $request->razonsocial,
-                'direccion' => $request->direccion,
-                'telefono' => $request->telefono,
-                'email' => $request->email,
-                'vendedor_id' => $request->vendedor_id,
-                'giro_id' => $request->giro_id,
-                'giro' => $request->giro,
-                'comunap_id' => $request->comunap_idCTM,
-                'formapago_id' => $request->formapago_id,
-                'plazopago_id' => $request->plazopago_id,
-                'contactonombre'=>  $request->contactonombreCTM,
-                'contactoemail' => $request->contactoemailCTM,
-                'contactotelef' => $request->contactotelefCTM,
-                'finanzascontacto'=>  $request->finanzascontactoCTM,
-                'finanzanemail' => $request->finanzanemailCTM,
-                'finanzastelefono' => $request->finanzastelefonoCTM,
-                'sucursal_id' => $request->sucursal_idCTM,
-                'observaciones' => $request->observacionesCTM
-            ];
-            if(ClienteTemp::where('rut', $request->rut)->count()>0){
-                $clientetemp = ClienteTemp::where('rut', $request->rut)->get();
-                ClienteTemp::where('rut', $request->rut)->update($array_clientetemp);
-                $request->request->add(['clientetemp_id' => $clientetemp[0]->id]);
-            }else{
-                $clientetemp = ClienteTemp::create($array_clientetemp);
-                $request->request->add(['clientetemp_id' => $clientetemp->id]);
+        DB::beginTransaction();
+        try {
+            $cont_producto = count($request->producto_id);
+            if($cont_producto <=0 ){
+                return redirect('notaventa')->with([
+                    'mensaje'=>'Cotización sin items, no se guardó.',
+                    'tipo_alert' => 'alert-error'
+                ]);
             }
-        }
-        $hoy = date("Y-m-d H:i:s");
-        $request->request->add(['fechahora' => $hoy]);
-        /*
-        $dateInput = explode('/',$request->plazoentrega);
-        $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
-        */
-        //dd($fechafin);
-        //$request["plazoentrega"] = date("Y-m-d",strtotime(date("Y-m-d") . "+ " . $request->plaentdias . " days"));
-        $request["plazoentrega"] = sumdiashabfec(date("Y-m-d"),$request->plaentdias); /****Funcion: Calcular fecha de entrega segun los dias ingresados, solo dias habiles */
+            //dd($request);
+            $aux_rut=str_replace('.','',$request->rut);
+            $request->rut = str_replace('-','',$aux_rut);
+            //dd($request);
+            if(!empty($request->razonsocialCTM)){
+                $array_clientetemp = [
+                    'rut' => $request->rut,
+                    'razonsocial' => $request->razonsocial,
+                    'direccion' => $request->direccion,
+                    'telefono' => $request->telefono,
+                    'email' => $request->email,
+                    'vendedor_id' => $request->vendedor_id,
+                    'giro_id' => $request->giro_id,
+                    'giro' => $request->giro,
+                    'comunap_id' => $request->comunap_idCTM,
+                    'formapago_id' => $request->formapago_id,
+                    'plazopago_id' => $request->plazopago_id,
+                    'contactonombre'=>  $request->contactonombreCTM,
+                    'contactoemail' => $request->contactoemailCTM,
+                    'contactotelef' => $request->contactotelefCTM,
+                    'finanzascontacto'=>  $request->finanzascontactoCTM,
+                    'finanzanemail' => $request->finanzanemailCTM,
+                    'finanzastelefono' => $request->finanzastelefonoCTM,
+                    'sucursal_id' => $request->sucursal_idCTM,
+                    'observaciones' => $request->observacionesCTM
+                ];
+                if(ClienteTemp::where('rut', $request->rut)->count()>0){
+                    $clientetemp = ClienteTemp::where('rut', $request->rut)->get();
+                    ClienteTemp::where('rut', $request->rut)->update($array_clientetemp);
+                    $request->request->add(['clientetemp_id' => $clientetemp[0]->id]);
+                }else{
+                    $clientetemp = ClienteTemp::create($array_clientetemp);
+                    $request->request->add(['clientetemp_id' => $clientetemp->id]);
+                }
+            }
+            $hoy = date("Y-m-d H:i:s");
+            $request->request->add(['fechahora' => $hoy]);
+            /*
+            $dateInput = explode('/',$request->plazoentrega);
+            $request["plazoentrega"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0];
+            */
+            //dd($fechafin);
+            //$request["plazoentrega"] = date("Y-m-d",strtotime(date("Y-m-d") . "+ " . $request->plaentdias . " days"));
+            $request["plazoentrega"] = sumdiashabfec(date("Y-m-d"),$request->plaentdias); /****Funcion: Calcular fecha de entrega segun los dias ingresados, solo dias habiles */
 
-        $comuna = Comuna::findOrFail($request->comuna_id);
-        $request->request->add(['provincia_id' => $comuna->provincia_id]);
-        $request->request->add(['region_id' => $comuna->provincia->region_id]);
-        //dd($request);
+            $comuna = Comuna::findOrFail($request->comuna_id);
+            $request->request->add(['provincia_id' => $comuna->provincia_id]);
+            $request->request->add(['region_id' => $comuna->provincia->region_id]);
+            //dd($request);
 
-        if($cont_producto>0){
-            $cotizacion = Cotizacion::create($request->all());
-            $cotizacionid = $cotizacion->id;
-            $aux_guardodetalle = true;
-            for ($i=0; $i < $cont_producto ; $i++){
-                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+            if($cont_producto>0){
+                $cotizacion = Cotizacion::create($request->all());
+                $cotizacionid = $cotizacion->id;
+                $aux_guardodetalle = true;
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
 
-                    $producto = Producto::findOrFail($request->producto_id[$i]);
-                    $cotizaciondetalle = new CotizacionDetalle();
-                    $cotizaciondetalle->cotizacion_id = $cotizacionid;
-                    $cotizaciondetalle->producto_id = $request->producto_id[$i];
-                    $cotizaciondetalle->cant = $request->cant[$i];
-                    $cotizaciondetalle->cantgrupo = $request->cant[$i];
-                    $cotizaciondetalle->cantxgrupo = 1;
-                    $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
-                    $cotizaciondetalle->descuento = $request->descuento[$i];
-                    $cotizaciondetalle->preciounit = $request->preciounit[$i];
-                    $cotizaciondetalle->peso = $producto->peso;
-                    $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
-                    $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
-                    $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
-                    $cotizaciondetalle->subtotal = $request->subtotal[$i];
-                    $cotizaciondetalle->producto_nombre = $producto->nombre;
-                    $cotizaciondetalle->espesor = $request->espesor[$i];
-                    $cotizaciondetalle->diametro = $producto->diametro;
-                    $cotizaciondetalle->categoriaprod_id = $producto->categoriaprod_id;
-                    $cotizaciondetalle->claseprod_id = $producto->claseprod_id;
-                    $cotizaciondetalle->grupoprod_id = $producto->grupoprod_id;
-                    $cotizaciondetalle->color_id = $producto->color_id;
+                        $producto = Producto::findOrFail($request->producto_id[$i]);
+                        $cotizaciondetalle = new CotizacionDetalle();
+                        $cotizaciondetalle->cotizacion_id = $cotizacionid;
+                        $cotizaciondetalle->producto_id = $request->producto_id[$i];
+                        $cotizaciondetalle->cant = $request->cant[$i];
+                        $cotizaciondetalle->cantgrupo = $request->cant[$i];
+                        $cotizaciondetalle->cantxgrupo = 1;
+                        $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
+                        $cotizaciondetalle->descuento = $request->descuento[$i];
+                        $cotizaciondetalle->preciounit = $request->preciounit[$i];
+                        $cotizaciondetalle->peso = $producto->peso;
+                        $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
+                        $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
+                        $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
+                        $cotizaciondetalle->subtotal = $request->subtotal[$i];
+                        $cotizaciondetalle->producto_nombre = $producto->nombre;
+                        $cotizaciondetalle->espesor = $request->espesor[$i];
+                        $cotizaciondetalle->diametro = $producto->diametro;
+                        $cotizaciondetalle->categoriaprod_id = $producto->categoriaprod_id;
+                        $cotizaciondetalle->claseprod_id = $producto->claseprod_id;
+                        $cotizaciondetalle->grupoprod_id = $producto->grupoprod_id;
+                        $cotizaciondetalle->color_id = $producto->color_id;
 
-                    $cotizaciondetalle->ancho = $request->ancho[$i];
-                    $cotizaciondetalle->largo = $request->long[$i];
-                    $cotizaciondetalle->obs = $request->obs[$i];
-                    $cotizaciondetalle_id = $cotizaciondetalle->id;
-                    
-                    if($cotizaciondetalle->save()){
-                        $at_imagen = "at_imagen" . ($i+1);
-                        $imagen = "imagen" . ($i+1);        
-                        // Quede aqui para mañana 14/09/2021
-                        if($producto->tipoprod == 1){
-                            $acuerdotecnicotemp = new AcuerdoTecnicoTemp();
-                            $objetAT = json_decode($request->acuerdotecnico[$i]);
-                            foreach($objetAT as $clave => &$valor) {
-                                if($valor == ""){
-                                    $valor = null;
+                        $cotizaciondetalle->ancho = $request->ancho[$i];
+                        $cotizaciondetalle->largo = $request->long[$i];
+                        $cotizaciondetalle->obs = $request->obs[$i];
+                        $cotizaciondetalle_id = $cotizaciondetalle->id;
+                        
+                        if($cotizaciondetalle->save()){
+                            $at_imagen = "at_imagen" . ($i+1);
+                            $imagen = "imagen" . ($i+1);        
+                            // Quede aqui para mañana 14/09/2021
+                            if($producto->tipoprod == 1){
+                                $acuerdotecnicotemp = new AcuerdoTecnicoTemp();
+                                $objetAT = json_decode($request->acuerdotecnico[$i]);
+                                foreach($objetAT as $clave => &$valor) {
+                                    if($valor == ""){
+                                        $valor = null;
+                                    }
                                 }
-                            }
-                            $arrayAT = (array) $objetAT;
-                            $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
-                            $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
-                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
-                            $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
-                                "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
-                                "cliente_id" => $request->cliente_id,
-                            ]);
-                            if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
-                                if($foto=="del"){
-                                    $foto = null;
+                                $arrayAT = (array) $objetAT;
+                                $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
+                                $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
+                                $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                                $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
+                                    "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
+                                    "cliente_id" => $request->cliente_id,
+                                ]);
+                                foreach ($arrayAT as $key => $value) {
+                                    if (strpos($key, 'at_cvalatdet') === 0) {
+                                        // Extraer el ID numérico del final, por ejemplo de 'at_valat19' → 19
+                                        $cvalatdet_id = intval(substr($key, strlen('at_cvalatdet')));
+
+                                        // Guardar en acuerdotecnicotempvalat solo si el valor no es nulo o vacío
+                                        if ($value !== null && $value !== '') {
+                                            AcuerdoTecnicoTempCValAtDet::create([
+                                                'acuerdotecnicotemp_id' => $acuerdotecnicotemp->id,
+                                                'cvalatdet_id' => $cvalatdet_id,
+                                                'valor' => $value
+                                            ]);
+                                        }
+                                    }
                                 }
-                                $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
-                                $data->at_impresofoto = $foto;
-                                $data->save();
+                                if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
+                                    if($foto=="del"){
+                                        $foto = null;
+                                    }
+                                    $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
+                                    $data->at_impresofoto = $foto;
+                                    $data->save();
+                                }
+                                $acuerdotecnicotemp_id = $acuerdotecnicotemp->id;
+                                $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp_id]);
                             }
-                            $acuerdotecnicotemp_id = $acuerdotecnicotemp->id;
-                            $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp_id]);
+                        }else{
+                            $aux_guardodetalle = false;
                         }
                     }else{
                         $aux_guardodetalle = false;
+                        return redirect('cotizacion')->with('mensaje','Cotizacion no fue guardada, Error al guardar acuerdo técnico.');
                     }
-                }else{
-                    $aux_guardodetalle = false;
-                    return redirect('cotizacion')->with('mensaje','Cotizacion no fue guardada, Error al guardar acuerdo técnico.');
                 }
-            }
-            if($aux_guardodetalle == false){
-                return redirect('cotizacion')->with('mensaje','Error al guardar detalle de Cotización.');
+                if($aux_guardodetalle == false){
+                    return redirect('cotizacion')->with('mensaje','Error al guardar detalle de Cotización.');
+                }else{
+                    DB::commit();
+                    return redirect('cotizacion')->with('mensaje','Cotización creada con exito!');
+                }
             }else{
-                return redirect('cotizacion')->with('mensaje','Cotización creada con exito!');
+                return redirect('cotizacion')->with('mensaje','Cotizacion no fue guardada, falto incluir productos a la Cotizacion.');
             }
-        }else{
-            return redirect('cotizacion')->with('mensaje','Cotizacion no fue guardada, falto incluir productos a la Cotizacion.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
         }
+
     }
 
     /**
@@ -462,255 +488,197 @@ class CotizacionController extends Controller
     public function actualizar(ValidarCotizacion $request, $id)
     {
         can('guardar-cotizacion');
-        $cotizacion = Cotizacion::findOrFail($id);
-        if($cotizacion->updated_at != $request->updated_at){
-            return redirect('cotizacion')->with([
-                'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Fecha Hora: '.$cotizacion->updated_at,
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        //EN COMENTARIO PARA QUE PERMITA MODIFICAR LAS COTIZACIONES DE LOS CLIENTES QUE ESTAN BLOQUEADOS
-        /* if($cotizacion->cliente_id){
-            $request1 = new Request();
-            $request1->merge(['modulo_id' => 1]);
-            $request1->request->set('modulo_id', 1);
-            $request1->merge(['deldesbloqueo' => 1]);
-            $request1->request->set('deldesbloqueo', 1);
-            $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
-            if($bloqcli["bloqueo"]){
+        DB::beginTransaction();
+        try {
+            $cotizacion = Cotizacion::findOrFail($id);
+            if($cotizacion->updated_at != $request->updated_at){
                 return redirect('cotizacion')->with([
-                    'mensaje'=> "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
+                    'mensaje' => 'No se pudo modificar. Registro Editado por otro usuario. Fecha Hora: '.$cotizacion->updated_at,
                     'tipo_alert' => 'alert-error'
                 ]);
             }
-        } */
-
-        $cont_cotdet = count($request->cotdet_id);
-        if($cont_cotdet <=0 ){
-            return redirect('notaventa')->with([
-                'mensaje'=>'Cotización sin items, no se actualizó.',
-                'tipo_alert' => 'alert-error'
-            ]);
-        }
-        $aux_rut=str_replace('.','',$request->rut);
-        $request->rut = str_replace('-','',$aux_rut);
-        //dd($request);
-        if(!empty($request->razonsocialCTM)){
-            $array_clientetemp = [
-                'rut' => $request->rut,
-                'razonsocial' => $request->razonsocial,
-                'direccion' => $request->direccion,
-                'telefono' => $request->telefono,
-                'email' => $request->email,
-                'vendedor_id' => $request->vendedor_id,
-                'giro_id' => $request->giro_id,
-                'giro' => $request->giro,
-                'comunap_id' => $request->comunap_idCTM,
-                'formapago_id' => $request->formapago_id,
-                'plazopago_id' => $request->plazopago_id,
-                'contactonombre'=>  $request->contactonombreCTM,
-                'contactoemail' => $request->contactoemailCTM,
-                'contactotelef' => $request->contactotelefCTM,
-                'finanzascontacto'=>  $request->finanzascontactoCTM,
-                'finanzanemail' => $request->finanzanemailCTM,
-                'finanzastelefono' => $request->finanzastelefonoCTM,
-                'sucursal_id' => $request->sucursal_idCTM,
-                'observaciones' => $request->observacionesCTM
-            ];
-            if(ClienteTemp::where('rut', $request->rut)->count()>0){
-                $clientetemp = ClienteTemp::where('rut', $request->rut)->get();
-                ClienteTemp::where('rut', $request->rut)->update($array_clientetemp);
-                $request->request->add(['clientetemp_id' => $clientetemp[0]->id]);
-            }else{
-                $clientetemp = ClienteTemp::create($array_clientetemp);
-                $request->request->add(['clientetemp_id' => $clientetemp->id]);
-            }
-        }
-        $request->request->add(['fechahora' => $cotizacion->fechahora]);
-        /*
-        $aux_plazoentrega= DateTime::createFromFormat('d/m/Y', $request->plazoentrega)->format('Y-m-d');
-        $request->request->add(['plazoentrega' => $aux_plazoentrega]);
-        */
-
-        $request->request->add(['plazoentrega' => sumdiashabfec(date("Y-m-d",strtotime($cotizacion->fechahora)),$request->plaentdias)]);/****Funcion: Calcular fecha de entrega segun los dias ingresados, solo dias habiles */
-        //dd($request->plazoentrega);
-        $cotizacion->update($request->all());
-        //dd($request->cotdet_id);
-        $auxCotDet=CotizacionDetalle::where('cotizacion_id',$id)->whereNotIn('id', $request->cotdet_id)->pluck('id')->toArray(); //->destroy();
-        //dd($auxCotDet);
-        for ($i=0; $i < count($auxCotDet) ; $i++){
-            //BUSCO EN COTIZACIONDETALLE LOS REGISTROS DE PRODUCTOS ELIMINADOS DE LA COTIZACION 
-            //LUEGO SI EL PRODUCTO TIENE ACUERDO TECNICO LO BUSCO Y SE ELIMINA DE LA TABLA DE ACUERDOTECNICOTEMP
-            $cotizaciondetalle = CotizacionDetalle::findOrFail($auxCotDet[$i]);
-            if($cotizaciondetalle->acuerdotecnicotempunoauno){
-                //BUSCO LOS ACUERDOS TECNICOS ASOCIADOS AL CLIENTE, DEBERIA SER UN SOLO ACUERDO ASOCIADO AN UN CLIENTE
-                //PERO BUSCO TODOS LOS ACUERDOS 
-                $acuerdotecnicotemp_clientes = AcuerdoTecnicoTemp_Cliente::where("acuerdotecnicotemp_id",$cotizaciondetalle->acuerdotecnicotempunoauno->id)->where("cliente_id",$cotizacion->cliente_id)->whereNull("deleted_at")->get();
-                foreach($acuerdotecnicotemp_clientes as $acuerdotecnicotemp_cliente) {
-                    AcuerdoTecnicoTemp_Cliente::destroy($acuerdotecnicotemp_cliente->id);
+            //EN COMENTARIO PARA QUE PERMITA MODIFICAR LAS COTIZACIONES DE LOS CLIENTES QUE ESTAN BLOQUEADOS
+            /* if($cotizacion->cliente_id){
+                $request1 = new Request();
+                $request1->merge(['modulo_id' => 1]);
+                $request1->request->set('modulo_id', 1);
+                $request1->merge(['deldesbloqueo' => 1]);
+                $request1->request->set('deldesbloqueo', 1);
+                $bloqcli = clienteBloqueado($cotizacion->cliente_id,0,$request1);
+                if($bloqcli["bloqueo"]){
+                    return redirect('cotizacion')->with([
+                        'mensaje'=> "Condición financiera en revisión: \n" . $bloqcli["bloqueo"],
+                        'tipo_alert' => 'alert-error'
+                    ]);
                 }
-                $acuerdotecnicoTemp_id = $cotizaciondetalle->acuerdotecnicotempunoauno->id;
-                AcuerdoTecnicoTemp::setImagen(false,0,0,0,"attemp".$acuerdotecnicoTemp_id); //Eliminar imagen de disco
-                AcuerdoTecnicoTemp::destroy($cotizaciondetalle->acuerdotecnicotempunoauno->id);
+            } */
 
+            $cont_cotdet = count($request->cotdet_id);
+            if($cont_cotdet <=0 ){
+                return redirect('notaventa')->with([
+                    'mensaje'=>'Cotización sin items, no se actualizó.',
+                    'tipo_alert' => 'alert-error'
+                ]);
             }
-            CotizacionDetalle::destroy($auxCotDet[$i]);
-        }
-        if($cont_cotdet>0){
-            for ($i=0; $i < count($request->cotdet_id) ; $i++){
-                $at_imagen = "at_imagen" . ($i+1);
-                $imagen = "imagen" . ($i+1);
-                $idcotizaciondet = $request->cotdet_id[$i]; 
-                $producto = Producto::findOrFail($request->producto_id[$i]);
-                //$acuerdotecnico_id = null;
-                if($producto->tipoprod == 1){
-                    if($request->acuerdotecnico[$i] != "null")
-                    {
-                        $objetAT = json_decode($request->acuerdotecnico[$i]);
-                        foreach($objetAT as $clave => &$valor) {
-                            if($valor == ""){
-                                $valor = null;
-                            }
-                        }
-                        /*
-                        if(isset($objetAT->id)){
-                            $acuerdotecnico_id = $objetAT->id;
-                        }else{
-                            $acuerdotecnico_id = "";
-                        }*/
-                        unset($objetAT->id);
-                        unset($objetAT->at_id);
-                        unset($objetAT->deleted_at);
-                        unset($objetAT->created_at);
-                        unset($objetAT->updated_at);
-                        unset($objetAT->usuariodel_id);
-                        unset($objetAT->tiposello);
-                        unset($objetAT->materiaprima);
-                        unset($objetAT->largounidadmedida);
-                        unset($objetAT->claseprod);
-                        unset($objetAT->cotizaciondetalle);
-                        unset($objetAT->anchounidadmedida);
-                        unset($objetAT->color);
-                        //dd($objetAT);
-                        $arrayAT = (array) $objetAT;
-                        $aux_at_pigmentacion = $arrayAT["at_pigmentacion"];
-                        if($aux_at_pigmentacion == "" or is_null($aux_at_pigmentacion)){
-                            $arrayAT["at_pigmentacion"] = 0;
-                        }
-                        $aux_at_largo = $arrayAT["at_largo"];
-                        if($aux_at_largo == "" or is_null($aux_at_largo)){
-                            $arrayAT["at_largo"] = 0;
-                        }
-                        $aux_at_fuelle = $arrayAT["at_fuelle"];
-                        if($aux_at_fuelle == "" or is_null($aux_at_fuelle)){
-                            $arrayAT["at_fuelle"] = 0;
-                        }
-                        $aux_at_formatofilm = $arrayAT["at_formatofilm"];
-                        if($aux_at_formatofilm == "" or is_null($aux_at_formatofilm)){
-                            $arrayAT["at_formatofilm"] = 0;
-                        }
-                        /*
-                        $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
-                            ['id' => $acuerdotecnico_id],
-                            $arrayAT
-                        );*/
-                        /*
-                        $acuerdotecnicotemp = AcuerdoTecnicoTemp::where("id","=",$acuerdotecnico_id);
-                        if (is_null($acuerdotecnicotemp)) {
-                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
-                            $acuerdotecnico_id = $acuerdotecnicotemp->id;
-                        } else {
-                            $acuerdotecnicotemp = $acuerdotecnicotemp->update($arrayAT);
-                        }*/
-                    }
-                }
-                //dd($request->precioxkilo);
-                /*
-                $cotizaciondetalle = CotizacionDetalle::updateOrInsert(
-                    ['id' => $request->cotdet_id[$i], 'cotizacion_id' => $id],
-                    [
-                        'producto_id' => $request->producto_id[$i],
-                        'cant' => $request->cant[$i],
-                        'unidadmedida_id' => $request->unidadmedida_id[$i],
-                        'descuento' => $request->descuento[$i],
-                        'preciounit' => $request->preciounit[$i],
-                        'peso' => $producto->peso,
-                        'precioxkilo' => $request->precioxkilo[$i],
-                        'precioxkiloreal' => $request->precioxkiloreal[$i],
-                        'totalkilos' => $request->totalkilos[$i],
-                        'subtotal' => $request->subtotal[$i],
-                        'producto_nombre' => $producto->nombre,
-                        'espesor' => $request->espesor[$i],
-                        'ancho' => $request->ancho[$i],
-                        'largo' => $request->long[$i],
-                        'diametro' => $producto->diametro,
-                        'categoriaprod_id' => $producto->categoriaprod_id,
-                        'claseprod_id' => $producto->claseprod_id,
-                        'grupoprod_id' => $producto->grupoprod_id,
-                        'color_id' => $producto->color_id,
-                        'acuerdotecnicotemp_id' => $acuerdotecnico_id
-                    ]
-                );*/
-                if( $request->cotdet_id[$i] == '0' ){
-                    $cotizaciondetalle = new CotizacionDetalle();
-                    $cotizaciondetalle->cotizacion_id = $id;
-                    $cotizaciondetalle->producto_id = $request->producto_id[$i];
-                    $cotizaciondetalle->cant = $request->cant[$i];
-                    $cotizaciondetalle->cantgrupo = $request->cant[$i];
-                    $cotizaciondetalle->cantxgrupo = 1;
-                    $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
-                    $cotizaciondetalle->descuento = $request->descuento[$i];
-                    $cotizaciondetalle->preciounit = $request->preciounit[$i];
-                    $cotizaciondetalle->peso = $request->peso[$i];
-                    $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
-                    $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
-                    $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
-                    $cotizaciondetalle->subtotal = $request->subtotal[$i];
-
-                    $cotizaciondetalle->producto_nombre = $producto->nombre;
-                    $cotizaciondetalle->ancho = $request->ancho[$i];
-                    $cotizaciondetalle->largo = $request->long[$i];
-                    $cotizaciondetalle->espesor = $request->espesor[$i];
-                    $cotizaciondetalle->diametro = $request->diametro[$i];
-                    $cotizaciondetalle->categoriaprod_id = $producto->categoriaprod_id;
-                    $cotizaciondetalle->claseprod_id = $producto->claseprod_id;
-                    $cotizaciondetalle->grupoprod_id = $producto->grupoprod_id;
-                    $cotizaciondetalle->color_id = $producto->color_id;    
-                    $cotizaciondetalle->save();
-                    $idcotizaciondet = $cotizaciondetalle->id;
-
-                    if($producto->tipoprod == 1){
-                        if($request->acuerdotecnico[$i] != "null"){
-                            $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
-                            $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
-                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
-                            if($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
-                                $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
-                                if($foto=="del"){
-                                    $foto = null;
-                                }
-                                $data->at_impresofoto = $foto;
-                                $data->save();
-                            }
-                            $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
-                                "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
-                                "cliente_id" => $cotizacion->cliente_id,
-                            ]);
-        
-                            $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
-                        }
-    
-                    }
-                    //dd($idDireccion);
+            $aux_rut=str_replace('.','',$request->rut);
+            $request->rut = str_replace('-','',$aux_rut);
+            //dd($request);
+            if(!empty($request->razonsocialCTM)){
+                $array_clientetemp = [
+                    'rut' => $request->rut,
+                    'razonsocial' => $request->razonsocial,
+                    'direccion' => $request->direccion,
+                    'telefono' => $request->telefono,
+                    'email' => $request->email,
+                    'vendedor_id' => $request->vendedor_id,
+                    'giro_id' => $request->giro_id,
+                    'giro' => $request->giro,
+                    'comunap_id' => $request->comunap_idCTM,
+                    'formapago_id' => $request->formapago_id,
+                    'plazopago_id' => $request->plazopago_id,
+                    'contactonombre'=>  $request->contactonombreCTM,
+                    'contactoemail' => $request->contactoemailCTM,
+                    'contactotelef' => $request->contactotelefCTM,
+                    'finanzascontacto'=>  $request->finanzascontactoCTM,
+                    'finanzanemail' => $request->finanzanemailCTM,
+                    'finanzastelefono' => $request->finanzastelefonoCTM,
+                    'sucursal_id' => $request->sucursal_idCTM,
+                    'observaciones' => $request->observacionesCTM
+                ];
+                if(ClienteTemp::where('rut', $request->rut)->count()>0){
+                    $clientetemp = ClienteTemp::where('rut', $request->rut)->get();
+                    ClienteTemp::where('rut', $request->rut)->update($array_clientetemp);
+                    $request->request->add(['clientetemp_id' => $clientetemp[0]->id]);
                 }else{
-                    //dd($idDireccion);
-                    DB::table('cotizaciondetalle')->updateOrInsert(
+                    $clientetemp = ClienteTemp::create($array_clientetemp);
+                    $request->request->add(['clientetemp_id' => $clientetemp->id]);
+                }
+            }
+            $request->request->add(['fechahora' => $cotizacion->fechahora]);
+            /*
+            $aux_plazoentrega= DateTime::createFromFormat('d/m/Y', $request->plazoentrega)->format('Y-m-d');
+            $request->request->add(['plazoentrega' => $aux_plazoentrega]);
+            */
+
+            $request->request->add(['plazoentrega' => sumdiashabfec(date("Y-m-d",strtotime($cotizacion->fechahora)),$request->plaentdias)]);/****Funcion: Calcular fecha de entrega segun los dias ingresados, solo dias habiles */
+            //dd($request->plazoentrega);
+            $cotizacion->update($request->all());
+            //dd($request->cotdet_id);
+            $auxCotDet=CotizacionDetalle::where('cotizacion_id',$id)->whereNotIn('id', $request->cotdet_id)->pluck('id')->toArray(); //->destroy();
+            //dd($auxCotDet);
+            for ($i=0; $i < count($auxCotDet) ; $i++){
+                //BUSCO EN COTIZACIONDETALLE LOS REGISTROS DE PRODUCTOS ELIMINADOS DE LA COTIZACION 
+                //LUEGO SI EL PRODUCTO TIENE ACUERDO TECNICO LO BUSCO Y SE ELIMINA DE LA TABLA DE ACUERDOTECNICOTEMP
+                $cotizaciondetalle = CotizacionDetalle::findOrFail($auxCotDet[$i]);
+                if($cotizaciondetalle->acuerdotecnicotempunoauno){
+                    //BUSCO LOS ACUERDOS TECNICOS ASOCIADOS AL CLIENTE, DEBERIA SER UN SOLO ACUERDO ASOCIADO AN UN CLIENTE
+                    //PERO BUSCO TODOS LOS ACUERDOS 
+                    $acuerdotecnicotemp_clientes = AcuerdoTecnicoTemp_Cliente::where("acuerdotecnicotemp_id",$cotizaciondetalle->acuerdotecnicotempunoauno->id)->where("cliente_id",$cotizacion->cliente_id)->whereNull("deleted_at")->get();
+                    foreach($acuerdotecnicotemp_clientes as $acuerdotecnicotemp_cliente) {
+                        AcuerdoTecnicoTemp_Cliente::destroy($acuerdotecnicotemp_cliente->id);
+                    }
+                    $acuerdotecnicoTemp_id = $cotizaciondetalle->acuerdotecnicotempunoauno->id;
+                    AcuerdoTecnicoTemp::setImagen(false,0,0,0,"attemp".$acuerdotecnicoTemp_id); //Eliminar imagen de disco
+                    AcuerdoTecnicoTemp::destroy($cotizaciondetalle->acuerdotecnicotempunoauno->id);
+
+                }
+                CotizacionDetalle::destroy($auxCotDet[$i]);
+            }
+            if($cont_cotdet>0){
+                for ($i=0; $i < count($request->cotdet_id) ; $i++){
+                    $at_imagen = "at_imagen" . ($i+1);
+                    $imagen = "imagen" . ($i+1);
+                    $idcotizaciondet = $request->cotdet_id[$i]; 
+                    $producto = Producto::findOrFail($request->producto_id[$i]);
+                    //$acuerdotecnico_id = null;
+                    if($producto->tipoprod == 1){
+                        if($request->acuerdotecnico[$i] != "null")
+                        {
+                            $objetAT = json_decode($request->acuerdotecnico[$i]);
+                            foreach($objetAT as $clave => &$valor) {
+                                if($valor == ""){
+                                    $valor = null;
+                                }
+                            }
+                            /*
+                            if(isset($objetAT->id)){
+                                $acuerdotecnico_id = $objetAT->id;
+                            }else{
+                                $acuerdotecnico_id = "";
+                            }*/
+                            unset($objetAT->id);
+                            unset($objetAT->at_id);
+                            unset($objetAT->deleted_at);
+                            unset($objetAT->created_at);
+                            unset($objetAT->updated_at);
+                            unset($objetAT->usuariodel_id);
+                            unset($objetAT->tiposello);
+                            unset($objetAT->materiaprima);
+                            unset($objetAT->largounidadmedida);
+                            unset($objetAT->claseprod);
+                            unset($objetAT->cotizaciondetalle);
+                            unset($objetAT->anchounidadmedida);
+                            unset($objetAT->color);
+                            //dd($objetAT);
+                            $arrayAT = (array) $objetAT;
+                            $aux_at_pigmentacion = $arrayAT["at_pigmentacion"];
+                            if($aux_at_pigmentacion == "" or is_null($aux_at_pigmentacion)){
+                                $arrayAT["at_pigmentacion"] = 0;
+                            }
+                            $aux_at_largo = $arrayAT["at_largo"];
+                            if($aux_at_largo == "" or is_null($aux_at_largo)){
+                                $arrayAT["at_largo"] = 0;
+                            }
+                            $aux_at_fuelle = $arrayAT["at_fuelle"];
+                            if($aux_at_fuelle == "" or is_null($aux_at_fuelle)){
+                                $arrayAT["at_fuelle"] = 0;
+                            }
+                            $aux_at_formatofilm = $arrayAT["at_formatofilm"];
+                            if($aux_at_formatofilm == "" or is_null($aux_at_formatofilm)){
+                                $arrayAT["at_formatofilm"] = 0;
+                            }
+                            $array_valats = [];
+                            foreach ($arrayAT as $key => $value) {
+                                if (strpos($key, 'at_cvalatdet') === 0) {
+                                    // Extraer el número del ID
+                                    $cvalatdet_id = intval(substr($key, strlen('at_cvalatdet')));
+
+                                    // Agregar al array de codigodet
+                                    $array_valats[] = [
+                                        'cvalatdet_id' => $cvalatdet_id,
+                                        'valor' => $value
+                                    ];
+
+                                    // Eliminar del array original
+                                    unset($arrayAT[$key]);
+                                }
+                            }
+                            if(isset($arrayAT["acuerdotecnicotempcvalatdets"])){
+                                unset($arrayAT["acuerdotecnicotempcvalatdets"]);
+                            }
+                            //dd($arrayAT);
+                            /*
+                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::updateOrInsert(
+                                ['id' => $acuerdotecnico_id],
+                                $arrayAT
+                            );*/
+                            /*
+                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::where("id","=",$acuerdotecnico_id);
+                            if (is_null($acuerdotecnicotemp)) {
+                                $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                                $acuerdotecnico_id = $acuerdotecnicotemp->id;
+                            } else {
+                                $acuerdotecnicotemp = $acuerdotecnicotemp->update($arrayAT);
+                            }*/
+                        }
+                    }
+                    //dd($request->precioxkilo);
+                    /*
+                    $cotizaciondetalle = CotizacionDetalle::updateOrInsert(
                         ['id' => $request->cotdet_id[$i], 'cotizacion_id' => $id],
                         [
                             'producto_id' => $request->producto_id[$i],
                             'cant' => $request->cant[$i],
-                            'cantgrupo' => $request->cant[$i],
-                            'cantxgrupo' => 1,
                             'unidadmedida_id' => $request->unidadmedida_id[$i],
                             'descuento' => $request->descuento[$i],
                             'preciounit' => $request->preciounit[$i],
@@ -727,44 +695,166 @@ class CotizacionController extends Controller
                             'categoriaprod_id' => $producto->categoriaprod_id,
                             'claseprod_id' => $producto->claseprod_id,
                             'grupoprod_id' => $producto->grupoprod_id,
-                            'color_id' => $producto->color_id
+                            'color_id' => $producto->color_id,
+                            'acuerdotecnicotemp_id' => $acuerdotecnico_id
                         ]
-                    );
-                    $cotizaciondetalle = CotizacionDetalle::findOrFail($request->cotdet_id[$i]);
-                    if(($producto->tipoprod == 1) and ($request->acuerdotecnico[$i] != "null")){
-                        $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
-                        $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
-                        if($cotizaciondetalle->acuerdotecnicotemp_id == null){
-                            $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
-                            if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
-                                if($foto=="del"){
-                                    $foto = null;
+                    );*/
+                    if( $request->cotdet_id[$i] == '0' ){
+                        $cotizaciondetalle = new CotizacionDetalle();
+                        $cotizaciondetalle->cotizacion_id = $id;
+                        $cotizaciondetalle->producto_id = $request->producto_id[$i];
+                        $cotizaciondetalle->cant = $request->cant[$i];
+                        $cotizaciondetalle->cantgrupo = $request->cant[$i];
+                        $cotizaciondetalle->cantxgrupo = 1;
+                        $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
+                        $cotizaciondetalle->descuento = $request->descuento[$i];
+                        $cotizaciondetalle->preciounit = $request->preciounit[$i];
+                        $cotizaciondetalle->peso = $request->peso[$i];
+                        $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
+                        $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
+                        $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
+                        $cotizaciondetalle->subtotal = $request->subtotal[$i];
+
+                        $cotizaciondetalle->producto_nombre = $producto->nombre;
+                        $cotizaciondetalle->ancho = $request->ancho[$i];
+                        $cotizaciondetalle->largo = $request->long[$i];
+                        $cotizaciondetalle->espesor = $request->espesor[$i];
+                        $cotizaciondetalle->diametro = $request->diametro[$i];
+                        $cotizaciondetalle->categoriaprod_id = $producto->categoriaprod_id;
+                        $cotizaciondetalle->claseprod_id = $producto->claseprod_id;
+                        $cotizaciondetalle->grupoprod_id = $producto->grupoprod_id;
+                        $cotizaciondetalle->color_id = $producto->color_id;    
+                        $cotizaciondetalle->save();
+                        $idcotizaciondet = $cotizaciondetalle->id;
+
+                        if($producto->tipoprod == 1){
+                            if($request->acuerdotecnico[$i] != "null"){
+                                $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
+                                $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
+                                $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                                if($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
+                                    $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
+                                    if($foto=="del"){
+                                        $foto = null;
+                                    }
+                                    $data->at_impresofoto = $foto;
+                                    $data->save();
                                 }
-                                $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
-                                $data->at_impresofoto = $foto;
-                                $data->save();
-                            }
-                            $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
-                        }else{
-                            AcuerdoTecnicoTemp::where("id","=",$cotizaciondetalle->acuerdotecnicotemp_id)
-                            ->update($arrayAT);
-                            $data = AcuerdoTecnicoTemp::findOrFail($cotizaciondetalle->acuerdotecnicotemp_id);
-                            //dd($data->at_impresofoto);
-                            if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$cotizaciondetalle->acuerdotecnicotemp_id,$request,$at_imagen,$request->$imagen,$data->at_impresofoto)){
-                                if($foto=="del"){
-                                    $foto = null;
+                                //AQUI ACTUALIZO O CREO LOS CAMPOS ADICIONALES VALIDACION DEL ACUERDO TECNICO TEMPORAL
+                                foreach ($array_valats as $array_valat) {
+                                    AcuerdoTecnicoTempCValAtDet::updateOrCreate(
+                                        [
+                                            'acuerdotecnicotemp_id' => $acuerdotecnicotemp->id,
+                                            'cvalatdet_id' => $array_valat["cvalatdet_id"]
+                                        ],
+                                        [
+                                            'valor' => $array_valat["valor"]
+                                        ]
+                                    );
                                 }
-                                $data->at_impresofoto = $foto;
-                                $data->save();
+                                $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
+                                    "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
+                                    "cliente_id" => $cotizacion->cliente_id,
+                                ]);
+            
+                                $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
                             }
+        
                         }
+                        //dd($idDireccion);
                     }else{
-                        $cotizaciondetalle->update(['acuerdotecnicotemp_id' => null]);
+                        //dd($idDireccion);
+                        DB::table('cotizaciondetalle')->updateOrInsert(
+                            ['id' => $request->cotdet_id[$i], 'cotizacion_id' => $id],
+                            [
+                                'producto_id' => $request->producto_id[$i],
+                                'cant' => $request->cant[$i],
+                                'cantgrupo' => $request->cant[$i],
+                                'cantxgrupo' => 1,
+                                'unidadmedida_id' => $request->unidadmedida_id[$i],
+                                'descuento' => $request->descuento[$i],
+                                'preciounit' => $request->preciounit[$i],
+                                'peso' => $producto->peso,
+                                'precioxkilo' => $request->precioxkilo[$i],
+                                'precioxkiloreal' => $request->precioxkiloreal[$i],
+                                'totalkilos' => $request->totalkilos[$i],
+                                'subtotal' => $request->subtotal[$i],
+                                'producto_nombre' => $producto->nombre,
+                                'espesor' => $request->espesor[$i],
+                                'ancho' => $request->ancho[$i],
+                                'largo' => $request->long[$i],
+                                'diametro' => $producto->diametro,
+                                'categoriaprod_id' => $producto->categoriaprod_id,
+                                'claseprod_id' => $producto->claseprod_id,
+                                'grupoprod_id' => $producto->grupoprod_id,
+                                'color_id' => $producto->color_id
+                            ]
+                        );
+                        $cotizaciondetalle = CotizacionDetalle::findOrFail($request->cotdet_id[$i]);
+                        if(($producto->tipoprod == 1) and ($request->acuerdotecnico[$i] != "null")){
+                            $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
+                            $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
+                            if($cotizaciondetalle->acuerdotecnicotemp_id == null){
+                                $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                                if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
+                                    if($foto=="del"){
+                                        $foto = null;
+                                    }
+                                    $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
+                                    $data->at_impresofoto = $foto;
+                                    $data->save();
+                                }
+                                $cotizaciondetalle->update(['acuerdotecnicotemp_id' => $acuerdotecnicotemp->id]);
+                                //AQUI ACTUALIZO O CREO LOS CAMPOS ADICIONALES VALIDACION DEL ACUERDO TECNICO TEMPORAL
+                                foreach ($array_valats as $array_valat) {
+                                    AcuerdoTecnicoTempCValAtDet::updateOrCreate(
+                                        [
+                                            'acuerdotecnicotemp_id' => $acuerdotecnicotemp->id,
+                                            'cvalatdet_id' => $array_valat["cvalatdet_id"]
+                                        ],
+                                        [
+                                            'valor' => $array_valat["valor"]
+                                        ]
+                                    );
+                                }
+
+                            }else{
+                                //AQUI ACTUALIZO O CREO LOS CAMPOS ADICIONALES VALIDACION DEL ACUERDO TECNICO TEMPORAL
+                                foreach ($array_valats as $array_valat) {
+                                    AcuerdoTecnicoTempCValAtDet::updateOrCreate(
+                                        [
+                                            'acuerdotecnicotemp_id' => $cotizaciondetalle->acuerdotecnicotemp_id,
+                                            'cvalatdet_id' => $array_valat["cvalatdet_id"]
+                                        ],
+                                        [
+                                            'valor' => $array_valat["valor"]
+                                        ]
+                                    );
+                                }
+                                AcuerdoTecnicoTemp::where("id","=",$cotizaciondetalle->acuerdotecnicotemp_id)
+                                ->update($arrayAT);
+                                $data = AcuerdoTecnicoTemp::findOrFail($cotizaciondetalle->acuerdotecnicotemp_id);
+                                //dd($data->at_impresofoto);
+                                if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$cotizaciondetalle->acuerdotecnicotemp_id,$request,$at_imagen,$request->$imagen,$data->at_impresofoto)){
+                                    if($foto=="del"){
+                                        $foto = null;
+                                    }
+                                    $data->at_impresofoto = $foto;
+                                    $data->save();
+                                }
+                            }
+                        }else{
+                            $cotizaciondetalle->update(['acuerdotecnicotemp_id' => null]);
+                        }
                     }
                 }
             }
+            DB::commit();
+            return redirect('cotizacion')->with('mensaje','Cotización actualizada con exito!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
         }
-        return redirect('cotizacion')->with('mensaje','Cotización actualizada con exito!');
     }
 
     /**
@@ -873,6 +963,7 @@ class CotizacionController extends Controller
                     ]);
                 }
             } */
+            $aux_aprobstatus = $cotizacion->aprobstatus;
             $cotizacion->aprobstatus = $request->aprobstatus;
             $aux_statusAcuTec = false;
             foreach ($cotizacion->cotizaciondetalles as $cotdet) {
@@ -897,10 +988,38 @@ class CotizacionController extends Controller
                 }
             }
             if($aux_staacutectemp){
-                $cotizacion->aprobstatus = 5;
+                $cotizacion->aprobstatus = 6; //Se envia cotizacion a pantalla de subir AT firmado
                 $cotizacion->aprobusu_id = auth()->id();
                 $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
-                $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion Acuerdo Tecnico (Santa Ester)';
+                $cotizacion->aprobobs = 'Se envio cotizacion y Acuerdo Tecnico (AcuTec) para ser firmado por el cliente';
+                foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
+                    if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                        if ($cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado != null) {
+                            $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;
+                            Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
+                            $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null; //asigno null para que se pueda subir el AT firmado
+                            $cotizaciondetalle->acuerdotecnicotempunoauno->save();
+                        }
+                    }
+                }
+
+                /* if($aux_aprobstatus == 4){ //Si el status es = 4 no borra los AT firmados, porque fur rechazado por tema de precios
+                    $cotizacion->aprobstatus = 2;
+                    $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion Financiera (Santa Ester) Ya paso por aprobar acuerdo Tecnico.';  
+                }else{
+                    $cotizacion->aprobstatus = 6; //Se envia cotizacion a pantalla de subir AT firmado
+                    $cotizacion->aprobobs = 'Se envio cotizacion y Acuerdo Tecnico (AcuTec) para ser firmado por el cliente';
+                    foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
+                        if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                            if ($cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado != null) {
+                                $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;
+                                Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
+                                $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null; //asigno null para que se pueda subir el AT firmado
+                                $cotizaciondetalle->acuerdotecnicotempunoauno->save();
+                            }
+                        }
+                    }
+                } */
             }else{
                 if($aux_staacutec){
                     $cotizacion->aprobstatus = 2;
@@ -939,6 +1058,7 @@ class CotizacionController extends Controller
                 }    
                 return response()->json([
                     'error' => 0,
+                    'aprobstatus' => $cotizacion->aprobstatus,
                     'mensaje' => "El registro fue procesado con exito.",
                     'tipo_alert' => "success"
                 ]);
@@ -996,7 +1116,7 @@ class CotizacionController extends Controller
                             $acuerdoOrigArray = $acuerdotecnicotemp->toArray();
                             //dd($acuerdoOrigArray);
                             
-                            $hayDiferencias = false;
+                            /* $hayDiferencias = false;
                             // Comparar campo a campo
                             foreach ($arrayAT as $clave => $valor1) {
                                 if (array_key_exists($clave, $acuerdoOrigArray)){
@@ -1007,6 +1127,11 @@ class CotizacionController extends Controller
                                         break; // Salir del bucle si hay alguna diferencia
                                     }    
                                 }
+                            } */
+                            if($request->staatmod == 0){
+                                $hayDiferencias = false;
+                            }else{
+                                $hayDiferencias = true;
                             }
                             //dd($hayDiferencias);
                             if($hayDiferencias){
@@ -1024,9 +1149,59 @@ class CotizacionController extends Controller
                                 unset($arrayAT["cotizaciondetalle"]);
                                 unset($arrayAT["anchounidadmedida"]);
                                 unset($arrayAT["color"]);
+
+                                $aux_at_pigmentacion = $arrayAT["at_pigmentacion"];
+                                if($aux_at_pigmentacion == "" or is_null($aux_at_pigmentacion)){
+                                    $arrayAT["at_pigmentacion"] = 0;
+                                }
+                                $aux_at_largo = $arrayAT["at_largo"];
+                                if($aux_at_largo == "" or is_null($aux_at_largo)){
+                                    $arrayAT["at_largo"] = 0;
+                                }
+                                $aux_at_fuelle = $arrayAT["at_fuelle"];
+                                if($aux_at_fuelle == "" or is_null($aux_at_fuelle)){
+                                    $arrayAT["at_fuelle"] = 0;
+                                }
+                                $aux_at_formatofilm = $arrayAT["at_formatofilm"];
+                                if($aux_at_formatofilm == "" or is_null($aux_at_formatofilm)){
+                                    $arrayAT["at_formatofilm"] = 0;
+                                }
+                                $array_valats = [];
+                                foreach ($arrayAT as $key => $value) {
+                                    if (strpos($key, 'at_cvalatdet') === 0) {
+                                        // Extraer el número del ID
+                                        $cvalatdet_id = intval(substr($key, strlen('at_cvalatdet')));
+
+                                        // Agregar al array de codigodet
+                                        $array_valats[] = [
+                                            'cvalatdet_id' => $cvalatdet_id,
+                                            'valor' => $value
+                                        ];
+
+                                        // Eliminar del array original
+                                        unset($arrayAT[$key]);
+                                    }
+                                }
+                                //dd($array_valats);
+                                if(isset($arrayAT["acuerdotecnicotempcvalatdets"])){
+                                    unset($arrayAT["acuerdotecnicotempcvalatdets"]);
+                                }
+
                                 $arrayAT["usuarioedit_id"] = auth()->id(); //ID USUARIO SUPERVISOR QUE EDITÓ EL REGISTRO
                                 AcuerdoTecnicoTemp::where("id","=",$aux_at_id)
                                 ->update($arrayAT);
+
+                                foreach ($array_valats as $array_valat) {
+                                    AcuerdoTecnicoTempCValAtDet::updateOrCreate(
+                                        [
+                                            'acuerdotecnicotemp_id' => $aux_at_id,
+                                            'cvalatdet_id' => $array_valat["cvalatdet_id"]
+                                        ],
+                                        [
+                                            'valor' => $array_valat["valor"]
+                                        ]
+                                    );
+                                }
     
                                 $acuerdoOrigArray["acuerdotecnicotemp_id"] = $acuerdoOrigArray["id"];
                                 $acuerdoOrigArray["at_status"] = 1;
@@ -1086,6 +1261,15 @@ class CotizacionController extends Controller
                         $cotizacion->aprobobs = "Cotizacion requiere Aprobacion Financiera (Santa Ester)";
                     }else{
                         $cotizacion->aprobstatus = "7";
+                        /* foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
+                            if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                                $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;
+                                Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
+                                $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null;
+                                $cotizaciondetalle->acuerdotecnicotempunoauno->save();
+                            }
+                        } */
+
                     }
                 }
             }
@@ -1423,6 +1607,7 @@ function editar($id){
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
+        $tablas['usuario'] = Usuario::findOrFail(auth()->id());
 
         $aux_sta=2;
 

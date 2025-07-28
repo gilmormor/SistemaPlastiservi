@@ -190,6 +190,12 @@ $(document).ready(function () {
 	}
 
 	$("#btnguardaraprob").click(function(event){
+		// Ejemplo de cómo llamar a la función:
+		if (!validarCotATFirmado()) {
+			return 0;
+			// Aquí puedes detener un formulario, por ejemplo:
+			// event.preventDefault(); // Si es parte de un submit
+		}
 		$("#myModalaprobcot").modal('show');
 	});
 	//alert('3'+$("#vendedor_id").val()+'3');
@@ -1163,6 +1169,7 @@ $("#btnaprobarM").click(function(event)
 		updated_at : $("#updated_at").val(),
 		arrayATs   : aux_arrayATs,
 		modulo_id  : $("#modulo_id").val(),
+		staatmod   : 0,
 		_token: $('input[name=_token]').val()
 	};
 	var ruta = '/cotizacion/aprobarcotsup/'+data['id'];
@@ -1200,6 +1207,7 @@ $("#btnaprobarM").click(function(event)
 					},
 				}).then((value) => {
 					if (value) {
+						data.staatmod = 1;
 						$("#myModalaprobcot").modal('hide');
 						ajaxRequest(data,ruta,'aprobarcotsup');	
 					}
@@ -2109,3 +2117,36 @@ function MostrarBotonProdxLote(sucursalVal){
 	}
 
 }
+
+function validarCotATFirmado() {
+    const $divsFirma = $('div[class*="Imagenatfirma"]');
+    
+    // Si no hay elementos, retornar true (validación exitosa)
+    if ($divsFirma.length === 0) {
+        return true;
+    }
+
+    let hayErrores = false;
+
+    // Recorrer los divs encontrados
+    $divsFirma.each(function(index) {
+        const numeroItem = index + 1;
+        const $div = $(this);
+
+        if (!$div.html().trim()) {
+            hayErrores = true;
+            swal({
+                title: `Falta AT firmado`,
+				text: `Para continuar con el proceso, por favor adjunta AT firmado correspondiente al ítem  ${numeroItem}.`,
+                icon: 'warning',
+                buttons: {
+                    confirm: "Aceptar"
+                },
+            });
+            return false; // Detiene el each
+        }
+    });
+
+    return !hayErrores; // true si no hay errores, false si los hubo
+}
+
