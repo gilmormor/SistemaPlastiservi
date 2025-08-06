@@ -18,7 +18,11 @@
     </ul>
     <p><b>Datos:</b></p>
     <ul>
-        <li><b>Nro. Cotización:</b> {{ $tabla->id }}</li>
+        <li><b>Nro. Cotización:</b> 
+            <a href="{{urlRaiz()."/cotizacionaprobaracutec"}}" title="Ir aprobar Acuerdo tecnico">
+                {{ $tabla->id }}
+            </a>
+        </li>
         <li><b>Fecha Cotización:</b> {{date("d-m-Y h:i:s A", strtotime($tabla->fechahora))}}</li>
         <li><b>Fecha Validación:</b> {{date("d-m-Y h:i:s A", strtotime($tabla->aprobfechahora))}}</li>
         <li><b>RUT:</b> {{ $tabla->cliente->rut }}</li>

@@ -1619,3 +1619,11 @@ Route::get('cotizacionatfirmado/{id}/productobuscarpage', 'CotizacionAtFirmadoCo
 Route::get('cotizacionatfirmado/{id}/clientebuscarpage', 'CotizacionAtFirmadoController@clientebuscarpageid')->name('clientebuscarpageid');
 Route::put('cotizacionatfirmado/{id}', 'CotizacionAtFirmadoController@actualizar')->name('actualizar_cotizacionatfirmado');
 Route::post('cotizacionatfirmado/enviarrev/{id}', 'CotizacionAtFirmadoController@enviarrev')->name('enviarrev_cotizacionatfirmado');
+
+/*RUTAS EDITAR aT PRODUCTO*/
+Route::get('ateditar', 'ATEditarController@index')->name('ateditar');
+Route::get('ateditarpage', 'ATEditarController@ateditarpage')->name('ateditarpage');
+Route::get('ateditar/reporte', 'ATEditarController@reporte')->name('ateditar_reporte');
+Route::get('ateditar/exportPdf', 'ATEditarController@exportPdf')->name('ateditar_exportPdf');
+Route::get('ateditar/{id}/editar', 'ATEditarController@editar')->name('editar_ateditar');
+Route::put('ateditar/{id}', 'ATEditarController@actualizar')->name('actualizar_ateditar');

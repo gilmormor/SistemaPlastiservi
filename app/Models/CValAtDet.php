@@ -15,6 +15,10 @@ class CValAtDet extends Model
         'nombre',
         'desc',
         'orden',
+        'arrayvalores',
+        'inputhtml',
+        'tipoinputhtml',
+        'selectmult',
         'usuario_id',
         'usuariodel_id'
     ];

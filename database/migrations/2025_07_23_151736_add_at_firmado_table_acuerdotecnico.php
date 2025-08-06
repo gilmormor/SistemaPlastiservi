@@ -14,7 +14,7 @@ class AddAtFirmadoTableAcuerdotecnico extends Migration
     public function up()
     {
         Schema::table('acuerdotecnico', function (Blueprint $table) {
-            $table->string('at_firmado')->comment('Nombre de archivo de acuerdotecnico firmado.')->after('at_cantxunimed')->nullable();
+            $table->string('at_firmado')->comment('Nombre de archivo de acuerdotecnico firmado.')->after('at_formatofilm')->nullable();
         });
     }
 

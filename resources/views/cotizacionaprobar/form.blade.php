@@ -425,7 +425,7 @@
                                                     }
                                                 ?>
                                                 @if ($data_initial_preview != "")
-                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                         <i class="fa fa-fw fa-photo"></i>
                                                     </a>
                                                 @endif

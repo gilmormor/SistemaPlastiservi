@@ -1017,6 +1017,7 @@ class Producto extends Model
             producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
             categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
             producto.precioneto,acuerdotecnico.id as acuerdotecnico_id,acuerdotecnico.at_impresofoto,
+            acuerdotecnico.at_firmado,producto.categoriaprod_id,
             categoriaprod.nombre as categoriaprod_nombre
             FROM producto INNER JOIN claseprod
             ON producto.claseprod_id=claseprod.id AND isnull(producto.deleted_at) AND isnull(claseprod.deleted_at)
@@ -1070,6 +1071,18 @@ class Producto extends Model
                     $data->espesor =  $acuerdotecnico->at_espesor;
                     $data->cla_nombre = $acuerdotecnico->claseprod->cla_nombre;
                     $data->producto_nombre = $aux_nombreprod;
+                    //CREACION DE CAMPOS DINAMICOS GUARDADOS EN acuerdotecnicotempcvalatdets, PARA QUE ME LOS GUARDE EN $acuerdotecnico->$campo
+                    //Y PODER TENER ACCESO A ELLOS DESDE EL FRONTEND
+                    foreach ($acuerdotecnico->acuerdotecnicocvalatdets as $cvalatdet) {
+                        $campo = 'at_cvalatdet' . $cvalatdet->cvalatdet_id;
+                        $valor = $cvalatdet->valor;
+
+                        // Agregas el atributo dinámicamente al objeto
+                        $acuerdotecnico->$campo = $valor;
+                    }
+
+                    $data->acuerdotecnico_json = json_encode($acuerdotecnico);
+                    //dd($data->acuerdotecnico_json);
 
 
                     //dd($aux_nombreprod);

@@ -348,7 +348,7 @@
                                                 {{$CotizacionDetalle->producto_id}}
                                             </a>
                                             @if ($CotizacionDetalle->acuerdotecnicotemp->at_impreso==1)
-                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2("attemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen arte Impresa" onclick='verpdf2("attemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
                                                     <i class="fa fa-fw fa-photo"></i>
                                                 </a>
                                             @endif
@@ -358,7 +358,7 @@
                                                     {{$CotizacionDetalle->producto_id}}
                                                 </a>
                                                 @if ($CotizacionDetalle->producto->acuerdotecnico->at_impreso==1)
-                                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen arte" onclick='verpdf2("attemp/{{$CotizacionDetalle->producto->acuerdotecnico->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen arte Impresa" onclick='verpdf2("attemp/{{$CotizacionDetalle->producto->acuerdotecnico->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
                                                         <i class="fa fa-fw fa-photo"></i>
                                                     </a>
                                                 @endif
@@ -405,7 +405,7 @@
                                                     <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_firmado ?? '')}}">
                                                 </div>
                                                 @if ($data_initial_preview != "")
-                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                         <i class="fa fa-fw fa-photo"></i>
                                                     </a>
                                                 @endif

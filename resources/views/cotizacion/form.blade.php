@@ -327,6 +327,8 @@
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
                                     //dd($CotizacionDetalle->acuerdotecnicotemp);
+                                    //CREACION DE CAMPOS DINAMICOS GUARDADOS EN acuerdotecnicotempcvalatdets, PARA QUE ME LOS GUARDE EN $CotizacionDetalle->acuerdotecnicotemp->$campo
+                                    //Y PODER TENER ACCESO A ELLOS DESDE EL FRONTEND
                                     if ($CotizacionDetalle->acuerdotecnicotemp != null){
                                         $AcuTec = $CotizacionDetalle->acuerdotecnicotemp;
                                         $aux_staAT = true;

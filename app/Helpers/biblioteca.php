@@ -8,6 +8,7 @@ use App\Models\ClienteDesbloqueadoModulo;
 use App\Models\ClienteDesbloqueadoModuloDel;
 use App\Models\Dte;
 use App\Models\Empresa;
+use App\Models\LogCambio;
 use App\Models\Modulo;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -667,5 +668,70 @@ if (!function_exists('pesounitattemp')) {
         return round((($at->at_ancho * $at->at_largo * $at->at_espesor * $at->materiaprima->pe) / 1000) * $aux_doble,10 );
     }
 }
+if (!function_exists('guardarLogCambio')) {
+    function guardarLogCambio($modeloNombre, $registroOriginal, $registroNuevo, $idTabla){
+        unset($registroOriginal['updated_at'], $registroNuevo['updated_at']);
+        // Comparar los arrays para detectar qué campos cambiaron
+        $diferencias = [];
+        foreach ($registroOriginal as $campo => $valorOriginal) {
+            $valorNuevo = $registroNuevo[$campo] ?? null;
+
+            // Comparamos sólo si cambiaron (puedes usar trim o strtolower si quieres comparar sin espacios o mayúsculas)
+            if ($valorOriginal != $valorNuevo) {
+                $diferencias[$campo] = [
+                    'anterior' => $valorOriginal,
+                    'nuevo' => $valorNuevo
+                ];
+            }
+        }
+
+        // Si no hay diferencias, no se guarda nada
+        if (empty($diferencias)) {
+            return;
+        }
+
+        // Guardamos el log
+        LogCambio::create([
+            'usuario_id' => auth()->id(),
+            'ip' => ObtenerRealIP(),
+            'tabla' => $modeloNombre,
+            'tabla_id' => $idTabla,
+            'operacion' => 'm',
+            'cambios' => json_encode($diferencias)
+        ]);
+    }
+}
+
+if (!function_exists('ObtenerRealIP')) {
+    function ObtenerRealIP(){
+
+        if (isset($_SERVER["HTTP_CLIENT_IP"])){
+
+            return $_SERVER["HTTP_CLIENT_IP"];
+
+        }elseif (isset($_SERVER["HTTP_X_FORWARDED_FOR"])){
+
+            return $_SERVER["HTTP_X_FORWARDED_FOR"];
+
+        }elseif (isset($_SERVER["HTTP_X_FORWARDED"])){
+
+            return $_SERVER["HTTP_X_FORWARDED"];
+
+        }elseif (isset($_SERVER["HTTP_FORWARDED_FOR"])){
+
+            return $_SERVER["HTTP_FORWARDED_FOR"];
+
+        }elseif (isset($_SERVER["HTTP_FORWARDED"])){
+
+            return $_SERVER["HTTP_FORWARDED"];
+
+        }else{
+
+            return $_SERVER["REMOTE_ADDR"];
+
+        }
+    }    
+}
+   
 
 ?>

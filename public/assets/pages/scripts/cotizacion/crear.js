@@ -1690,7 +1690,7 @@ function ocultarMostrarFiltro(aux_nfila){
 	$(".kv-file-remove").hide();
 }
 
-function embalajePlastiservi(){
+/* function embalajePlastiservi(){
 	let aux_val = $("#at_embalajeplastservi").val();
 	if(aux_val == "1" || aux_val == ""){
 		$(".embalaje").prop("disabled", true);
@@ -1698,7 +1698,7 @@ function embalajePlastiservi(){
 	}else{
 		$(".embalaje").prop("disabled", false);
 	}
-}
+} */
 
 function arrayAcuerdoTecnico(){
 	var aux_nfila = $("#tabla-data tbody tr").length - 3;

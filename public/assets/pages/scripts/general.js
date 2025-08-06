@@ -2575,7 +2575,7 @@ function crearEditarAcuTec(i){
 			var html = '';
 			var html1 = '';
 			data.forEach(function(item) {
-				console.log(item.cvalatdets);
+				//console.log(item.cvalatdets);
 				html1 += `                        
 						<div class="row">
 							<div class="box box-primary">
@@ -2585,12 +2585,13 @@ function crearEditarAcuTec(i){
 								<div class="box-body">
 									<div class="row">`;
 				item.cvalatdets.forEach(function(cvalatdet) {
-					console.log(cvalatdet.nombre);
+					//console.log(cvalatdet.nombre);
 					aux_valorBlanco = "";
 					aux_valorSi = "";
 					aux_valorNo = "";
 
 					for (const property in acuerdotecnicoValAt) {
+						//console.log(acuerdotecnicoValAt);
 						if((property == `at_cvalatdet${cvalatdet.id}`)){
 							if(acuerdotecnicoValAt[property] == ""){
 								aux_valorBlanco = "selected";
@@ -4357,4 +4358,14 @@ function XMLDownLoad(id){ //GENERAR PDF Solicitud de Despacho
 			console.log('Error al descargar el archivo: ' + errorThrown);
 		}
 	});
+}
+
+function embalajePlastiservi(){
+	let aux_val = $("#at_embalajeplastservi").val();
+	if(aux_val == "1" || aux_val == ""){
+		$(".embalaje").prop("disabled", true);
+		$(".embalaje").val("")
+	}else{
+		$(".embalaje").prop("disabled", false);
+	}
 }

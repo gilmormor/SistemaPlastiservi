@@ -17,7 +17,7 @@ class CreateTableCvalat extends Migration
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('nombre',50)->comment('Nombre');
-            $table->string('desc',100)->comment('Descripcion');
+            $table->string('desc')->comment('Descripcion');
             $table->tinyInteger('orden')->comment('Orden de registros.')->default(0);
             $table->unsignedBigInteger('usuario_id');
             $table->foreign('usuario_id','fk_cvalat_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');

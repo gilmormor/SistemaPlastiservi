@@ -21,9 +21,10 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            'ajax'        : "reportproductopage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+            'ajax'        : "ateditarpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             "order": [[ 1, "asc" ]],
             'columns'     : [
+                {data: 'producto_id'},
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
@@ -44,10 +45,10 @@ $(document).ready(function () {
                 if(data.stock <= 0){
                     $(row).hide();                    
                 }*/
-                $('td', row).eq(0).attr('style','text-align:center');
+                $('td', row).eq(1).attr('style','text-align:center');
                 if(data.acuerdotecnico_id != null){
-                    $('td', row).eq(0).attr('style','text-align:left');
-                    //$('td', row).eq(0).html(aux_text);
+                    $('td', row).eq(1).attr('style','text-align:left');
+                    //$('td', row).eq(1).html(aux_text);
                     if (data.hasOwnProperty('cliente_id')) {
                         aux_cliente_id = data.cliente_id;
                     } else {
@@ -68,6 +69,9 @@ $(document).ready(function () {
                                 <i class="fa fa-fw fa-files-o"></i>
                             </a>`;
                     }
+                    aux_text += `<input type="text" name="acuerdotecnico${data.producto_id}" id="acuerdotecnico${data.producto_id}" value="${data.acuerdotecnico_json}" style="display:none;"/>`;
+                    aux_text += `<input type="text" name="nombreProdTD${data.producto_id}" id="nombreProdTD${data.producto_id}" categoriaprod_nombre="${data.categoriaprod_nombre}" style="display:none;"/>`;
+                    aux_text += `<input type="text" name="producto_idTDT${data.producto_id}" id="producto_idTDT${data.producto_id}" categoriaprod_id="${data.categoriaprod_id}" style="display:none;"/>`;
 
                     if(data.at_impresofoto != "" && data.at_impresofoto != null){
                         aux_text += 
@@ -75,20 +79,32 @@ $(document).ready(function () {
                                 <i class="fa fa-fw fa-photo"></i>
                             </a>`;
                     }
-                    $('td', row).eq(0).html(aux_text);
-                    //$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
+                    $('td', row).eq(1).html(aux_text);
+                    //$('td', row).eq(1).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
                 }
-                $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
-                $('td', row).eq(6).attr('data-order',data.espesor);
-                $('td', row).eq(6).attr('data-search',data.espesor);
-                $('td', row).eq(6).html(MASKLA(data.espesor,3));
                 $('td', row).eq(6).attr('style','text-align:center');
-                $('td', row).eq(7).attr('data-order',data.peso);
-                $('td', row).eq(7).attr('data-search',data.peso);
-                $('td', row).eq(7).html(MASKLA(data.peso,3));
-                $('td', row).eq(7).attr('style','text-align:right');
-                $('td', row).eq(9).attr('style','text-align:right');
+                $('td', row).eq(7).attr('data-order',data.espesor);
+                $('td', row).eq(7).attr('data-search',data.espesor);
+                $('td', row).eq(7).html(MASKLA(data.espesor,3));
+                $('td', row).eq(7).attr('style','text-align:center');
+                $('td', row).eq(8).attr('data-order',data.peso);
+                $('td', row).eq(8).attr('data-search',data.peso);
+                $('td', row).eq(8).html(MASKLA(data.peso,3));
+                $('td', row).eq(8).attr('style','text-align:right');
+                //$('td', row).eq(9).attr('style','text-align:right');
+                /* aux_text = 
+                        `<div class="tools11">
+                                <a class="btn-accion-tabla tooltipsC action-buttons" title="Editar AT" onclick="crearEditarAcuTec(${data.producto_id})">
+                                    <i class="fa fa-fw fa-pencil accioness fa-lg"></i>
+                                </a>
+                        </div>`; */
+                aux_text = `
+                    <a href='ateditar' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>
+                        <i class='fa fa-fw fa-pencil'></i>
+                    </a>`;
+                //$('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
+                $('td', row).eq(10).html(aux_text);
             }
         });
     }
@@ -275,4 +291,14 @@ function copiar_rut(id,rut){
 	$("#rut").val(rut);
 	//$("#rut").focus();
 	$("#rut").blur();
+}
+
+function embalajePlastiservi(){
+	let aux_val = $("#at_embalajeplastservi").val();
+	if(aux_val == "1" || aux_val == ""){
+		$(".embalaje").prop("disabled", true);
+		$(".embalaje").val("")
+	}else{
+		$(".embalaje").prop("disabled", false);
+	}
 }
