@@ -122,7 +122,7 @@ class AcuerdoTecnicoController extends Controller
             }
 
             $aux_Condacuerdotecnico_idEditAct = " true";
-            if(isset($request->acuerdotecnico_idEditAct) and !is_null($request->acuerdotecnico_idEditAct) or !empty($request->acuerdotecnico_idEditAct) or $request->acuerdotecnico_idEditAct == ""){
+            if(isset($request->acuerdotecnico_idEditAct) and !is_null($request->acuerdotecnico_idEditAct) and !empty($request->acuerdotecnico_idEditAct) and $request->acuerdotecnico_idEditAct != ""){
                 $aux_Condacuerdotecnico_idEditAct = " acuerdotecnico.id != $request->acuerdotecnico_idEditAct";
             }
 
