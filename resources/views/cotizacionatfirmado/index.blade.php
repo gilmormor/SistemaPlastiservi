@@ -29,7 +29,7 @@ Cotización - Subir AT firmado
                                 <th>Vendedor</th>
                                 <th class="width30">PDF</th>
                                 <th class="ocultar">aprobstatus</th>
-                                <th class="width40">Act</th>
+                                <th class="width80">Act</th>
                             </tr>
                         </thead>
                         <tbody>

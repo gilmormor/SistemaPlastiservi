@@ -111,13 +111,10 @@ class ATEditarController extends Controller
         //dd($request->ip());
 
         $acuerdotecnico = AcuerdoTecnico::findOrFail($request->acuerdotecnico_id);
-        $atorig = $acuerdotecnico->toArray();
-       
-        /* return redirect('ateditar/3880/editar')->with([
-                'mensaje'=> 'Acuerdo Tecnico actualizado con éxito',
-                'tipo_alert' => 'alert-success'
-            ]); */
-
+        // Antes de los updates
+        $acuerdotecnicoOriginal = AcuerdoTecnico::with('acuerdotecnicocvalatdets')
+            ->findOrFail($request->acuerdotecnico_id);
+        
         DB::beginTransaction();
         try {
             $id = $request->acuerdotecnico_id;
@@ -237,39 +234,18 @@ class ATEditarController extends Controller
                 $acuerdotecnico->save();
             }
 
-            $acuerdotecnico = AcuerdoTecnico::findOrFail($request->acuerdotecnico_id);
-            $atnew = $acuerdotecnico->toArray();
-            guardarLogCambio('acuerdotecnico', $atorig, $atnew, $acuerdotecnico->id);
-            /* $acuerdotecnico = AcuerdoTecnico::findOrFail($request->acuerdotecnico_id);
-            $atorig = $acuerdotecnico->toArray();
+            // Recargar el modelo actualizado con relaciones
+            $acuerdotecnicoActualizado = AcuerdoTecnico::with('acuerdotecnicocvalatdets')
+                ->findOrFail($request->acuerdotecnico_id);
 
-            $acuerdotecnico = AcuerdoTecnico::findOrFail($request->acuerdotecnico_id);
-            $atnew = $acuerdotecnico->toArray(); */
+            // Guardar log comparando original con actualizado
+            guardarLogCambioModelo(
+                $acuerdotecnicoActualizado,
+                ['acuerdotecnicocvalatdets'],
+                $acuerdotecnicoOriginal // <- se lo pasamos como estado original
+            );
 
-            /* $acuerdoOrigArray["acuerdotecnico_id"] = $acuerdoOrigArray["id"];
-            $acuerdoOrigArray["at_status"] = 1;
-            $acuerdoOrigArray["usuarioedit_id"] = auth()->id();
-
-            $arrayAT["acuerdotecnico_id"] = $acuerdoOrigArray["id"];
-            $arrayAT["at_status"] = 2;
-            $arrayAT["usuarioedit_id"] = auth()->id();
-
-            unset($acuerdoOrigArray["id"]);
-            unset($acuerdoOrigArray["at_id"]);
-            unset($acuerdoOrigArray["deleted_at"]);
-            unset($acuerdoOrigArray["created_at"]);
-            unset($acuerdoOrigArray["updated_at"]);
-            unset($acuerdoOrigArray["usuariodel_id"]);
-            unset($acuerdoOrigArray["tiposello"]);
-            unset($acuerdoOrigArray["materiaprima"]);
-            unset($acuerdoOrigArray["largounidadmedida"]);
-            unset($acuerdoOrigArray["claseprod"]);
-            unset($acuerdoOrigArray["cotizaciondetalle"]);
-            unset($acuerdoOrigArray["anchounidadmedida"]);
-            unset($acuerdoOrigArray["color"]);
-            
-            $acuerdotecnicoedit = AcuerdoTecnicoEdit::create($acuerdoOrigArray);
-            $acuerdotecnicoedit = AcuerdoTecnicoEdit::create($arrayAT); */
+            //guardarLogCambio('acuerdotecnico', $atorig, $atnew, $acuerdotecnico->id);
 
             DB::commit();
             /* return redirect('ateditar/3880/editar')->with([

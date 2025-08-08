@@ -21,7 +21,7 @@ $(document).ready(function () {
             {data: 'aprobstatus',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 
-                "<a href='cotizacionatfirmado' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
+                "<a href='cotizacionatfirmado' class='btn-accion-tabla btnEditar' title='Editar este registro'>"+
                     "<i class='fa fa-fw fa-pencil'></i>"+
                 "</a>"}
         ],
@@ -33,25 +33,26 @@ $(document).ready(function () {
             $('td', row).eq(0).attr("id","id" + data.id);
             $('td', row).eq(0).attr("id","id" + data.id);
             $('td', row).eq(0).attr("updated_at",data.updated_at);
-            aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
+            aux_text = "<a class='btn-accion-tabla btn-sm  title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
                             "<i class='fa fa-fw fa-file-pdf-o'></i>"+
                         "</a>"
             $('td', row).eq(4).html(aux_text);
 
             aux_text = 
             `<div class="tools11">
-                <a href="cotizacionatfirmado" class="btn-accion-tabla btn-sm tooltipsC btnEnviarRev action-buttons botonac${data.id}" title="Enviar revision Acuerdo tecnico" style="padding-left: 0px;">
-                    <i class="fa fa-fw fa-save accioness fa-lg"></i>
+                <a class='btn-accion-tabla bntdevolver' title='Devolver: ${data.id}' >
+                    <i class='fa fa-fw fa-reply'></i>
                 </a>
-                <a href='cotizacionatfirmado' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>
+                <a class="btn-accion-tabla btnEnviarRev botonac${data.id}" title="Enviar revision Acuerdo tecnico" style="padding-left: 0px;">
+                    <i class="fa fa-fw fa-save"></i>
+                </a>
+                <a href="cotizacionatfirmado" class='btn-accion-tabla btnEditar' title='Editar este registro'>
                     <i class='fa fa-fw fa-pencil'></i>
                 </a>
             </div>`;
 
             //$('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
             $('td', row).eq(6).html(aux_text);
-
-
 
         }
     });
@@ -63,19 +64,9 @@ $(document).on("click", ".btnEnviarRev", function(event){
     form = $(this);
     id = fila.find('td:eq(0)').text();
     contador = fila.find('td:eq(6)').text();
-    contacutec = fila.find('td:eq(8)').text();
-    aprobstatus = 1;
-    if(contacutec>0){
-        aprobstatus = 5;
-    }else{
-        if(contador>0){
-            aprobstatus = 2;
-        }    
-    }
     var data = {
 		id: id,
         cotizacion_id: id,
-        aprobstatus : aprobstatus,
         updated_at  : $("#id" + id).attr("updated_at"),
         _token: $('input[name=_token]').val()
 	};
@@ -136,3 +127,42 @@ function ajaxRequest(data,url,funcion,form = false) {
 		}
 	});
 }
+
+$(document).on("click", ".bntdevolver", function(event){
+    event.preventDefault();
+    fila = $(this).closest("tr");
+    form = $(this);
+    id = fila.find('td:eq(0)').text();
+    contador = fila.find('td:eq(6)').text();
+    contacutec = fila.find('td:eq(8)').text();
+    aprobstatus = 1;
+    if(contacutec>0){
+        aprobstatus = 5;
+    }else{
+        if(contador>0){
+            aprobstatus = 2;
+        }    
+    }
+    var data = {
+		id: id,
+        cotizacion_id: id,
+        aprobstatus : aprobstatus,
+        updated_at  : $("#id" + id).attr("updated_at"),
+        _token: $('input[name=_token]').val()
+	};
+	var ruta = '/cotizacionatfirmado/devolver/'+id;
+	swal({
+		title: '¿ Devolver a proceso anterior ?',
+		text: "Esta acción no se puede deshacer!",
+		icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			ajaxRequest(data,ruta,'enviarrev',form);
+		}
+	});
+    
+});

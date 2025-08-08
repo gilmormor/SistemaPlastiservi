@@ -265,6 +265,54 @@ class CotizacionAtFirmadoController extends Controller
         }
 
     }
+
+    public function devolver(Request $request)
+    {
+        //dd($request);
+        can('guardar-cargar-at-firmado-cotizacion');
+        if ($request->ajax()) {
+            $cotizacion = Cotizacion::findOrFail($request->id);
+            if($request->updated_at != $cotizacion->updated_at){
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => "No se actualizaron los datos, registro fue modificado por otro usuario!",
+                    'tipo_alert' => "error"
+                ]);
+            }
+            DB::beginTransaction();
+            try {
+                $cotizacion->updated_at = now();
+                $cotizacion->aprobstatus = null; //Se devuelve cotizacion a crear cotizacion
+                $cotizacion->aprobusu_id = null;
+                $cotizacion->aprobfechahora = null;
+                $cotizacion->aprobobs = 'Devuelto de pantalla subir Acuerdo Tec por Vendedor Usuario Id: ' . auth()->id() . " Fecha: " . date("Y-m-d H:i:s");
+                $cotizacion->save();
+                foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
+                    if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                        $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null;
+                        $cotizaciondetalle->acuerdotecnicotempunoauno->save();
+                    }
+                }
+                DB::commit();
+                return response()->json([
+                    'error' => 0,
+                    'aprobstatus' => $cotizacion->aprobstatus,
+                    'mensaje' => "El registro fue procesado con exito.",
+                    'tipo_alert' => "success"
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'error' => 1,
+                    'mensaje' => 'Error: ' . $e->getMessage(),
+                    'tipo_alert' => "success"
+                ]);
+            }
+        } else {
+            abort(404);
+        }
+
+    }
 }
 
 function editar($id){

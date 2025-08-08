@@ -1619,6 +1619,7 @@ Route::get('cotizacionatfirmado/{id}/productobuscarpage', 'CotizacionAtFirmadoCo
 Route::get('cotizacionatfirmado/{id}/clientebuscarpage', 'CotizacionAtFirmadoController@clientebuscarpageid')->name('clientebuscarpageid');
 Route::put('cotizacionatfirmado/{id}', 'CotizacionAtFirmadoController@actualizar')->name('actualizar_cotizacionatfirmado');
 Route::post('cotizacionatfirmado/enviarrev/{id}', 'CotizacionAtFirmadoController@enviarrev')->name('enviarrev_cotizacionatfirmado');
+Route::post('cotizacionatfirmado/devolver/{id}', 'CotizacionAtFirmadoController@devolver')->name('devolver_cotizacionatfirmado');
 
 /*RUTAS EDITAR aT PRODUCTO*/
 Route::get('ateditar', 'ATEditarController@index')->name('ateditar');
