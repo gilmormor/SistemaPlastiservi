@@ -1628,7 +1628,8 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
             subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
             notaventadetalle.preciounit,notaventadetalle.precioxkilo,
             comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
-            '' as at_espesor,0 as stockbpt,0 as picking";
+            '' as at_espesor,0 as stockbpt,0 as picking,
+            notaventa.lugarentrega";
             //SE ORDENA DE FORMA DESENDENTE PARA ENVIAR EN EL 1er REGISTRO LOS TOTALES Y LLEGUEN A LA TABLA PARA PODER TOTALIZAR
             //SI SE CAMBIA O ELIMINA ESTE ORDEN NO VA A TOTALIZAR EN LA CONSULTA POR PANTALLA
             $aux_AgruOrd = "order by notaventadetalle.notaventa_id desc";
