@@ -123,12 +123,18 @@ class ATFirmadoSubirController extends Controller
                 $acuerdotecnicoOriginal // <- se lo pasamos como estado original
             );
 
-            if ($aux_resp != null and $acuerdotecnicoActualizado->at_firmado == null and $acuerdotecnico->at_firmado != null) {
-                AtFirmEli::create([
-                            'acuerdotecnico_id' => $request->acuerdotecnico_id,
-                            'at_firmado' => $acuerdotecnico->at_firmado,
-                            'usuario_id' => auth()->id(),
-                        ]);
+            if ($aux_resp != null){
+                if ($acuerdotecnicoActualizado->at_firmado == null and $acuerdotecnico->at_firmado != null) {
+                    AtFirmEli::create([
+                                'acuerdotecnico_id' => $request->acuerdotecnico_id,
+                                'at_firmado' => $acuerdotecnico->at_firmado,
+                                'usuario_id' => auth()->id(),
+                    ]);
+                }else{
+                    if($acuerdotecnicoActualizado->at_firmado != null){
+                        AtFirmEli::where('acuerdotecnico_id', $request->acuerdotecnico_id)->delete();
+                    }
+                }
             }
 
 
