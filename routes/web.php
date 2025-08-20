@@ -1621,10 +1621,18 @@ Route::put('cotizacionatfirmado/{id}', 'CotizacionAtFirmadoController@actualizar
 Route::post('cotizacionatfirmado/enviarrev/{id}', 'CotizacionAtFirmadoController@enviarrev')->name('enviarrev_cotizacionatfirmado');
 Route::post('cotizacionatfirmado/devolver/{id}', 'CotizacionAtFirmadoController@devolver')->name('devolver_cotizacionatfirmado');
 
-/*RUTAS EDITAR aT PRODUCTO*/
+/*RUTAS EDITAR AT PRODUCTO*/
 Route::get('ateditar', 'ATEditarController@index')->name('ateditar');
 Route::get('ateditarpage', 'ATEditarController@ateditarpage')->name('ateditarpage');
 Route::get('ateditar/reporte', 'ATEditarController@reporte')->name('ateditar_reporte');
 Route::get('ateditar/exportPdf', 'ATEditarController@exportPdf')->name('ateditar_exportPdf');
 Route::get('ateditar/{id}/editar', 'ATEditarController@editar')->name('editar_ateditar');
 Route::put('ateditar/{id}', 'ATEditarController@actualizar')->name('actualizar_ateditar');
+
+/*RUTAS EDITAR At FIRMADO*/
+Route::get('atfirmadosubir', 'ATFirmadoSubirController@index')->name('atfirmadosubir');
+Route::get('atfirmadosubirpage', 'ATFirmadoSubirController@atfirmadosubirpage')->name('atfirmadosubirpage');
+Route::get('atfirmadosubir/reporte', 'ATFirmadoSubirController@reporte')->name('atfirmadosubir_reporte');
+Route::get('atfirmadosubir/exportPdf', 'ATFirmadoSubirController@exportPdf')->name('atfirmadosubir_exportPdf');
+Route::get('atfirmadosubir/{id}/editar', 'ATFirmadoSubirController@editar')->name('editar_atfirmadosubir');
+Route::put('atfirmadosubir/{id}', 'ATFirmadoSubirController@actualizar')->name('actualizar_atfirmadosubir');

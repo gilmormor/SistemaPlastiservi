@@ -15,7 +15,6 @@ $(document).ready(function () {
     configurarTabla(nombreTabla,"",false)
 
 
-
     function configurarTabla1(aux_tabla){
         data = datosproducto();
         $(aux_tabla).DataTable({
@@ -26,7 +25,7 @@ $(document).ready(function () {
             'autoWidth'   : false,
             'processing'  : true,
             'serverSide'  : true,
-            'ajax'        : "ateditarpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+            'ajax'        : "atfirmadosubirpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
             "order": [[ 1, "asc" ]],
             'columns'     : [
                 {data: 'producto_id'},
@@ -105,7 +104,7 @@ $(document).ready(function () {
                                 </a>
                         </div>`; */
                 aux_text = `
-                    <a href='ateditar' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>
+                    <a href='atfirmadosubir' class='btn-accion-tabla tooltipsC btnEditar' title='Editar At Firmado'>
                         <i class='fa fa-fw fa-pencil'></i>
                     </a>`;
                 //$('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
@@ -113,8 +112,6 @@ $(document).ready(function () {
             }
         });
     }
-
-
 
     arrayBodegas = [];
     $("#invbodega_id option").each(function(){
@@ -133,19 +130,6 @@ $(document).ready(function () {
     if($("#sucursal_id").val() > 0){
 		llenarbodegas($("#sucursal_id").val())
 	}
-
-});
-
-$("#btnconsultar").click(function()
-{
-    /* data = datosproducto();
-    $('#tabla-data-producto').DataTable().ajax.url( "reportproductopage/" + data.data2 ).load(); */
-
-    var data = datosproducto();
-    var newUrl = "reportproductopage/" + data.data2;
-    
-    
-    configurarTabla("#tabla-data-producto",newUrl,true); // Reinicia DataTable con `serverSide: true`
 
 });
 
@@ -185,7 +169,6 @@ function configurarTabla(nombreTabla,url,serverSide) {
     }
 
     // Configura DataTable con `serverSide` dinámico
-    data = datosproducto();
     $(nombreTabla).DataTable({
         'paging'      : true, 
         'lengthChange': true,
@@ -273,7 +256,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
                             </a>
                     </div>`; */
             aux_text = `
-                <a href='ateditar' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>
+                <a href='atfirmadosubir' class='btn-accion-tabla tooltipsC btnEditar' title='Editar At Firmado'>
                     <i class='fa fa-fw fa-pencil'></i>
                 </a>`;
             //$('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
@@ -281,6 +264,19 @@ function configurarTabla(nombreTabla,url,serverSide) {
         }
     });
 }
+
+$("#btnconsultar").click(function()
+{
+    /* data = datosproducto();
+    $('#tabla-data-producto').DataTable().ajax.url( "reportproductopage/" + data.data2 ).load(); */
+
+    var data = datosproducto();
+    var newUrl = "reportproductopage/" + data.data2;
+    
+    
+    configurarTabla("#tabla-data-producto",newUrl,true); // Reinicia DataTable con `serverSide: true`
+
+});
 
 var eventFired = function ( type ) {
 	total = 0;
@@ -314,9 +310,9 @@ function datosproducto(){
     "&categoriaprod_id="+data1.categoriaprod_id +
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&rut="+data1.rut +
+    "&at_impreso="+data1.at_impreso +
     "&at_firmadosta="+data1.at_firmadosta +
     "&at_impresostaeli="+data1.at_impresostaeli
-
 
 
     var data = {

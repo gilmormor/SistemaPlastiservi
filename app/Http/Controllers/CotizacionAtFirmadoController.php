@@ -408,6 +408,7 @@ function editar($id){
         $tablas['tipoSello'] = TipoSello::orderBy('id')->get();
         $tablas['moneda'] = Moneda::orderBy('id')->get();
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
+        $tablas['usuario'] = Usuario::findOrFail(auth()->id());
         $tablas['modulo_id'] = 25;
 
         $aux_sta=2;

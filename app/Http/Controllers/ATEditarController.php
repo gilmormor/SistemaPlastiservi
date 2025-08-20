@@ -6,6 +6,7 @@ use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnicoCValAtDet;
 use App\Models\AcuerdoTecnicoEdit;
 use App\Models\AreaProduccion;
+use App\Models\AtFirmEli;
 use App\Models\CategoriaProd;
 use App\Models\Certificado;
 use App\Models\Color;
@@ -108,9 +109,16 @@ class ATEditarController extends Controller
      */
     public function actualizar(Request $request, $id)
     {
-        //dd($request->ip());
-
+        //dd($request);
         $acuerdotecnico = AcuerdoTecnico::findOrFail($request->acuerdotecnico_id);
+        //dd($acuerdotecnico);
+        if($request->updated_at != $acuerdotecnico->updated_at){
+            return redirect('ateditar')->with([
+                'error' => 1,
+                'mensaje' => "No se actualizaron los datos, registro fue modificado por otro usuario!",
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         // Antes de los updates
         $acuerdotecnicoOriginal = AcuerdoTecnico::with('acuerdotecnicocvalatdets')
             ->findOrFail($request->acuerdotecnico_id);
@@ -198,7 +206,7 @@ class ATEditarController extends Controller
             $aux_at = AcuerdoTecnico::where("id","=",$request->acuerdotecnico_id)
             ->update($arrayAT);
 
-            $request->merge([
+            /* $request->merge([
                 'id' => $request->acuerdotecnico_id,
                 'namefilenew' => 'atfirm' . $request->acuerdotecnico_id,
                 'nombrecampofile' => "at_filefirmado",
@@ -215,7 +223,7 @@ class ATEditarController extends Controller
                 }
                 $acuerdotecnico->at_firmado = $foto;
                 $acuerdotecnico->save();
-            }
+            } */
             $request->merge([
                 'id' => $request->acuerdotecnico_id,
                 'namefilenew' => 'at' . $request->acuerdotecnico_id,
@@ -239,13 +247,22 @@ class ATEditarController extends Controller
                 ->findOrFail($request->acuerdotecnico_id);
 
             // Guardar log comparando original con actualizado
-            guardarLogCambioModelo(
+            $aux_resp = guardarLogCambioModelo(
                 $acuerdotecnicoActualizado,
                 ['acuerdotecnicocvalatdets'],
                 $acuerdotecnicoOriginal // <- se lo pasamos como estado original
             );
 
             //guardarLogCambio('acuerdotecnico', $atorig, $atnew, $acuerdotecnico->id);
+            if ($aux_resp != null and $acuerdotecnicoActualizado->at_firmado != null) {
+                AcuerdoTecnico::where("id","=",$request->acuerdotecnico_id)
+                            ->update(["at_firmado" => null]);
+                AtFirmEli::create([
+                            'acuerdotecnico_id' => $request->acuerdotecnico_id,
+                            'at_firmado' => $acuerdotecnico->at_firmado,
+                            'usuario_id' => auth()->id(),
+                        ]);
+            }
 
             DB::commit();
             /* return redirect('ateditar/3880/editar')->with([

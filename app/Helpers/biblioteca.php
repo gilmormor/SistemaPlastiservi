@@ -798,7 +798,7 @@ if (!function_exists('guardarLogCambioModelo')) {
         }
 
         if (empty($diferenciasPadre) && empty($diferenciasHijas)) {
-            return;
+            return null;
         }
 
         $nombreTablaPadre = $modeloActual->getTable();
@@ -821,6 +821,7 @@ if (!function_exists('guardarLogCambioModelo')) {
             'operacion'  => 'm',
             'cambios'    => json_encode($diferencias, JSON_UNESCAPED_UNICODE)
         ]);
+        return 1;
     }
 }
 

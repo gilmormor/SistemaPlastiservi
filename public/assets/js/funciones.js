@@ -85,7 +85,7 @@ var Biblioteca = function(){
 }();
 
 
-notificaciones();
+//notificaciones();
 
 function notificaciones(){
     var data = {

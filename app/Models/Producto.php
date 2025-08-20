@@ -1013,6 +1013,20 @@ class Producto extends Model
             $aux_at_impresoCond = " acuerdotecnico.at_impreso in (1) ";
         }
 
+        $aux_at_firmadostaCond = " true ";
+        if(isset($request->at_firmadosta)){
+            if($request->at_firmadosta == "1"){
+                $aux_at_firmadostaCond = " not isnull(acuerdotecnico.at_firmado)";
+            }
+            if($request->at_firmadosta == "0"){
+                $aux_at_firmadostaCond = " isnull(acuerdotecnico.at_firmado)";
+            }
+        }
+        //dd($aux_at_firmadostaCond);
+        $aux_at_impresostaeliCond = " true ";
+        if(isset($request->at_impresostaeli) and $request->at_impresostaeli == "1"){
+            $aux_at_impresostaeliCond = " acuerdotecnico.id in (Select acuerdotecnico_id from atfirmeli) ";
+        }
 
         $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
             producto.diamextmm,producto.diamextpg,
@@ -1038,6 +1052,8 @@ class Producto extends Model
             and $aux_condsucursal_id
             and tipoprod = 0
             and $aux_at_impresoCond
+            and $aux_at_firmadostaCond
+            and $aux_at_impresostaeliCond
             ORDER BY producto.id;";
             $datas = DB::select($sql);
             foreach ($datas as &$data) {

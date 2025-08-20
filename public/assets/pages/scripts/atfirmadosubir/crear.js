@@ -1,7 +1,7 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
-    /* $('#at_filefirmado').fileinput({
+    $('#at_filefirmado').fileinput({
 		language: 'es',
 		allowedFileExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
 		maxFileSize: 400,
@@ -34,40 +34,6 @@ $(document).ready(function () {
 		//console.log($('#at_filefirmado').val());
 		$("#imagen").val($('#at_filefirmado').val());
         $("#at_filefirmado_deleted").val("1");
-	}); */
-    $('#at_fileimpresofoto').fileinput({
-		language: 'es',
-		allowedFileExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
-		maxFileSize: 400,
-		initialPreview: [
-			// PDF DATA
-			'/storage/imagenes/notaventa/'+$("#imagen").val(),
-		],
-		initialPreviewShowDelete: false,
-		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
-		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
-		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
-		initialPreviewConfig: [
-			{type: "pdf", size: 8000, caption: $("#imagen").val(), url: "/file-upload-batch/2", key: 10, downloadUrl: false}, // disable download
-		],
-        showUpload: false,
-        showClose: false,
-        initialPreviewAsData: true,
-		dropZoneEnabled: false,
-		maxFileCount: 5,
-        theme: "fa",
-	}).on('fileclear', function(event) {
-		//console.log("fileclear");
-		$('#at_fileimpresofoto').attr("data-initial-preview","");
-		$("#imagen").val("");
-        $("#at_fileimpresofoto_deleted").val("1");
-		//alert('entro');
-	}).on('fileimageloaded', function(e, params) {
-		//console.log('Paso');
-		//console.log('File uploaded params', params);
-		//console.log($('#at_fileimpresofoto').val());
-		$("#imagen").val($('#at_fileimpresofoto').val());
-        $("#at_fileimpresofoto_deleted").val("1");
 	});
 });
 
