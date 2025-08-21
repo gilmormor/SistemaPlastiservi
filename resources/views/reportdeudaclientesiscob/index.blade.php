@@ -163,6 +163,17 @@ Deuda Clientes Sis Cob
                 </div>
             </div>
             <div class="row">
+                <div class="form-group col-xs-12 col-sm-1">
+                    <label for="formapago" class="control-label" title="Forma Pago">Forma Pago</label>
+                    <input type="text" name="formapago" id="formapago" class="form-control" value="" maxlength="70" readonly/>
+                </div>
+                <div class="form-group col-xs-12 col-sm-1">
+                    <label for="plazopago" class="control-label" title="Plazo Pago">Plazo Pago</label>
+                    <input type="text" name="plazopago" id="plazopago" class="form-control" value="" maxlength="70" readonly/>
+                </div>
+            </div>
+
+            <div class="row">
                 <div>
                     <legend></legend>
                 </div>

@@ -4369,3 +4369,67 @@ function embalajePlastiservi(){
 		$(".embalaje").prop("disabled", false);
 	}
 }
+
+function desvEspesor(aux_valor,aux_desc){
+	aux_desv = "";
+	if(aux_valor > 0){
+		if(aux_desc == "Baja" || aux_desc == "Mezcla" || aux_desc == "PP"){
+			switch(true) {
+				case aux_valor >= 0.010 && aux_valor <= 0.040:
+					aux_desv = "±2 µ";
+					break;
+				case aux_valor >= 0.041 && aux_valor <= 0.080:
+					aux_desv = "±3 µ";
+					break;
+				case aux_valor >= 0.081 && aux_valor <= 0.090:
+					aux_desv = "±4 µ";
+					break;
+				case aux_valor >= 0.091 && aux_valor <= 0.140:
+					aux_desv = "±5 µ";
+					break;
+				//case aux_valor >= 0.141 && aux_valor <= 0.200:
+				case aux_valor >= 0.141:
+					aux_desv = "±7 µ";
+					break;
+			}		
+		}else{
+			switch(true) {
+				case aux_valor >= 0.010 && aux_valor <= 0.013:
+					aux_desv = "±1 µ";
+					break;
+				case aux_valor >= 0.014 && aux_valor <= 0.018:
+					aux_desv = "±2 µ";
+					break;
+				case aux_valor >= 0.019 && aux_valor <= 0.030:
+					aux_desv = "±3 µ";
+					break;
+				case aux_valor >= 0.031 && aux_valor <= 0.050:
+					aux_desv = "±4 µ";
+					break;
+				case aux_valor >= 0.051:
+					aux_desv = "±5 µ";
+					break;
+				}
+		}
+	}
+	return aux_desv;
+
+}
+
+function desvAnchoLargo(aux_valor){
+	aux_desv = "";
+	if(aux_valor > 0){
+		switch(true) {
+			case aux_valor <= 50:
+				aux_desv = "±1 CM";
+				break;
+			case aux_valor > 50 && aux_valor <= 150:
+				aux_desv = "±2 CM";
+				break;
+			default:
+				aux_desv = "±3 CM";
+				break;
+		}	
+	}
+	return aux_desv;
+}

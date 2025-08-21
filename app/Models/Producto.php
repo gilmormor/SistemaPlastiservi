@@ -1027,6 +1027,11 @@ class Producto extends Model
         if(isset($request->at_impresostaeli) and $request->at_impresostaeli == "1"){
             $aux_at_impresostaeliCond = " acuerdotecnico.id in (Select acuerdotecnico_id from atfirmeli) ";
         }
+        $aux_unionTablaAcuerdoTecnico = "LEFT JOIN acuerdotecnico ";
+        if(isset($request->sta_filtrar_at) and $request->sta_filtrar_at){
+            $aux_unionTablaAcuerdoTecnico = "INNER JOIN acuerdotecnico ";
+        }
+        
 
         $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
             producto.diamextmm,producto.diamextpg,
@@ -1043,7 +1048,7 @@ class Producto extends Model
             ON categoriaprod.id = categoriaprodsuc.categoriaprod_id AND isnull(categoriaprodsuc.deleted_at)
             INNER JOIN sucursal
             ON categoriaprodsuc.sucursal_id = sucursal.id AND isnull(sucursal.deleted_at)
-            LEFT JOIN acuerdotecnico
+            $aux_unionTablaAcuerdoTecnico
             ON producto.id = acuerdotecnico.producto_id AND isnull(acuerdotecnico.deleted_at)
             $aux_cliente_producto_sql
             WHERE $aux_areaproduccion_idCond

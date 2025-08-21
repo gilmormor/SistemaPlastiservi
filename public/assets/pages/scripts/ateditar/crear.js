@@ -263,3 +263,17 @@ function ajaxRequest(data,url,funcion) {
 		}
 	});
 }
+
+$("#at_ancho").blur(function(event){
+	$("#at_anchodesv").val(desvAnchoLargo($("#at_ancho").val()));
+});
+
+$("#at_largo").blur(function(event){
+	$("#at_largodesv").val(desvAnchoLargo($("#at_largo").val()));
+});
+
+$("#at_espesor").blur(function(event){
+	aux_valor = $("#at_espesor").val();
+	aux_desc = $("#at_materiaprima_id option:selected").attr('desc');
+	$("#at_espesordesv").val(desvEspesor(aux_valor,aux_desc));
+});

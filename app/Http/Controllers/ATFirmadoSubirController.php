@@ -44,6 +44,7 @@ class ATFirmadoSubirController extends Controller
     }
 
     public function atfirmadosubirpage(Request $request){
+        $request->merge(['sta_filtrar_at' => true]);
         $datas = Producto::productosxUsuarioRep($request);
         return datatables($datas)->toJson();
     }
@@ -122,12 +123,11 @@ class ATFirmadoSubirController extends Controller
                 ['acuerdotecnicocvalatdets'],
                 $acuerdotecnicoOriginal // <- se lo pasamos como estado original
             );
-
             if ($aux_resp != null){
-                if ($acuerdotecnicoActualizado->at_firmado == null and $acuerdotecnico->at_firmado != null) {
+                if ($acuerdotecnicoActualizado->at_firmado == null and $acuerdotecnicoOriginal->at_firmado != null) {
                     AtFirmEli::create([
                                 'acuerdotecnico_id' => $request->acuerdotecnico_id,
-                                'at_firmado' => $acuerdotecnico->at_firmado,
+                                'at_firmado' => $acuerdotecnicoOriginal->at_firmado,
                                 'usuario_id' => auth()->id(),
                     ]);
                 }else{
@@ -136,7 +136,6 @@ class ATFirmadoSubirController extends Controller
                     }
                 }
             }
-
 
             //guardarLogCambio('acuerdotecnico', $atorig, $atnew, $acuerdotecnico->id);
 

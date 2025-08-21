@@ -52,6 +52,7 @@ class ATEditarController extends Controller
     }
 
     public function ateditarpage(Request $request){
+        $request->merge(['sta_filtrar_at' => true]);
         $datas = Producto::productosxUsuarioRep($request);
         return datatables($datas)->toJson();
     }
@@ -254,7 +255,7 @@ class ATEditarController extends Controller
             );
 
             //guardarLogCambio('acuerdotecnico', $atorig, $atnew, $acuerdotecnico->id);
-            if ($aux_resp != null and $acuerdotecnicoActualizado->at_firmado != null) {
+            if ($aux_resp != null and $acuerdotecnicoOriginal->at_firmado != null) {
                 AcuerdoTecnico::where("id","=",$request->acuerdotecnico_id)
                             ->update(["at_firmado" => null]);
                 AtFirmEli::create([

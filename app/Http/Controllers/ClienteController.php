@@ -799,6 +799,9 @@ class ClienteController extends Controller
             //dd($cliente);
 
             if(count($cliente) > 0){
+                $aux_cliente = Cliente::findOrFail($cliente[0]->id);
+                $cliente[0]->formapago_desc = $aux_cliente->formapago->descripcion;
+                $cliente[0]->plazopago_desc = $aux_cliente->plazopago->descripcion;
                 if(isset($request->sta_consdeuda) and $request->sta_consdeuda == '1'){
                     $aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //AQUI SOLO CONSULTO DATACOBRANZA LOCAL
                     //$aux_respuesta = Cliente::valBloqCliSisCob($cliente,$request,0); //PRIMERO CONSULTO DEUDA CONTRA SISTEMA COBRANZA

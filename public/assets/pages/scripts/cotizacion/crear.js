@@ -191,11 +191,11 @@ $(document).ready(function () {
 
 	$("#btnguardaraprob").click(function(event){
 		// Ejemplo de cómo llamar a la función:
-		if (!validarCotATFirmado()) {
+		/* if (!validarCotATFirmado()) {
 			return 0;
 			// Aquí puedes detener un formulario, por ejemplo:
 			// event.preventDefault(); // Si es parte de un submit
-		}
+		} */
 		$("#myModalaprobcot").modal('show');
 	});
 	//alert('3'+$("#vendedor_id").val()+'3');
@@ -1566,71 +1566,6 @@ $("#at_espesor").blur(function(event){
 	aux_desc = $("#at_materiaprima_id option:selected").attr('desc');
 	$("#at_espesordesv").val(desvEspesor(aux_valor,aux_desc));
 });
-
-
-function desvAnchoLargo(aux_valor){
-	aux_desv = "";
-	if(aux_valor > 0){
-		switch(true) {
-			case aux_valor <= 50:
-				aux_desv = "±1 CM";
-				break;
-			case aux_valor > 50 && aux_valor <= 150:
-				aux_desv = "±2 CM";
-				break;
-			default:
-				aux_desv = "±3 CM";
-				break;
-		}	
-	}
-	return aux_desv;
-}
-
-function desvEspesor(aux_valor,aux_desc){
-	aux_desv = "";
-	if(aux_valor > 0){
-		if(aux_desc == "Baja" || aux_desc == "Mezcla" || aux_desc == "PP"){
-			switch(true) {
-				case aux_valor >= 0.010 && aux_valor <= 0.040:
-					aux_desv = "±2 µ";
-					break;
-				case aux_valor >= 0.041 && aux_valor <= 0.080:
-					aux_desv = "±3 µ";
-					break;
-				case aux_valor >= 0.081 && aux_valor <= 0.090:
-					aux_desv = "±4 µ";
-					break;
-				case aux_valor >= 0.091 && aux_valor <= 0.140:
-					aux_desv = "±5 µ";
-					break;
-				//case aux_valor >= 0.141 && aux_valor <= 0.200:
-				case aux_valor >= 0.141:
-					aux_desv = "±7 µ";
-					break;
-			}		
-		}else{
-			switch(true) {
-				case aux_valor >= 0.010 && aux_valor <= 0.013:
-					aux_desv = "±1 µ";
-					break;
-				case aux_valor >= 0.014 && aux_valor <= 0.018:
-					aux_desv = "±2 µ";
-					break;
-				case aux_valor >= 0.019 && aux_valor <= 0.030:
-					aux_desv = "±3 µ";
-					break;
-				case aux_valor >= 0.031 && aux_valor <= 0.050:
-					aux_desv = "±4 µ";
-					break;
-				case aux_valor >= 0.051:
-					aux_desv = "±5 µ";
-					break;
-				}
-		}
-	}
-	return aux_desv;
-
-}
 
 function iniciarFileinput(aux_nfila){
 	$('#at_imagen' + aux_nfila).fileinput({

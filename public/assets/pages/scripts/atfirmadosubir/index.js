@@ -271,7 +271,7 @@ $("#btnconsultar").click(function()
     $('#tabla-data-producto').DataTable().ajax.url( "reportproductopage/" + data.data2 ).load(); */
 
     var data = datosproducto();
-    var newUrl = "reportproductopage/" + data.data2;
+    var newUrl = "atfirmadosubirpage/" + data.data2;
     
     
     configurarTabla("#tabla-data-producto",newUrl,true); // Reinicia DataTable con `serverSide: true`
