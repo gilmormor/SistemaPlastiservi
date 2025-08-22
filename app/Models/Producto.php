@@ -34,6 +34,7 @@ class Producto extends Model
         'stockmin',
         'stockmax',
         'acuerdotecnico_id',
+        'usuario_id',
         'usuariodel_id'
     ];
 

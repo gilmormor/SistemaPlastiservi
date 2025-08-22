@@ -128,9 +128,20 @@ class ProductoController extends Controller
     {
         //dd($request);
         can('guardar-producto');
-        Producto::create($request->all());
-        //return redirect('producto')->with('mensaje','Producto creado con exito');
-        return redirect('producto/crear')->with('mensaje','Producto creado con exito');
+        DB::beginTransaction();
+        try {
+            $request->request->add(['usuario_id' => auth()->id()]);
+            Producto::create($request->all());
+            //return redirect('producto')->with('mensaje','Producto creado con exito');
+            return redirect('producto/crear')->with('mensaje','Producto creado con exito');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect('producto/crear')->with([
+                'mensaje'=> 'Error: ' . $e->getMessage(),
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
     }
 
     /**
@@ -200,10 +211,26 @@ class ProductoController extends Controller
     {
         can('guardar-producto');
         //dd($request);
-        $Producto = Producto::findOrFail($id);
-        $Producto->update($request->all());
-
-        return redirect('producto')->with('mensaje','Producto actualizado con exito');
+        DB::beginTransaction();
+        try {
+            $Producto = Producto::findOrFail($id);
+            $ProductoOriginal = Producto::findOrFail($id);
+            $Producto->update($request->all());
+            $ProductoModificado = Producto::findOrFail($id);
+            $aux_resp = guardarLogCambioModelo(
+                $ProductoModificado,
+                [],
+                $ProductoOriginal // <- se lo pasamos como estado original
+            );
+            DB::commit();
+            return redirect('producto')->with('mensaje','Producto actualizado con exito');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect('producto')->with([
+                'mensaje'=> 'Error: ' . $e->getMessage(),
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
     }
 
     /**
