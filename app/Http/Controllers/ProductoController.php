@@ -130,7 +130,7 @@ class ProductoController extends Controller
         can('guardar-producto');
         DB::beginTransaction();
         try {
-            $request->request->add(['usuario_id' => auth()->id()]);
+            $request->merge(['usuario_id' => auth()->id()]);
             Producto::create($request->all());
             //return redirect('producto')->with('mensaje','Producto creado con exito');
             return redirect('producto/crear')->with('mensaje','Producto creado con exito');
