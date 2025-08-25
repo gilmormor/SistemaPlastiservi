@@ -45,7 +45,7 @@
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
                     @if (session('aux_aprocot')=='0')
-                        @if (($data->vendedor_id == $tablas['vendedor_id']) or ($data->usuario_id == auth()->id()) or (auth()->id() == 1)) <!-- Solo deja modificar si es el mismo vendedor o si fue el usuario que creo el registro or si es el usuario administrador-->
+                        @if (($data->vendedor_id == $tablas['vendedor_id']) or ($data->usuario_id == auth()->id()) or ($tablas['usuario']->persona->sta_editarnvcot == 1)) <!-- Solo deja modificar si es el mismo vendedor o si fue el usuario que creo el registro or si es el usuario administrador-->
                             @include('includes.boton-form-editar')
                         @endif
                     @else

@@ -9,6 +9,7 @@ use App\Http\Requests\ValidarCotizacion;
 use App\Http\Requests\ValidarNotaVenta;
 use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnico_Cliente;
+use App\Models\AcuerdoTecnicoCValAtDet;
 use App\Models\CategoriaProd;
 use App\Models\CentroEconomico;
 use App\Models\Certificado;
@@ -814,6 +815,7 @@ class NotaVentaController extends Controller
         $tablas['moneda'] = Moneda::orderBy('id')->get();
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->where("mostrarnv", 1)->get();
+        $tablas['usuario'] = Usuario::findOrFail(auth()->id());
 
         return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
     }
@@ -1223,86 +1225,116 @@ class NotaVentaController extends Controller
                 }
             }
             //dd("entro");
-            if ($notaventa->save()) { //($notaventa->save()) {
-                if($notaventa->aprobstatus == 3){
-                    foreach ($notaventa->notaventadetalles as $notaventadetalle) {
-                        if(!isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 1 and isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
-                            //SI EXISTE ACUERDO TECNICO SE CREA EL PRODUCTO
-                            //dd($cotizaciondetalle->acuerdotecnicotemp->attributesToArray());
-                            $array_acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
-                            $producto = Producto::findOrFail($notaventadetalle->producto_id);
-                            $array_producto = $producto->attributesToArray();
-                            $array_producto["nombre"] = $array_acuerdotecnicotemp["at_desc"];
-                            $array_producto["descripcion"] = $array_acuerdotecnicotemp["at_desc"];
-                            $array_producto["claseprod_id"] = $array_acuerdotecnicotemp["at_claseprod_id"];
-                            $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
-                            $array_producto["tipoprod"] = 0;
-                            $productonew = Producto::create($array_producto);
-                            //dd($notaventa->vendedor_id);
-                            //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
-                            //$productonew->vendedores()->sync($request->vendedor_id);
-                            $ProductoVendedor = ProductoVendedor::updateOrCreate(
-                                ['producto_id' => $productonew->id,'vendedor_id' => $notaventa->vendedor_id],
-                                [
-                                    'producto_id' => $productonew->id,
-                                    'vendedor_id' => $notaventa->vendedor_id
-                                ]
-                            );
-                            //CREAR RELACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
-                            $ClienteProducto = ClienteProducto::updateOrCreate(
-                                ['cliente_id' => $notaventa->cliente_id,'producto_id' => $productonew->id],
-                                [
-                                    'cliente_id' => $notaventa->cliente_id,
-                                    'producto_id' => $productonew->id
-                                ]
-                            );
-                            $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
-                            $array_acuerdotecnicotemp["at_notaventadetalle_id"] = $notaventadetalle->id;
-                            $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
-                            //SI EL ACUERDOTECNICOTEMP TIENE ARCHIVO ADJUNTO LO COPIO AL ACUERDOTECNICO DEFINITIVO Y COPIO EL ARCHIVO
-                            if($array_acuerdotecnicotemp["at_impreso"] == 1 and $array_acuerdotecnicotemp["at_impresofoto"] != null){
-                                $fileOrigen = 'imagenes/attemp/' . $array_acuerdotecnicotemp["at_impresofoto"];
-                                $extension = File::extension($fileOrigen);
-                                $fileDestino = 'at' . $acuerdotecnico->id . '.' . $extension;
-                                $newName = 'imagenes/at/' . $fileDestino;
-                                Storage::disk('public')->copy($fileOrigen, $newName);
-                                $acuerdotecnico->at_impresofoto = $fileDestino;
-                                $acuerdotecnico->save();
-                            }
-                            //dd($array_acuerdotecnicotemp);
-                            //SE RELACIONA EL ACUERDO TECNICO CON EL CLIENTE
-                            //SOLO EXISTE 1 ACUERDO TECNICO, PERO PUEDEN HABER VARIOS ACUERDO TECNICO POR CADA CLIENTE QUE COMPARTEN EL MISMO ACUERDO TECNICO 
-                            //COMO POR EJEMPLO: LA FORMA DE EMPAQUE, ES EL MISNMO PRODUCTO PERO CAMBIA LA FORMA DE EMPAQUETAR.
-                            $acuerdotecnico_cliente = AcuerdoTecnico_Cliente::create([
-                                "acuerdotecnico_id" => $acuerdotecnico->id,
-                                "cliente_id" => $notaventa->cliente_id,
-                            ]);
-                            NotaVentaDetalle::findOrFail($notaventadetalle->id)->update([
-                                'producto_id' => $productonew->id
-                            ]);
-                        }else{
-                            //CUANDO EL PRODUCTO YA EXISTE Y TIENE ACUERDO TECNICO LO INSERTO EN LA TABLA cliente_producto
-                            if(isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 0){
-                                //CREAR RELACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
-                                $ClienteProducto = ClienteProducto::updateOrCreate(
-                                    ['cliente_id' => $notaventa->cliente_id,'producto_id' => $notaventadetalle->producto_id],
+            DB::beginTransaction();
+            try {
+                if ($notaventa->save()) { //($notaventa->save()) {
+                    if($notaventa->aprobstatus == 3){
+                        foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+                            if(!isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 1 and isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
+                                //SI EXISTE ACUERDO TECNICO SE CREA EL PRODUCTO
+                                //dd($cotizaciondetalle->acuerdotecnicotemp->attributesToArray());
+                                $array_acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
+                                $producto = Producto::findOrFail($notaventadetalle->producto_id);
+                                $array_producto = $producto->attributesToArray();
+                                $array_producto["nombre"] = $array_acuerdotecnicotemp["at_desc"];
+                                $array_producto["descripcion"] = $array_acuerdotecnicotemp["at_desc"];
+                                $array_producto["claseprod_id"] = $array_acuerdotecnicotemp["at_claseprod_id"];
+                                $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
+                                $array_producto["tipoprod"] = 0;
+                                $array_producto["usuario_id"] = auth()->id();
+                                $productonew = Producto::create($array_producto);
+                                //dd($notaventa->vendedor_id);
+                                //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
+                                //$productonew->vendedores()->sync($request->vendedor_id);
+                                $ProductoVendedor = ProductoVendedor::updateOrCreate(
+                                    ['producto_id' => $productonew->id,'vendedor_id' => $notaventa->vendedor_id],
                                     [
-                                        'cliente_id' => $notaventa->cliente_id,
-                                        'producto_id' => $notaventadetalle->producto_id
+                                        'producto_id' => $productonew->id,
+                                        'vendedor_id' => $notaventa->vendedor_id
                                     ]
                                 );
+                                //CREAR RELACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
+                                $ClienteProducto = ClienteProducto::updateOrCreate(
+                                    ['cliente_id' => $notaventa->cliente_id,'producto_id' => $productonew->id],
+                                    [
+                                        'cliente_id' => $notaventa->cliente_id,
+                                        'producto_id' => $productonew->id
+                                    ]
+                                );
+                                $array_acuerdotecnicotemp["producto_id"] = $productonew->id;
+                                $array_acuerdotecnicotemp["at_notaventadetalle_id"] = $notaventadetalle->id;
+                                $acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotemp;
+                                $acuerdotecnico = AcuerdoTecnico::create($array_acuerdotecnicotemp);
+                                foreach ($acuerdotecnicotemp->acuerdotecnicotempcvalatdets as $attempcvalatdet) {
+                                    AcuerdoTecnicoCValAtDet::create([
+                                        'acuerdotecnico_id' => $acuerdotecnico->id,
+                                        'cvalatdet_id' => $attempcvalatdet->cvalatdet_id,
+                                        'valor' => $attempcvalatdet->valor
+                                    ]);
+                                }
+                                //SI EL ACUERDOTECNICOTEMP TIENE ARCHIVO ADJUNTO LO COPIO AL ACUERDOTECNICO DEFINITIVO Y COPIO EL ARCHIVO
+                                if($array_acuerdotecnicotemp["at_impreso"] == 1 and $array_acuerdotecnicotemp["at_impresofoto"] != null){
+                                    $fileOrigen = 'imagenes/attemp/' . $array_acuerdotecnicotemp["at_impresofoto"];
+                                    $extension = File::extension($fileOrigen);
+                                    $fileDestino = 'at' . $acuerdotecnico->id . '.' . $extension;
+                                    $newName = 'imagenes/at/' . $fileDestino;
+                                    Storage::disk('public')->copy($fileOrigen, $newName);
+                                    $acuerdotecnico->at_impresofoto = $fileDestino;
+                                    $acuerdotecnico->save();
+                                }
+                                //COPIO AL ACUERDOTECNICO DEFINITIVO el At FirmadoY COPIO EL ARCHIVO
+                                if($array_acuerdotecnicotemp["at_firmado"] != null){
+                                    $fileOrigen = 'imagenes/attempfirm/' . $array_acuerdotecnicotemp["at_firmado"];
+                                    $extension = File::extension($fileOrigen);
+                                    $fileDestino = 'atfirm' . $acuerdotecnico->id . '.' . $extension;
+                                    $newName = 'imagenes/atfirm/' . $fileDestino;
+                                    Storage::disk('public')->copy($fileOrigen, $newName);
+                                    $acuerdotecnico->at_firmado = $fileDestino;
+                                    $acuerdotecnico->save();
+                                }
 
+                                //dd($array_acuerdotecnicotemp);
+                                //SE RELACIONA EL ACUERDO TECNICO CON EL CLIENTE
+                                //SOLO EXISTE 1 ACUERDO TECNICO, PERO PUEDEN HABER VARIOS ACUERDO TECNICO POR CADA CLIENTE QUE COMPARTEN EL MISMO ACUERDO TECNICO 
+                                //COMO POR EJEMPLO: LA FORMA DE EMPAQUE, ES EL MISNMO PRODUCTO PERO CAMBIA LA FORMA DE EMPAQUETAR.
+                                $acuerdotecnico_cliente = AcuerdoTecnico_Cliente::create([
+                                    "acuerdotecnico_id" => $acuerdotecnico->id,
+                                    "cliente_id" => $notaventa->cliente_id,
+                                ]);
+                                NotaVentaDetalle::findOrFail($notaventadetalle->id)->update([
+                                    'producto_id' => $productonew->id
+                                ]);
+                            }else{
+                                //CUANDO EL PRODUCTO YA EXISTE Y TIENE ACUERDO TECNICO LO INSERTO EN LA TABLA cliente_producto
+                                if(isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 0){
+                                    //CREAR RELACION DE PRODUCTO CON CLIENTE PARA LUEGO FILTRAR LOS PRODUCTOS DE CADA CLIENTE
+                                    $ClienteProducto = ClienteProducto::updateOrCreate(
+                                        ['cliente_id' => $notaventa->cliente_id,'producto_id' => $notaventadetalle->producto_id],
+                                        [
+                                            'cliente_id' => $notaventa->cliente_id,
+                                            'producto_id' => $notaventadetalle->producto_id
+                                        ]
+                                    );
+
+                                }
                             }
                         }
                     }
+                    Event(new AprobarRechazoNotaVenta($notaventa)); //NOTIFICACION A VENDEDOR SOBRE APROBACION O RECHAZO DE NOTA DE VENTA
+                    //dd("romper");
+                    DB::commit();
+                    return response()->json([
+                        'id' => 1,
+                        'mensaje' => 'El registro fue actualizado correctamente'
+                    ]);
+                } else {
+                    return response()->json([
+                        'id' => 2,
+                        'mensaje' => 'Error al guardar.'
+                    ]);
                 }
-                Event(new AprobarRechazoNotaVenta($notaventa)); //NOTIFICACION A VENDEDOR SOBRE APROBACION O RECHAZO DE NOTA DE VENTA
-                //dd("romper");
-                return response()->json([
-                    'id' => 1,
-                    'mensaje' => 'El registro fue actualizado correctamente'
-                ]);
-            } else {
+            } catch (\Exception $e) {
+                DB::rollBack();
                 return response()->json([
                     'id' => 2,
                     'mensaje' => 'Error al guardar.'

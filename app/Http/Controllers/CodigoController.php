@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarCodigo;
 use App\Models\Codigo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CodigoController extends Controller
 {
@@ -47,8 +48,28 @@ class CodigoController extends Controller
     public function guardar(ValidarCodigo $request)
     {
         can('guardar-codigo');
-        Codigo::create($request->all());
-        return redirect('codigo')->with('mensaje','Código creado con exito');
+        /* Codigo::create($request->all());
+        return redirect('codigo')->with('mensaje','Código creado con exito'); */
+        DB::beginTransaction();
+        try {
+            $codigo = Codigo::create($request->only(['desc', 'usuario_id']));
+
+            // Guardar codigodet si vienen
+            if ($request->has('detalles')) {
+                foreach ($request->detalles as $detalle) {
+                    $codigo->codigodet()->create([
+                        'descdet' => trim($detalle['descdet']),
+                        'usuario_id' => auth()->id()
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect('codigo')->with('mensaje','Código creado con éxito');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
@@ -83,9 +104,145 @@ class CodigoController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function actualizar(ValidarCodigo $request, $id)
+    /* {
+        DB::beginTransaction();
+        try {
+            $codigo = Codigo::findOrFail($id);
+            $codigo->update($request->only(['desc', 'usuario_id']));
+
+            // Eliminar los detalles anteriores
+            $codigo->codigodet()->delete();
+
+            // Crear los nuevos detalles
+            if ($request->has('detalles')) {
+                foreach ($request->detalles as $detalle) {
+                    $codigo->codigodet()->create([
+                        'descdet' => trim($detalle['descdet']),
+                        'usuario_id' => auth()->id()
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect('codigo')->with('mensaje', 'Código actualizado con éxito');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
+        }
+    } */
+    /* {
+        DB::beginTransaction();
+        try {
+            $codigo = Codigo::findOrFail($id);
+            $codigo->update($request->only(['desc', 'usuario_id']));
+
+            // Procesar detalles
+            if ($request->has('detalles')) {
+                $detallesIds = [];
+                
+                foreach ($request->detalles as $detalle) {
+                    if (isset($detalle['id'])) {
+                        // Actualizar detalle existente
+                        $detalleModel = $codigo->codigodet()->find($detalle['id']);
+                        if ($detalleModel) {
+                            $detalleModel->update([
+                                'descdet' => trim($detalle['descdet']),
+                                'usuario_id' => auth()->id()
+                            ]);
+                            $detallesIds[] = $detalle['id'];
+                        }
+                    } else {
+                        // Crear nuevo detalle
+                        $newDetalle = $codigo->codigodet()->create([
+                            'descdet' => trim($detalle['descdet']),
+                            'usuario_id' => auth()->id()
+                        ]);
+                        $detallesIds[] = $newDetalle->id;
+                    }
+                }
+
+                // Eliminar detalles que no están en la lista actual
+                $codigo->codigodet()->whereNotIn('id', $detallesIds)->delete();
+            } else {
+                // Si no hay detalles, eliminar todos
+                $codigo->codigodet()->delete();
+            }
+
+            DB::commit();
+            return redirect('codigo')->with('mensaje', 'Código actualizado con éxito');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
+        }
+    } */
+
     {
-        Codigo::findOrFail($id)->update($request->all());
-        return redirect('codigo')->with('mensaje','Código actualizado con exito');
+        DB::beginTransaction();
+        try {
+            $codigo = Codigo::findOrFail($id);
+            $codigo->update($request->only(['desc', 'usuario_id']));
+
+            // Procesar detalles
+            if ($request->has('detalles')) {
+                $detallesIds = [];
+                $detallesActuales = $codigo->codigodet()->pluck('id')->toArray();
+                
+                foreach ($request->detalles as $detalle) {
+                    if (isset($detalle['id'])) {
+                        // Actualizar detalle existente
+                        $detalleModel = $codigo->codigodet()->find($detalle['id']);
+                        if ($detalleModel) {
+                            $detalleModel->update([
+                                'descdet' => trim($detalle['descdet']),
+                                'usuario_id' => auth()->id()
+                            ]);
+                            $detallesIds[] = $detalle['id'];
+                        }
+                    } else {
+                        // Crear nuevo detalle
+                        $newDetalle = $codigo->codigodet()->create([
+                            'descdet' => trim($detalle['descdet']),
+                            'usuario_id' => auth()->id()
+                        ]);
+                        $detallesIds[] = $newDetalle->id;
+                    }
+                }
+
+                // Identificar detalles a eliminar
+                $detallesAEliminar = array_diff($detallesActuales, $detallesIds);
+                
+                // Validar y eliminar solo los que no tienen relaciones
+                foreach ($detallesAEliminar as $detalleId) {
+                    $detalle = $codigo->codigodet()->find($detalleId);
+                    
+                    if ($detalle->hasRelationships()) {
+                        DB::rollBack();
+                        return redirect()->back()
+                            ->with('error', 'No se puede eliminar el detalle con ID '.$detalleId.' porque tiene registros asociados en otras tablas')
+                            ->withInput();
+                    }
+                    
+                    $detalle->delete();
+                }
+            } else {
+                // Validar antes de eliminar todos
+                foreach ($codigo->codigodet as $detalle) {
+                    if ($detalle->hasRelationships()) {
+                        DB::rollBack();
+                        return redirect()->back()
+                            ->with('error', 'No se puede eliminar algunos detalles porque tienen registros asociados en otras tablas')
+                            ->withInput();
+                    }
+                }
+                $codigo->codigodet()->delete();
+            }
+
+            DB::commit();
+            return redirect('codigo')->with('mensaje', 'Código actualizado con éxito');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**

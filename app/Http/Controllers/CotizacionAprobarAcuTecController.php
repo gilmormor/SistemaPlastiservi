@@ -122,7 +122,7 @@ class CotizacionAprobarAcuTecController extends Controller
      */
     public function editar($id)
     {
-        session(['editaracutec' => '1']);
+        session(['editaracutec' => '0']);
         session(['modulo_id' => '2']);
         return editar($id);
         /*

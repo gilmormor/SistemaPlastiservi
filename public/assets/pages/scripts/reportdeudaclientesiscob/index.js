@@ -8,6 +8,8 @@ $(document).ready(function () {
 
         $("#razonsocial").val("");
         $("#limitecredito").val("");
+        $("#formapago").val("");
+        $("#plazopago").val("");
         $("#totalNVpenddesp").val("");
         $("#TDeuda").val("");
         $("#TDeudaFec").val("");
@@ -428,6 +430,9 @@ $("#rut").blur(function(){
                         $("#rut").attr("cliente_id",respuesta.cliente[0].id);
                         $("#razonsocial").val(respuesta.cliente[0].razonsocial);
                         $("#limitecredito").val(MASKLA(respuesta.cliente[0].limitecredito,0));
+                        $("#formapago").val(respuesta.cliente[0].formapago_desc);
+                        $("#plazopago").val(respuesta.cliente[0].plazopago_desc);
+
                         aux_bloqueodesc = respuesta.cliente[0].clientebloqueado_descripcion
                         if(aux_bloqueodesc == "" || aux_bloqueodesc == null){
                             $("#divbloqueopro").hide();

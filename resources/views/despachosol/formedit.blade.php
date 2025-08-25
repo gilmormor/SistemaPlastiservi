@@ -351,7 +351,7 @@
                         <div class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_file" class="control-label">Adjuntar OC</label>
                             <div class="input-group">
-                                <input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview='{{isset($data->oc_file) ? Storage::url("imagenes/notaventa/$data->oc_file") : ""}}' accept="image/*"/>
+                                <input type="file" name="oc_file" id="oc_file" class="form-control" data-initial-preview='{{isset($data->oc_file) ? Storage::url("imagenes/notaventa/$data->oc_file") : ""}}'  accept=".jpg,.jpeg,.png,.pdf, application/pdf"/>
                             </div>
                         </div>
                     </div>

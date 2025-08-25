@@ -6,6 +6,8 @@ use App\Models\AcuerdoTecnico;
 use App\Models\AcuerdoTecnicoTemp;
 use App\Models\Certificado;
 use App\Models\Cliente;
+use App\Models\CValAt;
+use App\Models\CValAtDet;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -118,6 +120,12 @@ class AcuerdoTecnicoController extends Controller
             if(is_null($request->at_formatofilm) or empty($request->at_formatofilm) or $request->at_formatofilm == ""){
                 $aux_Condat_formatofilm = "at_formatofilm = 0";
             }
+
+            $aux_Condacuerdotecnico_idEditAct = " true";
+            if(isset($request->acuerdotecnico_idEditAct) and !is_null($request->acuerdotecnico_idEditAct) and !empty($request->acuerdotecnico_idEditAct) and $request->acuerdotecnico_idEditAct != ""){
+                $aux_Condacuerdotecnico_idEditAct = " acuerdotecnico.id != $request->acuerdotecnico_idEditAct";
+            }
+
             $json = json_decode($request->objtxt);
             $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
             FROM acuerdotecnico INNER JOIN producto
@@ -144,7 +152,9 @@ class AcuerdoTecnicoController extends Controller
             and at_unidadmedida_id = $request->at_unidadmedida_id
             and $aux_Condat_formatofilm
             and at_etiqplastiservi = $request->at_etiqplastiservi
-            and isnull(acuerdotecnico.deleted_at)";
+            and isnull(acuerdotecnico.deleted_at)
+            and $aux_Condacuerdotecnico_idEditAct;";
+            
             $datas = DB::select($sql);
             //dd($datas);
             return $datas;
@@ -219,11 +229,12 @@ class AcuerdoTecnicoController extends Controller
                 $certificado_array[] = $aux_certificado->descripcion;
             }
             $tablas['certificados'] = implode(", ", $certificado_array);
+            $tablas['cvalats'] = CValAt::orderBy('orden')->get();
 
             //dd($tablas['certificado']);
             //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
             if(env('APP_DEBUG')){
-                return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
+                //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
             }
             $pdf = PDF::loadView('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas','request'));
             //return $pdf->download('cotizacion.pdf');
@@ -235,6 +246,20 @@ class AcuerdoTecnicoController extends Controller
         }
         
         
+    }
+
+    public function obtenerCamposValidacion(Request $request)
+    {
+        //$items = CValAtDet::orderBy('orden')->get(['id','cvalat_id', 'nombre']);
+        $items = CValAt::with(['cvalatdets' => function($query) {
+                $query->select('id', 'cvalat_id', 'nombre', 'orden')
+                    ->orderBy('orden'); // Ordena los hijos por 'orden'
+            }])
+            ->orderBy('orden') // Ordena los padres por 'orden'
+            ->get(['id', 'nombre', 'orden']);
+
+        //dd($items);
+        return response()->json($items);
     }
 
 }

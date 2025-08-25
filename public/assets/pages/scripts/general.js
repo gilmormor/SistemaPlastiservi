@@ -310,7 +310,8 @@ function validacion(campo,tipo)
 			{
 				$("#glypcn"+campo).remove();
 				$('#'+campo).parent().parent().attr("class", columnas+" has-success has-feedback");
-				$('#'+campo).parent().parent().children('span').hide();
+				//$('#'+campo).parent().parent().children('span').hide();
+				$('#'+campo).parent().parent().children('span').text("").show();
 				$('#'+campo).parent().parent().append("<span id='glypcn"+campo+"' class='glyphicon glyphicon-ok form-control-feedback'></span>");
 				return true;
 			}
@@ -2564,6 +2565,102 @@ function crearEditarAcuTec(i){
 	} else {
 		$("#at_formatofilm").val("0");
 	}
+
+	var acuerdotecnicoValAt = JSON.parse($("#acuerdotecnico" + i).val());
+	$.ajax({
+		url: '/acuerdotecnico/obtenerCamposValidacion',
+		type: 'GET',
+		data: { codigo_id: 2 },
+		success: function(data) {
+			var html = '';
+			var html1 = '';
+			data.forEach(function(item) {
+				//console.log(item.cvalatdets);
+				html1 += `                        
+						<div class="row">
+							<div class="box box-primary">
+								<div class="box-header with-border">
+									<h3 class="box-title">${item.nombre}</h3>
+								</div>
+								<div class="box-body">
+									<div class="row">`;
+				item.cvalatdets.forEach(function(cvalatdet) {
+					//console.log(cvalatdet.nombre);
+					aux_valorBlanco = "";
+					aux_valorSi = "";
+					aux_valorNo = "";
+
+					for (const property in acuerdotecnicoValAt) {
+						//console.log(acuerdotecnicoValAt);
+						if((property == `at_cvalatdet${cvalatdet.id}`)){
+							if(acuerdotecnicoValAt[property] == ""){
+								aux_valorBlanco = "selected";
+							}
+							if(acuerdotecnicoValAt[property] == "1"){
+								aux_valorSi = "selected";
+							}
+							if(acuerdotecnicoValAt[property] == "0"){
+								aux_valorNo = "selected";
+							}
+						}
+					}
+
+					html1 += `                        
+							<div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+								<label for="codigodet_${cvalatdet.id}" class="control-label requerido" data-toggle='tooltip' title="${cvalatdet.nombre}">${cvalatdet.nombre}</label>
+								<select name="at_cvalatdet${cvalatdet.id}" id="at_cvalatdet${cvalatdet.id}" 
+									class="selectpicker form-control entmuestra form_acutec valorrequerido" tipoval="combobox">
+									<option value="" ${aux_valorBlanco}>Seleccione...</option>
+									<option value="1" ${aux_valorSi}>Si</option>
+									<option value="0" ${aux_valorNo}>No</option>
+								</select>
+							</div>`;
+				});
+
+				html1 += `
+				
+							</div>
+						</div>
+					</div>
+				</div>`;
+
+				$('#div_valat').html(html1);
+				/* aux_valorBlanco = "";
+				aux_valorSi = "";
+				aux_valorNo = "";
+
+				for (const property in acuerdotecnicoValAt) {
+					if((property == `at_cvalatdet${item.id}`)){
+						if(acuerdotecnicoValAt[property] == ""){
+							aux_valorBlanco = "selected";
+						}
+						if(acuerdotecnicoValAt[property] == "1"){
+							aux_valorSi = "selected";
+						}
+						if(acuerdotecnicoValAt[property] == "0"){
+							aux_valorNo = "selected";
+						}
+					}
+				}
+				html += `
+					<div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
+						<label for="codigodet_${item.id}" class="control-label requerido" data-toggle='tooltip' title="${item.nombre}">${item.nombre} - ${item.cvalat_id}</label>
+						<select name="at_cvalatdet${item.id}" id="at_cvalatdet${item.id}" 
+							class="selectpicker form-control entmuestra form_acutec valorrequerido" tipoval="combobox">
+							<option value="" ${aux_valorBlanco}>Seleccione...</option>
+							<option value="1" ${aux_valorSi}>Si</option>
+							<option value="0" ${aux_valorNo}>No</option>
+						</select>
+					</div>
+				`; */
+			});
+			/* $('#div_valat').html(html); */
+
+			$(".selectpicker").selectpicker('refresh');
+			activarClasesDin();
+		}
+	});
+
 	var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
 	//console.log(acuerdotecnico);
 	for (const property in acuerdotecnico) {
@@ -2601,6 +2698,19 @@ function crearEditarAcuTec(i){
 	$(".selectpicker").selectpicker('refresh');
 	embalajePlastiservi();
     $("#myModalAcuerdoTecnico").modal('show');
+}
+
+function activarClasesDin(){
+	$(".valorrequerido").keyup(function(){
+		//alert($(this).parent().attr('class'));
+		//console.log($(this).prop('min'));
+		validacion($(this).prop('name'),$(this).attr('tipoval'));
+	});
+
+	$(".valorrequerido").change(function(){
+		//alert($(this).parent().attr('class'));
+		validacion($(this).prop('name'),$(this).attr('tipoval'));
+	});	
 }
 
 /*
@@ -4248,4 +4358,78 @@ function XMLDownLoad(id){ //GENERAR PDF Solicitud de Despacho
 			console.log('Error al descargar el archivo: ' + errorThrown);
 		}
 	});
+}
+
+function embalajePlastiservi(){
+	let aux_val = $("#at_embalajeplastservi").val();
+	if(aux_val == "1" || aux_val == ""){
+		$(".embalaje").prop("disabled", true);
+		$(".embalaje").val("")
+	}else{
+		$(".embalaje").prop("disabled", false);
+	}
+}
+
+function desvEspesor(aux_valor,aux_desc){
+	aux_desv = "";
+	if(aux_valor > 0){
+		if(aux_desc == "Baja" || aux_desc == "Mezcla" || aux_desc == "PP"){
+			switch(true) {
+				case aux_valor >= 0.010 && aux_valor <= 0.040:
+					aux_desv = "±2 µ";
+					break;
+				case aux_valor >= 0.041 && aux_valor <= 0.080:
+					aux_desv = "±3 µ";
+					break;
+				case aux_valor >= 0.081 && aux_valor <= 0.090:
+					aux_desv = "±4 µ";
+					break;
+				case aux_valor >= 0.091 && aux_valor <= 0.140:
+					aux_desv = "±5 µ";
+					break;
+				//case aux_valor >= 0.141 && aux_valor <= 0.200:
+				case aux_valor >= 0.141:
+					aux_desv = "±7 µ";
+					break;
+			}		
+		}else{
+			switch(true) {
+				case aux_valor >= 0.010 && aux_valor <= 0.013:
+					aux_desv = "±1 µ";
+					break;
+				case aux_valor >= 0.014 && aux_valor <= 0.018:
+					aux_desv = "±2 µ";
+					break;
+				case aux_valor >= 0.019 && aux_valor <= 0.030:
+					aux_desv = "±3 µ";
+					break;
+				case aux_valor >= 0.031 && aux_valor <= 0.050:
+					aux_desv = "±4 µ";
+					break;
+				case aux_valor >= 0.051:
+					aux_desv = "±5 µ";
+					break;
+				}
+		}
+	}
+	return aux_desv;
+
+}
+
+function desvAnchoLargo(aux_valor){
+	aux_desv = "";
+	if(aux_valor > 0){
+		switch(true) {
+			case aux_valor <= 50:
+				aux_desv = "±1 CM";
+				break;
+			case aux_valor > 50 && aux_valor <= 150:
+				aux_desv = "±2 CM";
+				break;
+			default:
+				aux_desv = "±3 CM";
+				break;
+		}	
+	}
+	return aux_desv;
 }
