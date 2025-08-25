@@ -1241,6 +1241,7 @@ class NotaVentaController extends Controller
                                 $array_producto["claseprod_id"] = $array_acuerdotecnicotemp["at_claseprod_id"];
                                 $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
                                 $array_producto["tipoprod"] = 0;
+                                $array_producto["usuario_id"] = auth()->id();
                                 $productonew = Producto::create($array_producto);
                                 //dd($notaventa->vendedor_id);
                                 //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR

@@ -1306,7 +1306,7 @@ class CotizacionController extends Controller
                 $aux_condvend = "cotizacion.vendedor_id= $vendedor_id ";
             }
             //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-            $aux_condaprobstatus = "(aprobstatus=1 or aprobstatus=3 or aprobstatus=6)";
+            $aux_condaprobstatus = "(aprobstatus=1 or aprobstatus=3)";
             $cotizaciones = consultabuscarcot($request->id,$aux_condvend,$aux_condaprobstatus);
             $respuesta["mensaje"] = "";
             $respuesta["id"] = "1";
@@ -1336,6 +1336,9 @@ class CotizacionController extends Controller
                     }
                     if($cotizaciones01[0]->aprobstatus == 7){
                         $respuesta["mensaje"] = "Acuerdo tecnico Rechazado: " . $cotizaciones01[0]->aprobobs;
+                    }
+                    if($cotizaciones01[0]->aprobstatus == 6){
+                        $respuesta["mensaje"] = "Cotizacion por cargar firma Acuerdo Tecnico: " . $cotizaciones01[0]->aprobobs;
                     }
                     $respuesta["title"] = $respuesta["mensaje"];
                     $respuesta["tipo_alert"] = "error";
