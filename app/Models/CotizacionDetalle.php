@@ -33,7 +33,8 @@ class CotizacionDetalle extends Model
         'grupoprod_id',
         'color_id',
         'obs',
-        'acuerdotecnicotemp_id'
+        'acuerdotecnicotemp_id',
+        'stacorregirat'
         
     ];
     //RELACION DE UNO A MUCHOS NotaVentaDetalle

@@ -67,7 +67,7 @@ class CotizacionAtFirmadoController extends Controller
                 ON cotizacion.vendedor_id = vendedor.id
                 INNER JOIN persona
                 ON vendedor.persona_id = persona.id
-                where aprobstatus=6
+                where (aprobstatus=6 or aprobstatus=8)
                 and cotizacion.deleted_at is null
                 AND cotizacion.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
@@ -344,9 +344,9 @@ function editar($id){
             }
         }
         //dd("ID:" . $id . "\n updated_at: " . $updated_at);
-        if($data->aprobstatus != 6){
+        if($data->aprobstatus != 6 and $data->aprobstatus != 8){
             return redirect('cotizacionatfirmado')->with([
-                'mensaje'=>'Cotizacion fue modificada por otro usuario.',
+                'mensaje'=>'Cotizacion cambio de estatus.',
                 'tipo_alert' => 'alert-error'
             ]);
         }

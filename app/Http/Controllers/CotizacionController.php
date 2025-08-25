@@ -994,11 +994,12 @@ class CotizacionController extends Controller
                 $cotizacion->aprobobs = 'Se envio cotizacion y Acuerdo Tecnico (AcuTec) para ser firmado por el cliente';
                 foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
                     if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
-                        if ($cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado != null) {
+                        if ($cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado != null and $aux_aprobstatus == 7 and $cotizaciondetalle->stacorregirat == 1) {
                             $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;
                             Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
                             $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null; //asigno null para que se pueda subir el AT firmado
                             $cotizaciondetalle->acuerdotecnicotempunoauno->save();
+                            $cotizacion->aprobstatus = 8; //Si al menos 1 AT fue enviado a correccion, vuelve a estado de revision AcuTec
                         }
                     }
                 }
@@ -1261,6 +1262,11 @@ class CotizacionController extends Controller
                         $cotizacion->aprobobs = "Cotizacion requiere Aprobacion Financiera (Santa Ester)";
                     }else{
                         $cotizacion->aprobstatus = "7";
+                        foreach ($request->arrayATs as $arrayAT) {
+                            $cotdet = CotizacionDetalle::findOrFail($arrayAT["at_cotizaciondetalle_id"]);
+                            $cotdet->stacorregirat = $arrayAT["stacorregirat"] == 1 ? 1 : null;
+                            $cotdet->save();
+                        }
                         /* foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
                             if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
                                 $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;

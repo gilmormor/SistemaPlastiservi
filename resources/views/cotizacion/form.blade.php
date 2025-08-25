@@ -375,35 +375,51 @@
                                         @endif
 
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
-                                            <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
                                             @if ($CotizacionDetalle->acuerdotecnicotemp == null)
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                             @else
-                                                <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>
+                                                @if ($data->aprobstatus == '7' and $CotizacionDetalle->stacorregirat != 1)
+                                                    <div class="Imagenatfirma">
+                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$CotizacionDetalle->acuerdotecnicotemp->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
+                                                            <i class="fa fa-fw fa-photo"></i>
+                                                        </a>
+                                                    </div>
+                                                @else
+                                                    <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec({{$aux_nfila}})">
+                                                    <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-aqua girarimagen"></i>                                                    
+                                                @endif
                                                 <?php 
                                                     if($CotizacionDetalle->acuerdotecnicotemp->at_impreso==1){
                                                         $aux_mostrarimagenat = "display:inline;";
                                                     }
                                                 ?>
                                             @endif
-                                            <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}" style={{$aux_mostrarimagenat}}>
-                                                <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
-                                                    <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
-                                                </a>
-                                                <?php 
-                                                    $data_initial_preview = "";
-                                                    if($CotizacionDetalle->acuerdotecnicotemp == null){
-                                                        $aux_imagen = "";
-                                                    }else{
-                                                        $aux_at_impresofoto = $CotizacionDetalle->acuerdotecnicotemp->at_impresofoto;
-                                                        $data_initial_preview=isset($aux_at_impresofoto) ? Storage::url("imagenes/attemp/$aux_at_impresofoto") : "";
-                                                    }
-                                                ?>
-                                                <div id="div_at_imagen{{$aux_nfila}}" name="div_at_imagen{{$aux_nfila}}" style="display: none;">
-                                                    <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept=".jpg,.jpeg,.png,.pdf, application/pdf"/>
-                                                    <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_impresofoto ?? '')}}">
+                                            @if ($CotizacionDetalle->acuerdotecnicotemp->at_impresofoto != null and $data->aprobstatus == '7' and $CotizacionDetalle->stacorregirat != 1)
+                                                <div class="Imagenatfirma">
+                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver arte" onclick='verpdf2("\attemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                        <i class="fa fa-fw fa-photo"></i>
+                                                    </a>
                                                 </div>
-                                            </div>
+                                            @else
+                                                <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}" style={{$aux_mostrarimagenat}}>
+                                                    <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
+                                                        <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
+                                                    </a>
+                                                    <?php 
+                                                        $data_initial_preview = "";
+                                                        if($CotizacionDetalle->acuerdotecnicotemp == null){
+                                                            $aux_imagen = "";
+                                                        }else{
+                                                            $aux_at_impresofoto = $CotizacionDetalle->acuerdotecnicotemp->at_impresofoto;
+                                                            $data_initial_preview=isset($aux_at_impresofoto) ? Storage::url("imagenes/attemp/$aux_at_impresofoto") : "";
+                                                        }
+                                                    ?>
+                                                    <div id="div_at_imagen{{$aux_nfila}}" name="div_at_imagen{{$aux_nfila}}" style="display: none;">
+                                                        <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept=".jpg,.jpeg,.png,.pdf, application/pdf"/>
+                                                        <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_impresofoto ?? '')}}">
+                                                    </div>
+                                                </div>
+                                            @endif
                                         @endif
                                     </td>
                                     <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">

@@ -272,6 +272,7 @@
                     <thead>
                         <tr>
                             <th style="text-align:center;">Cod</th>
+                            <th class="width30"></th>
                             <th title="Acuerdo tecnico firmado">At Firmado</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">cotizacionDetalle_ID</th>
@@ -309,7 +310,7 @@
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
                             <th style="display:none;">Array Acuerdo Tecnico</th>
                             <th style="display:none;">Tipo Producto</th>
-                            <th class="width70"></th>
+                            <th class="width30"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -400,6 +401,9 @@
                                                 </a>
                                             </div>
                                         @endif
+                                    </td>
+                                    <td>
+                                        <input id="stacorregirat{{$aux_nfila}}" name="stacorregirat{{$aux_nfila}}" type="checkbox" title="Marcar para identificar At a Modificar">
                                     </td>
                                     <td name="cotdet_atfirm{{$aux_nfila}}" id="cotdet_atfirm{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
