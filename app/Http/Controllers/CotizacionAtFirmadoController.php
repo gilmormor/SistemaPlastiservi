@@ -287,12 +287,12 @@ class CotizacionAtFirmadoController extends Controller
                 $cotizacion->aprobfechahora = null;
                 $cotizacion->aprobobs = 'Devuelto de pantalla subir Acuerdo Tec por Vendedor Usuario Id: ' . auth()->id() . " Fecha: " . date("Y-m-d H:i:s");
                 $cotizacion->save();
-                foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
+                /* foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
                     if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
                         $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null;
                         $cotizaciondetalle->acuerdotecnicotempunoauno->save();
                     }
-                }
+                } */
                 DB::commit();
                 return response()->json([
                     'error' => 0,

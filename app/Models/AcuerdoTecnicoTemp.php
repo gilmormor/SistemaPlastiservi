@@ -80,6 +80,7 @@ class AcuerdoTecnicoTemp extends Model
         'at_aprobado',
         'at_formatofilm',
         'at_firmado',
+        'at_stacorregirat',
         'usuariodel_id'
     ];
 

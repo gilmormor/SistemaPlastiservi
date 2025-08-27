@@ -1650,9 +1650,9 @@ function arrayAcuerdoTecnico(){
 			}
 			let acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
 			// Validar si existe el checkbox antes de agregar el campo
-            let chk = $("#stacorregirat" + i);
+            let chk = $("#at_stacorregirat" + i);
             if (chk.length) {
-                acuerdotecnico.stacorregirat = chk.is(':checked') ? 1 : 0;
+                acuerdotecnico.at_stacorregirat = chk.is(':checked') ? 1 : 0;
             }
 			// Añadir el objeto al array
 			miArray.push(acuerdotecnico);

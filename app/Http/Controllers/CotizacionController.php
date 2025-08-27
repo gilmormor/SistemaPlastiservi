@@ -819,6 +819,10 @@ class CotizacionController extends Controller
                                 }
 
                             }else{
+                                //TOMO EL ACUERDO TECNICO ANTES DE SER MODIFICADO PARA GUARDAR EN LOG Y COMPARAR CON EL NUEVO
+                                $acuerdotecnicoTempOriginal = AcuerdoTecnicoTemp::with('acuerdotecnicocvalatdets')
+                                    ->findOrFail($cotizaciondetalle->acuerdotecnicotemp_id);
+                                //dd($acuerdotecnicoTempOriginal);
                                 //AQUI ACTUALIZO O CREO LOS CAMPOS ADICIONALES VALIDACION DEL ACUERDO TECNICO TEMPORAL
                                 foreach ($array_valats as $array_valat) {
                                     AcuerdoTecnicoTempCValAtDet::updateOrCreate(
@@ -841,6 +845,19 @@ class CotizacionController extends Controller
                                     }
                                     $data->at_impresofoto = $foto;
                                     $data->save();
+                                }
+                                //TOMO EL ACUERDO TECNICO DESPUES DE SER MODIFICADO PARA GUARDAR EN LOG Y COMPARAR CON EL ANTERIOR
+                                $acuerdotecnicoTempActualizado = AcuerdoTecnicoTemp::with('acuerdotecnicocvalatdets')
+                                    ->findOrFail($cotizaciondetalle->acuerdotecnicotemp_id);
+                                $aux_resp = guardarLogCambioModelo(
+                                    $acuerdotecnicoTempActualizado,
+                                    ['acuerdotecnicocvalatdets'],
+                                    $acuerdotecnicoTempOriginal // <- se lo pasamos como estado original
+                                );
+                                //Si hubo cambios en el acuerdo tecnico se elimina la firma del mismo para que sea firmado nuevamente
+                                if($aux_resp == 1){
+                                    $acuerdotecnicoTempActualizado->at_firmado = null;
+                                    $acuerdotecnicoTempActualizado->save();
                                 }
                             }
                         }else{
@@ -994,11 +1011,12 @@ class CotizacionController extends Controller
                 $cotizacion->aprobobs = 'Se envio cotizacion y Acuerdo Tecnico (AcuTec) para ser firmado por el cliente';
                 foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
                     if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
-                        if ($cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado != null and $aux_aprobstatus == 7 and $cotizaciondetalle->stacorregirat == 1) {
-                            $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;
+                        $aux_attemp = $cotizaciondetalle->acuerdotecnicotempunoauno;
+                        if ($aux_attemp->at_firmado != null and $aux_aprobstatus == 7 and $aux_attemp->at_stacorregirat == 1) {
+                            $aux_atfirmado = $aux_attemp->at_firmado;
                             Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
-                            $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null; //asigno null para que se pueda subir el AT firmado
-                            $cotizaciondetalle->acuerdotecnicotempunoauno->save();
+                            $aux_attemp->at_firmado = null; //asigno null para que se pueda subir el AT firmado
+                            $aux_attemp->save();
                             $cotizacion->aprobstatus = 8; //Si al menos 1 AT fue enviado a correccion, vuelve a estado de revision AcuTec
                         }
                     }
@@ -1263,9 +1281,12 @@ class CotizacionController extends Controller
                     }else{
                         $cotizacion->aprobstatus = "7";
                         foreach ($request->arrayATs as $arrayAT) {
-                            $cotdet = CotizacionDetalle::findOrFail($arrayAT["at_cotizaciondetalle_id"]);
-                            $cotdet->stacorregirat = $arrayAT["stacorregirat"] == 1 ? 1 : null;
-                            $cotdet->save();
+                            /* $cotdet = CotizacionDetalle::findOrFail($arrayAT["at_cotizaciondetalle_id"]);
+                            $cotdet->at_stacorregirat = $arrayAT["at_stacorregirat"] == 1 ? 1 : null;
+                            $cotdet->save(); */
+                            $attemp = AcuerdoTecnicoTemp::findOrFail($arrayAT["id"]);
+                            $attemp->at_stacorregirat = $arrayAT["at_stacorregirat"] == 1 ? 1 : null;
+                            $attemp->save();
                         }
                         /* foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
                             if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){

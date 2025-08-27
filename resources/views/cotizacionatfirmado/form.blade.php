@@ -380,14 +380,22 @@
                                     </td>
                                     <td name="cotdet_atfirm{{$aux_nfila}}" id="cotdet_atfirm{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
+                                            <?php 
+                                                $sta_divMostrarImagenat = "";
+                                            ?>
                                             <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}">
-                                                @if ($data->aprobstatus == 8 and $CotizacionDetalle->stacorregirat != 1)
+                                                @if ($data->aprobstatus == 8 and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
                                                     <div class="Imagenatfirma">
                                                         <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$CotizacionDetalle->acuerdotecnicotemp->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                             <i class="fa fa-fw fa-photo"></i>
                                                         </a>
                                                     </div>
-                                                @else
+                                                    <?php 
+                                                        $sta_divMostrarImagenat = "display:none;";
+                                                    ?>
+                                                @endif
+
+                                                <div style="{{$sta_divMostrarImagenat}}">
                                                     <a class="btn-accion-tabla tooltipsC" title="Subir Acuerdo Técnico firmado" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
                                                         <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
                                                     </a>
@@ -416,7 +424,7 @@
                                                             <i class="fa fa-fw fa-photo"></i>
                                                         </a>
                                                     @endif
-                                                @endif
+                                                </div>
                                             </div>
                                         @endif
                                     </td>

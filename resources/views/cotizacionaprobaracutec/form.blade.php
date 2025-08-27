@@ -403,7 +403,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <input id="stacorregirat{{$aux_nfila}}" name="stacorregirat{{$aux_nfila}}" type="checkbox" title="Marcar para identificar At a Modificar">
+                                        <input id="at_stacorregirat{{$aux_nfila}}" name="at_stacorregirat{{$aux_nfila}}" type="checkbox" title="Marcar para identificar At a Modificar">
                                     </td>
                                     <td name="cotdet_atfirm{{$aux_nfila}}" id="cotdet_atfirm{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)

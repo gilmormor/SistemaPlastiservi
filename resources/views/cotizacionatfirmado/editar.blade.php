@@ -26,6 +26,11 @@
         <div class="box box-primary">
             <div class="box-header with-border">
                 <h3 class="box-title">Editar Cotización Nro.: {{$data->id}}</h3>
+                <div class="box-tools pull-right">
+                    <a href="{{route('cotizacionatfirmado')}}" class="btn btn-block btn-info btn-sm">
+                        <i class="fa fa-fw fa-reply-all"></i> Volver al listado
+                    </a>
+                </div>
             </div>
             <form action="{{route('actualizar_cotizacionatfirmado', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf @method("put")
