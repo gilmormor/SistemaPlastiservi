@@ -1279,6 +1279,19 @@ class CotizacionController extends Controller
                         $cotizacion->aprobstatus = "2";
                         $cotizacion->aprobobs = "Cotizacion requiere Aprobacion Financiera (Santa Ester)";
                     }else{
+                        $aux_contat_stacorregirat = 0;
+                        foreach ($request->arrayATs as $arrayAT) {
+                            if($arrayAT["at_stacorregirat"] == 1){
+                                $aux_contat_stacorregirat++;
+                            }
+                        }
+                        if($aux_contat_stacorregirat == 0){
+                            return response()->json([
+                                'id' => -1,
+                                'mensaje' => 'No fue procesado. Debes seleccionar al menos 1 item.'
+                            ]);
+
+                        }
                         $cotizacion->aprobstatus = "7";
                         foreach ($request->arrayATs as $arrayAT) {
                             /* $cotdet = CotizacionDetalle::findOrFail($arrayAT["at_cotizaciondetalle_id"]);

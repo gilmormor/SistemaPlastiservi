@@ -686,6 +686,9 @@ function ajaxRequest(data,url,funcion) {
 								aux_paginaredirect = $("#aux_paginaredirect").val();
 								window.location = loc.protocol+"//"+loc.hostname+"/" + aux_paginaredirect;
 							}
+							if(respuesta.id == -1){
+								Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+							}
 						}
 						if($("#aprobstatus").val()== "5"){
 							if(respuesta.id !== undefined && respuesta.id == 0){
@@ -703,7 +706,9 @@ function ajaxRequest(data,url,funcion) {
 									}
 								});	
 							}else{
-								Biblioteca.notificaciones('El registro no puso se actualizado, hay recursos usandolo', 'Plastiservi', 'error');
+								if(respuesta.id > 0){
+									Biblioteca.notificaciones('No se proceso el registro.', 'Plastiservi', 'error');
+								}
 							}	
 						}
 					}
