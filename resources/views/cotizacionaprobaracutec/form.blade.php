@@ -272,7 +272,11 @@
                     <thead>
                         <tr>
                             <th style="text-align:center;">Cod</th>
-                            <th class="width30" title="Marcar si el acuerdo técnico debe corregirse">⚠️</th>
+                            <th class="width30" class="tooltipsC" title="Marcar si el acuerdo técnico debe corregirse">
+                                <a class="btn-accion-tabla btn-sm tooltipsC" title="Marcar si el acuerdo técnico debe corregirse" style="padding-left: 0px;">
+                                    ⚠️
+                                </a>
+                            </th>
                             <th title="Acuerdo tecnico firmado">At Firmado</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">cotizacionDetalle_ID</th>
@@ -403,7 +407,7 @@
                                         @endif
                                     </td>
                                     <td style="text-align:center">
-                                        <input id="at_stacorregirat{{$aux_nfila}}" name="at_stacorregirat{{$aux_nfila}}" type="checkbox" title="Marcar si este producto requiere corrección en el acuerdo técnico">
+                                        <input id="at_stacorregirat{{$aux_nfila}}" name="at_stacorregirat{{$aux_nfila}}" type="checkbox" class="tooltipsC" title="Marcar si este producto requiere corrección en el acuerdo técnico">
                                     </td>
                                     <td name="cotdet_atfirm{{$aux_nfila}}" id="cotdet_atfirm{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
