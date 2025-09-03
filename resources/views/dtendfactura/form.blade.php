@@ -132,7 +132,7 @@
         <div class="row">
             <div class="form-group col-xs-12 col-sm-3">
                 <label for="obsfac" class="control-label" data-toggle='tooltip' title="Observación Factura">Observación Fact</label>
-                <textarea class="form-control" name="obsfac" id="obsfac" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90" readonly></textarea>
+                <textarea class="form-control validar-texto-xml" name="obsfac" id="obsfac" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90" readonly></textarea>
             </div>
             <div class="form-group col-xs-12 col-sm-4">
                 <label for="codref" class="control-label requerido" data-toggle='tooltip' title="Código de Referencia">Cod Ref</label>

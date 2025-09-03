@@ -70,7 +70,7 @@
                         <div class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label">Nro OrdenCompra</label>
                             <div class="input-group">
-                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" {{$enableCamposCot}}/>
+                                <input type="text" name="oc_id" id="oc_id" class="form-control validar-texto-xml" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" {{$enableCamposCot}}/>
                             </div>
                         </div>
                         <div class="form-group col-xs-12 col-sm-12">

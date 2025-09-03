@@ -285,7 +285,7 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-4">
                             <label for="obs" class="control-label">Observación Guia</label>
-                            <textarea class="form-control" name="obs" id="obs" maxlength="90"></textarea>
+                            <textarea class="form-control validar-texto-xml" name="obs" id="obs" maxlength="90"></textarea>
                         </div>
 
                     </div>

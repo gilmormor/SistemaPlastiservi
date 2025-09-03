@@ -167,6 +167,8 @@ $(document).ready(function () {
 			$('.prod_id' + prod_id).removeClass('highlight');
 		});
 	});
+	//initValidarTexto();
+	initValidarTextoXML();
 });
 
 
@@ -4248,4 +4250,65 @@ function XMLDownLoad(id){ //GENERAR PDF Solicitud de Despacho
 			console.log('Error al descargar el archivo: ' + errorThrown);
 		}
 	});
+}
+
+/* function initValidarTexto() {
+    const regex = /^[a-zA-Z0-9 .\-()°]*$/;
+
+    // Delegación de eventos con jQuery (funciona en inputs creados dinámicamente también)
+    $(document).on("input", ".validar-texto", function () {
+        let valor = $(this).val();
+        if (!regex.test(valor)) {
+            // Reemplaza todo lo que no cumpla la regla
+            $(this).val(valor.replace(/[^a-zA-Z0-9 .\-()°]/g, ""));
+        }
+    });
+}
+ */
+// Función genérica para validar inputs con clase .validar-texto
+/* function initValidarTexto() {
+    const regex = /^[a-zA-Z0-9 .\-()°]*$/;
+
+    // Delegación de eventos con jQuery (para inputs dinámicos también)
+    $(document).on("input", ".validar-texto", function () {
+        let valor = $(this).val();
+        if (!regex.test(valor)) {
+            // Reemplaza todo lo que no cumpla la regla
+            $(this).val(valor.replace(/[^a-zA-Z0-9 .\-()°]/g, ""));
+        }
+    });
+
+    // Bloquear la tecla Enter
+    $(document).on("keydown", ".validar-texto", function (e) {
+        if (e.key === "Enter" || e.keyCode === 13) {
+            e.preventDefault(); // evita el salto de línea
+            return false;
+        }
+    });
+} */
+
+function initValidarTextoXML() {
+    // Regex para permitir solo caracteres válidos según XML 1.0:
+    // - Letras, números, espacio y símbolos comunes
+    // - Se excluyen caracteres de control no permitidos en XML
+    // - También se bloquean los 5 caracteres reservados XML (<, >, &, ", ')
+    const regex = /^[\u0020-\uD7FF\uE000-\uFFFD]*$/;
+
+    $(document).on("input", ".validar-texto-xml", function () {
+        let valor = $(this).val();
+
+        // Eliminar caracteres inválidos para XML y los reservados especiales
+        valor = valor.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, ""); // inválidos
+        valor = valor.replace(/[<>&"']/g, ""); // reservados
+
+        $(this).val(valor);
+    });
+
+    // Bloquear la tecla Enter (no se permite salto de línea en inputs XML-safe)
+    $(document).on("keydown", ".validar-texto-xml", function (e) {
+        if (e.key === "Enter" || e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
 }

@@ -187,7 +187,7 @@
             </div>
             <div class="form-group col-xs-12 col-sm-5">
                 <label for="obs" class="control-label">Observaciones</label>
-                <textarea class="form-control" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
+                <textarea class="form-control validar-texto-xml" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
             </div>
 
         </div>
@@ -200,7 +200,7 @@
                         <div id="group_oc_id" class="form-group col-xs-12 col-sm-12">
                             <label id="lboc_id" name="lboc_id" for="oc_id" class="control-label {{$aux_labelRequerido}}">Nro OrdenCompra</label>
                             <div class="input-group">
-                                <input type="text" name="oc_id" id="oc_id" class="form-control" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="18" {{$enableCamposCot}} {{$aux_inputRequerido}}/>
+                                <input type="text" name="oc_id" id="oc_id" class="form-control validar-texto-xml" value="{{old('oc_id', $data->oc_id ?? '')}}" placeholder="Nro Orden de Compra" maxlength="18" {{$enableCamposCot}} {{$aux_inputRequerido}}/>
                             </div>
                         </div>
                         <div id="group_oc_file" class="form-group col-xs-12 col-sm-12">
