@@ -1288,7 +1288,7 @@ class CotizacionController extends Controller
                         if($aux_contat_stacorregirat == 0){
                             return response()->json([
                                 'id' => -1,
-                                'mensaje' => 'No fue procesado. Debes seleccionar al menos 1 item.'
+                                'mensaje' => 'Para rechazar debes seleccionar al menos 1 item.'
                             ]);
 
                         }

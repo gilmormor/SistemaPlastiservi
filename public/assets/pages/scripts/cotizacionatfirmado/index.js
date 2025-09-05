@@ -18,6 +18,8 @@ $(document).ready(function () {
             {data: 'razonsocial'},
             {data: 'vendedor_nombre'},
             {data: 'pdfcot'},
+            {data: 'contconfirm'},
+            {data: 'contsinfirm'},
             {data: 'aprobstatus',className:"ocultar"},
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 
@@ -38,6 +40,9 @@ $(document).ready(function () {
                         "</a>"
             $('td', row).eq(4).html(aux_text);
 
+            $('td', row).eq(5).attr('style','text-align:center');
+            $('td', row).eq(6).attr('style','text-align:center');
+
             aux_text = 
             `<div class="tools11">
                 <a class='btn-accion-tabla bntdevolver' title='Devolver: ${data.id}' >
@@ -52,7 +57,7 @@ $(document).ready(function () {
             </div>`;
 
             //$('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
-            $('td', row).eq(6).html(aux_text);
+            $('td', row).eq(8).html(aux_text);
 
         }
     });

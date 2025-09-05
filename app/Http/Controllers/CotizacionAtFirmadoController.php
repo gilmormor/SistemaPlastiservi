@@ -58,7 +58,9 @@ class CotizacionAtFirmadoController extends Controller
         $sql = "SELECT cotizacion.id,DATE_FORMAT(cotizacion.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     concat(persona.nombre, ' ' ,persona.apellido) as vendedor_nombre,
-                    aprobstatus,'1' as pdfcot,cotizacion.updated_at
+                    aprobstatus,'1' as pdfcot,cotizacion.updated_at,
+                    SUM(CASE WHEN acuerdotecnicotemp.at_firmado IS NULL THEN 0 ELSE 1 END) AS contconfirm,
+                    SUM(CASE WHEN acuerdotecnicotemp.at_firmado IS NULL THEN 1 ELSE 0 END) AS contsinfirm
                 FROM cotizacion left join cliente
                 on cotizacion.cliente_id = cliente.id
                 left join clientetemp
@@ -67,10 +69,16 @@ class CotizacionAtFirmadoController extends Controller
                 ON cotizacion.vendedor_id = vendedor.id
                 INNER JOIN persona
                 ON vendedor.persona_id = persona.id
+                INNER JOIN cotizaciondetalle
+                ON cotizacion.id = cotizaciondetalle.cotizacion_id
+                LEFT JOIN acuerdotecnicotemp
+                ON cotizaciondetalle.id = acuerdotecnicotemp.at_cotizaciondetalle_id
                 where (aprobstatus=6 or aprobstatus=8)
                 and cotizacion.deleted_at is null
-                AND cotizacion.sucursal_id in ($sucurcadena);";
+                AND cotizacion.sucursal_id in ($sucurcadena)
+                GROUP BY cotizacion.id;";
         //where usuario_id='.auth()->id();
+        //dd($sql);
         $datas = DB::select($sql);
         return datatables($datas)->toJson();  
     }
