@@ -65,10 +65,11 @@
                     <div class="row">
                         @if (($aux_sta==2 and $data->cotizacion_id and $data->id) or $aux_sta==3)
                             <div class="form-group col-xs-12 col-sm-1">
-                                <label for="cotizacion_id" class="control-label requerido" data-toggle='tooltip' title="Num Cotización">Cot</label>
                                 @if($aux_sta==2)
+                                    <label for="cotizacion_id" class="control-label requerido" data-toggle='tooltip' title="Num Cotización">Cot</label>
                                     <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id', $data->cotizacion_id ?? '')}}" required readonly/>
                                 @else
+                                    <label for="cotizacion_id" class="control-label requerido" data-toggle='tooltip' title="Num Nota Venta">NV</label>
                                     <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id', $data->id ?? '')}}" required readonly/>
                                 @endif
                             </div>            
@@ -427,31 +428,31 @@
                             <th style="display:none;">Cant</th>
                             <th>Nombre</th>
                             <th style="display:none;">UnidadMedida</th>
-                            <th>Clase<br>Sello</th>
-                            <th>Diam<br>Ancho</th>
+                            <th style="display:none;">Clase<br>Sello</th>
+                            <th style="display:none;">Diam<br>Ancho</th>
                             <th style="display:none;">Diametro</th>
-                            <th>Largo</th>
                             <th style="display:none;">Largo</th>
-                            <th>Esp</th>
+                            <th style="display:none;">Largo</th>
+                            <th style="display:none;">Esp</th>
                             <th style="display:none;">Espesor</th>
-                            <th>Peso</th>
+                            <th style="text-align:right;">Peso</th>
                             <th style="display:none;">Peso</th>
-                            <th>TU</th>
+                            <th style="display:none;">TU</th>
                             <th style="display:none;">TUnion</th>
-                            <th>Desc</th>
+                            <th style="text-align:right;">Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
-                            <th>P Neto Unit</th>
+                            <th title="Precio Unitario" style="text-align:right;">Precio Unit</th>
                             <th style="display:none;">Precio Neto Unit</th>
-                            <th>V Kilo</th>
+                            <th title="Precio x Kilo" style="text-align:right;">Precio Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
                             <th style="display:none;">Precio X Kilo Real</th>
-                            <th>Total Kilos</th>
+                            <th style="text-align:right;">Total Kilos</th>
                             <th style="display:none;">Total Kilos</th>
-                            <th>Sub Total</th>
+                            <th style="text-align:right;">Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
-                            @if($aux_concot==false)
+                            @if(($aux_sta==1 or $aux_sta==2) and $aux_concot == false)
                                 <th class="width70"></th>
                             @endif
                         </tr>
@@ -585,29 +586,29 @@
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
                                         {{$aux_producto_nombre}}
-                                        @if ($aux_staAT)
+                                        {{-- @if ($aux_staAT)
                                             <br><span class='small-text'>{{$aux_atribAcuTec}}</span>
-                                        @endif        
+                                        @endif --}}        
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control"  value="{{$detalle->unidadmedida_id}}" style="display:none;"/>
                                     </td>
-                                    <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
+                                    <td style="display:none;" name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                         {{$aux_cla_sello_nombre}}
                                     </td>
-                                    <td name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
+                                    <td style="display:none;" name="diamextmmTD{{$aux_nfila}}" id="diamextmmTD{{$aux_nfila}}" style="text-align:right">
                                         {{$aux_ancho}}
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="diamextmm[]" id="diamextmm{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->diametro}}" style="display:none;"/>
                                     </td>
-                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="longTD{{$aux_nfila}}" id="longTD{{$aux_nfila}}" style="text-align:right;display:none;">
                                         {{$aux_largo}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->largo}}" style="display:none;"/>
                                     </td>
-                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right">
+                                    <td name="espesorTD{{$aux_nfila}}" id="espesorTD{{$aux_nfila}}" style="text-align:right;display:none;">
                                         {{number_format($aux_espesor, 3, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -616,12 +617,12 @@
                                         <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$detalle->obs}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{$detalle->producto->peso}}
+                                        {{number_format($detalle->peso, (fmod($detalle->peso, 1) == 0.0 ? 2 : 6), ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->peso}}" style="display:none;"/>
                                     </td>
-                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
+                                    <td style="display:none;" name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
                                         {{$detalle->producto->tipounion}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -681,15 +682,15 @@
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="13" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="8" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="13" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="8" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="13" style="text-align:right"><b>Total</b></td>
+                                <td colspan="8" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif

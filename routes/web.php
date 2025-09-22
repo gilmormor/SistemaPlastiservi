@@ -444,11 +444,14 @@ Route::post('clientetemp/buscarCliTemp', 'ClienteTempController@buscarCliTemp')-
 
 /*RUTAS AREAPRODUCCION*/
 Route::get('areaproduccion', 'AreaProduccionController@index')->name('areaproduccion');
+Route::get('areaproduccionpage', 'AreaProduccionController@areaproduccionpage')->name('areaproduccionpage');
+Route::get('areaproduccionetapaprodpage', 'AreaProduccionController@areaproduccionetapaprodpage')->name('areaproduccionetapaprodpage');
 Route::get('areaproduccion/crear', 'AreaProduccionController@crear')->name('crear_areaproduccion');
 Route::post('areaproduccion', 'AreaProduccionController@guardar')->name('guardar_areaproduccion');
 Route::get('areaproduccion/{id}/editar', 'AreaProduccionController@editar')->name('editar_areaproduccion');
 Route::put('areaproduccion/{id}', 'AreaProduccionController@actualizar')->name('actualizar_areaproduccion');
 Route::delete('areaproduccion/{id}', 'AreaProduccionController@eliminar')->name('eliminar_areaproduccion');
+Route::post('areaproduccion/guardarordenetapaprod', 'AreaProduccionController@guardarordenetapaprod')->name('guardarordenetapaprod_areaproduccion');
 
 
 /*RUTAS CONSULTAR INDICADOR NOTA DE VENTA POR VENDEDOR*/
@@ -1594,3 +1597,122 @@ Route::post('emailxlote', 'EmailxLoteController@guardar')->name('guardar_emailxl
 Route::get('emailxlote/{id}/editar', 'EmailxLoteController@editar')->name('editar_emailxlote');
 Route::put('emailxlote/{id}', 'EmailxLoteController@actualizar')->name('actualizar_emailxlote');
 Route::delete('emailxlote/{id}', 'EmailxLoteController@eliminar')->name('eliminar_emailxlote');
+
+/*RUTAS OT*/
+Route::get('ot', 'OtController@index')->name('ot');
+Route::get('otpage', 'OtController@otpage')->name('otpage');
+Route::get('ot/listarnv', 'OtController@listarnv')->name('listarnv_ot');
+Route::get('ot/totalizarindex', 'OtController@totalizarindex')->name('ot_totalizarindex');
+Route::get('ot/crear', 'OtController@crear')->name('crear_ot');
+Route::post('ot', 'OtController@guardar')->name('guardar_ot');
+Route::get('ot/{id}/{updatednum_at}/editar', 'OtController@editar')->name('editar_ot');
+Route::put('ot/{id}', 'OtController@actualizar')->name('actualizar_ot');
+Route::delete('ot/{id}', 'OtController@eliminar')->name('eliminar_ot');
+
+Route::post('ot/aprobot/{id}', 'OtController@aprobot')->name('aprobot_ot');
+Route::post('ot/{id}/anular', 'OtController@anular')->name('anular_ot');
+Route::post('ot/procesar', 'OtController@procesar')->name('procesar_ot');
+Route::post('ot/anular', 'OtController@anular')->name('anular_ot');
+Route::get('ot/exportPdf/{id}', 'OtController@exportPdf')->name('exportPdf_ot');
+
+
+/*RUTAS OTNV*/
+Route::get('otnv', 'OtNVController@index')->name('otnv');
+Route::get('otnvpage', 'OtNVController@otnvpage')->name('otnvpage');
+Route::get('otnv/listarnv', 'OtNVController@listarnv')->name('listarnv_otnv');
+Route::get('otnv/totalizarindex', 'OtNVController@totalizarindex')->name('otnv_totalizarindex');
+Route::get('otnv/crear', 'OtNVController@crear')->name('crear_otnv');
+Route::post('otnv', 'OtNVController@guardar')->name('guardar_otnv');
+Route::get('otnv/{id}/{updatednum_at}/editar', 'OtNVController@editar')->name('editar_otnv');
+Route::put('otnv/{id}', 'OtNVController@actualizar')->name('actualizar_otnv');
+Route::delete('otnv/{id}', 'OtNVController@eliminar')->name('eliminar_otnv');
+
+Route::get('otnv/listarnvpage', 'OtNVController@listarnvpage')->name('listarnvpage_otnv');
+Route::get('otnv/totalizarlistarnvpage', 'OtNVController@totalizarlistarnvpage')->name('otnv_totalizarlistarnvpage');
+Route::get('otnv/{id}/{updatednum_at}/crearot', 'OtNVController@crearot')->name('crear_otnv');
+Route::post('otnv/aprobotnv/{id}', 'OtNVController@aprobot')->name('aprobot_otnv');
+Route::post('otnv/procesar', 'OtNVController@procesar')->name('procesar_otnv');
+Route::post('otnv/anular', 'OtNVController@anular')->name('anular_otnv');
+
+/*RUTAS REPORTE OT*/
+Route::get('reportot', 'ReportOtController@index')->name('reportot');
+Route::get('reportot/reportotpage', 'ReportOtController@reportotpage')->name('reportotpage');
+Route::get('reportot/reporte', 'ReportOtController@reporte')->name('reportot_reporte');
+Route::get('reportot/exportPdf', 'ReportOtController@exportPdf')->name('reportot_exportPdf');
+Route::get('reportot/totalizarindex', 'ReportOtController@totalizarindex')->name('reportot_totalizarindex');
+Route::get('reportot/listardtedet', 'ReportOtController@listardtedet')->name('reportot_listardtedet');
+
+/*RUTAS OT*/
+Route::get('otaprobar', 'OtAprobarController@index')->name('otaprobar');
+Route::get('otaprobarpage', 'OtAprobarController@otaprobarpage')->name('otaprobarpage');
+Route::post('otaprobar/aprobar', 'OtAprobarController@aprobar')->name('aprobar_otaprobar');
+Route::post('otaprobar/rechazar', 'OtAprobarController@rechazar')->name('rechazar_otaprobar');
+
+/*RUTAS APROBAR ITEM OT*/
+Route::get('otitemenvprogprod', 'OtItemEnvProgProdController@index')->name('otitemenvprogprod');
+Route::get('otitemenvprogprodpage', 'OtItemEnvProgProdController@otitemenvprogprodpage')->name('otitemenvprogprodpage');
+Route::post('otitemenvprogprod/aprobar', 'OtItemEnvProgProdController@aprobar')->name('aprobar_otitemenvprogprod');
+Route::post('otitemenvprogprod/rechazar', 'OtItemEnvProgProdController@rechazar')->name('rechazar_otitemenvprogprod');
+Route::post('otitemenvprogprod/calcularPeso', 'OtItemEnvProgProdController@calcularPeso')->name('calcularPeso_otitemenvprogprod');
+
+
+/*RUTAS PROGRAMAR ITEM OT*/
+Route::get('otitemprogramacion', 'OtItemProgramacionController@index')->name('otitemprogramacion');
+Route::get('otitemprogramacionpage', 'OtItemProgramacionController@otitemprogramacionpage')->name('otitemprogramacionpage');
+Route::post('otitemprogramacion/aprobar', 'OtItemProgramacionController@aprobar')->name('aprobar_otitemprogramacion');
+Route::post('otitemprogramacion/rechazar', 'OtItemProgramacionController@rechazar')->name('rechazar_otitemprogramacion');
+
+/*RUTAS MAQUINAGRUPO*/
+Route::get('maquinagrupo', 'MaquinaGrupoController@index')->name('maquinagrupo');
+Route::get('maquinagrupopage', 'MaquinaGrupoController@maquinagrupopage')->name('maquinagrupopage');
+Route::get('maquinagrupo/crear', 'MaquinaGrupoController@crear')->name('crear_maquinagrupo');
+Route::post('maquinagrupo', 'MaquinaGrupoController@guardar')->name('guardar_maquinagrupo');
+Route::get('maquinagrupo/{id}/editar', 'MaquinaGrupoController@editar')->name('editar_maquinagrupo');
+Route::put('maquinagrupo/{id}', 'MaquinaGrupoController@actualizar')->name('actualizar_maquinagrupo');
+Route::delete('maquinagrupo/{id}', 'MaquinaGrupoController@eliminar')->name('eliminar_maquinagrupo');
+
+/*RUTAS MAQUINA*/
+Route::get('maquina', 'MaquinaController@index')->name('maquina');
+Route::get('maquinapage', 'MaquinaController@maquinapage')->name('maquinapage');
+Route::get('maquina/crear', 'MaquinaController@crear')->name('crear_maquina');
+Route::post('maquina', 'MaquinaController@guardar')->name('guardar_maquina');
+Route::get('maquina/{id}/editar', 'MaquinaController@editar')->name('editar_maquina');
+Route::put('maquina/{id}', 'MaquinaController@actualizar')->name('actualizar_maquina');
+Route::delete('maquina/{id}', 'MaquinaController@eliminar')->name('eliminar_maquina');
+
+/*RUTAS ATRIBUTO*/
+Route::get('atributo', 'AtributoController@index')->name('atributo');
+Route::get('atributopage', 'AtributoController@atributopage')->name('atributopage');
+Route::get('atributo/crear', 'AtributoController@crear')->name('crear_atributo');
+Route::post('atributo', 'AtributoController@guardar')->name('guardar_atributo');
+Route::get('atributo/{id}/editar', 'AtributoController@editar')->name('editar_atributo');
+Route::put('atributo/{id}', 'AtributoController@actualizar')->name('actualizar_atributo');
+Route::delete('atributo/{id}', 'AtributoController@eliminar')->name('eliminar_atributo');
+
+/*RUTAS OPERARIO*/
+Route::get('operario', 'OperarioController@index')->name('operario');
+Route::get('operariopage', 'OperarioController@operariopage')->name('operariopage');
+Route::get('operario/crear', 'OperarioController@crear')->name('crear_operario');
+Route::post('operario', 'OperarioController@guardar')->name('guardar_operario');
+Route::get('operario/{id}/editar', 'OperarioController@editar')->name('editar_operario');
+Route::put('operario/{id}', 'OperarioController@actualizar')->name('actualizar_operario');
+Route::delete('operario/{id}', 'OperarioController@eliminar')->name('eliminar_operario');
+
+
+/*RUTAS ETAPAS DE PRODUCCION*/
+Route::get('etapaprod', 'EtapaProdController@index')->name('etapaprod');
+Route::get('etapaprodpage', 'EtapaProdController@etapaprodpage')->name('etapaprodpage');
+Route::get('etapaprod/crear', 'EtapaProdController@crear')->name('crear_etapaprod');
+Route::post('etapaprod', 'EtapaProdController@guardar')->name('guardar_etapaprod');
+Route::get('etapaprod/{id}/editar', 'EtapaProdController@editar')->name('editar_etapaprod');
+Route::put('etapaprod/{id}', 'EtapaProdController@actualizar')->name('actualizar_etapaprod');
+Route::delete('etapaprod/{id}', 'EtapaProdController@eliminar')->name('eliminar_etapaprod');
+
+/*RUTAS FASES POR AREA PRODUCTIVA POR SUCURSAL*/
+Route::get('areaproduccionsucetapaprod', 'AreaProduccionSucEtapaProdController@index')->name('areaproduccionsucetapaprod');
+Route::get('areaproduccionsucetapaprodpage', 'AreaProduccionSucEtapaProdController@areaproduccionsucetapaprodpage')->name('areaproduccionsucetapaprodpage');
+Route::post('areaproduccionsucetapaprod/guardar', 'AreaProduccionSucEtapaProdController@guardar')->name('guardar_areaproduccionsucetapaprod');
+Route::get('areaproduccionsucetapaprod/{id}/editar', 'AreaProduccionSucEtapaProdController@editar')->name('editar_areaproduccionsucetapaprod');
+Route::put('areaproduccionsucetapaprod/{id}', 'AreaProduccionSucEtapaProdController@actualizar')->name('actualizar_areaproduccionsucetapaprod');
+Route::get('areaproduccionsucetapaprod/sucetapaprodpage', 'AreaProduccionSucEtapaProdController@sucetapaprodpage')->name('sucetapaprodpage');
+Route::post('areaproduccionsucetapaprod/guardarordenetapaprod', 'AreaProduccionSucEtapaProdController@guardarordenetapaprod')->name('guardarordenetapaprod_areaproduccionsucetapaprod');

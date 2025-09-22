@@ -469,3 +469,48 @@ td.highlight {
     .highlight {
         background-color: yellow !important; /* Color para iluminar con prioridad */
     }
+
+    .new-item {
+        background-color: #d4edda; /* Verde claro */
+      }
+
+    .error {
+        border: 2px solid red !important;
+        border-radius: 4px;
+        padding: 3px;
+    }
+    
+    .error .btn.dropdown-toggle {
+        border-color: red !important;
+        box-shadow: none !important;
+    }
+
+/*     .error-input {
+        border: 2px solid #e74c3c !important;
+        box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+        transition: all 0.3s ease;
+    }
+
+    .error-msg {
+        color: #e74c3c;
+        font-size: 0.85em;
+        margin-top: 2px;
+        font-style: italic;
+        display: block;
+    } */
+
+
+.error-input,
+.has-error .btn.dropdown-toggle {
+	border: 1px solid red !important;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+    transition: all 0.3s ease;
+}
+
+.error-msg {
+	color: #e74c3c;
+        font-size: 0.85em;
+        margin-top: 2px;
+        font-style: italic;
+        display: block;
+}

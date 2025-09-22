@@ -492,6 +492,7 @@ class NotaVentaController extends Controller
 
         $tablas['limitecredito'] = $data->cliente->limitecredito;
         session(['editaracutec' => '0']);
+        $tablas['crearcot'] = 1;
 
         //dd($aux_aproNV);
         return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
@@ -587,7 +588,11 @@ class NotaVentaController extends Controller
                         $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $notaventadetalle->descuento = $request->descuento[$i];
                         $notaventadetalle->preciounit = $request->preciounit[$i];
-                        $notaventadetalle->peso = $producto->peso;
+                        if(isset($producto->acuerdotecnico->at_peso)){
+                            $notaventadetalle->peso = $producto->acuerdotecnico->at_peso;
+                        }else{
+                            $notaventadetalle->peso = $producto->peso;
+                        }
                         $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
                         $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                         $notaventadetalle->totalkilos = $request->totalkilos[$i];
@@ -603,6 +608,7 @@ class NotaVentaController extends Controller
                         $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
                         $notaventadetalle->color_id = $producto->color_id;
                         $notaventadetalle->obs = $request->obs[$i];
+                        $notaventadetalle->requiere_fabricacion = $producto->categoriaprod->requiere_fabricacion;
                         $notaventadetalle->save();
                         $idDireccion = $notaventadetalle->id;    
                     }
@@ -614,8 +620,19 @@ class NotaVentaController extends Controller
             foreach ($cotizaciondetalles as $cotizaciondetalle) {
                 //dd($cotizaciondetalle->acuerdotecnicotemp);
                 $array_cotizaciondetalle = $cotizaciondetalle->attributesToArray();
+                if(isset($cotizaciondetalle->producto->acuerdotecnico->at_peso)){
+                    $aux_peso = $cotizaciondetalle->producto->acuerdotecnico->at_peso;
+                }else{
+                    if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                        $aux_peso = $cotizaciondetalle->acuerdotecnicotempunoauno->at_peso;
+                    }else{
+                        $aux_peso = $cotizaciondetalle->producto->peso;
+                    }
+                }
+                $array_cotizaciondetalle["peso"] = $aux_peso;
                 $array_cotizaciondetalle["notaventa_id"] = $notaventaid;
                 $array_cotizaciondetalle["cotizaciondetalle_id"] = $array_cotizaciondetalle["id"];
+                $array_cotizaciondetalle["requiere_fabricacion"] = $cotizaciondetalle->producto->categoriaprod->requiere_fabricacion;
                 unset($array_cotizaciondetalle["id"],$array_cotizaciondetalle["usuariodel_id"],$array_cotizaciondetalle["deleted_at"],$array_cotizaciondetalle["created_at"],$array_cotizaciondetalle["updated_at"]);
                 //dd($array_cotizaciondetalle);
                 /*
@@ -873,6 +890,11 @@ class NotaVentaController extends Controller
                 for ($i=0; $i < count($request->NVdet_id) ; $i++){
                     $idcotizaciondet = $request->NVdet_id[$i]; 
                     $producto = Producto::findOrFail($request->producto_id[$i]);
+                    if(isset($producto->acuerdotecnico)){
+                        $aux_peso = $producto->acuerdotecnico->at_peso;
+                    }else{
+                        $aux_peso = $producto->peso;
+                    }
                     if( $request->NVdet_id[$i] == '0' ){
                         $notaventadetalle = new NotaVentaDetalle();
                         $notaventadetalle->notaventa_id = $notaventaid;
@@ -884,7 +906,7 @@ class NotaVentaController extends Controller
                         $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $notaventadetalle->descuento = $request->descuento[$i];
                         $notaventadetalle->preciounit = $request->preciounit[$i];
-                        $notaventadetalle->peso = $producto->peso;
+                        $notaventadetalle->peso = $aux_peso;
                         $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
                         $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                         $notaventadetalle->totalkilos = $request->totalkilos[$i];
@@ -916,7 +938,7 @@ class NotaVentaController extends Controller
                                 'unidadmedida_id' => $request->unidadmedida_id[$i],
                                 'descuento' => $request->descuento[$i],
                                 'preciounit' => $request->preciounit[$i],
-                                'peso' => $producto->peso,
+                                'peso' => $aux_peso,
                                 'precioxkilo' => $request->precioxkilo[$i],
                                 'precioxkiloreal' => $request->precioxkiloreal[$i],
                                 'totalkilos' => $request->totalkilos[$i],
@@ -1307,11 +1329,11 @@ class NotaVentaController extends Controller
                 "modena_nombre" => $aux_modena_nombre,
                 "modena_desc" => $aux_modena_desc,
                 "modena_simb" => $aux_modena_simb
-            ];    
+            ];
             if($stareport == '1'){
-                if(env('APP_DEBUG')){
+                /* if(env('APP_DEBUG')){
                     return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
-                }
+                } */
                 if($aux_staacutec){
                     $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 }else{

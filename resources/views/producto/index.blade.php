@@ -43,6 +43,21 @@ Productos
                                 <th class="width70">Acción</th>
                             </tr>
                         </thead>
+                        <tfoot>
+                            <tr>
+                                <th class="width30">ID</th>
+                                <th>Nombre</th>
+                                <th>Categoria</th>
+                                <th>Grupo</th>
+                                <th>Diametro</th>
+                                <th>Espesor mm</th>
+                                <th>Largo</th>
+                                <th>Peso</th>
+                                <th>Tipo Union</th>
+                                <th>Precio</th>
+                                <th class="width70">Acción</th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
