@@ -14,6 +14,7 @@ use App\Models\DteOC;
 use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\TipoEntrega;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
@@ -56,6 +57,12 @@ class DteGuiaDespDirController extends Controller
         $tablas['comunas'] = Comuna::orderBy('id')->get();
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablas['sucursales'] = Sucursal::orderBy('id')
+                        ->whereIn('sucursal.id', $sucurArray)
+                        ->get();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         //dd($tablas);
         return view('dteguiadespdir.crear',compact('tablas'));
 

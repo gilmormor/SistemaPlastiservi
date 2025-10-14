@@ -184,7 +184,7 @@
                             @if (isset($data) and $data->sucursal_id==$centroeconomico->id) 
                                 {{'selected'}}
                             @endif
-                            >{{$centroeconomico->nombre}}</option>
+                            >{{$centroeconomico->nombre}} - {{$centroeconomico->sucursal->abrev}}</option>
                     @endforeach
                 </select>
             </div>

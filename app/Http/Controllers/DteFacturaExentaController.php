@@ -16,6 +16,7 @@ use App\Models\DteOC;
 use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Seguridad\Usuario;
+use App\Models\Sucursal;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
@@ -53,10 +54,13 @@ class DteFacturaExentaController extends Controller
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')->get();
         $tablas['foliocontrol'] = Foliocontrol::orderBy('id')->get();
-        $centroeconomicos = CentroEconomico::orderBy('id')->get();
-
-        //dd($tablas);
-        return view('dtefacturaexenta.crear',compact('tablas','centroeconomicos'));
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablas['sucursales'] = Sucursal::orderBy('id')
+            ->whereIn('sucursal.id', $sucurArray)
+            ->get();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        return view('dtefacturaexenta.crear',compact('tablas'));
 
     }
 

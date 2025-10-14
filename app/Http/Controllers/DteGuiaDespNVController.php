@@ -76,11 +76,16 @@ class DteGuiaDespNVController extends Controller
         $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')->get();
         $tablas['foliocontrol'] = Foliocontrol::orderBy('id')->get();
         $tablas['comunas'] = Comuna::orderBy('id')->get();
-        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         $tablas['tipoentregas'] = TipoEntrega::orderBy('id')->get();
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
         $empresa = Empresa::findOrFail(1);
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablas['sucursales'] = Sucursal::orderBy('id')
+                        ->whereIn('sucursal.id', $sucurArray)
+                        ->get();
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
         //dd($tablas);
         return view('dteguiadespnv.crear',compact('data','detalles','tablas','array_bodegasmodulo','empresa'));
 
