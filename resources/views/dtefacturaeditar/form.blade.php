@@ -112,6 +112,9 @@
                                 @if ($centroeconomico->sucursal_id == $sucursal->id)
                                     <option
                                         value="{{$centroeconomico->id}}"
+                                        @if (isset($data) and $data->centroeconomico_id==$centroeconomico->id) 
+                                            {{'selected'}}
+                                        @endif
                                     >{{$centroeconomico->nombre}} - {{$sucursal->abrev}}</option>  
                                 @endif
                             @endforeach
