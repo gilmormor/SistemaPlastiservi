@@ -599,7 +599,7 @@ function exportarExcelLosPinos() {
                 cellLengthProducto = aux_length;
             }
             aux_precioxkg = 0;
-            if(registro.itemkg>0){
+            if(registro.itemkg != 0){
                 aux_precioxkg = registro.montoitem/registro.itemkg;
 
             }
@@ -632,8 +632,8 @@ function exportarExcelLosPinos() {
                 registro.montoitem, //"Neto",
                 registro.gru_nombre, //"Categoria",
                 registro.prcitem, //"Precio",
-                (registro.qtyitem > 0 ? registro.itemkg/registro.qtyitem : 0), //"Peso Nominal",
-                (registro.qtyitem > 0 ? registro.itemkg/registro.qtyitem : 0), //"Peso Real",
+                (registro.qtyitem != 0 ? registro.itemkg/registro.qtyitem : 0), //"Peso Nominal",
+                (registro.qtyitem != 0 ? registro.itemkg/registro.qtyitem : 0), //"Peso Real",
                 0, //"Kg Desp",
                 aux_precioxkg, //"Precio x Kg"
                 registro.montoitem, //,"Venta $",
