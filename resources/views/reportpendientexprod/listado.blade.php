@@ -149,7 +149,13 @@
 							$request["tipo"] = 2;
 							$stock = 0;
 							if(isset($invbodegaproducto)){
-								$existencia =  $invbodegaproducto::existencia($request);
+								//$existencia =  $invbodegaproducto::existencia($request);
+								$existencia = [
+									"stock" => [ 
+										"cant" => $invbodegaproducto->stock,
+									]
+								];
+
 								$stock = $existencia["stock"]["cant"];    
 							}
 

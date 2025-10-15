@@ -267,7 +267,12 @@
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;
                                                             $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                             $request["tipo"] = 2;
-                                                            $existencia = $invbodegaproducto::existencia($request);
+                                                            //$existencia = $invbodegaproducto::existencia($request);
+                                                            $existencia = [
+                                                                "stock" => [ 
+                                                                    "cant" => $invbodegaproducto->stock,
+                                                                ]
+                                                            ];
                                                             //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                             //$aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
                                                             $aux_valueStock = ""; 
