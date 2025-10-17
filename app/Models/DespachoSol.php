@@ -379,7 +379,18 @@ class DespachoSol extends Model
                         ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
                         AND $aux_notinNullSoldesp";
         //$aux_condactivas = "true";
-    
+
+        if(empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = " true ";
+        }else{
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprod_id = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprod_id = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprod_id) ";
+        }
+
         $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
                 notaventa.oc_file,
                 comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
@@ -465,6 +476,7 @@ class DespachoSol extends Model
                 and $aux_condsucursal_id
                 and $aux_condsta_picking
                 AND $aux_conddespachosol_id
+                AND $aux_condcategoriaprod_id
                 and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
                 and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
                 and isnull(despachosoldet.deleted_at)
@@ -684,6 +696,18 @@ class DespachoSol extends Model
         if(isset($request->solenvord) and !empty($request->solenvord) and $request->solenvord == "1"){
             $aux_codsolenvord = "despachosol.id in (SELECT despachosol_id FROM despachosolenvorddesp WHERE despachosolenvorddesp.despachosol_id = despachosol.id AND despachosolenvorddesp.staenvdesp = 1 AND ISNULL(despachosolenvorddesp.deleted_at))";
         }
+
+        if(empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = " true ";
+        }else{
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprod_id = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprod_id = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprod_id) ";
+        }
+
         //dd($aux_orden);
         $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.rut,cliente.razonsocial,notaventa.oc_id,
                 notaventa.oc_file,notaventa.sucursal_id,
@@ -780,6 +804,7 @@ class DespachoSol extends Model
                 and $aux_condid
                 and $aux_condproducto_id
                 and $aux_condsucursal_id
+                and $aux_condcategoriaprod_id
                 and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
                 and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
                 and isnull(despachosoldet.deleted_at)

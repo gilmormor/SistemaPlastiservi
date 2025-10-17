@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\Cliente;
 use App\Models\ClienteBloqueado;
 use App\Models\ClienteVendedor;
@@ -50,6 +51,7 @@ class PickingController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('picking.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 

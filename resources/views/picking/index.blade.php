@@ -35,7 +35,7 @@ Gestion Picking
                         <input type="hidden" name="aux_ruta_crearord" id="aux_ruta_crearord" value="{{route('crearord_picking', ['id' => '1'])}}">
                         <div class="col-xs-12 col-md-9 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial">
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Fecha Inicial">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="fecha">Fecha Ini:</label>
                                     </div>
@@ -43,7 +43,7 @@ Gestion Picking
                                         <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad"  value="{{old('fechad', $fechaServ['fecha1erDiaMes'] ?? '')}}" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final">
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Fecha Final">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="dep_fecha">Fecha Fin:</label>
                                     </div>
@@ -53,7 +53,7 @@ Gestion Picking
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Estimada de Despacho">
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Fecha Estimada de Despacho">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="fecha">Fecha ED:</label>
                                     </div>
@@ -61,7 +61,7 @@ Gestion Picking
                                         <input type="text" bsDaterangepicker class="form-control datepicker" name="fechaestdesp" id="fechaestdesp" placeholder="DD/MM/AAAA" required readonly="">
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Picking">
+                                <div class="col-xs-12 col-sm-6" title="Estatus Picking">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Picking:</label>
                                     </div>
@@ -75,20 +75,20 @@ Gestion Picking
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="RUT">
+                                <div class="col-xs-12 col-sm-6" title="RUT">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="rut">RUT:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
-                                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12" data-toggle='tooltip'/>
+                                            <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12"/>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" title="Buscar">Buscar</button>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Vendedor">
+                                <div class="col-xs-12 col-sm-6" title="Vendedor">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Vendedor:</label>
                                     </div>
@@ -100,7 +100,7 @@ Gestion Picking
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Nota de Venta">
+                                <div class="col-xs-12 col-sm-6" title="Número Nota de Venta">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="notaventa_id">NotaVenta:</label>
                                     </div>
@@ -108,7 +108,7 @@ Gestion Picking
                                         <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{old('notaventa_id')}}" maxlength="12"/>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Orden de Compra">
+                                <div class="col-xs-12 col-sm-6" title="Orden de Compra">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="oc_id">OC:</label>
                                     </div>
@@ -118,7 +118,7 @@ Gestion Picking
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
+                                <div class="col-xs-12 col-sm-6" title="Area de Producción">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label >Area Prod:</label>
                                     </div>
@@ -135,7 +135,7 @@ Gestion Picking
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Tipo de Entrega">
+                                <div class="col-xs-12 col-sm-6" title="Tipo de Entrega">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label >T Entrega:</label>
                                     </div>
@@ -154,7 +154,7 @@ Gestion Picking
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Giro">
+                                <div class="col-xs-12 col-sm-6" title="Giro">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Giro:</label>
                                     </div>
@@ -171,7 +171,7 @@ Gestion Picking
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Nota de Venta">
+                                <div class="col-xs-12 col-sm-6" title="Estatus Nota de Venta">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Estatus:</label>
                                     </div>
@@ -187,7 +187,7 @@ Gestion Picking
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Comuna">
+                                <div class="col-xs-12 col-sm-6" title="Comuna">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Comuna:</label>
                                     </div>
@@ -197,7 +197,7 @@ Gestion Picking
                                         ?>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="ID">
+                                <div class="col-xs-12 col-sm-6" title="ID">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="id">ID:</label>
                                     </div>
@@ -207,7 +207,7 @@ Gestion Picking
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                <div class="col-xs-12 col-sm-6" title="Código Producto">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="producto_idPxP" class="control-label">Producto</label>
                                     </div>
@@ -220,7 +220,7 @@ Gestion Picking
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Categoria">
+                                <div class="col-xs-12 col-sm-6" title="Categoria">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="sucursal_id" class="control-label">Sucursal:</label>
                                     </div>
@@ -239,7 +239,21 @@ Gestion Picking
                                 </div>    
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Bloqueo">
+                                <div class="col-xs-12 col-sm-6" title="Categoria">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="categoriaprod_id" class="control-label">Categoria:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id'  data-live-search='true' multiple data-actions-box='true'>"
+                                            @foreach($tablashtml['categoriaprod'] as $categoriaprod)
+                                                <option value="{{$categoriaprod->id}}">
+                                                    {{$categoriaprod->nombre}}
+                                                </option>";
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6" title="Estatus Bloqueo">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Estatus Bloqueo:</label>
                                     </div>

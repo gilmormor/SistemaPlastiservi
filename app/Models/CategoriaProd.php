@@ -67,6 +67,11 @@ class CategoriaProd extends Model
         return $this->belongsToMany(InvBodega::class, 'categoriaprod_invbodega','categoriaprod_id','invbodega_id')->withTimestamps();
     }
 
+    //RELACION UNO A MUCHOS categoriaprod_invbodega
+    public function categoriaprod_invbodegas()
+    {
+        return $this->hasMany(CategoriaProd_InvBodega::class,"categoriaprod_id");
+    }
  
     public static function categoriasxUsuario($sucursal_id = false){
         $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join)  use ($sucursal_id) {

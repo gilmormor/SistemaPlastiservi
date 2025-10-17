@@ -505,6 +505,7 @@ function datospicking(){
         sucursal_id       : $("#sucursal_id").val(),
         sta_picking       : $("#sta_picking").val(),
         statusBloqueo     : $("#statusBloqueo").val(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),  
         _token            : $('input[name=_token]').val()
     };
 
@@ -526,6 +527,7 @@ function datospicking(){
     "&sucursal_id="+data1.sucursal_id +
     "&sta_picking="+data1.sta_picking +
     "&statusBloqueo="+data1.statusBloqueo +
+    "&categoriaprod_id="+data1.categoriaprod_id +
     "&_token="+data1._token;
 
     var data = {

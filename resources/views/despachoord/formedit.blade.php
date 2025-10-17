@@ -295,7 +295,24 @@
                                             <tbody>
                                                 <?php $i=0; //dd($invbodegaproductos) ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if ($invbodegaproducto->invbodega->sucursal_id == $data->despachosol->sucursal_id)
+                                                    <?php
+                                                        /* Explicación:
+                                                        pluck('invbodega_id') → crea una colección con solo los IDs de bodegas.
+                                                        contains($valor) → verifica si ese valor está contenido en la colección.
+                                                        📤 Resultado:
+                                                        $existe será true si el invbodega_id del producto está contenido.
+                                                        $existe será false si no lo está. */
+                                                        $existe = $invbodegaproducto->producto
+                                                            ->categoriaprod
+                                                            ->categoriaprod_invbodegas
+                                                            ->pluck('invbodega_id')
+                                                            ->contains($invbodegaproducto->invbodega_id);
+                                                        if ($invbodegaproducto->producto->categoriaprod->stadespsinstock == 1 and $invbodegaproducto->invbodega->tipo == 1) {
+                                                            $existe = false;
+                                                        }
+                                                        //@if (true or $invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
+                                                    ?>
+                                                    @if ($existe and $invbodegaproducto->invbodega->sucursal_id == $data->despachosol->sucursal_id)
                                                         <?php
                                                             $i++;
                                                             //dd($invbodegaproductos);

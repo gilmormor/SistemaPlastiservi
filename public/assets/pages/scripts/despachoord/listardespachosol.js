@@ -548,6 +548,7 @@ function datosdespachosol(){
         sololectura       : $("#sololectura").val(),
         solenvord         : $("#solenvord").val(),
         statusBloqueo     : $("#statusBloqueo").val(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -570,6 +571,7 @@ function datosdespachosol(){
     "&sololectura="+data1.sololectura +
     "&solenvord="+data1.solenvord +
     "&statusBloqueo="+data1.statusBloqueo +
+    "&categoriaprod_id="+data1.categoriaprod_id +
     "&_token="+data1._token;
 
     var data = {

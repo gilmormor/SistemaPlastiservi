@@ -163,6 +163,7 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml','miVariableGlobal'));
     }
 
@@ -2516,6 +2517,16 @@ function consulta($request,$aux_sql,$orden){
         $aux_condFlagStock = $request->FlagStock;
     }
 
+    if(empty($request->categoriaprod_id)){
+        $aux_condcategoriaprod_id = " true ";
+    }else{
+        if(is_array($request->categoriaprod_id)){
+            $aux_categoriaprod_id = implode ( ',' , $request->categoriaprod_id);
+        }else{
+            $aux_categoriaprod_id = $request->categoriaprod_id;
+        }
+        $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprod_id) ";
+    }
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     $arraySucFisxUsu = implode(",", sucFisXUsu($user->persona));
@@ -2632,6 +2643,7 @@ function consulta($request,$aux_sql,$orden){
         and $aux_condplazoentrega
         and $aux_condproducto_id
         AND $aux_condsucursal_id
+        AND $aux_condcategoriaprod_id
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null

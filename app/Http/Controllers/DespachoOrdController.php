@@ -2138,6 +2138,7 @@ class DespachoOrdController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml['sololectura'] = 0;
         $tablashtml['solenvord'] = 0; //ESTATUS SOLICITUD DESPACHO ENVIADA A ORD DESPACHO 
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
@@ -2156,7 +2157,8 @@ class DespachoOrdController extends Controller
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml['sololectura'] = 0;
-        $tablashtml['solenvord'] = 1; //ESTATUS SOLICITUD DESPACHO ENVIADA A ORD DESPACHO 
+        $tablashtml['solenvord'] = 1; //ESTATUS SOLICITUD DESPACHO ENVIADA A ORD DESPACHO
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 

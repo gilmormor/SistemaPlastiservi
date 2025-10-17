@@ -591,7 +591,21 @@
                                             <tbody>
                                                 <?php $i=0 ?>
                                                 @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if (true or $invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
+                                                    <?php
+                                                        /* Explicación:
+                                                        pluck('invbodega_id') → crea una colección con solo los IDs de bodegas.
+                                                        contains($valor) → verifica si ese valor está contenido en la colección.
+                                                        📤 Resultado:
+                                                        $existe será true si el invbodega_id del producto está contenido.
+                                                        $existe será false si no lo está. */
+                                                        $existe = $invbodegaproducto->producto
+                                                            ->categoriaprod
+                                                            ->categoriaprod_invbodegas
+                                                            ->pluck('invbodega_id')
+                                                            ->contains($invbodegaproducto->invbodega_id);
+                                                        //@if (true or $invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
+                                                    ?>
+                                                    @if ($existe)
                                                         <?php
                                                             $request = new Request();
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;

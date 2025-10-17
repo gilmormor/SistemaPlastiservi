@@ -511,6 +511,7 @@ function datoslnv1(){
         modulo_id         : 4,
         statusBloqueo     : $("#statusBloqueo").val(),
         FlagStock         : $("#FlagStock").val(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -532,6 +533,7 @@ function datoslnv1(){
             "&modulo_id=" + data1.modulo_id +
             "&statusBloqueo=" + data1.statusBloqueo +
             "&FlagStock=" + data1.FlagStock +
+            "&categoriaprod_id=" + data1.categoriaprod_id +
             "&aux_titulo=" + aux_titulo;
     
     var data = {
