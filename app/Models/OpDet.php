@@ -12,11 +12,15 @@ class OpDet extends Model
     protected $fillable = [
         'op_id',
         'otdet_id',
-        'apetapaprod_id',
+        'apsucetapaprod_id',
         'obs',
         'kg',
         'cant',
+        'kgprod',
+        'cantprod',
         'saldokg',
+        'kgscrap',
+        'mtslineal',
         'fechafin',
         'usuariodel_id'
     ];
@@ -26,15 +30,10 @@ class OpDet extends Model
     {
         return $this->belongsTo(Op::class)->whereDoesntHave('opanul');
     }
-    //RELACION INVERSA otdet
-    public function otdet()
+    //RELACION INVERSA areaproduccionsucetapaprod
+    public function areaproduccionsucetapaprod()
     {
-        return $this->belongsTo(OtDet::class);
-    }
-    //RELACION INVERSA areaproduccionetapaprod
-    public function areaproduccionetapaprod()
-    {
-        return $this->belongsTo(AreaProduccionEtapaProd::class,"apetapaprod_id");
+        return $this->belongsTo(AreaProduccionSucEtapaProd::class,"apsucetapaprod_id");
     }
 
     //RELACION UNO A UNO OpDetMaquina

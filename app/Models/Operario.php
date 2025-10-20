@@ -17,9 +17,9 @@ class Operario extends Model
     ];
 
     //RELACION MUCHO A MUCHOS CON areaproduccionsuc A TRAVES DE operario_areaproduccionsuc
-    public function areaproduccionsucs()
+    public function areaproduccionsuceps()
     {
-        return $this->belongsToMany(AreaProduccionSuc::class, 'operario_areaproduccionsuc','operario_id','areaproduccionsuc_id')->withTimestamps();
+        return $this->belongsToMany(AreaProduccionSucEtapaProd::class, 'operario_areaproduccionsucep','operario_id','areaproduccionsucep_id')->withTimestamps();
     }
     
     

@@ -106,7 +106,7 @@ class AreaProduccionSucEtapaProdController extends Controller
     {
         can('guardar-area-produccion-suc-etapa-prod');
         //dd($request);
-        $AreaProduccionSucEtapaProd = AreaProduccionSucEtapaProd::findOrFail($request->areaproduccionetapaprod_id);
+        $AreaProduccionSucEtapaProd = AreaProduccionSucEtapaProd::findOrFail($request->areaproduccionsucetapaprod_id);
         if(strtotime($AreaProduccionSucEtapaProd->updated_at) != $request->updatednum_at){
             return response()->json([
                 'id' => 0,

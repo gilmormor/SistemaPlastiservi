@@ -11,7 +11,7 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        "order"       : [[ 0, "desc" ]],
+        "order"       : [[ 1, "desc" ]],
         'ajax'        : "otaprobarpage",
         'columns'     : [
             {

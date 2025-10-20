@@ -28,19 +28,29 @@ class OperarioController extends Controller
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
 
-        $sql = "SELECT operario.id,operario.nombre,sucursal.nombre as sucursal_nombre,
-                GROUP_CONCAT(DISTINCT concat(sucursal.nombre, '/' ,areaproduccion.nombre)) as areaproduccion_nombre
-                from operario INNER JOIN operario_areaproduccionsuc
-                ON operario.id = operario_areaproduccionsuc.operario_id
+        /* $sql = "SELECT operario.id,operario.nombre,sucursal.nombre as sucursal_nombre,
+                GROUP_CONCAT(DISTINCT concat(sucursal.nombre, '/' ,areaproduccion.nombre,'/',etapaprod.nombre)) as areaproduccion_nombre
+                from operario_areaproduccionsucep INNER JOIN areaproduccionsucetapaprod
+                ON operario_areaproduccionsucep.areaproduccionsucep_id = areaproduccionsucetapaprod.id
                 INNER JOIN areaproduccionsuc
-                ON areaproduccionsuc.id = operario_areaproduccionsuc.areaproduccionsuc_id
+                ON areaproduccionsucetapaprod.areaproduccionsuc_id = areaproduccionsuc.id
+                INNER JOIN etapaprod
+                ON etapaprod.id = areaproduccionsucetapaprod.etapaprod_id
+                INNER JOIN operario 
+                ON operario.id = operario_areaproduccionsucep.operario_id
                 INNER JOIN sucursal
                 ON sucursal.id = areaproduccionsuc.sucursal_id
                 INNER JOIN areaproduccion
                 ON areaproduccion.id = areaproduccionsuc.areaproduccion_id
                 where areaproduccionsuc.sucursal_id in ($sucurcadena)
                 AND isnull(operario.deleted_at)
+                GROUP BY operario.id;"; */
+        $sql = "SELECT operario.id,operario.nombre,'' as sucursal_nombre,
+                '' as areaproduccion_nombre
+                from operario
+                where isnull(operario.deleted_at)
                 GROUP BY operario.id;";
+
         $datas = DB::select($sql);
         return datatables($datas)->toJson();
     }
@@ -59,16 +69,24 @@ class OperarioController extends Controller
         $sucurcadena = implode(",", $sucurArray);
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
 
-        $sql = "SELECT areaproduccionsuc.id,areaproduccionsuc.areaproduccion_id,areaproduccionsuc.sucursal_id,
+        $sql = "SELECT areaproduccionsucetapaprod.id,
+                areaproduccionsuc.id as areaproduccionsuc_id,
+                areaproduccionsuc.areaproduccion_id,
+                areaproduccionsuc.sucursal_id,
                 sucursal.nombre as sucursal_nombre,
-                areaproduccion.nombre as areaproduccion_nombre
-                from areaproduccionsuc INNER JOIN sucursal
+                areaproduccion.nombre as areaproduccion_nombre,
+                etapaprod.nombre AS etapaprod_nombre
+                from areaproduccionsucetapaprod INNER JOIN areaproduccionsuc
+                ON areaproduccionsucetapaprod.areaproduccionsuc_id = areaproduccionsuc.id
+                INNER JOIN etapaprod
+                ON etapaprod.id = areaproduccionsucetapaprod.etapaprod_id
+                INNER JOIN sucursal
                 ON sucursal.id = areaproduccionsuc.sucursal_id
                 INNER JOIN areaproduccion
                 ON areaproduccion.id = areaproduccionsuc.areaproduccion_id
                 where areaproduccionsuc.sucursal_id in ($sucurcadena)
                 AND isnull(areaproduccionsuc.deleted_at);";
-        $tablas['areaproduccionsuc'] = DB::select($sql);
+        $tablas['areaproduccionsucep'] = DB::select($sql);
         //dd($tablas['areaproduccionsuc']);
         return view('operario.crear',compact('tablas'));
     }
@@ -83,7 +101,7 @@ class OperarioController extends Controller
     {
         can('guardar-operario');
         $operario = Operario::create($request->all());
-        $operario->areaproduccionsucs()->sync($request->areaproduccionsuc_id);
+        $operario->areaproduccionsuceps()->sync($request->areaproduccionsucep_id);
         return redirect('operario')->with('mensaje','Operario creado con exito');
     }
 
@@ -113,16 +131,24 @@ class OperarioController extends Controller
         $sucurcadena = implode(",", $sucurArray);
 
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $sucurArray)->get();
-        $sql = "SELECT areaproduccionsuc.id,areaproduccionsuc.areaproduccion_id,areaproduccionsuc.sucursal_id,
+        $sql = "SELECT areaproduccionsucetapaprod.id,
+                areaproduccionsuc.id as areaproduccionsuc_id,
+                areaproduccionsuc.areaproduccion_id,
+                areaproduccionsuc.sucursal_id,
                 sucursal.nombre as sucursal_nombre,
-                areaproduccion.nombre as areaproduccion_nombre
-                from areaproduccionsuc INNER JOIN sucursal
+                areaproduccion.nombre as areaproduccion_nombre,
+                etapaprod.nombre AS etapaprod_nombre
+                from areaproduccionsucetapaprod INNER JOIN areaproduccionsuc
+                ON areaproduccionsucetapaprod.areaproduccionsuc_id = areaproduccionsuc.id
+                INNER JOIN etapaprod
+                ON etapaprod.id = areaproduccionsucetapaprod.etapaprod_id
+                INNER JOIN sucursal
                 ON sucursal.id = areaproduccionsuc.sucursal_id
                 INNER JOIN areaproduccion
                 ON areaproduccion.id = areaproduccionsuc.areaproduccion_id
                 where areaproduccionsuc.sucursal_id in ($sucurcadena)
                 AND isnull(areaproduccionsuc.deleted_at);";
-        $tablas['areaproduccionsuc'] = DB::select($sql);
+        $tablas['areaproduccionsucep'] = DB::select($sql);
 
         return view('operario.editar', compact('data','tablas'));
     }
@@ -139,7 +165,7 @@ class OperarioController extends Controller
         //Operario::findOrFail($id)->update($request->all());
         $operario = Operario::findOrFail($id);
         $operario->update($request->all());
-        $operario->areaproduccionsucs()->sync($request->areaproduccionsuc_id);
+        $operario->areaproduccionsuceps()->sync($request->areaproduccionsucep_id);
         return redirect('operario')->with('mensaje','Maquina actualizado con exito');
     }
 

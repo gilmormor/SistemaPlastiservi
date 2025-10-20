@@ -445,7 +445,7 @@ Route::post('clientetemp/buscarCliTemp', 'ClienteTempController@buscarCliTemp')-
 /*RUTAS AREAPRODUCCION*/
 Route::get('areaproduccion', 'AreaProduccionController@index')->name('areaproduccion');
 Route::get('areaproduccionpage', 'AreaProduccionController@areaproduccionpage')->name('areaproduccionpage');
-Route::get('areaproduccionetapaprodpage', 'AreaProduccionController@areaproduccionetapaprodpage')->name('areaproduccionetapaprodpage');
+Route::get('areaproduccionsucetapaprodpage', 'AreaProduccionController@areaproduccionsucetapaprodpage')->name('areaproduccionsucetapaprodpage');
 Route::get('areaproduccion/crear', 'AreaProduccionController@crear')->name('crear_areaproduccion');
 Route::post('areaproduccion', 'AreaProduccionController@guardar')->name('guardar_areaproduccion');
 Route::get('areaproduccion/{id}/editar', 'AreaProduccionController@editar')->name('editar_areaproduccion');
@@ -1716,3 +1716,40 @@ Route::get('areaproduccionsucetapaprod/{id}/editar', 'AreaProduccionSucEtapaProd
 Route::put('areaproduccionsucetapaprod/{id}', 'AreaProduccionSucEtapaProdController@actualizar')->name('actualizar_areaproduccionsucetapaprod');
 Route::get('areaproduccionsucetapaprod/sucetapaprodpage', 'AreaProduccionSucEtapaProdController@sucetapaprodpage')->name('sucetapaprodpage');
 Route::post('areaproduccionsucetapaprod/guardarordenetapaprod', 'AreaProduccionSucEtapaProdController@guardarordenetapaprod')->name('guardarordenetapaprod_areaproduccionsucetapaprod');
+
+/*RUTAS ACUERDO TECNICO ETAPAS DE PRODUCCION*/
+Route::get('acuerdotecnicoetapaprod', 'AcuerdoTecnicoEtapaProdController@index')->name('acuerdotecnicoetapaprod');
+Route::get('acuerdotecnicoetapaprodpage', 'AcuerdoTecnicoEtapaProdController@acuerdotecnicoetapaprodpage')->name('acuerdotecnicoetapaprodpage');
+Route::get('acuerdotecnicoetapaprod/{id}/editar', 'AcuerdoTecnicoEtapaProdController@editar')->name('editar_acuerdotecnicoetapaprod');
+Route::put('acuerdotecnicoetapaprod/{id}', 'AcuerdoTecnicoEtapaProdController@actualizar')->name('actualizar_acuerdotecnicoetapaprod');
+
+/*RUTAS PRODUCCION MOVIMIENTO ANTES DE PRODUCCION FINAL*/
+Route::get('produccionreg/etapaprod', 'ProduccionRegController@etapaprod')->name('produccionreg_etapaprod');
+
+Route::get('produccionreg/selecetapaprod', 'ProduccionRegController@selecetapaprod')->name('produccionreg_selecetapaprod');
+Route::get('selecetapaprodpage', 'ProduccionRegController@selecetapaprodpage')->name('selecetapaprodpage');
+Route::get('produccionreg/set/{id}', 'ProduccionRegController@setId')->name('produccionreg_set');
+Route::get('produccionreg', 'ProduccionRegController@index')->name('produccionreg');
+Route::get('produccionreg/index01', 'ProduccionRegController@index01')->name('produccionreg_index01');
+Route::get('produccionregpage', 'ProduccionRegController@produccionregpage')->name('produccionregpage');
+Route::get('produccionreg/crearini/{id}/{updated_at}', 'ProduccionRegController@crearini')->name('crearini_produccionreg');
+Route::get('produccionreg/crear', 'ProduccionRegController@crear')->name('crear_produccionreg');
+Route::post('produccionreg', 'ProduccionRegController@guardar')->name('guardar_produccionreg');
+Route::get('produccionreg/{id}/editar', 'ProduccionRegController@editar')->name('editar_produccionreg');
+Route::put('produccionreg/{id}', 'ProduccionRegController@actualizar')->name('actualizar_produccionreg');
+Route::delete('produccionreg/{id}', 'ProduccionRegController@eliminar')->name('eliminar_produccionreg');
+Route::get('produccionreg/listaropdet', 'ProduccionRegController@listaropdet')->name('produccionreg_listaropdet');
+Route::get('produccionreg/listaropdetpage', 'ProduccionRegController@listaropdetpage')->name('produccionreg_listaropdetpage');
+
+
+/*RUTAS PERSONA ETAPAS DE PRODUCCION*/
+Route::get('personaetapaprod', 'PersonaEtapaProdController@index')->name('personaetapaprod');
+Route::get('personaetapaprodpage', 'PersonaEtapaProdController@personaetapaprodpage')->name('personaetapaprodpage');
+Route::get('personaetapaprod/{id}/editar', 'PersonaEtapaProdController@editar')->name('editar_personaetapaprod');
+Route::put('personaetapaprod/{id}', 'PersonaEtapaProdController@actualizar')->name('actualizar_personaetapaprod');
+
+/*RUTAS REGISTRO DE PRODUCCION*/
+Route::get('etapasprodxpersona', 'EtapasProdxPersonaController@index')->name('etapasprodxpersona');
+Route::get('etapasprodxpersonapage', 'EtapasProdxPersonaController@etapasprodxpersonapage')->name('etapasprodxpersonapage');
+
+Route::get('op/exportPdf/{id}', 'OpController@exportPdf')->name('exportPdf_op');

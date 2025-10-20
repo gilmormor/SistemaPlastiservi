@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class EtapaProd extends Model
 {
@@ -16,13 +17,6 @@ class EtapaProd extends Model
         'usuario_id',
         'usuariodel_id'
     ];
-
-    //RELACION DE UNO A MUCHOS NotaVentaDetalle
-    public function areaproduccionetapaprods()
-    {
-        return $this->hasMany(AreaProduccionEtapaProd::class,'etapaprod_id');
-    }
-
 
     public static function reportot($request){
         $user = Usuario::findOrFail(auth()->id());
@@ -308,4 +302,33 @@ class EtapaProd extends Model
         //dd($datas);
         return $datas;
     }
+
+    public static function etapasProdxPersona(){
+        $user = Usuario::findOrFail(auth()->id());
+        $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $sucurcadena = implode(",", $sucurArray);
+        $aux_condsucurArray = "areaproduccionsuc.sucursal_id IN ($sucurcadena)";
+        $sql = "SELECT personaetapaprod.areaproduccionsucetapaprod_id,
+                areaproduccionsucetapaprod.etapaprod_id,etapaprod.nombre AS etapaprod_nombre,
+                personaetapaprod.persona_id,areaproduccionsuc.sucursal_id,sucursal.nombre AS sucursal_nombre,
+                areaproduccionsucetapaprod.orden
+                FROM personaetapaprod INNER JOIN areaproduccionsucetapaprod
+                ON personaetapaprod.areaproduccionsucetapaprod_id = areaproduccionsucetapaprod.id
+                INNER JOIN etapaprod 
+                ON areaproduccionsucetapaprod.etapaprod_id = etapaprod.id
+                INNER JOIN persona
+                ON persona.id = personaetapaprod.persona_id
+                INNER JOIN areaproduccionsuc
+                ON areaproduccionsuc.id = areaproduccionsucetapaprod.areaproduccionsuc_id
+                INNER JOIN usuario
+                ON usuario.id = persona.usuario_id
+                INNER JOIN sucursal
+                ON sucursal.id = areaproduccionsuc.sucursal_id
+                WHERE persona.usuario_id = $user->id
+                AND $aux_condsucurArray
+                ORDER BY areaproduccionsuc.sucursal_id,areaproduccionsucetapaprod.orden;";
+        $datas = DB::select($sql);
+        return $datas;
+}
+
 }

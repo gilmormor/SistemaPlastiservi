@@ -15,6 +15,12 @@ class Operario_AreaProduccionSuc extends Model
         'usuariodel_id'
     ];
 
+    //RELACION DE UNO A MUCHOS producciondet
+    public function producciondets()
+    {
+        return $this->hasMany(ProduccionDet::class,'operarioapsuc_id');
+    }
+
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function areaproduccionsuc()
     {

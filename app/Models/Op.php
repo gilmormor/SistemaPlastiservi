@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\User;
 
 class Op extends Model
 {
@@ -24,4 +26,28 @@ class Op extends Model
     {
         return $this->hasMany(OpDet::class,'op_id');
     }
+
+    //RELACION INVERSA OtDet
+    public function otdet()
+    {
+        return $this->belongsTo(OtDet::class);
+    }
+
+    //RELACION DE UNO A uno OpAnul
+    public function opanul()
+    {
+        return $this->hasOne(OpAnul::class,'op_id');
+    }
+    //Relacion inversa a Usuario
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+
+    //Relacion inversa a User
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

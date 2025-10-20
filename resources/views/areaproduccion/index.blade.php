@@ -6,7 +6,6 @@ Area Producción
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/areaproduccion/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/areaproduccion/buscar.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -36,5 +35,4 @@ Area Producción
         </div>
     </div>
 </div>
-@include('areaproduccion.editarordenetapaprod')
 @endsection

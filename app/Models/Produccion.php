@@ -12,9 +12,13 @@ class Produccion extends Model
     protected $table = "produccion";
     protected $fillable = [
         'opdet_id',
-        'operario_id',
-        'cantprod',
-        'kgprod',
+        'etapaprod_id',
+        'producto_id',
+        'sucursal_id',
+        'cant',
+        'kg',
+        'kgscrap',
+        'mtslineal',
         'obs',
         'aprobstatus',
         'aprobusu_id',
@@ -23,15 +27,20 @@ class Produccion extends Model
         'usuario_id',
         'usuariodel_id',
     ];
-    //RELACION UNO A MUCHOS ProduccionDet
-    public function producciondets()
+    //RELACION INVERSA opdet
+    public function opdet()
     {
-        return $this->hasMany(ProduccionDet::class);
+        return $this->belongsTo(OpDet::class);
     }
     //RELACION INVERSA Usuario
     public function usuario()
     {
         return $this->belongsTo(Usuario::class);
+    }
+    //RELACION UNO A MUCHOS ProduccionTransfer
+    public function producciontransfers()
+    {
+        return $this->hasMany(ProduccionTransfer::class);
     }
 
 }

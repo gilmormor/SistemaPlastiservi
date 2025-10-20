@@ -152,7 +152,7 @@ function saveordenetapaprod(id,updatednum_at){
     }).then((value) => {
         if (value) {
             var data = {
-                areaproduccionetapaprod_id : id,
+                areaproduccionsucetapaprod_id : id,
                 orden : $("#orden" + id).val(),
                 updatednum_at  : updatednum_at,
                 _token : $('input[name=_token]').val()

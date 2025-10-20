@@ -82,7 +82,8 @@ class AcuerdoTecnico extends Model
         'at_peso',
         'at_cantxunimed',
         'usuariodel_id'
-    ];    
+    ];
+    protected $appends = ['nombre_producto']; // se incluirá automáticamente en JSON
 
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function color()
@@ -158,10 +159,24 @@ class AcuerdoTecnico extends Model
         return $this->belongsTo(Producto::class);
     }
 
-    //RELACION MUCHOS A MUCHOS EtapaProd AreaProduccionEtapaProd
-    public function apetapaprods()
+    //Atributo personalizado para obtener el nombre del producto
+    // Se asume que el modelo Producto tiene un método atributosProducto()
+    //primero busca el nombre en atributosProducto, si no lo encuentra usa el campo nombre
+    //el valor lo asigna al atributo nombre_producto: protected $appends = ['nombre_producto'];
+    public function getNombreProductoAttribute()
     {
-        return $this->belongsToMany(AreaProduccionEtapaProd::class, 'acuerdotecnicoapetapaprod','acuerdotecnico_id','apetapaprod_id')->withTimestamps();
+        // aquí decides si usas directamente el campo nombre
+        // o si llamas a tu función atributosProducto()
+        if ($this->producto) {
+            return $this->producto->atributosProducto($this->producto_id)['nombre'] 
+                   ?? $this->producto->nombre;
+        }
+        return null;
+    }
+    //RELACION MUCHOS A MUCHOS EtapaProd AreaProduccionSucEtapaProd
+    public function apsucetapaprods()
+    {
+        return $this->belongsToMany(AreaProduccionSucEtapaProd::class, 'acuerdotecnicoapsucetapaprod','acuerdotecnico_id','apsucetapaprod_id')->withTimestamps();
     }
 
     public static function buscaratxcampos($request)
