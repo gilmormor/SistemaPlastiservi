@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\Comuna;
 use App\Models\Empresa;
 use App\Models\Giro;
@@ -32,6 +33,7 @@ class ReportDespachoSolPendienteController extends Controller
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml['sololectura'] = 1;
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('despachoord.listardespachosol', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
 
     }
