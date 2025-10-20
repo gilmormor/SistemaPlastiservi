@@ -853,8 +853,6 @@ function exportarExcel() {
             aux_productonomb = registro.nombre.replace(/&quot;/g, '"');
             aux_productonomb = aux_productonomb.replace(/&#039;/g, "'");
             if(registro.diametro !== null && registro.diametro !== undefined){
-                /* aux_diametro = registro.diametro.replace(/&quot;/g, '"');
-                aux_diametro = aux_diametro.replace(/&#039;/g, "'"); */
                 aux_diametro = registro.diametro.toString()
                         .replace(/&quot;/g, '"')
                         .replace(/&#039;/g, "'");
@@ -893,8 +891,8 @@ function exportarExcel() {
         if(aux_totalMonto > 0){
             prom_preciokg = (aux_totalPreciokg/aux_cont);
             prom_Monto = (aux_totalMonto/aux_cont);
-            datosExcel.push(["","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);
-            datosExcel.push(["","","","","","","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
+            datosExcel.push(["","","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);
+            datosExcel.push(["","","","","","","","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
         }
 
         createExcel(datosExcel);
@@ -967,13 +965,6 @@ function createExcel(datosExcel) {
         celda.autosize = true;
     }    
 
-    const columnI = worksheet.getColumn(14);
-    columnI.eachCell({ includeEmpty: true }, (cell) => {
-        if (cell.value !== null && typeof cell.value === "number") {
-        cell.numFmt = "#,##0";
-        }
-    });
-
     const columnJ = worksheet.getColumn(15);
     columnJ.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
@@ -1023,13 +1014,20 @@ function createExcel(datosExcel) {
         }
     });
 
+    const columnQ = worksheet.getColumn(22);
+    columnQ.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
         const cell7 = worksheet.getCell(i, 8);
         cell7.alignment = { horizontal: "center", vertical: "middle" };
 
         const cell9 = worksheet.getCell(i, 14);
-        cell9.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+        cell9.alignment = { wrapText: true, horizontal: "center", vertical: "middle" };
 
         const cell10 = worksheet.getCell(i, 15);
         cell10.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
@@ -1053,7 +1051,7 @@ function createExcel(datosExcel) {
         cell16.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
         const cell17 = worksheet.getCell(i, 22);
-        cell17.alignment = { wrapText: true, horizontal: "left", vertical: "middle" };
+        cell17.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
         /*
         const cell9 = worksheet.getCell(i, 9);
@@ -1091,18 +1089,18 @@ function createExcel(datosExcel) {
     cell = row2.getCell(14);
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
-
+    //Negrilla Totales una linea antes del final 
     row = worksheet.getRow(datosExcel.length-1);
     cell = row.getCell(8);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
 
-    cell = row.getCell(14);
+    cell = row.getCell(11);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
 
-    cell = row.getCell(11);
+    cell = row.getCell(15);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
@@ -1137,17 +1135,24 @@ function createExcel(datosExcel) {
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
 
-    row = worksheet.getRow(datosExcel.length);
-    cell = row.getCell(14);
+    cell = row.getCell(22);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
 
-    cell = row.getCell(20);
+    //Negrilla Promedios
+    row = worksheet.getRow(datosExcel.length);
+
+    cell = row.getCell(15);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0.00";
 
     cell = row.getCell(21);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(22);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
