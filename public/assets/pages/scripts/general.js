@@ -2794,7 +2794,7 @@ function primerfiltrobuscarprod(){
 	aux_tipoprod = "0";
 
 	$("#lblTitVerTosdosProd").html("Productos X Cliente");
-	$("#lblVerTodosProd").attr("data-original-title","Cli para ver todos los productos");
+	$("#lblVerTodosProd").attr("data-original-title","Clic para ver todos los productos");
 
 	if($("#VerTodosProd").prop("checked")){
 		aux_tipoprod = "";
