@@ -1796,6 +1796,7 @@ class DespachoOrdController extends Controller
                                 </a>";
                     }
 //                    $tablaOrdTrab= "";
+                    $fechafact = $despachoorddet->despachoord->fechafactura ? date('d/m/Y', strtotime($despachoorddet->despachoord->fechafactura)) : "";
                     $tab2 .= "
                     <tr id='fila$i' name='fila$i'>
                         <td id='id$i' name='id$i'>
@@ -1819,7 +1820,7 @@ class DespachoOrdController extends Controller
                         <td class='textcenter'>$tipounion</td>
                         <td class='textcenter'>$peso</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->guiadespacho ." </td>
-                        <td class='textcenter'>" . date('d/m/Y', strtotime($despachoorddet->despachoord->fechafactura)) . "</td>
+                        <td class='textcenter'>" . $fechafact . "</td>
                         <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>    
                     </tr>";
 
