@@ -10,9 +10,10 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="row" id="staprodxcli" style="display: none">
+                    {{-- <div class="row" id="staprodxcli" style="display: none"> --}}
+                    <div class="row" id="staprodxcli">
                         <div class="col-lg-6" id="DivVerTodosProd" name="DivVerTodosProd">
-                            <label class="switch tooltipsC" id="lblVerTodosProd" name="lblVerTodosProd" title="Ver todos los Productos">
+                            <label class="switch tooltipsC" id="lblVerTodosProd" name="lblVerTodosProd" title="Clic para Ver todos los Productos">
                                 <input id="VerTodosProd" name="VerTodosProd" type="checkbox" >
                                 <div class="slider round"></div>
                             </label>

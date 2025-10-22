@@ -1943,6 +1943,8 @@ function validardatoscant(){
 //AL HACER CLIC EN BOTON INCLUIR NUEVO PRODUCTO. COTIZACION NOTA DE VENTA ETC
 $("#botonNewProd").click(function(event)
 {
+	$("#VerTodosProd").prop("checked",false);
+	$("#lblVerTodosProd").prop("title","Clic para Ver todos los productos");
 	$("#producto_idM").prop("disabled",false);
 	$("#btnbuscarproducto").prop("disabled",false);
 	clientedirec_id = $("#clientedirec_id").val();
@@ -2792,7 +2794,7 @@ function primerfiltrobuscarprod(){
 	aux_tipoprod = "0";
 
 	$("#lblTitVerTosdosProd").html("Productos X Cliente");
-	$("#lblVerTodosProd").attr("data-original-title","Ver Productos X Cliente");
+	$("#lblVerTodosProd").attr("data-original-title","Cli para ver todos los productos");
 
 	if($("#VerTodosProd").prop("checked")){
 		aux_tipoprod = "";
@@ -2801,7 +2803,7 @@ function primerfiltrobuscarprod(){
 		$("#lblVerAcuTec").attr("data-original-title","Ver Productos Base para crear Acuerdo Técnico");
 	
 		$("#lblTitVerTosdosProd").html("Todos los productos");
-		$("#lblVerTodosProd").attr("data-original-title","Ver Productos X Cliente");
+		$("#lblVerTodosProd").attr("data-original-title","Clic para Ver Productos X Cliente");
 
 		var data1 = {
 			cliente_id  : "",

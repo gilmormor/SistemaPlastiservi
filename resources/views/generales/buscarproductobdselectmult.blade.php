@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="row" id="staprodxclims" style="display: none">
                         <div class="col-lg-6" id="DivVerTodosProdms" name="DivVerTodosProdms">
-                            <label class="switch tooltipsC" id="lblVerTodosProdms" name="lblVerTodosProdms" title="Ver todos los Productos">
+                            <label class="switch tooltipsC" id="lblVerTodosProdms" name="lblVerTodosProdms" title="Clic para Ver todos los Productos">
                                 <input id="VerTodosProdms" name="VerTodosProdms" type="checkbox" >
                                 <div class="slider round"></div>
                             </label>
