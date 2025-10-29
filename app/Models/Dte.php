@@ -388,6 +388,23 @@ class Dte extends Model
             $aux_condFiltrarxUsuario = " dte.usuario_id = $user->id ";
         }
 
+        if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = "";
+        }else{
+
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprodid = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id =
+                " AND dte.id IN (SELECT dtedet.dte_id
+                    FROM dtedet INNER JOIN producto
+                    ON dtedet.producto_id = producto.id
+                    WHERE dtedet.dte_id = dte.id
+                    AND producto.categoriaprod_id IN ($aux_categoriaprodid)) ";
+        }
+
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dte.fchemisgen,dte.fechahora,cliente.rut,cliente.razonsocial,
         dte.mnttotal,dte.kgtotal,
         if(isnull(notaventa.oc_id),dteoc.oc_id,notaventa.oc_id) as nvoc_id,
@@ -484,6 +501,7 @@ class Dte extends Model
         and $aux_condnrodocto
         and $aux_condnrofactura
         and $aux_condFiltrarxUsuario
+        $aux_condcategoriaprod_id
         GROUP BY dte.id
         ORDER BY dte.id asc;";
         //dd($sql);
@@ -881,6 +899,23 @@ class Dte extends Model
         }else{
             $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id IN ($request->areaproduccion_id)";
         }
+
+        if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = "";
+        }else{
+
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprodid = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id =
+                " AND dte.id IN (SELECT dtedet.dte_id
+                    FROM dtedet INNER JOIN producto
+                    ON dtedet.producto_id = producto.id
+                    WHERE dtedet.dte_id = dte.id
+                    AND producto.categoriaprod_id IN ($aux_categoriaprodid)) ";
+        }
         
         $sql = "SELECT dte.id,dte.nrodocto,dte.fchemis,dteguiadesp.despachoord_id,notaventa.cotizacion_id,
         despachoord.despachosol_id,dte.fechahora,despachoord.fechaestdesp,dte.centroeconomico_id,
@@ -963,6 +998,7 @@ class Dte extends Model
         AND $aux_condFiltrarxUsuario
         AND $aux_condindtraslado
         AND $aux_condareaproduccion_id
+        $aux_condcategoriaprod_id
         GROUP BY dte.nrodocto,dtedet.id
         order BY dte.nrodocto,dtedet.id;";
         //dd($sql);
@@ -1166,6 +1202,23 @@ class Dte extends Model
             }
         }
 
+        if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = "";
+        }else{
+
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprodid = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id =
+                " AND dte.id IN (SELECT dtedet.dte_id
+                    FROM dtedet INNER JOIN producto
+                    ON dtedet.producto_id = producto.id
+                    WHERE dtedet.dte_id = dte.id
+                    AND producto.categoriaprod_id IN ($aux_categoriaprodid)) ";
+        }
+
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,mnttotal,dte.kgtotal,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
@@ -1242,6 +1295,7 @@ class Dte extends Model
         AND $aux_producto_idCond
         AND $aux_areaproduccion_idCond
         AND $aux_tipoFactura
+        $aux_condcategoriaprod_id
         GROUP BY dte.id
         ORDER BY dte.nrodocto asc;";
 

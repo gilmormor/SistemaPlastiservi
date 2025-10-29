@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\Comuna;
 use App\Models\Dte;
 use App\Models\Empresa;
@@ -38,6 +39,7 @@ class ReportDTEGuiaDespController extends Controller
         $tablashtml['sucursales'] = Sucursal::orderBy('id')
                                     ->whereIn('sucursal.id', $sucurArray)
                                     ->get();
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('reportdteguiadesp.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 

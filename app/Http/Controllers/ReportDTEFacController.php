@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\CentroEconomico;
 use App\Models\Comuna;
 use App\Models\Dte;
@@ -38,6 +39,7 @@ class ReportDTEFacController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablashtml['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('reportdtefac.index', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 

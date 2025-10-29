@@ -286,6 +286,7 @@ function datosGD(filtro = 0){
         guiadesp_id       : $("#guiadesp_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         filtro            : 1,
+        categoriaprod_id  : $("#categoriaprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 /*
@@ -323,6 +324,7 @@ function datosGD(filtro = 0){
     "&guiadesp_id="+data1.guiadesp_id +
     "&producto_id="+data1.producto_id +
     "&filtro="+data1.filtro +
+    "&categoriaprod_id="+data1.categoriaprod_id +
     "&_token="+data1._token
 
     var data = {

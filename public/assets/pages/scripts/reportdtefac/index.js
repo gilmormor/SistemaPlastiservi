@@ -432,6 +432,7 @@ function datosFac(filtro = 0){
         statusgen         : 1,
         tipoFactura       : $("#tipoFactura").val(),
         tipofactTitulo    : $("#tipoFactura option:selected").html(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 /*
@@ -474,6 +475,7 @@ function datosFac(filtro = 0){
     "&statusgen="+data1.statusgen +
     "&tipoFactura="+data1.tipoFactura +
     "&tipofactTitulo="+data1.tipofactTitulo +
+    "&categoriaprod_id="+data1.categoriaprod_id +
     "&_token="+data1._token
 
     var data = {
