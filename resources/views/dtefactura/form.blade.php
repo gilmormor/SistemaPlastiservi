@@ -101,7 +101,7 @@
                 </select>
             </div>
     
-            <div class="form-group col-xs-12 col-sm-2">
+            <div class="form-group col-xs-12 col-sm-3">
                 <label for="centroeconomico_id" class="control-label requerido">Centro Economico</label>
                 <select name="centroeconomico_id" id="centroeconomico_id" class="form-control select2 centroeconomico_id" data-live-search='true' required>
                     <option value="">Seleccione...</option>
@@ -111,11 +111,11 @@
                             @if (isset($data) and $data->centroeconomico_id==$centroeconomico->id) 
                                 {{'selected'}}
                             @endif
-                            >{{$centroeconomico->nombre}}</option>
+                            >{{$centroeconomico->nombre}} - {{$centroeconomico->sucursal->abrev}}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3">
+            <div class="form-group col-xs-12 col-sm-2">
                 <label for="hep" class="control-label" data-toggle='tooltip' title="Hoja de Entrada de Servicio CodRef:HES">Hes</label>
                 <input type="text" name="hep" id="hep" class="form-control" value="{{old('hep', $data->dtefac->hep ?? '')}}" maxlength="12"/>
             </div>
