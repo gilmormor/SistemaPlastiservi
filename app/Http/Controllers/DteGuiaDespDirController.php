@@ -49,7 +49,7 @@ class DteGuiaDespDirController extends Controller
     public function crear()
     {
         can('crear-dte-guia-desp-directa');
-        $vendedor = Vendedor::vendedores();
+        $vendedor = Vendedor::vendedores("A");
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')->get();

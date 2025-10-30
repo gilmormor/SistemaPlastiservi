@@ -70,7 +70,7 @@ class DteGuiaDespNVController extends Controller
         }
 
         $detalles = $data->notaventadetalles;
-        $vendedor = Vendedor::vendedores();
+        $vendedor = Vendedor::vendedores("A");
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['empresa'] = Empresa::findOrFail(1);
         $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')->get();

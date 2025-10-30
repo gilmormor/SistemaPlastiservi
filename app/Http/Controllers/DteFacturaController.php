@@ -72,13 +72,19 @@ class DteFacturaController extends Controller
     public function crear()
     {
         can('crear-dte-factura-gd');
-        $vendedor = Vendedor::vendedores();
+        $vendedor = Vendedor::vendedores("A");
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['foliocontrol'] = Foliocontrol::orderBy('id')->get();
         $tablas['empresa'] = Empresa::findOrFail(1);
+        $users = Usuario::findOrFail(auth()->id());
+        $sucurArray = $users->sucursales->pluck('id')->toArray();
+        $tablas['sucursales'] = Sucursal::orderBy('id')
+                        ->whereIn('sucursal.id', $sucurArray)
+                        ->get();
 
-        $centroeconomicos = CentroEconomico::orderBy('id')->get();
-        return view('dtefactura.crear',compact('tablas','centroeconomicos'));
+
+        $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        return view('dtefactura.crear',compact('tablas'));
 
     }
 

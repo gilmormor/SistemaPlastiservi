@@ -202,7 +202,7 @@ class CotizacionController extends Controller
         $tablas['unidadmedidaAT'] = UnidadMedida::orderBy('id')->get();
 
         $aux_sta=1;
-        $vendedor = Vendedor::vendedores();
+        $vendedor = Vendedor::vendedores("A");
         $tablas['vendedores'] = $vendedor['vendedores'];
         //$productos = Producto::productosxUsuario();
         $tablas['materiPrima'] = MateriaPrima::orderBy('id')->get();
@@ -1395,7 +1395,7 @@ function editar($id){
         $tablas = array();
         $vendedor_id = Vendedor::vendedor_id();
         $tablas['vendedor_id'] = $vendedor_id["vendedor_id"];
-        $vendedor = Vendedor::vendedores();
+        $vendedor = Vendedor::vendedores("A");
         $tablas['vendedores'] = $vendedor['vendedores'];
         
         $fecha = date("d/m/Y", strtotime($data->fechahora));

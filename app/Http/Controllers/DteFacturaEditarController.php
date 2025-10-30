@@ -68,7 +68,7 @@ class DteFacturaEditarController extends Controller
             GROUP BY dteoc.oc_id;";
     //dd($sql);
         $tablas['dteoc'] =  DB::select($sql);
-        $vendedor = Vendedor::vendedores();
+        $vendedor = Vendedor::vendedores("A");
         $tablas['vendedores'] = $vendedor['vendedores'];
         $tablas['foliocontrol'] = Foliocontrol::orderBy('id')->get();
         $tablas['empresa'] = Empresa::findOrFail(1);
