@@ -1082,7 +1082,7 @@ class Producto extends Model
         
     }
 
-    public static function atributosProducto($producto_id){
+    public static function atributosProductoxxx($producto_id){
         $producto = Producto::findOrFail($producto_id);
         $aux_nombreprod = $producto->nombre;
         $aux_cla_nombre = "";
@@ -1104,9 +1104,9 @@ class Producto extends Model
             $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? " " . number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
             $aux_color =  empty($AcuTec->color->descripcion) ? "" : " " . $AcuTec->color->descripcion;
             $aux_at_complementonomprod = empty($AcuTec->at_complementonomprod) ? "" : " " . $AcuTec->at_complementonomprod;
-            $aux_atribAcuTec = $AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+            $aux_atribAcuTec = trim($AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm);
             //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
-            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
+            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . ($aux_atribAcuTec == "" ? "" : $aux_atribAcuTec . " ") . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.'));
             $at_materiaprima = $producto->acuerdotecnico->materiaprima->nombre;
         }else{
             //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
@@ -1136,6 +1136,106 @@ class Producto extends Model
             "cla_nombre" => $aux_cla_nombre,
             "tipounion" => $aux_tipounion,
             "at_materiaprima" => $at_materiaprima
+        ];
+        return $atributoProducto;
+    }
+
+    public static function atributosProducto($producto_id,$cotizaciondetalle_id = null){
+        $producto = Producto::findOrFail($producto_id);
+        $aux_nombreprod = $producto->nombre;
+        $aux_cla_nombre = "";
+        $at_espesor = "";
+        $aux_tipounion = "";
+        $aux_atribAcuTec = "";
+        $at_anchoT = "";
+        $at_largoT = "";
+        $aux_color = "";
+        $aux_unidmed = "";
+        $unidadmedida_id = "";
+        $at_peso = 0;
+        $sta_atTemporal = false;
+        $sta_nomattemp = "";
+        if($cotizaciondetalle_id > 0){
+            $cotizaciondetalle = CotizacionDetalle::findOrFail($cotizaciondetalle_id);
+            if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                $acuerdotecnico = $cotizaciondetalle->acuerdotecnicotempunoauno;
+                $sta_atTemporal = true;
+                $sta_nomattemp = " (Prod Temp.)";
+            }
+        }
+        if((isset($producto->acuerdotecnico) or ($sta_atTemporal))){
+            //dd($producto->acuerdotecnico);
+            if($producto->tipoprod == 0){
+                $acuerdotecnico = $producto->acuerdotecnico;
+                $sta_nomattemp = "";
+            }/* else{
+                $cotizaciondetalle = CotizacionDetalle::findOrFail($cotizaciondetalle_id);
+                $acuerdotecnico = $cotizaciondetalle->acuerdotecnicotempunoauno;
+            } */
+            $at_ancho = $acuerdotecnico->at_ancho;
+            $at_largo = $acuerdotecnico->at_largo;
+            $at_espesor = $acuerdotecnico->at_espesor;
+            $at_ancho = empty($at_ancho) ? "0,00" : $at_ancho;
+            $at_largo = empty($at_largo) ? "0,00" : $at_largo;
+            $at_espesor = empty($at_espesor) ? "0,00" : $at_espesor;
+            $at_peso = $acuerdotecnico->at_peso;
+            //$aux_nombreprod = $aux_nombreprod . " " . $at_ancho . "x" . $at_largo . "x" . $at_espesor;
+
+            $AcuTec = $acuerdotecnico;
+            $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? " " . number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
+            $aux_color =  empty($AcuTec->color->descripcion) ? "" : " " . $AcuTec->color->descripcion;
+            $aux_at_complementonomprod = empty($AcuTec->at_complementonomprod) ? "" : " " . $AcuTec->at_complementonomprod;
+            $aux_atribAcuTec = $AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+            if(isset($acuerdotecnico->claseprod)){
+                $aux_cla_nombre =str_replace("N/A","",$acuerdotecnico->claseprod->cla_descripcion);
+            }
+            //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
+            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, ',', '.')) . " " . $aux_cla_nombre . $sta_nomattemp;
+            $at_materiaprima = $acuerdotecnico->materiaprima->nombre;
+            $aux_unidmed = $acuerdotecnico->unidadmedida->nombre;
+            $unidadmedida_id = $acuerdotecnico->unidadmedida->id;
+        }else{
+            //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
+            if(isset($producto->claseprod)){
+                $aux_cla_nombre =str_replace("N/A","",$producto->claseprod->cla_descripcion);
+                if($producto->claseprod->cla_descripcion == "SC"){
+                    $aux_cla_nombre = "";
+                }
+            }
+            $at_anchoT = $producto->diametro > 0 ? " D:" . $producto->diametro : "";
+            $at_largoT = $producto->long ? " L:" . $producto->long : "";
+            $at_ancho = $producto->diametro > 0 ? $producto->diametro : "";
+            $at_largo = $producto->long ? $producto->long : "";
+            $at_espesor = $producto->peso;
+            $aux_tipounion = "";
+            if(!($producto->tipounion === "S/C" or $producto->tipounion === "S/U")){
+                $aux_tipounion = $producto->tipounion;
+            }
+            if($producto->tipoprod == 1){
+                $aux_nombreprod = $producto->nombre;
+            }else{
+                $aux_nombreprod = $aux_nombreprod . $at_anchoT . $at_largoT . " " . $aux_cla_nombre. " " . $aux_tipounion;
+            }
+            $at_peso = $producto->peso;
+            $at_materiaprima = "";
+            $aux_unidmed = $producto->categoriaprod->unidadmedida->nombre;
+            $unidadmedida_id = $producto->categoriaprod->unidadmedida->id;
+        }
+        $atributoProducto = [
+            "nombre" => $aux_nombreprod,
+            "at_ancho" => $at_ancho,
+            "at_largo" => $at_largo,
+            "at_espesor" => $at_espesor,
+            "at_anchoT" => $at_anchoT,
+            "at_largoT" => $at_largoT,
+            "cla_nombre" => $aux_cla_nombre,
+            "tipounion" => $aux_tipounion,
+            "at_materiaprima" => $at_materiaprima,
+            "at_color" => $aux_color,
+            "at_unidmed" => $aux_unidmed,
+            "unidadmedida_id" => $unidadmedida_id,
+            "at_peso" => $at_peso
+            
         ];
         return $atributoProducto;
     }

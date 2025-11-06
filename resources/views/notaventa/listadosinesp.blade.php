@@ -80,11 +80,14 @@
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($notaventaDetalles as $notaventaDetalle)
+				<?php 
+					$aux_producto_nombre = $notaventaDetalle->producto->atributosProducto($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id)['nombre'];
+				?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
-						<td class="textleft">{{$notaventaDetalle->producto->nombre}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
 						<td class="textleft">
 							{{$notaventaDetalle->producto->diametro}}
 						</td>

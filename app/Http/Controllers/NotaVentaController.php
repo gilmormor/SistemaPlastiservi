@@ -1238,6 +1238,16 @@ class NotaVentaController extends Controller
                             $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
                             $array_producto["tipoprod"] = 0;
                             $productonew = Producto::create($array_producto);
+
+                            //ACTUALIZAR NOMBRE DEL PRODUCTO CON EL ATRIBUTO NOMBRE
+                            //ESTO PARA QUE EN LA NOTA DE VENTA APAREZCA EL NOMBRE DEL ACUERDO TECNICO
+                            //ESTO ES PARA QUE DE UNA VEZ CREE EL NOMBRE DEL PRODUCTO CON LAS CARACTERISTICAS DEL PRODUCTO
+                            //IGUAL EN TODOS LOS PROCESOS DONDE ESTA EL PRODUCTO ESTOY USANDO EL NOMBRE QUE VIENE DE LA FUNCION $producto->atributosProducto()
+                            $atributoProd = $productonew->atributosProducto($productonew->id);
+                            $aux_producto_nombre = $atributoProd["nombre"];
+                            $productonew->nombre = $aux_producto_nombre;
+                            $productonew->save();
+
                             //dd($notaventa->vendedor_id);
                             //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
                             //$productonew->vendedores()->sync($request->vendedor_id);

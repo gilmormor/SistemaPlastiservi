@@ -263,3 +263,33 @@ function copiar_rut(id,rut){
 	//$("#rut").focus();
 	$("#rut").blur();
 }
+
+function actnomprod_at() { // FUNCION PARA ACTUALIZAR EL NOMBRE DEL PRODUCTO CON LOS DATOS DEL ACUERDO TECNICO
+    data = datosproducto();
+	var ruta = '/cotizacion/eliminarCotizacionDetalle/'+i;
+	swal({
+		title: '¿ Desea continuar ?',
+		text: "Esta acción no se puede deshacer!",
+		icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+            $.ajax({
+                url: 'reportproducto/actnomprodat/' + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+                type: 'POST',
+                dataType: 'json',
+                success: function(data) {
+                    alertify.success("Nombres de productos actualizados correctamente");
+                    // Recargar la tabla para reflejar los cambios
+                    //$('#tabla-data-producto').DataTable().ajax.url( "reportproductopage/" + data.data2 ).load();
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+	});
+}

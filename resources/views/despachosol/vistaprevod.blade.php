@@ -114,6 +114,7 @@
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 						}
+						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->atributosProducto($despachosoldet->notaventadetalle->producto_id)['nombre'];
 						if($despachosoldet->cantsoldesp > $sumacantorddesp){
 							$aux_nfila++;
 							$aux_saldo = $despachosoldet->cantsoldesp - $sumacantorddesp;

@@ -122,6 +122,7 @@
 							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                             $aux_staAT = true;
 						}
+						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->atributosProducto($despachosoldet->notaventadetalle->producto_id)['nombre'];
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto_id}}</td>
@@ -129,9 +130,9 @@
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}
-							@if ($aux_staAT)
+							{{-- @if ($aux_staAT)
 								<br><span class="small-text">{{$aux_atribAcuTec}}</span>
-							@endif
+							@endif --}}
 						</td>
 						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>

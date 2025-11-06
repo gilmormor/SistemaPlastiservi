@@ -172,16 +172,16 @@
 							$aux_espesor = $AcuTec->at_espesor;
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 						}
-
+						$aux_producto_nombre = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id,$CotizacionDetalle->id)['nombre'];
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$CotizacionDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{!!$aux_producto_nombre!!}
-							@if ($aux_staAT)
+							{{-- @if ($aux_staAT)
 								<br><span class='small-text'>{{$aux_atribAcuTec}}</span>
-							@endif
+							@endif --}}
 						</td>
 						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
