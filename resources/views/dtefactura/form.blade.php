@@ -95,15 +95,14 @@
                             @if (isset($data) and ($data->vendedor_id == $vendedor->id))
                                 {{'selected'}}
                             @endif
-                            >{{$vendedor->nombre}} {{$vendedor->apellido}}
-                        </option>
+                            >{{$vendedor->nombre}} {{$vendedor->apellido}}</option>
                     @endforeach
                 </select>
             </div>
     
             <div class="form-group col-xs-12 col-sm-3">
                 <label for="centroeconomico_id" class="control-label requerido">Centro Economico</label>
-                <select name="centroeconomico_id" id="centroeconomico_id" class="form-control select2 centroeconomico_id" data-live-search='true' required>
+                {{-- <select name="centroeconomico_id" id="centroeconomico_id" class="form-control select2 centroeconomico_id" data-live-search='true' required>
                     <option value="">Seleccione...</option>
                     @foreach($centroeconomicos as $centroeconomico)
                         <option
@@ -112,6 +111,20 @@
                                 {{'selected'}}
                             @endif
                             >{{$centroeconomico->nombre}} - {{$centroeconomico->sucursal->abrev}}</option>
+                    @endforeach
+                </select> --}}
+                <select name="centroeconomico_id" id="centroeconomico_id" class="selectpicker form-control"  data-live-search='true' required>
+                    <option value="">Seleccione...</option>
+                    @foreach($tablas['sucursales'] as $sucursal)
+                        <optgroup label="{{$sucursal->nombre}}" data-max-options="0">
+                            @foreach($tablas['centroeconomicos'] as $centroeconomico)
+                                @if ($centroeconomico->sucursal_id == $sucursal->id)
+                                    <option
+                                        value="{{$centroeconomico->id}}"
+                                    >{{$centroeconomico->nombre}} - {{$sucursal->abrev}}</option>  
+                                @endif
+                            @endforeach
+                        </optgroup>
                     @endforeach
                 </select>
             </div>

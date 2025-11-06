@@ -245,7 +245,7 @@ function ajaxRequest(data,url,funcion) {
 					$("#notaventa_id").val(respuesta[0].notaventa_id);
 					$('.select2').trigger('change'); // Notify any JS components that the value changed
 					//$("#centroeconomico_id option[value='"+ respuesta[0].centroeconomico_id +"']").attr("selected",true);
-					//$(".selectpicker").selectpicker('refresh');
+					$(".selectpicker").selectpicker('refresh');
 					llenarItemFact(respuesta)
 				}
 			}
