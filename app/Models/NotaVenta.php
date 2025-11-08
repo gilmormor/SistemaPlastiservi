@@ -200,8 +200,18 @@ class NotaVenta extends Model
         return $this->belongsTo(CentroEconomico::class);
     }
     
-    
-    
+    //Relacion inversa a Usuario
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
+
+    //Relacion inversa a Usuario quien aprobo NV
+    public function usuarioaprob()
+    {
+        return $this->belongsTo(Usuario::class, 'aprobusu_id');
+    }    
+
     public static function consulta($request,$aux_consulta){
         $user = Usuario::findOrFail(auth()->id());
         if(empty($request->vendedor_id)){
@@ -416,7 +426,12 @@ class NotaVenta extends Model
             sum(notaventadetalle.subtotal) AS totalps,
             ROUND(sum(notaventadetalle.subtotal * ((notaventa.piva + 100) /100) ),0) AS total,
             comuna.nombre as comunanombre,
-            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
+            notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
+            cliente.limitecredito,
+            IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
+            IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
+            IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
+            IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu
             FROM notaventa INNER JOIN notaventadetalle
             ON notaventa.id=notaventadetalle.notaventa_id
             INNER JOIN producto
@@ -429,6 +444,8 @@ class NotaVenta extends Model
             ON cliente.id=notaventa.cliente_id
             INNER JOIN comuna
             ON comuna.id=notaventa.comunaentrega_id
+            LEFT JOIN vista_datacobranza
+            ON vista_datacobranza.cliente_id = notaventa.cliente_id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut

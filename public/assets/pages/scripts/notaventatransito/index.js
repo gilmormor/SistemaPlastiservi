@@ -37,8 +37,8 @@ $(document).ready(function () {
             }else{
                 if (data.aprobstatus=='2'){
                     aux_mensaje= "Precio menor en Tabla - Debe ser Aprobado";
-                    aux_icono = "glyphicon glyphicon-thumbs-down";
-                    aux_color = "btn btn-danger";            
+                    aux_icono = "glyphicon glyphicon-time";
+                    aux_color = "btn btn-warning";            
                 }else{
                     if (data.aprobstatus=='3'){
                         aux_mensaje= "Precio menor Aprobado por supervisor";

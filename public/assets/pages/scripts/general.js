@@ -1761,6 +1761,10 @@ function listarorddespxNV(id,producto_id = null){
 			//$("#tablaconsulta").html(datos['tabla']);
 			configurarTabla('#tabladespachoorddet');
 			configurarTabla('#tablatrazabilidaddespachosol');
+			aux_clic = `Nota de Venta: <a class="btn-accion-tabla btn-sm tooltipsC" onclick="genpdfNV(${id},1,'myModalTablaOD')" title="" data-original-title="Nota de venta ${id}">
+                            ${id}
+                        </a>`;
+			$("#titulomyModalTablaOD").html(aux_clic);
 			$("#myModalTablaOD").modal('show');
         }
     });

@@ -260,10 +260,66 @@ class NotaVentaConsultaController extends Controller
                                         <i class='fa fa-fw fa-archive'></i>
                                     </a>";
                 }
+                // Determinar el estado según el aprobstatus
+                $aux_htmlEstadoNV = "";
+                $aux_mensaje = "";
+                $aux_icono1 = "";
+                switch ($notaventa->aprobstatus) {
+                    case null:
+                    case 0:
+                        //$estado = "Sin aprobar";
+                        if(empty($data->anulada)){
+                            $aux_mensaje = "En Bandeja crear Nota de Venta Vendedor";
+                            $aux_icono1 = "glyphicon glyphicon-inbox text-yellow";
+                        }
+                        break;
+                    case 1:
+                        //$estado = "Cerrada por vendedor (para hacer NV)";
+                        $aux_mensaje = "Aprobado Vendedor";
+                        $aux_icono1 = "fa fa-thumbs-o-up text-yellow";
+                        break;
+                    case 2:
+                        //$estado = "Cerrada por vendedor (requiere aprobación)";
+                        if(empty($data->anulada)){
+                            $aux_mensaje = "En espera por ser aprobada por Supervisor";
+                            $aux_icono1 = "fa fa-clock-o text-red";
+                        }
+                        break;
+                    case 3:
+                        //$estado = "Aprobada por supervisor";
+                        $aux_mensaje = "Aprobada por Supervisor";
+                        $aux_icono1 = "fa fa-thumbs-o-up text-aqua";
+                        break;
+                    case 4:
+                        //$estado = "Rechazada por supervisor";
+                        $aux_mensaje = "Rechazada por supervisor - En bandeja crear Nota de Venta";
+                        $aux_icono1 = "fa fa-hand-paper-o text-red";
+                        break;
+                    default:
+                        //$estado = "Estado desconocido";
+                        break;
+                }
+                $usuarioAprob = "";
+                $fechaAprob = "";
+                if($notaventa->usuarioaprob){
+                    $usuarioAprob = "Usuario:" . $notaventa->usuarioaprob->nombre;
+                    $fechaAprob = date('d/m/Y H:i', strtotime($notaventa->aprobfechahora));
+                }
+                if($aux_icono1 != ""){
+                    $aux_htmlEstadoNV = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Estado: $notaventa->aprobstatus $aux_mensaje $usuarioAprob $fechaAprob' data-toggle='tooltip'>
+                                            <i class='$aux_icono1'></i>
+                                        </a>";
+                }
+
+
                 $respuesta['tabla'] .= "
                 <tr id='fila$i' name='fila$i' style='$colorFila' title='$aux_title' data-toggle='$aux_data_toggle' class='btn-accion-tabla tooltipsC'>
-                    <td id='id$i' name='id$i'>$data->id
+                    <td id='id$i' name='id$i'>
+                        <a class='btn-accion-tabla btn-sm tooltipsC' onclick='genpdfNV($data->id,1)' title='Nota de venta $data->id'>
+                            $data->id
+                        </a>
                         $aux_iconiInf
+                        $aux_htmlEstadoNV
                     </td>
                     <td style='font-size:12px' id='fechahora$i' name='fechahora$i' data-order='$data->fechahora'>" . date('d/m/Y H:i:s', strtotime($data->fechahora)) . "</td>
                     <td id='rut$i' name='rut$i'>$rut</td>

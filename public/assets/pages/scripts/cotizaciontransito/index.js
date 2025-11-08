@@ -22,6 +22,7 @@ $(document).ready(function () {
             {data: 'clientetemp_id',className:"ocultar"},
             {data: 'updated_at',className:"ocultar"},
             {data: 'estado'},
+            {data: 'aprobstatusdesc'},
             {data: 'pdfcot'},
             {data: 'pdfcot'}
         ],
@@ -30,7 +31,7 @@ $(document).ready(function () {
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
-            aux_mensaje= "";
+            /* aux_mensaje= "";
             aux_icono = "";
             aux_color = "";
             if (data.aprobstatus=='1'){
@@ -67,7 +68,7 @@ $(document).ready(function () {
                 validacioncliente_id = (codigo == null || codigo.length == 0 || /^\s+$/.test(codigo));
                 if( validacioncliente_id ){
                     aux_mensaje = aux_mensaje + " - Cliente Nuevo debe ser Validado";
-                    aux_icono = "glyphicon glyphicon-thumbs-down";
+                    aux_icono = "glyphicon glyphicon-briefcase";
                     aux_color = "btn btn-danger";
                 }else{
                     codigo = data.clientetemp_id;
@@ -78,20 +79,20 @@ $(document).ready(function () {
                         aux_color = "btn btn-success";
                     }
                 }    
-            }
+            } */
             $('td', row).eq(7).html(data.updated_at);
             $('td', row).eq(7).attr("id","updated_at"+data.id);
             $('td', row).eq(7).attr("name","updated_at"+data.id);
             aux_text = 
-                `<a class="btn-xs tooltipsC ${aux_color}" title="${aux_mensaje}">
-                    <span class="${aux_icono}" style="bottom: 0px;top: 2px;"></span>
+                `<a class="btn-xs tooltipsC ${data.aux_color}" title="${data.aprobstatusdesc}">
+                    <span class="${data.aux_icono}" style="bottom: 0px;top: 2px;"></span>
                 </a>`;
             $('td', row).eq(8).html(aux_text);
             aux_text = 
                 `<a class="btn-accion-tabla btn-sm tooltipsC" title="Cotizacion: ${data.id}" onclick="genpdfCOT(${data.id},1)">
                     <i class='fa fa-fw fa-file-pdf-o'></i>
                 </a>`;
-            $('td', row).eq(9).html(aux_text);
+            $('td', row).eq(10).html(aux_text);
             aux_text = 
                 `<a href="cotizacion/devolveracrecot" class="btn-accion-tabla btnVar tooltipsC" title="Devolver a Crear Cotizacion" updated_at="${data.updated_at}">
                     <button type="button" class="btn btn-warning btn-xs">
@@ -103,7 +104,7 @@ $(document).ready(function () {
                         <i class="fa fa-fw fa-trash"></i>
                     </button>
                 </a>`;
-            $('td', row).eq(10).html(aux_text);
+            $('td', row).eq(11).html(aux_text);
 
             if ( data.contador * 1 > 0 ) {
                 //console.log(row);

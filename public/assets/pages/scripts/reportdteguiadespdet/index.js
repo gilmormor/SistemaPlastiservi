@@ -367,8 +367,12 @@ function exportarExcelSantaEster() {
         data.datos.forEach(function(registro) {
             aux_indtra = indtrasladoObj(registro.indtraslado);
             
-            aux_totalMonto += registro.montoitem;
-            aux_totalComision += registro.comision;
+            if (registro.dteanul_obs != null) {
+                
+            }else{
+                aux_totalMonto += registro.montoitem;
+                aux_totalComision += registro.comision;
+            }
             filainifusionar++;
             aux_length = registro.razonsocial.toString().length
             if(aux_length > cellLengthRazonSoc){
@@ -384,6 +388,9 @@ function exportarExcelSantaEster() {
             if(registro.fact_nrodocto != null){
                 aux_fact_nrodocto = parseInt(registro.fact_nrodocto);
             }
+            if (registro.dteanul_obs != null) {
+                aux_fact_nrodocto = "Guia Anulada";
+            }
             var filaExcel = [
                 registro.oc_id,
                 registro.nrodocto,
@@ -398,10 +405,10 @@ function exportarExcelSantaEster() {
                 registro.at_largo,
                 registro.at_espesor,
                 registro.materiaprima_nombre,
-                registro.qtyitem,
-                registro.itemkg,
+                registro.dteanul_obs != null ? 0 : registro.qtyitem,
+                registro.dteanul_obs != null ? 0 : registro.itemkg,
                 registro.prcitem,
-                registro.montoitem
+                registro.dteanul_obs != null ? 0 : registro.montoitem
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;

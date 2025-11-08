@@ -32,6 +32,7 @@ Cotización
                                 <th class="ocultar">clientetemp_id</th>
                                 <th class="ocultar">updated_at</th>
                                 <th class="width30">Estado</th>
+                                <th>Desc Estado</th>
                                 <th>PDF</th>
                                 <th>Accion</th>
                             </tr>

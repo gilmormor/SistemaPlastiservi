@@ -1243,10 +1243,6 @@ class NotaVentaController extends Controller
                             //ESTO PARA QUE EN LA NOTA DE VENTA APAREZCA EL NOMBRE DEL ACUERDO TECNICO
                             //ESTO ES PARA QUE DE UNA VEZ CREE EL NOMBRE DEL PRODUCTO CON LAS CARACTERISTICAS DEL PRODUCTO
                             //IGUAL EN TODOS LOS PROCESOS DONDE ESTA EL PRODUCTO ESTOY USANDO EL NOMBRE QUE VIENE DE LA FUNCION $producto->atributosProducto()
-                            $atributoProd = $productonew->atributosProducto($productonew->id);
-                            $aux_producto_nombre = $atributoProd["nombre"];
-                            $productonew->nombre = $aux_producto_nombre;
-                            $productonew->save();
 
                             //dd($notaventa->vendedor_id);
                             //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
@@ -1279,6 +1275,11 @@ class NotaVentaController extends Controller
                                 $acuerdotecnico->at_impresofoto = $fileDestino;
                                 $acuerdotecnico->save();
                             }
+                            $atributoProd = $productonew->atributosProducto($productonew->id);
+                            $aux_producto_nombre = $atributoProd["nombre"];
+                            $productonew->nombre = $aux_producto_nombre;
+                            $productonew->save();
+
                             //dd($array_acuerdotecnicotemp);
                             //SE RELACIONA EL ACUERDO TECNICO CON EL CLIENTE
                             //SOLO EXISTE 1 ACUERDO TECNICO, PERO PUEDEN HABER VARIOS ACUERDO TECNICO POR CADA CLIENTE QUE COMPARTEN EL MISMO ACUERDO TECNICO 

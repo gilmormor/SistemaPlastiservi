@@ -133,7 +133,7 @@ class CotizacionConsultaController extends Controller
                 }
                 if(empty($data->cliente_id)){
                     $aux_mensaje = $aux_mensaje . " - Cliente Nuevo debe ser Validado";
-                    $aux_icono = "glyphicon glyphicon-thumbs-down";
+                    $aux_icono = "glyphicon glyphicon-briefcase";
                     $aux_color = "btn btn-danger";
                 }else{
                     if(!empty($data->clientetemp_id)){

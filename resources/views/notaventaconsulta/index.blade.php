@@ -162,10 +162,10 @@ Consulta Nota Venta
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus" multiple>
                                             <optgroup label="Nota Venta" data-max-options="0">
-                                                <option value="0">Todos</option>
+                                                <option value="0" selected>Todos</option>
                                                 <option value="1">Emitidas sin aprobar</option>
                                                 <option value="2">Por debajo precio en tabla</option>
-                                                <option value="3" selected>Aprobadas</option>
+                                                <option value="3">Aprobadas</option>
                                                 <option value="4">Rechazadas</option>
                                             </optgroup>
                                             <optgroup label="Despacho" data-max-options="0">

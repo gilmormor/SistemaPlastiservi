@@ -99,6 +99,60 @@ class CotizacionTransController extends Controller
                 and T1.deleted_at is null;";
 
         $datas = DB::select($sql);
+        foreach ($datas as &$data) {
+            $data->aprobstatusdesc = '';
+            switch ($data->aprobstatus) {
+                case 1:
+                    $data->aprobstatusdesc = "Aprobado Vendedor";
+                    $data->aux_icono = "glyphicon glyphicon-thumbs-up";
+                    $data->aux_color = "btn btn-success";
+                    break;
+                case 2:
+                    $data->aprobstatusdesc = "Precio menor en Tabla - Debe ser Aprobado";
+                    $data->aux_icono = "glyphicon glyphicon-thumbs-down";
+                    $data->aux_color = "btn btn-danger";            
+                    break;
+                case 3:
+                    $data->aprobstatusdesc = "Precio menor Aprobado por supervisor";
+                    $data->aux_icono = "glyphicon glyphicon-thumbs-up";
+                    $data->aux_color = "btn btn-success";
+                    break;
+                case 5:
+                    $data->aprobstatusdesc = "Cotizacion contiene acuerdo técnico - Debe ser validado";
+                    $data->aux_icono = "glyphicon glyphicon-list-alt";
+                    $data->aux_color = "btn btn-danger";
+                    break;
+                case 6:
+                    $data->aprobstatusdesc = "Cotizacion con acuerdo técnico Aprobado";
+                    $data->aux_icono = "glyphicon glyphicon-thumbs-up";
+                    $data->aux_color = "btn btn-success";            
+                    break;
+            }
+            if ($data->aprobstatus != '2'){
+                $codigo = $data->cliente_id ?? null; // o $data->cliente_id si es un objeto
+
+                $validacioncliente_id = (
+                    $codigo === null || 
+                    trim($codigo) === '' // elimina espacios y verifica si quedó vacío
+                );
+                if( $validacioncliente_id ){
+                    $data->aprobstatusdesc = "Cliente Nuevo esperando a ser validado por finanzas";
+                    $data->aux_icono = "glyphicon glyphicon-briefcase";
+                    $data->aux_color = "btn btn-danger";
+                }else{
+                    $codigo = $data->clientetemp_id;
+                    $aux_validacion = (
+                        $codigo === null || 
+                        trim($codigo) === '' // elimina espacios y verifica si quedó vacío
+                    );
+                    if ( $aux_validacion != true ){
+                        $data->aprobstatusdesc .= " - Cliente Nuevo";
+                        $data->aux_icono = "glyphicon glyphicon-thumbs-up";
+                        $data->aux_color = "btn btn-success";
+                    }
+                }
+            }
+        }
         //dd($datas);
 
         return datatables($datas)->toJson();
