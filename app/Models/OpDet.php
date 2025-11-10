@@ -12,11 +12,15 @@ class OpDet extends Model
     protected $fillable = [
         'op_id',
         'otdet_id',
-        'apetapaprod_id',
+        'apsucetapaprod_id',
         'obs',
         'kg',
         'cant',
+        'kgprod',
+        'cantprod',
         'saldokg',
+        'kgscrap',
+        'mtslineal',
         'fechafin',
         'usuariodel_id'
     ];
@@ -26,15 +30,10 @@ class OpDet extends Model
     {
         return $this->belongsTo(Op::class)->whereDoesntHave('opanul');
     }
-    //RELACION INVERSA otdet
-    public function otdet()
+    //RELACION INVERSA areaproduccionsucetapaprod
+    public function areaproduccionsucetapaprod()
     {
-        return $this->belongsTo(OtDet::class);
-    }
-    //RELACION INVERSA areaproduccionetapaprod
-    public function areaproduccionetapaprod()
-    {
-        return $this->belongsTo(AreaProduccionEtapaProd::class,"apetapaprod_id");
+        return $this->belongsTo(AreaProduccionSucEtapaProd::class,"apsucetapaprod_id");
     }
 
     //RELACION UNO A UNO OpDetMaquina
@@ -42,5 +41,61 @@ class OpDet extends Model
     {
         return $this->hasOne(OpDetMaquina::class,'opdet_id','maquina_id');
     }
-    
+
+    //RELACION DE UNO A MUCHOS OpDetRegProdTemp
+    public function opdetregprodtemps()
+    {
+        return $this->hasMany(OpDetRegProdTemp::class,'opdet_id');
+    }
+
+    //RELACION UNO A UNO OtDetNVDet
+    public function otdetnvdet()
+    {
+        return $this->hasOne(OtDetNVDet::class,'opdet_id');
+    }
+
+    /**
+     * Obtiene los totales de producción pendientes de aprobación asociados al registro actual de OpDet.
+     *
+     * Esta función calcula las sumas totales de los campos `cant`, `kg`, `kgscrap` y `mtslineal`
+     * en la tabla `opdetregprodtemp`, únicamente considerando los registros que:
+     *  - No han sido eliminados (campo `deleted_at` es NULL)
+     *  - No han sido aprobados por el supervisor (`aprobstatus` != 2)
+     *
+     * Se utiliza como un atributo dinámico de Eloquent (Accessor) y permite acceder
+     * a los totales pendientes como una propiedad del modelo `OpDet`.
+     *
+     * Ejemplo de uso:
+     * ```php
+     * $opdet = OpDet::findOrFail($id);
+     * $totales = $opdet->totales_pendientes;
+     *
+     * echo $totales->total_cant;      // Total de unidades pendientes
+     * echo $totales->total_kg;        // Total de kilos pendientes
+     * echo $totales->total_kgscrap;   // Total de scrap pendiente
+     * echo $totales->total_mtslineal; // Total de metros lineales pendientes
+     * ```
+     *
+     * @return \stdClass  Objeto con los campos:
+     *                    - total_cant
+     *                    - total_kg
+     *                    - total_kgscrap
+     *                    - total_mtslineal
+     */
+    public function getTotalesPendientesAttribute()
+    {
+        return $this->opdetregprodtemps()
+            ->whereNull('deleted_at')                 // Ignorar registros eliminados
+            ->where(function($q) {                    // Excluir los aprobados
+                $q->where('aprobstatus', '!=', 2)
+                ->orWhereNull('aprobstatus');
+            })
+            ->selectRaw('
+                COALESCE(SUM(cant), 0) as total_cant,
+                COALESCE(SUM(kg), 0) as total_kg,
+                COALESCE(SUM(kgscrap), 0) as total_kgscrap,
+                COALESCE(SUM(mtslineal), 0) as total_mtslineal
+            ')
+            ->first();
+    }
 }

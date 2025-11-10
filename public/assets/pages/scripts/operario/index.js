@@ -14,6 +14,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'nombre'},
             {data: 'areaproduccion_nombre'},
+            {data: 'activo'},
             {defaultContent : 
                 "<a href='operario' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
                     "<i class='fa fa-fw fa-pencil'></i>" +
@@ -25,7 +26,14 @@ $(document).ready(function () {
 		"language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            if(data.activo==1){
+                aux_text = "Si";
+            }else{
+                aux_text = "No";
+            }
+            $('td', row).eq(3).html(aux_text);
         }
-      });
-
+    });
 });

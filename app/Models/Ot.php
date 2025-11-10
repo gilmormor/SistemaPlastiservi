@@ -32,7 +32,7 @@ class Ot extends Model
         'usuariodel_id'
     ];
 
-    //RELACION DE UNO A MUCHOS NotaVentaDetalle
+    //RELACION DE UNO A MUCHOS otdet
     public function otdets()
     {
         return $this->hasMany(OtDet::class,'ot_id');
@@ -618,7 +618,8 @@ class Ot extends Model
         acuerdotecnico.at_impreso,acuerdotecnico.at_impresofoto,
         acuerdotecnico.at_impresoobs,acuerdotecnico.at_tiposelloobs,acuerdotecnico.at_materiaprimaobs,
         GROUP_CONCAT(
-            CONCAT_WS('|', areaproduccionetapaprod.id, etapaprod.nombre)
+            CONCAT_WS('|', areaproduccionsucetapaprod.id,etapaprod.id, etapaprod.nombre)
+            ORDER BY etapaprod.id ASC
             SEPARATOR ';'
         ) AS detetapaprod_array
         FROM ot INNER JOIN otdet
@@ -649,12 +650,12 @@ class Ot extends Model
         ON otanul.ot_id = ot.id
         LEFT JOIN acuerdotecnico
         ON acuerdotecnico.producto_id = otdet.producto_id
-        LEFT JOIN acuerdotecnicoapetapaprod
-        ON acuerdotecnicoapetapaprod.acuerdotecnico_id = acuerdotecnico.id
-        LEFT JOIN areaproduccionetapaprod
-        ON areaproduccionetapaprod.id = acuerdotecnicoapetapaprod.apetapaprod_id
+        LEFT JOIN acuerdotecnicoapsucetapaprod
+        ON acuerdotecnicoapsucetapaprod.acuerdotecnico_id = acuerdotecnico.id
+        LEFT JOIN areaproduccionsucetapaprod
+        ON areaproduccionsucetapaprod.id = acuerdotecnicoapsucetapaprod.apsucetapaprod_id
         LEFT JOIN etapaprod
-        ON etapaprod.id = areaproduccionetapaprod.etapaprod_id
+        ON etapaprod.id = areaproduccionsucetapaprod.etapaprod_id
         INNER JOIN unidadmedida
         ON unidadmedida.id = otdet.unidadmedida_id
         WHERE $aux_sucursal_idCond

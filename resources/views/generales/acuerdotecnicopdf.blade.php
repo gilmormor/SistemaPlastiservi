@@ -93,7 +93,7 @@
 							@endif
 						</tr>
 						<tr class="headtarial">
-							<td colspan="3" style="width: 50% !important;"><strong>Nombre completo: </strong>{{$acuerdotecnico->producto->atributosProducto($acuerdotecnico->producto_id)["nombre"]}}</td>
+							<td colspan="3" style="width: 50% !important;"><strong>Nombre completo: </strong>{{$acuerdotecnico->producto ? $acuerdotecnico->producto->atributosProducto($acuerdotecnico->producto_id)["nombre"] : $acuerdotecnico->at_desc . " (At Temporal)"}}</td>
 						</tr>
 					</table>
 				</div>

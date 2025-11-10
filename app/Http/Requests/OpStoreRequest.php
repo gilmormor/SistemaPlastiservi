@@ -30,7 +30,7 @@ class OpStoreRequest extends FormRequest
             'prioridad' => 'required|numeric|max:3',
             'obs' => 'nullable|string',
             'EtapasProduccion' => 'required|array|min:1',
-            'EtapasProduccion.*.apetapaprod_id' => 'required|exists:areaproduccionetapaprod,id',
+            'EtapasProduccion.*.apsucetapaprod_id' => 'required|exists:areaproduccionsucetapaprod,id',
             'EtapasProduccion.*.observacion' => 'nullable|string',
             'EtapasProduccion.*.maquina_id' => [
                                             'nullable',
