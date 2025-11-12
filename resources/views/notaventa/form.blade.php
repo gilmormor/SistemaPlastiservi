@@ -497,8 +497,8 @@
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                     }
-                                    $cotizaciondetalle_id = $detalle->cotizaciondetalle_id ? $detalle->cotizaciondetalle_id : ($detalle->id ? $detalle->id : null);
-                                    $aux_producto_nombre = $detalle->producto->atributosProducto($detalle->producto_id,$cotizaciondetalle_id)['nombre'];
+                                    //$cotizaciondetalle_id = $detalle->cotizaciondetalle_id ? $detalle->cotizaciondetalle_id : ($detalle->id ? $detalle->id : null);
+                                    $aux_producto_nombre = $detalle->producto->atributosProducto($detalle->producto_id)['nombre'];
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$detalle->producto_id}}">
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
