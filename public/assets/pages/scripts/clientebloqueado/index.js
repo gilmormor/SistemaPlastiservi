@@ -13,6 +13,7 @@ $(document).ready(function () {
         'columns'     : [
             {data: 'id'},
             {data: 'cliente_id'},
+            {data: 'rut'},
             {data: 'razonsocial'},
             {data: 'descripcion'},
             //El boton eliminar esta en comentario Gilmer 23/02/2021

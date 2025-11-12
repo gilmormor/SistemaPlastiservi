@@ -27,6 +27,7 @@ Observación Financiera
                         <tr>
                             <th class="width30">ID</th>
                             <th class="width70">Cod Cliente</th>
+                            <th>RUT</th>
                             <th>Nombre</th>
                             <th>Descripción</th>
                             <th class="width70">Acción</th>

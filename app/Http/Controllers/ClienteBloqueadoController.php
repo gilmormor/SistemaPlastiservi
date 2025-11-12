@@ -31,7 +31,7 @@ class ClienteBloqueadoController extends Controller
 
     public function clientebloqueadopage(){
         $sql = "SELECT clientebloqueado.id,clientebloqueado.descripcion,clientebloqueado.cliente_id,
-            cliente.razonsocial
+            cliente.razonsocial,cliente.rut
             from clientebloqueado inner join cliente
             on clientebloqueado.cliente_id = cliente.id
             where isnull(clientebloqueado.deleted_at) 
