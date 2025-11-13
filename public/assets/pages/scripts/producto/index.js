@@ -12,7 +12,7 @@ $(document).ready(function () {
         'ajax'        : "productopage",
         'columns'     : [
             {data: 'id'},
-            {data: 'nombre'},
+            {data: 'nombre_producto'},
             {data: 'categorianombre'},
             {data: 'gru_nombre'},
             {data: 'diametro'},

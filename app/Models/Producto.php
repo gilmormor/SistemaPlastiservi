@@ -1037,10 +1037,11 @@ class Producto extends Model
             and $aux_at_impresoCond
             ORDER BY producto.id;";
             $datas = DB::select($sql);
+            $producto = New Producto();
             foreach ($datas as &$data) {
                 if($data->acuerdotecnico_id != null){
                     $acuerdotecnico = AcuerdoTecnico::findOrFail($data->acuerdotecnico_id);
-                    $aux_formatofilm = $acuerdotecnico->at_formatofilm > 0 ? number_format($acuerdotecnico->at_formatofilm, 2, ',', '.') . "Kg." : "";
+                    /* $aux_formatofilm = $acuerdotecnico->at_formatofilm > 0 ? number_format($acuerdotecnico->at_formatofilm, 2, ',', '.') . "Kg." : "";
                     $color = Color::findOrFail($acuerdotecnico->at_color_id);
                     $aux_color =  empty($color->descripcion) ? "" : " " . $color->descripcion . " ";
                     $aux_at_complementonomprod = empty($acuerdotecnico->at_complementonomprod) ? "" : $acuerdotecnico->at_complementonomprod . " ";
@@ -1048,7 +1049,7 @@ class Producto extends Model
                     $aux_atribAcuTec = $materiaprima->nombre . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
                     //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
                     $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec) . " (" . $acuerdotecnico->unidadmedida->nombre . ")"; // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
-                    $data->nombre = $aux_nombreprod; 
+                    $data->nombre = $aux_nombreprod;  */
 
 
                     $at_ancho = $acuerdotecnico->at_ancho;
@@ -1069,12 +1070,14 @@ class Producto extends Model
                     $data->long = $acuerdotecnico->at_largo;
                     $data->espesor =  $acuerdotecnico->at_espesor;
                     $data->cla_nombre = $acuerdotecnico->claseprod->cla_nombre;
-                    $data->producto_nombre = $aux_nombreprod;
+                    //$data->producto_nombre = $aux_nombreprod;
 
 
                     //dd($aux_nombreprod);
                     //dd($data);    
                 }
+                $data->producto_nombre = $producto->atributosProducto($data->producto_id)['nombre'];
+
             }
             
         //dd($datas);

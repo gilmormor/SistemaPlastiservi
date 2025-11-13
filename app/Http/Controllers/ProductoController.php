@@ -53,6 +53,11 @@ class ProductoController extends Controller
         ON grupoprod.id = producto.grupoprod_id AND isnull(grupoprod.deleted_at)
         WHERE isnull(producto.deleted_at) AND isnull(categoriaprod.deleted_at)";
         $datas = DB::select($sql);
+        $producto = New Producto();
+        foreach ($datas as $data) {
+            //$producto = Producto::findOrFail($data->id);
+            $data->nombre_producto = $producto->atributosProducto($data->id)['nombre'];
+        }
         return datatables($datas)->toJson();
         /*
         return datatables()
