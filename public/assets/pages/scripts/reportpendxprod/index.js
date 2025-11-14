@@ -36,6 +36,7 @@ $(document).ready(function () {
                 {data: 'razonsocial'}, // 4
                 {data: 'comunanombre'}, // 5
                 {data: 'lugarentrega'}, // 5
+                {data: 'tipentnombre'}, // 5
                 {data: 'producto_id'}, // 6
                 {data: 'nombre'}, // 7
                 {data: 'cla_nombre'}, // 8
@@ -101,21 +102,21 @@ $(document).ready(function () {
                         ${data.producto_id}
                     </a>`;
                 }
-                $('td', row).eq(7).html(aux_text);
+                $('td', row).eq(8).html(aux_text);
 
                 style='text-align:right' 
-                $('td', row).eq(14).attr('style','text-align:right');
-                $('td', row).eq(14).attr('data-order',data.stockbpt);
-                $('td', row).eq(14).addClass('stock');
-                $('td', row).eq(14).html(MASKLA(data.stockbpt,0));
                 $('td', row).eq(15).attr('style','text-align:right');
-                $('td', row).eq(15).attr('data-order',data.picking);
-                $('td', row).eq(15).addClass('picking');
-                $('td', row).eq(15).html(MASKLA(data.picking,0));
+                $('td', row).eq(15).attr('data-order',data.stockbpt);
+                $('td', row).eq(15).addClass('stock');
+                $('td', row).eq(15).html(MASKLA(data.stockbpt,0));
                 $('td', row).eq(16).attr('style','text-align:right');
-                $('td', row).eq(16).attr('data-order',data.cant);
-                $('td', row).eq(16).addClass('cant');
-                $('td', row).eq(16).html(MASKLA(data.cant,0));
+                $('td', row).eq(16).attr('data-order',data.picking);
+                $('td', row).eq(16).addClass('picking');
+                $('td', row).eq(16).html(MASKLA(data.picking,0));
+                $('td', row).eq(17).attr('style','text-align:right');
+                $('td', row).eq(17).attr('data-order',data.cant);
+                $('td', row).eq(17).addClass('cant');
+                $('td', row).eq(17).html(MASKLA(data.cant,0));
 
                 aux_text = "0"
                 if(data.sumacantdesp > 0){
@@ -124,24 +125,24 @@ $(document).ready(function () {
                         ${MASKLA(data.sumacantdesp,0)}
                     </a>`
                 }
-                $('td', row).eq(17).attr('style','text-align:right');
-                $('td', row).eq(17).attr('data-order',data.sumacantdesp);
-                $('td', row).eq(17).addClass('sumacantdesp');
-                $('td', row).eq(17).html(aux_text);
                 $('td', row).eq(18).attr('style','text-align:right');
-                $('td', row).eq(18).attr('data-order',data.cantsaldo);
-                $('td', row).eq(18).addClass('cantsaldo');
-                $('td', row).eq(18).html(MASKLA(data.cantsaldo,0));
+                $('td', row).eq(18).attr('data-order',data.sumacantdesp);
+                $('td', row).eq(18).addClass('sumacantdesp');
+                $('td', row).eq(18).html(aux_text);
                 $('td', row).eq(19).attr('style','text-align:right');
-                $('td', row).eq(19).attr('data-order',data.kgpend);
-                $('td', row).eq(19).addClass('kgpend');
-                $('td', row).eq(19).html(MASKLA(data.kgpend,0));
+                $('td', row).eq(19).attr('data-order',data.cantsaldo);
+                $('td', row).eq(19).addClass('cantsaldo');
+                $('td', row).eq(19).html(MASKLA(data.cantsaldo,0));
                 $('td', row).eq(20).attr('style','text-align:right');
-                $('td', row).eq(20).html(MASKLA(data.precioxkilo,2));
+                $('td', row).eq(20).attr('data-order',data.kgpend);
+                $('td', row).eq(20).addClass('kgpend');
+                $('td', row).eq(20).html(MASKLA(data.kgpend,0));
                 $('td', row).eq(21).attr('style','text-align:right');
-                $('td', row).eq(21).attr('data-order',data.subtotalplata);
-                $('td', row).eq(21).addClass('totalplata');
-                $('td', row).eq(21).html(MASKLA(data.subtotalplata,0));
+                $('td', row).eq(21).html(MASKLA(data.precioxkilo,2));
+                $('td', row).eq(22).attr('style','text-align:right');
+                $('td', row).eq(22).attr('data-order',data.subtotalplata);
+                $('td', row).eq(22).addClass('totalplata');
+                $('td', row).eq(22).html(MASKLA(data.subtotalplata,0));
             }
         });
     }

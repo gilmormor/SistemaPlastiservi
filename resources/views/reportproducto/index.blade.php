@@ -32,7 +32,7 @@ Reporte Productos
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Sucursal">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="sucursal_id" >Sucursal</label>
                                     </div>
@@ -58,7 +58,7 @@ Reporte Productos
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                <div class="col-xs-12 col-sm-6" title="Código Producto">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="producto_idPxP" class="control-label">Producto</label>
                                     </div>
@@ -73,7 +73,7 @@ Reporte Productos
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Categoria">
+                                <div class="col-xs-12 col-sm-6" title="Categoria">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="categoriaprod_id" class="control-label">Categoria:</label>
                                     </div>
@@ -87,7 +87,7 @@ Reporte Productos
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
+                                <div class="col-xs-12 col-sm-6" title="Area de Producción">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label >Area Prod:</label>
                                     </div>
@@ -107,13 +107,13 @@ Reporte Productos
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="rut" data-toggle='tooltip' title="RUT">RUT:</label>
+                                        <label for="rut" title="RUT">RUT:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <div class="input-group">
                                             <input type="text" name="rut" id="rut" class="form-control" value="{{old('rut')}}" placeholder="F2 Buscar" onkeyup="llevarMayus(this);" oninput="validarInputRut(event)" maxlength="12" data-toggle='tooltip'/>
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" data-toggle='tooltip' title="Buscar">Buscar</button>
+                                                <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente" title="Buscar">Buscar</button>
                                             </span>
                                         </div>
                                     </div>
@@ -135,6 +135,25 @@ Reporte Productos
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" title="Grupo Categoria Promedio">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Grupo CatProm</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="grupocatprom_id" id="grupocatprom_id" class="selectpicker form-control grupocatprom_id" data-live-search='true' multiple data-actions-box='true'>
+                                            @foreach($tablashtml['grupocatprom'] as $grupocatprom)
+                                                <option
+                                                    value="{{$grupocatprom->id}}"
+                                                    >
+                                                    {{$grupocatprom->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-3 col-sm-12">
@@ -163,6 +182,7 @@ Reporte Productos
                             <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
                             <th>Producto</th>
                             <th>Categoria</th>
+                            <th>Grupo Cat. Prom.</th>
                             <th>Clase<br>Sello</th>
                             <th>Diametro<br>Ancho</th>
                             <th>Largo</th>

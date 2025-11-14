@@ -46,11 +46,16 @@ class ProductoController extends Controller
             )
             ->toJson();
         */
-        $sql = "SELECT producto.*,categoriaprod.nombre AS categorianombre,gru_nombre
+        $sql = "SELECT producto.*,categoriaprod.nombre AS categorianombre,gru_nombre,
+        grupocatprom.nombre AS grupocatprom_nombre
         FROM producto INNER JOIN categoriaprod
         ON producto.categoriaprod_id = categoriaprod.id
         INNER JOIN grupoprod
         ON grupoprod.id = producto.grupoprod_id AND isnull(grupoprod.deleted_at)
+        LEFT JOIN grupocatpromcategoriaprod
+        ON grupocatpromcategoriaprod.categoriaprod_id = producto.categoriaprod_id
+        LEFT JOIN grupocatprom
+        ON grupocatprom.id = grupocatpromcategoriaprod.grupocatprom_id AND isnull(grupocatprom.deleted_at)
         WHERE isnull(producto.deleted_at) AND isnull(categoriaprod.deleted_at)";
         $datas = DB::select($sql);
         $producto = New Producto();

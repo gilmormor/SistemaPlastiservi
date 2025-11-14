@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
 use App\Models\Empresa;
+use App\Models\GrupoCatProm;
 use App\Models\InvBodega;
 use App\Models\InvMov;
 use App\Models\Producto;
@@ -30,6 +31,7 @@ class ReportProductoController extends Controller
                         ->get();
         $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
+        $tablashtml['grupocatprom'] = GrupoCatProm::orderBy('id')->get();
         $selecmultprod = 1;
         return view('reportproducto.index', compact('tablashtml','selecmultprod'));
     }

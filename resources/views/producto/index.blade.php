@@ -34,6 +34,7 @@ Productos
                                 <th>Nombre</th>
                                 <th>Categoria</th>
                                 <th>Grupo</th>
+                                <th>Grupo Cat. Prom.</th>
                                 <th>Diametro</th>
                                 <th>Espesor mm</th>
                                 <th>Largo</th>

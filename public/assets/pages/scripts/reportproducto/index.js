@@ -27,6 +27,7 @@ $(document).ready(function () {
                 {data: 'producto_id'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
+                {data: 'grupocatprom_nombre'},
                 {data: 'cla_nombre'},
                 {data: 'diametro'},
                 {data: 'long'},
@@ -65,17 +66,17 @@ $(document).ready(function () {
                     $('td', row).eq(0).html(aux_text);
                     //$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
                 }
-                $('td', row).eq(4).attr('style','text-align:center');
                 $('td', row).eq(5).attr('style','text-align:center');
-                $('td', row).eq(6).attr('data-order',data.espesor);
-                $('td', row).eq(6).attr('data-search',data.espesor);
-                $('td', row).eq(6).html(MASKLA(data.espesor,3));
                 $('td', row).eq(6).attr('style','text-align:center');
-                $('td', row).eq(7).attr('data-order',data.peso);
-                $('td', row).eq(7).attr('data-search',data.peso);
-                $('td', row).eq(7).html(MASKLA(data.peso,3));
-                $('td', row).eq(7).attr('style','text-align:right');
-                $('td', row).eq(9).attr('style','text-align:right');
+                $('td', row).eq(7).attr('data-order',data.espesor);
+                $('td', row).eq(7).attr('data-search',data.espesor);
+                $('td', row).eq(7).html(MASKLA(data.espesor,3));
+                $('td', row).eq(7).attr('style','text-align:center');
+                $('td', row).eq(8).attr('data-order',data.peso);
+                $('td', row).eq(8).attr('data-search',data.peso);
+                $('td', row).eq(8).html(MASKLA(data.peso,3));
+                $('td', row).eq(8).attr('style','text-align:right');
+                $('td', row).eq(10).attr('style','text-align:right');
             }
         });
     }
@@ -127,6 +128,7 @@ function datosproducto(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         at_impreso        : $("#at_impreso").val(),
+        grupocatprom_id   : $("#grupocatprom_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -137,6 +139,7 @@ function datosproducto(){
     "&categoriaprod_id="+data1.categoriaprod_id +
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&rut="+data1.rut +
+    "&grupocatprom_id="+data1.grupocatprom_id +
     "&at_impreso="+data1.at_impreso
 
 
@@ -228,6 +231,7 @@ function exportarExcel() {
             registro.producto_id,
             registro.producto_nombre,
             registro.categoria_nombre,
+            registro.grupocatprom_nombre,
             registro.diametro,
             registro.cla_nombre,
             registro.long,

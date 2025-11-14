@@ -1011,13 +1011,24 @@ class Producto extends Model
             $aux_at_impresoCond = " acuerdotecnico.at_impreso in (1) ";
         }
 
+        if(!isset($request->grupocatprom_id) or empty($request->grupocatprom_id)){
+            $aux_grupocatprom_idCond = "true";
+        }else{
+            $aux_grupocatprom_id = $request->grupocatprom_id;
+            if(is_array($request->grupocatprom_id)){
+                $aux_grupocatprom_id = implode(",", $request->grupocatprom_id);
+            }
+            $aux_grupocatprom_idCond = " grupocatpromcategoriaprod.grupocatprom_id in ($aux_grupocatprom_id) ";
+        }
+
 
         $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
             producto.diamextmm,producto.diamextpg,
             producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
             categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
             producto.precioneto,acuerdotecnico.id as acuerdotecnico_id,acuerdotecnico.at_impresofoto,
-            categoriaprod.nombre as categoriaprod_nombre
+            categoriaprod.nombre as categoriaprod_nombre,
+            grupocatpromcategoriaprod.grupocatprom_id,grupocatprom.nombre AS grupocatprom_nombre
             FROM producto INNER JOIN claseprod
             ON producto.claseprod_id=claseprod.id AND isnull(producto.deleted_at) AND isnull(claseprod.deleted_at)
             INNER JOIN categoriaprod
@@ -1028,6 +1039,10 @@ class Producto extends Model
             ON categoriaprodsuc.sucursal_id = sucursal.id AND isnull(sucursal.deleted_at)
             LEFT JOIN acuerdotecnico
             ON producto.id = acuerdotecnico.producto_id AND isnull(acuerdotecnico.deleted_at)
+            LEFT JOIN grupocatpromcategoriaprod
+            ON grupocatpromcategoriaprod.categoriaprod_id = producto.categoriaprod_id
+            LEFT JOIN grupocatprom
+            ON grupocatprom.id = grupocatpromcategoriaprod.grupocatprom_id AND isnull(grupocatprom.deleted_at)
             $aux_cliente_producto_sql
             WHERE $aux_areaproduccion_idCond
             and $aux_producto_idCodn
@@ -1035,6 +1050,7 @@ class Producto extends Model
             and $aux_condsucursal_id
             and tipoprod = 0
             and $aux_at_impresoCond
+            AND $aux_grupocatprom_idCond
             ORDER BY producto.id;";
             $datas = DB::select($sql);
             $producto = New Producto();
