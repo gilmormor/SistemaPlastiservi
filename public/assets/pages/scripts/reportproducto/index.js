@@ -223,6 +223,7 @@ function exportarExcel() {
         var encabezadosExcel = encabezados.map(function(encabezado) {
           return encabezado.innerHTML;
         });
+        datosExcel.push(encabezadosExcel);
         
         // Agregar los datos de la tabla al arreglo
         data.data.forEach(function(registro) {
