@@ -221,7 +221,7 @@ function exportarExcel() {
         // Agregar encabezados de columna al arreglo
         var encabezados = tabla.columns().header().toArray();
         var encabezadosExcel = encabezados.map(function(encabezado) {
-          return encabezado.innerHTML;
+            return encabezado.textContent.trim(); // ← obtiene solo el texto, sin HTML
         });
         datosExcel.push(encabezadosExcel);
         
