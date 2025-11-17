@@ -300,6 +300,7 @@ Pendiente x Producto
                             <th>Razón Social</th>
                             <th>Comuna</th>
                             <th>LugarEntrega</th>
+                            <th title='Tipo de entrega'>TipoEntrega</th>
                             <th class='tooltipsC' title='Código Producto'>Cod</th>
                             <th>Producto</th>
                             <th>Clase<br>Sello</th>
@@ -315,13 +316,14 @@ Pendiente x Producto
                             <th style='text-align:right' class='tooltipsC' title='Kilos Pendiente'>Kilos<br>Pend</th>
                             <th style='text-align:right' class='tooltipsC' title='Precio por Kilo'>Precio<br>Kilo</th>
                             <th style='text-align:right' class='tooltipsC' title='Dinero'>$</th>
+                            <th>Vendedor</th>
                         </tr>
                     </thead>
                     <tbody>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="15" style="text-align:right">TOTALES</th>
+                            <th colspan="16" style="text-align:right">TOTALES</th>
                             <th id="subpicking" name="subpicking" style="text-align:right" class="tooltipsC" title="Total Picking">0</th>
                             <th id="subcant" name="subcant" style="text-align:right" class="tooltipsC" title="Cantidad">0</th>
                             <th id="subsumacantdesp" name="subsumacantdesp" style="text-align:right" class="tooltipsC" title="Cantidad Despachada">0</th>
@@ -331,7 +333,7 @@ Pendiente x Producto
                             <th id="subtotalplata" name="subtotalplata" style="text-align:right" class="tooltipsC" title="Total $">0</th>
                         </tr>
                         <tr>
-                            <th colspan="15" style="text-align:right">PROMEDIO</th>
+                            <th colspan="16" style="text-align:right">PROMEDIO</th>
                             <th colspan="5" style="text-align:right"></th>
                             <th id="prom_precioxkilo" name="prom_precioxkilo" style="text-align:right" class="tooltipsC" title="Precio Kg Promedio">0</th>
                             <th id="prom_totalplata" name="prom_totalplata" style="text-align:right" class="tooltipsC" title="Total $ (Precio promedio)">0</th>

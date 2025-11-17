@@ -223,16 +223,23 @@ function exportarExcel() {
         var encabezadosExcel = encabezados.map(function(encabezado) {
           return encabezado.innerHTML;
         });
-        datosExcel.push(encabezadosExcel);
         
         // Agregar los datos de la tabla al arreglo
         data.data.forEach(function(registro) {
+            if(registro.diametro !== null && registro.diametro !== undefined){
+                aux_diametro = registro.diametro.toString()
+                        .replace(/&quot;/g, '"')
+                        .replace(/&#039;/g, "'");
+            }else{
+                aux_diametro = "";
+            }
+
           var filaExcel = [
             registro.producto_id,
             registro.producto_nombre,
             registro.categoria_nombre,
             registro.grupocatprom_nombre,
-            registro.diametro,
+            aux_diametro,
             registro.cla_nombre,
             registro.long,
             registro.espesor,

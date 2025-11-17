@@ -1092,8 +1092,8 @@ class Producto extends Model
                     //dd($aux_nombreprod);
                     //dd($data);    
                 }
-                $data->producto_nombre = $producto->atributosProducto($data->producto_id)['nombre'];
-
+                $aux_producto = $producto->atributosProducto($data->producto_id);
+                $data->producto_nombre = $aux_producto['nombre'];
             }
             
         //dd($datas);
@@ -1688,7 +1688,8 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
                 FROM vista_sumsoldespdet
                 WHERE notaventa_id=notaventa.id) as totalsubtotalsoldesp,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho,
-        tipoentrega.nombre as tipentnombre,tipoentrega.icono
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+        CONCAT(persona.nombre, ' ', UPPER(LEFT(persona.apellido, 1))) AS vendedor_nombre
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
@@ -1709,6 +1710,10 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         ON tipoentrega.id=notaventa.tipoentrega_id
         INNER JOIN vista_notaventatotales
         ON notaventa.id=vista_notaventatotales.id
+        INNER JOIN vendedor
+        ON notaventa.vendedor_id=vendedor.id
+        INNER JOIN persona
+        ON vendedor.persona_id=persona.id
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -1755,7 +1760,9 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
 
         }
 
-        $sql = "SELECT notaventadetalle.producto_id $aux_campos ,notaventa.sucursal_id
+        $sql = "SELECT notaventadetalle.producto_id $aux_campos ,notaventa.sucursal_id,
+        tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+        CONCAT(persona.nombre, ' ', UPPER(LEFT(persona.apellido, 1))) AS vendedor_nombre
         FROM notaventadetalle INNER JOIN notaventa
         ON notaventadetalle.notaventa_id=notaventa.id
         INNER JOIN producto
@@ -1772,6 +1779,12 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         ON comuna.id=notaventa.comunaentrega_id
         LEFT JOIN acuerdotecnico
         ON notaventadetalle.producto_id = acuerdotecnico.producto_id
+        INNER JOIN tipoentrega
+        ON tipoentrega.id=notaventa.tipoentrega_id
+        INNER JOIN vendedor
+        ON notaventa.vendedor_id=vendedor.id
+        INNER JOIN persona
+        ON vendedor.persona_id=persona.id
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut

@@ -36,6 +36,7 @@ $(document).ready(function () {
                 {data: 'razonsocial'}, // 4
                 {data: 'comunanombre'}, // 5
                 {data: 'lugarentrega'}, // 5
+                {data: 'tipentnombre'},
                 {data: 'producto_id'}, // 6
                 {data: 'nombre'}, // 7
                 {data: 'cla_nombre'}, // 8
@@ -50,7 +51,8 @@ $(document).ready(function () {
                 {data: 'cantsaldo'}, //17
                 {data: 'kgpend'}, //18
                 {data: 'precioxkilo'}, //19
-                {data: 'subtotalplata'} //20
+                {data: 'subtotalplata'}, //20
+                {data: 'vendedor_nombre'} //20                
             ],
             "language": {
                 //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -101,21 +103,21 @@ $(document).ready(function () {
                         ${data.producto_id}
                     </a>`;
                 }
-                $('td', row).eq(8).html(aux_text);
+                $('td', row).eq(9).html(aux_text);
 
                 style='text-align:right' 
-                $('td', row).eq(14).attr('style','text-align:right');
-                $('td', row).eq(14).attr('data-order',data.stockbpt);
-                $('td', row).eq(14).addClass('stock');
-                $('td', row).eq(14).html(MASKLA(data.stockbpt,0));
                 $('td', row).eq(15).attr('style','text-align:right');
-                $('td', row).eq(15).attr('data-order',data.picking);
-                $('td', row).eq(15).addClass('picking');
-                $('td', row).eq(15).html(MASKLA(data.picking,0));
+                $('td', row).eq(15).attr('data-order',data.stockbpt);
+                $('td', row).eq(15).addClass('stock');
+                $('td', row).eq(15).html(MASKLA(data.stockbpt,0));
                 $('td', row).eq(16).attr('style','text-align:right');
-                $('td', row).eq(16).attr('data-order',data.cant);
-                $('td', row).eq(16).addClass('cant');
-                $('td', row).eq(16).html(MASKLA(data.cant,0));
+                $('td', row).eq(16).attr('data-order',data.picking);
+                $('td', row).eq(16).addClass('picking');
+                $('td', row).eq(16).html(MASKLA(data.picking,0));
+                $('td', row).eq(17).attr('style','text-align:right');
+                $('td', row).eq(17).attr('data-order',data.cant);
+                $('td', row).eq(17).addClass('cant');
+                $('td', row).eq(17).html(MASKLA(data.cant,0));
 
                 aux_text = "0"
                 if(data.sumacantdesp > 0){
@@ -124,24 +126,24 @@ $(document).ready(function () {
                         ${MASKLA(data.sumacantdesp,0)}
                     </a>`
                 }
-                $('td', row).eq(17).attr('style','text-align:right');
-                $('td', row).eq(17).attr('data-order',data.sumacantdesp);
-                $('td', row).eq(17).addClass('sumacantdesp');
-                $('td', row).eq(17).html(aux_text);
                 $('td', row).eq(18).attr('style','text-align:right');
-                $('td', row).eq(18).attr('data-order',data.cantsaldo);
-                $('td', row).eq(18).addClass('cantsaldo');
-                $('td', row).eq(18).html(MASKLA(data.cantsaldo,0));
+                $('td', row).eq(18).attr('data-order',data.sumacantdesp);
+                $('td', row).eq(18).addClass('sumacantdesp');
+                $('td', row).eq(18).html(aux_text);
                 $('td', row).eq(19).attr('style','text-align:right');
-                $('td', row).eq(19).attr('data-order',data.kgpend);
-                $('td', row).eq(19).addClass('kgpend');
-                $('td', row).eq(19).html(MASKLA(data.kgpend,0));
+                $('td', row).eq(19).attr('data-order',data.cantsaldo);
+                $('td', row).eq(19).addClass('cantsaldo');
+                $('td', row).eq(19).html(MASKLA(data.cantsaldo,0));
                 $('td', row).eq(20).attr('style','text-align:right');
-                $('td', row).eq(20).html(MASKLA(data.precioxkilo,2));
+                $('td', row).eq(20).attr('data-order',data.kgpend);
+                $('td', row).eq(20).addClass('kgpend');
+                $('td', row).eq(20).html(MASKLA(data.kgpend,0));
                 $('td', row).eq(21).attr('style','text-align:right');
-                $('td', row).eq(21).attr('data-order',data.subtotalplata);
-                $('td', row).eq(21).addClass('totalplata');
-                $('td', row).eq(21).html(MASKLA(data.subtotalplata,0));
+                $('td', row).eq(21).html(MASKLA(data.precioxkilo,2));
+                $('td', row).eq(22).attr('style','text-align:right');
+                $('td', row).eq(22).attr('data-order',data.subtotalplata);
+                $('td', row).eq(22).addClass('totalplata');
+                $('td', row).eq(22).html(MASKLA(data.subtotalplata,0));
             }
         });
     }
@@ -837,7 +839,7 @@ function exportarExcel() {
         aux_totalkgtotal = 0;
         aux_totalmnttotal = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$"]);
+        datosExcel.push(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor"]);
         data.data.forEach(function(registro) {
             aux_cont++;
             aux_totalPicking += registro.picking;
@@ -867,6 +869,7 @@ function exportarExcel() {
                 registro.razonsocial,
                 registro.comunanombre,
                 registro.lugarentrega,
+                registro.tipentnombre,
                 registro.producto_id,
                 aux_productonomb,
                 registro.cla_nombre,
@@ -882,6 +885,7 @@ function exportarExcel() {
                 registro.kgpend,
                 registro.precioxkilo,
                 registro.subtotalplata,
+                registro.vendedor_nombre,
                 registro.at_materiaprima
             ];
             //aux_vendedor_id = registro.vendedor_id;
@@ -891,8 +895,8 @@ function exportarExcel() {
         if(aux_totalMonto > 0){
             prom_preciokg = (aux_totalPreciokg/aux_cont);
             prom_Monto = (aux_totalMonto/aux_cont);
-            datosExcel.push(["","","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);
-            datosExcel.push(["","","","","","","","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
+            datosExcel.push(["","","","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);
+            datosExcel.push(["","","","","","","","","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
         }
 
         createExcel(datosExcel);
@@ -930,10 +934,12 @@ function createExcel(datosExcel) {
     ajustarcolumnaexcel(worksheet,"H");
     ajustarcolumnaexcel(worksheet,"I");
     ajustarcolumnaexcel(worksheet,"J");
+    ajustarcolumnaexcel(worksheet,"K");
+    ajustarcolumnaexcel(worksheet,"X");
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 22; i++) {
+    for (let i = 1; i <= 24; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -958,63 +964,63 @@ function createExcel(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 22; i++) {
+    for (let i = 1; i <= 24; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
         celda.autosize = true;
     }    
 
-    const columnJ = worksheet.getColumn(15);
+    const columnJ = worksheet.getColumn(16);
     columnJ.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
 
-    const columnK = worksheet.getColumn(16);
+    const columnK = worksheet.getColumn(17);
     columnK.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
 
-    const columnL = worksheet.getColumn(17);
+    const columnL = worksheet.getColumn(18);
     columnL.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
 
-    const columnM = worksheet.getColumn(18);
+    const columnM = worksheet.getColumn(19);
     columnM.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
 
-    const columnN = worksheet.getColumn(19);
+    const columnN = worksheet.getColumn(20);
     columnN.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
         }
     });
 
-    const columnO = worksheet.getColumn(20);
+    const columnO = worksheet.getColumn(21);
     columnO.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
         }
     });
 
-    const columnP = worksheet.getColumn(21);
+    const columnP = worksheet.getColumn(22);
     columnP.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
 
-    const columnQ = worksheet.getColumn(22);
+    const columnQ = worksheet.getColumn(23);
     columnQ.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -1023,34 +1029,34 @@ function createExcel(datosExcel) {
 
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
-        const cell7 = worksheet.getCell(i, 8);
+        const cell7 = worksheet.getCell(i, 9);
         cell7.alignment = { horizontal: "center", vertical: "middle" };
 
-        const cell9 = worksheet.getCell(i, 14);
+        const cell9 = worksheet.getCell(i, 15);
         cell9.alignment = { wrapText: true, horizontal: "center", vertical: "middle" };
 
-        const cell10 = worksheet.getCell(i, 15);
+        const cell10 = worksheet.getCell(i, 16);
         cell10.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        const cell11 = worksheet.getCell(i, 16);
+        const cell11 = worksheet.getCell(i, 17);
         cell11.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        const cell12 = worksheet.getCell(i, 17);
+        const cell12 = worksheet.getCell(i, 18);
         cell12.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        const cell13 = worksheet.getCell(i, 18);
+        const cell13 = worksheet.getCell(i, 19);
         cell13.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        const cell14 = worksheet.getCell(i, 19);
+        const cell14 = worksheet.getCell(i, 20);
         cell14.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        const cell15 = worksheet.getCell(i, 20);
+        const cell15 = worksheet.getCell(i, 21);
         cell15.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        const cell16 = worksheet.getCell(i, 21);
+        const cell16 = worksheet.getCell(i, 22);
         cell16.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
-        const cell17 = worksheet.getCell(i, 22);
+        const cell17 = worksheet.getCell(i, 23);
         cell17.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
         /*
@@ -1091,16 +1097,11 @@ function createExcel(datosExcel) {
 
     //Negrilla Totales una linea antes del final 
     row = worksheet.getRow(datosExcel.length-1);
-    cell = row.getCell(8);
+    cell = row.getCell(9);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
 
-    cell = row.getCell(11);
-    cell.font = { bold: true };
-    cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
-
-    cell = row.getCell(15);
+    cell = row.getCell(12);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
@@ -1123,12 +1124,12 @@ function createExcel(datosExcel) {
     cell = row.getCell(19);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0.00";
+    cell.numFmt = "#,##0";
 
     cell = row.getCell(20);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
-    cell.numFmt = "#,##0";
+    cell.numFmt = "#,##0.00";
 
     cell = row.getCell(21);
     cell.font = { bold: true };
@@ -1136,6 +1137,11 @@ function createExcel(datosExcel) {
     cell.numFmt = "#,##0";
 
     cell = row.getCell(22);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0";
+
+    cell = row.getCell(23);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
@@ -1143,16 +1149,16 @@ function createExcel(datosExcel) {
     //Negrilla Promedios
     row = worksheet.getRow(datosExcel.length);
 
-    cell = row.getCell(15);
+    cell = row.getCell(16);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
 
-    cell = row.getCell(21);
+    cell = row.getCell(22);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
 
-    cell = row.getCell(22);
+    cell = row.getCell(23);
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
