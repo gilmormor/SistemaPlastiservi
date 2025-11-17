@@ -233,10 +233,17 @@ function exportarExcel() {
             }else{
                 aux_diametro = "";
             }
+            if(registro.producto_nombre !== null && registro.producto_nombre !== undefined){
+                aux_producto_nombre = registro.producto_nombre.toString()
+                        .replace(/&quot;/g, '"')
+                        .replace(/&#039;/g, "'");
+            }else{
+                aux_producto_nombre = "";
+            }
 
           var filaExcel = [
             registro.producto_id,
-            registro.producto_nombre,
+            aux_producto_nombre,
             registro.categoria_nombre,
             registro.grupocatprom_nombre,
             aux_diametro,
