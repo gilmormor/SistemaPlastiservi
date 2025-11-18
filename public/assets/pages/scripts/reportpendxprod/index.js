@@ -103,7 +103,7 @@ $(document).ready(function () {
                         ${data.producto_id}
                     </a>`;
                 }
-                $('td', row).eq(9).html(aux_text);
+                $('td', row).eq(8).html(aux_text);
 
                 style='text-align:right' 
                 $('td', row).eq(15).attr('style','text-align:right');
