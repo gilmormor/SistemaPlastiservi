@@ -207,13 +207,13 @@
                                     $aux_largo = $detalle->notaventadetalle->producto->long . "Mts";
                                     $aux_largonum = $detalle->notaventadetalle->producto->long;
                                     $aux_cla_sello_nombre = isset($detalle->notaventadetalle->producto->claseprod) ? $detalle->notaventadetalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->nombre;
+                                    //$aux_producto_nombre = $detalle->notaventadetalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->notaventadetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
                                     if ($detalle->notaventadetalle->producto->acuerdotecnico != null){
                                         $AcuTec = $detalle->notaventadetalle->producto->acuerdotecnico;
-                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->notaventadetalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
+                                        //$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->notaventadetalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_anchonum = $AcuTec->at_ancho;
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
@@ -224,6 +224,7 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_staAT = true;
                                     }
+                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->atributosProducto($detalle->notaventadetalle->producto_id)['nombre'];
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -300,6 +301,7 @@
                                                             $i++;
                                                             //dd($invbodegaproductos);
                                                             $request = new Request();
+                                                            $request["invbodegaproducto_id"] = $invbodegaproducto->id;
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;
                                                             $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                             $request["tipo"] = 2;
@@ -386,9 +388,9 @@
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
                                         {{$aux_producto_nombre}}
-                                        @if ($aux_staAT)
+                                        {{-- @if ($aux_staAT)
                                             <br><span class="small-text">{{$aux_atribAcuTec}}</span>
-                                        @endif
+                                        @endif --}}
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                         {{$aux_cla_sello_nombre}}

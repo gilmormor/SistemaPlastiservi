@@ -906,7 +906,7 @@ class CotizacionController extends Controller
                     $cotizacion->aprobstatus = 2;
                     $cotizacion->aprobusu_id = auth()->id();
                     $cotizacion->aprobfechahora = date("Y-m-d H:i:s");
-                    $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion Financiera (Santa Ester)';    
+                    $cotizacion->aprobobs = 'Cotizacion requiere Aprobacion Financiera.'; // (Santa Ester)';    
                 }else{
                     //SEGUN SOLICITUD SE ELIMINO LA VALIDACION DE PRECIOS
                     //ENTONCES SI LA SUCURSAL ES 2 O 3 LA COTIZACION PASA DIRECTO A NOTA DE VENTA    
@@ -1083,7 +1083,7 @@ class CotizacionController extends Controller
             
                         //$cotizacion->aprobstatus = "6"; Este estatus era para acuerdo tecnico aprobado, pero ahora todas las cotizaciones deben pasar por aprobacion de Luisa Martinez
                         $cotizacion->aprobstatus = "2";
-                        $cotizacion->aprobobs = "Cotizacion requiere Aprobacion Financiera (Santa Ester)";
+                        $cotizacion->aprobobs = "Cotizacion requiere Aprobacion Financiera"; //(Santa Ester)";
                     }else{
                         $cotizacion->aprobstatus = "7";
                     }
