@@ -450,13 +450,13 @@
                                     $aux_espesor = $detalle->espesor;
                                     $aux_largo = $detalle->producto->long . "Mts";
                                     $aux_cla_sello_nombre = isset($detalle->producto->claseprod->cla_nombre) ? $detalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $detalle->producto->nombre;
+                                    //$aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
                                     if ($detalle->producto->acuerdotecnico != null){
                                         $AcuTec = $detalle->producto->acuerdotecnico;
-                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
+                                        //$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                                         $aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
@@ -464,7 +464,7 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_staAT = true;
                                     }
-
+                                    $aux_producto_nombre = $detalle->producto->atributosProducto($detalle->producto_id)['nombre'];
                                     if($aux_cant > $sumacantsoldesp){
                                         $aux_nfila++;
                                         $aux_saldo = $aux_cant - $sumacantsoldesp;
@@ -594,6 +594,7 @@
                                                     @if (true or $invbodegaproducto->invbodega->sucursal_id == $data->sucursal_id)
                                                         <?php
                                                             $request = new Request();
+                                                            $request["invbodegaproducto_id"] = $invbodegaproducto->id;
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;
                                                             $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                             $request["tipo"] = 2;
@@ -666,9 +667,9 @@
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
                                         {{$aux_producto_nombre}}
-                                        @if ($aux_staAT)
+                                        {{-- @if ($aux_staAT)
                                             <br><span class='small-text'>{{$aux_atribAcuTec}}</span>
-                                        @endif
+                                        @endif --}}
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                         {{$aux_cla_sello_nombre}}

@@ -178,6 +178,7 @@
                                                         @foreach($invbodegaproductos as $invbodegaproducto)
                                                             <?php
                                                                 $request = new Request();
+                                                                $request["invbodegaproducto_id"] = $invbodegaproducto->id;
                                                                 $request["producto_id"] = $invbodegaproducto->producto_id;
                                                                 $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                                 $request["tipo"] = 2;

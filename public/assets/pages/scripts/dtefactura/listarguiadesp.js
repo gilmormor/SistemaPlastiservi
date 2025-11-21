@@ -68,7 +68,7 @@ $(document).ready(function () {
                     "<a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
                         data.oc_id + 
                     "</a>";
-                $('td', row).eq(4).html(aux_text);
+                $('td', row).eq(5).html(aux_text);
             }
             aux_text = "";
             if(data.notaventa_id != "" && data.notaventa_id != null){

@@ -28,7 +28,7 @@ class InvBodegaProducto extends Model
         return $this->belongsTo(InvBodega::class);
     }
     
-    public static function existencia($request){
+    public static function existenciaOld($request){
         //$request["tipo"] es el valor que define que tipo de bodega se consulta, 1=Bodega normal de almacenaje. 2=Bodega de despago, de esta bodega sale el producto para la calle a traves de la Guia de despacho
         if(isset($request->annomespredef) and $request->annomespredef and isset($request->annomes) and !empty($request->annomes) and $request->annomes != ""){
             $annomes = $request->annomes;
@@ -67,6 +67,47 @@ class InvBodegaProducto extends Model
             $respuesta['stock']['cant'] = 0;
         }
         $respuesta['cont'] = count($array_stock);
+        return $respuesta;
+    }
+    /*  Nueva funcion de existencia para optimizar consultas
+        Se evita hacer sumas en tablas grandes como invmov e invmovdet
+        pero tengo que solucionar el tema de el annomes porque ahora debo consultar primero si el mes
+        anterior ya fue cerrado y el mes actual ya esta abiertp. Debo recibir el codigo de sucursal para
+        consultar en la tabla invcontrol si el mes anterior esta cerrado y el mes actual esta abierto
+        existenciaNew($request)
+    */
+    public static function existencia($request){
+        //$request["tipo"] es el valor que define que tipo de bodega se consulta, 1=Bodega normal de almacenaje. 2=Bodega de despago, de esta bodega sale el producto para la calle a traves de la Guia de despacho
+        if(isset($request->annomespredef) and $request->annomespredef and isset($request->annomes) and !empty($request->annomes) and $request->annomes != ""){
+            $annomes = $request->annomes;
+        }else{
+            $annomes = date("Ym");
+        }
+        $aux_stock = 0;
+        $aux_cont = 0;
+        if($request["invbodegaproducto_id"]){
+            $invbodegaproducto = InvBodegaProducto::findOrFail($request["invbodegaproducto_id"]);
+        }else{
+            $aux_invbodegaproducto = InvBodegaProducto::where("producto_id","=",$request["producto_id"])
+                                        ->where("invbodega_id","=",$request["invbodega_id"])
+                                        ->get();
+            if(count($aux_invbodegaproducto) > 0){
+                $invbodegaproducto = InvBodegaProducto::findOrFail($aux_invbodegaproducto[0]->id);
+            }
+        }
+        if(isset($invbodegaproducto)){
+            $invcontrol = InvControl::where("sucursal_id","=",$invbodegaproducto->invbodega->sucursal_id)
+                            ->where("annomes","=",$annomes)
+                            ->get();
+
+            if(count($invcontrol) > 0){
+                $aux_stock = $invbodegaproducto->stock;
+                $aux_cont = 1;
+            }
+        }
+        $respuesta = array();
+        $respuesta['stock']['cant'] = $aux_stock;
+        $respuesta['cont'] = $aux_cont;
         return $respuesta;
     }
 

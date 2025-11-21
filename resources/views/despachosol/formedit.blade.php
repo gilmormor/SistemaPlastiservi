@@ -488,6 +488,7 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_staAT = true;
                                     }
+                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->atributosProducto($detalle->notaventadetalle->producto_id)['nombre'];
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -591,6 +592,7 @@
                                                         <?php
                                                             $i++;
                                                             $request = new Request();
+                                                            $request["invbodegaproducto_id"] = $invbodegaproducto->id;
                                                             $request["producto_id"] = $invbodegaproducto->producto_id;
                                                             $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
                                                             $request["tipo"] = 2;
@@ -668,9 +670,9 @@
                                     </td>
                                     <td name="nombreProdTD{{$aux_nfila}}" id="nombreProdTD{{$aux_nfila}}">
                                         {{$aux_producto_nombre}}
-                                        @if ($aux_staAT)
+                                        {{-- @if ($aux_staAT)
                                             <br><span class="small-text">{{$aux_atribAcuTec}}</span>
-                                        @endif
+                                        @endif --}}
                                     </td>
                                     <td name="cla_nombreTD{{$aux_nfila}}" id="cla_nombreTD{{$aux_nfila}}">
                                         {{$aux_cla_sello_nombre}}

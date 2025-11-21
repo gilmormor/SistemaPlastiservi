@@ -825,6 +825,7 @@ class DteFacturaController extends Controller
                                 if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
                                     $aux_bodegadespacho_id = $invmovmodulobodent->id;
                                     $requestProd = new Request();
+                                    $requestProd["invbodegaproducto_id"] = $oddetbodprod->invbodegaproducto->id;
                                     $requestProd["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                                     $requestProd["invbodega_id"] = $aux_bodegadespacho_id;
                                     $requestProd["tipo"] = 2;
