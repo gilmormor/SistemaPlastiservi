@@ -132,6 +132,7 @@ class InvBodPesajeaBodProdTermController extends Controller
             $requestProd["annomespredef"] = true;
             $requestProd["annomes"] = CategoriaGrupoValMes::annomes($request->annomes);
             $requestProd["data_id"] = $data->invbodegaproducto_id;
+            $requestProd["invbodegaproducto_id"] = $data->invbodegaproducto_id;
             $requestProd["producto_id"] = $data->producto_id;
             $requestProd["invbodega_id"] = $data->invbodega_id;
             $arrayExistencia = InvBodegaProducto::existencia($requestProd);
