@@ -17,6 +17,7 @@ class CreateTableOperario extends Migration
             $table->bigIncrements('id');
             $table->string('nombre',100)->comment('Nombre Operario')->nullable();
             $table->string('desc',200)->comment('Descripcion')->nullable();
+            $table->tinyInteger('activo')->default(1)->comment('Estatus activo o inactivo.');
             $table->unsignedBigInteger('usuario_id');
             $table->foreign('usuario_id','fk_operario_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();

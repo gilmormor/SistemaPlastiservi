@@ -10,6 +10,7 @@ use App\Models\AreaProduccionSucEtapaProd;
 use App\Models\EtapaProd;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
+use App\Models\UnidadMedida;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,6 +30,8 @@ class AreaProduccionSucEtapaProdController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
+        $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')
+                        ->get();
         return view('areaproduccionsucetapaprod.index',compact('tablas'));
     }
 
@@ -45,6 +48,7 @@ class AreaProduccionSucEtapaProdController extends Controller
             $aux_areaproduccionsuc_idCond = "areaproduccionsucetapaprod.areaproduccionsuc_id = $request->areaproduccionsuc_id";
         }
         $sql = "SELECT areaproduccionsucetapaprod.id,etapaprod.nombre as etapaprod_nombre,
+            unidadmedida_id,
             areaproduccionsucetapaprod.orden,
             UNIX_TIMESTAMP(areaproduccionsucetapaprod.updated_at) as updatednum_at,
             areaproduccionsucetapaprod.updated_at
@@ -106,7 +110,7 @@ class AreaProduccionSucEtapaProdController extends Controller
     {
         can('guardar-area-produccion-suc-etapa-prod');
         //dd($request);
-        $AreaProduccionSucEtapaProd = AreaProduccionSucEtapaProd::findOrFail($request->areaproduccionetapaprod_id);
+        $AreaProduccionSucEtapaProd = AreaProduccionSucEtapaProd::findOrFail($request->areaproduccionsucetapaprod_id);
         if(strtotime($AreaProduccionSucEtapaProd->updated_at) != $request->updatednum_at){
             return response()->json([
                 'id' => 0,
@@ -114,7 +118,7 @@ class AreaProduccionSucEtapaProdController extends Controller
                 'tipo_alert' => 'error'
             ]);    
         }
-
+        $AreaProduccionSucEtapaProd->unidadmedida_id = $request->unidadmedida_id;
         $AreaProduccionSucEtapaProd->orden = $request->orden;
         $AreaProduccionSucEtapaProd->updated_at = date("Y-m-d H:i:s");
         if($AreaProduccionSucEtapaProd->save()){

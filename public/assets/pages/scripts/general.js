@@ -67,10 +67,15 @@ $(document).ready(function () {
 
 	$(".numerico").blur(function(e){
 		if($(this).attr('valor') != undefined){
-			$(this).attr('valor',$(this).val());
+			let aux_valorStr = $(this).val();
+			let aux_valor = parseFloat(aux_valorStr) || 0;
+			$(this).attr('valor',aux_valor == 0 ? '' : aux_valor);
 			//$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
-			$(this).val(MASKLA($(this).val(),2));
-
+			if(aux_valor == 0){
+				$(this).val('');
+			}else{
+				$(this).val(MASKLA($(this).val(),2));
+			}
 		}
 	});
 	$(".numerico").focus(function(e){

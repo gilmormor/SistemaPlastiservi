@@ -14,8 +14,6 @@ class AddApetapaprodIdTableOpdet extends Migration
     public function up()
     {
         Schema::table('opdet', function (Blueprint $table) {
-            $table->unsignedBigInteger('apetapaprod_id')->nullable()->after('op_id')->comment('Id apetapaprod.');
-            $table->foreign('apetapaprod_id','fk_opdet_apetapaprod')->references('id')->on('areaproduccionetapaprod')->onDelete('restrict')->onUpdate('restrict');
             $table->float('kg',18,2)->comment('Kg programados para producir.')->default(0)->after('obs');
             $table->float('cant',18,2)->comment('Cantidad programados, si corresponde.')->default(0)->after('kg');
             $table->float('saldokg',18,2)->comment('Saldo Kg por producir.')->default(0)->after('cant');
@@ -31,8 +29,6 @@ class AddApetapaprodIdTableOpdet extends Migration
     public function down()
     {
         Schema::table('opdet', function (Blueprint $table) {
-            $table->dropForeign('fk_opdet_apetapaprod');
-            $table->dropColumn('apetapaprod_id');
             $table->dropColumn('kg');
             $table->dropColumn('cant');
             $table->dropColumn('saldokg');

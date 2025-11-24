@@ -35,12 +35,6 @@ class AreaProduccion extends Model
     {
         return $this->hasMany(AreaProduccionSuc::class,'areaproduccion_id');
     }
-
-    //RELACION MUCHOS A MUCHOS EtapaProd
-    public function etapaprods()
-    {
-        return $this->belongsToMany(EtapaProd::class, 'areaproduccionetapaprod','areaproduccion_id','etapaprod_id')->withTimestamps();
-    }
     
     public static function areaproduccionxusuario(){
         $user = Usuario::findOrFail(auth()->id());

@@ -445,7 +445,7 @@ Route::post('clientetemp/buscarCliTemp', 'ClienteTempController@buscarCliTemp')-
 /*RUTAS AREAPRODUCCION*/
 Route::get('areaproduccion', 'AreaProduccionController@index')->name('areaproduccion');
 Route::get('areaproduccionpage', 'AreaProduccionController@areaproduccionpage')->name('areaproduccionpage');
-Route::get('areaproduccionetapaprodpage', 'AreaProduccionController@areaproduccionetapaprodpage')->name('areaproduccionetapaprodpage');
+Route::get('areaproduccionsucetapaprodpage', 'AreaProduccionController@areaproduccionsucetapaprodpage')->name('areaproduccionsucetapaprodpage');
 Route::get('areaproduccion/crear', 'AreaProduccionController@crear')->name('crear_areaproduccion');
 Route::post('areaproduccion', 'AreaProduccionController@guardar')->name('guardar_areaproduccion');
 Route::get('areaproduccion/{id}/editar', 'AreaProduccionController@editar')->name('editar_areaproduccion');
@@ -1716,3 +1716,56 @@ Route::get('areaproduccionsucetapaprod/{id}/editar', 'AreaProduccionSucEtapaProd
 Route::put('areaproduccionsucetapaprod/{id}', 'AreaProduccionSucEtapaProdController@actualizar')->name('actualizar_areaproduccionsucetapaprod');
 Route::get('areaproduccionsucetapaprod/sucetapaprodpage', 'AreaProduccionSucEtapaProdController@sucetapaprodpage')->name('sucetapaprodpage');
 Route::post('areaproduccionsucetapaprod/guardarordenetapaprod', 'AreaProduccionSucEtapaProdController@guardarordenetapaprod')->name('guardarordenetapaprod_areaproduccionsucetapaprod');
+
+/*RUTAS ACUERDO TECNICO ETAPAS DE PRODUCCION*/
+Route::get('acuerdotecnicoetapaprod', 'AcuerdoTecnicoEtapaProdController@index')->name('acuerdotecnicoetapaprod');
+Route::get('acuerdotecnicoetapaprodpage', 'AcuerdoTecnicoEtapaProdController@acuerdotecnicoetapaprodpage')->name('acuerdotecnicoetapaprodpage');
+Route::get('acuerdotecnicoetapaprod/{id}/editar', 'AcuerdoTecnicoEtapaProdController@editar')->name('editar_acuerdotecnicoetapaprod');
+Route::put('acuerdotecnicoetapaprod/{id}', 'AcuerdoTecnicoEtapaProdController@actualizar')->name('actualizar_acuerdotecnicoetapaprod');
+
+/*RUTAS PRODUCCION MOVIMIENTO ANTES DE PRODUCCION FINAL*/
+Route::get('opdetregprodtemp/etapaprod', 'OpDetRegProdTempController@etapaprod')->name('opdetregprodtemp_etapaprod');
+
+Route::get('opdetregprodtemp/selecetapaprod', 'OpDetRegProdTempController@selecetapaprod')->name('opdetregprodtemp_selecetapaprod');
+Route::get('selecetapaprodpage', 'OpDetRegProdTempController@selecetapaprodpage')->name('selecetapaprodpage');
+Route::get('opdetregprodtemp/set/{id}', 'OpDetRegProdTempController@setId')->name('opdetregprodtemp_set');
+Route::get('opdetregprodtemp', 'OpDetRegProdTempController@index')->name('opdetregprodtemp');
+Route::get('opdetregprodtemp/index01', 'OpDetRegProdTempController@index01')->name('opdetregprodtemp_index01');
+Route::get('opdetregprodtemppage', 'OpDetRegProdTempController@opdetregprodtemppage')->name('opdetregprodtemppage');
+Route::get('opdetregprodtemp/crearini/{id}/{updated_at}', 'OpDetRegProdTempController@crearini')->name('crearini_opdetregprodtemp');
+Route::get('opdetregprodtemp/crear', 'OpDetRegProdTempController@crear')->name('crear_opdetregprodtemp');
+Route::post('opdetregprodtemp', 'OpDetRegProdTempController@guardar')->name('guardar_opdetregprodtemp');
+Route::get('opdetregprodtemp/{id}/editar', 'OpDetRegProdTempController@editar')->name('editar_opdetregprodtemp');
+Route::put('opdetregprodtemp/{id}', 'OpDetRegProdTempController@actualizar')->name('actualizar_opdetregprodtemp');
+Route::delete('opdetregprodtemp/opdetregprodtemp/{id}', 'OpDetRegProdTempController@eliminar')->name('eliminar_opdetregprodtemp');
+Route::get('opdetregprodtemp/listaropdet', 'OpDetRegProdTempController@listaropdet')->name('opdetregprodtemp_listaropdet');
+Route::get('opdetregprodtemp/listaropdetpage', 'OpDetRegProdTempController@listaropdetpage')->name('opdetregprodtemp_listaropdetpage');
+Route::post('opdetregprodtemp/enviaraprob/{id}', 'OpDetRegProdTempController@enviaraprob')->name('opdetregprodtemp_enviaraprob');
+
+/*RUTAS PERSONA ETAPAS DE PRODUCCION*/
+Route::get('personaetapaprod', 'PersonaEtapaProdController@index')->name('personaetapaprod');
+Route::get('personaetapaprodpage', 'PersonaEtapaProdController@personaetapaprodpage')->name('personaetapaprodpage');
+Route::get('personaetapaprod/{id}/editar', 'PersonaEtapaProdController@editar')->name('editar_personaetapaprod');
+Route::put('personaetapaprod/{id}', 'PersonaEtapaProdController@actualizar')->name('actualizar_personaetapaprod');
+
+/*RUTAS REGISTRO DE PRODUCCION*/
+Route::get('etapasprodxpersona', 'EtapasProdxPersonaController@index')->name('etapasprodxpersona');
+Route::get('etapasprodxpersonapage', 'EtapasProdxPersonaController@etapasprodxpersonapage')->name('etapasprodxpersonapage');
+
+Route::get('op/exportPdf/{id}', 'OpController@exportPdf')->name('exportPdf_op');
+
+Route::get('opdetregprodtempaprobsup/selecetapaprod', 'OpDetRegProdTempAprobSupController@selecetapaprod')->name('opdetregprodtempaprobsup_selecetapaprod');
+Route::get('opdetregprodtempaprobsup/selecetapaprodpage', 'OpDetRegProdTempAprobSupController@selecetapaprodpage')->name('opdetregprodtempaprobsup_selecetapaprodpage');
+Route::get('opdetregprodtempaprobsup/set/{id}', 'OpDetRegProdTempAprobSupController@setId')->name('opdetregprodtempaprobsup_set');
+Route::get('opdetregprodtempaprobsup', 'OpDetRegProdTempAprobSupController@index')->name('opdetregprodtempaprobsup');
+Route::get('opdetregprodtempaprobsup/index01', 'OpDetRegProdTempAprobSupController@index01')->name('opdetregprodtempaprobsup_index01');
+Route::get('opdetregprodtempaprobsuppage', 'OpDetRegProdTempAprobSupController@opdetregprodtempaprobsuppage')->name('opdetregprodtempaprobsuppage');
+Route::get('opdetregprodtempaprobsup/crearini/{id}/{updated_at}', 'OpDetRegProdTempAprobSupController@crearini')->name('crearini_opdetregprodtempaprobsup');
+Route::get('opdetregprodtempaprobsup/crear', 'OpDetRegProdTempAprobSupController@crear')->name('crear_opdetregprodtempaprobsup');
+Route::post('opdetregprodtempaprobsup', 'OpDetRegProdTempAprobSupController@guardar')->name('guardar_opdetregprodtempaprobsup');
+Route::get('opdetregprodtempaprobsup/{id}/editar', 'OpDetRegProdTempAprobSupController@editar')->name('editar_opdetregprodtempaprobsup');
+Route::put('opdetregprodtempaprobsup/{id}', 'OpDetRegProdTempAprobSupController@actualizar')->name('actualizar_opdetregprodtempaprobsup');
+Route::delete('opdetregprodtempaprobsup/{id}', 'OpDetRegProdTempAprobSupController@eliminar')->name('eliminar_opdetregprodtempaprobsup');
+Route::get('opdetregprodtempaprobsup/listaropdet', 'OpDetRegProdTempAprobSupController@listaropdet')->name('opdetregprodtempaprobsup_listaropdet');
+Route::get('opdetregprodtempaprobsup/listaropdetpage', 'OpDetRegProdTempAprobSupController@listaropdetpage')->name('opdetregprodtempaprobsup_listaropdetpage');
+Route::post('opdetregprodtempaprobsup/aprob/{id}', 'OpDetRegProdTempAprobSupController@aprob')->name('opdetregprodtempaprobsup_aprob');

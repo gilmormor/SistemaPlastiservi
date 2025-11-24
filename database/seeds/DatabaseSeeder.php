@@ -2,6 +2,7 @@
 
 use App\Models\Color;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -53,6 +54,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TablaPersonaSeeder::class);
         $this->call(TablaVendedorSeeder::class);
         $this->call(TablaJefatura_sucursal_area_personaSeeder::class);
+        $this->call(EtapaProdSeeder::class);
     }
     protected function truncateTablas(array $tablas){
         DB::statement('SET FOREIGN_KEY_CHECKS = 0;');

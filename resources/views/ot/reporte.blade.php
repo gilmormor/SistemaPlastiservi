@@ -95,7 +95,7 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="4" class="textright"><span><strong>Total</strong></span></td>
+					<td colspan="5" class="textright"><span><strong>Total</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($totalkg, 2, ",", ".")}}</strong></span></td>
 				</tr>
 			</tfoot>

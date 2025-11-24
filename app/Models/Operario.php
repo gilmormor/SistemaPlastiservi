@@ -12,14 +12,15 @@ class Operario extends Model
     protected $fillable = [
         'nombre',
         'desc',
+        'activo',
         'usuario_id',
         'usuariodel_id'
     ];
 
-    //RELACION MUCHO A MUCHOS CON areaproduccionsuc A TRAVES DE operario_areaproduccionsuc
-    public function areaproduccionsucs()
+    //RELACION MUCHO A MUCHOS CON areaproduccionsuc A TRAVES DE operario_areaproduccionsucep
+    public function areaproduccionsuceps()
     {
-        return $this->belongsToMany(AreaProduccionSuc::class, 'operario_areaproduccionsuc','operario_id','areaproduccionsuc_id')->withTimestamps();
+        return $this->belongsToMany(AreaProduccionSucEtapaProd::class, 'operario_areaproduccionsucep','operario_id','areaproduccionsucep_id')->withTimestamps();
     }
     
     
