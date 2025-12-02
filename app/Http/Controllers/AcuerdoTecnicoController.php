@@ -7,6 +7,7 @@ use App\Models\AcuerdoTecnicoTemp;
 use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\Empresa;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -93,7 +94,15 @@ class AcuerdoTecnicoController extends Controller
     public function buscaratxcampos(Request $request)
     {
         if($request->ajax()){
-            //dd($request);
+            /* $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
+                        FROM acuerdotecnico INNER JOIN producto
+                        on acuerdotecnico.producto_id = producto.id
+                        and isnull(acuerdotecnico.deleted_at)
+                        WHERE acuerdotecnico.id IN (1362,1429,1430);";
+                        $datas = DB::select($sql);
+                        //dd($datas);
+            return $datas; */
+            //dd($request->at_impreso);
             $aux_ta_fuelleCond = " true ";
             if(!is_null($request->at_fuelle)){
                 $aux_ta_fuelleCond = "if(isnull(at_fuelle),'',at_fuelle) = $request->at_fuelle";
@@ -145,8 +154,15 @@ class AcuerdoTecnicoController extends Controller
             and $aux_Condat_formatofilm
             and at_etiqplastiservi = $request->at_etiqplastiservi
             and isnull(acuerdotecnico.deleted_at)";
+            //dd($sql);
             $datas = DB::select($sql);
             //dd($datas);
+            foreach ($datas as &$data) {
+                $producto = Producto::find($data->producto_id);
+                $producto_atributos = $producto->atributosProducto($data->producto_id);
+                $data->producto_nombre = $producto_atributos['nombre'];
+            }
+
             return $datas;
             //return datatables($datas)->toJson();
     

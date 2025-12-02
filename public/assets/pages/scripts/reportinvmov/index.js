@@ -243,7 +243,7 @@ function consultarpage(data){
                     ${data.producto_id}
                 </a>`;
                 $('td', row).eq(5).html(aux_text);
-                $('td', row).eq(5).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"");');
+                $('td', row).eq(5).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"");');
             }
             
             $('td', row).eq(9).attr('data-order',data.cant);

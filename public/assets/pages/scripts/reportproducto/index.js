@@ -54,12 +54,12 @@ $(document).ready(function () {
                         aux_cliente_id = 0;
                     }
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${data.acuerdotecnico_id},${aux_cliente_id},"")'>
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${data.acuerdotecnico_id},${aux_cliente_id},1,"")'>
                         ${data.producto_id}
                     </a>`;
                     if(data.at_impresofoto != "" && data.at_impresofoto != null){
                         aux_text += 
-                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
+                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
                                 <i class="fa fa-fw fa-photo"></i>
                             </a>`;
                     }

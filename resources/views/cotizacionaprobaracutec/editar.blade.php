@@ -15,7 +15,7 @@
 
 @section('scripts')
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cotizacion/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cotizacionaprobaracutec/crear.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script>
 @endsection
@@ -32,7 +32,7 @@
             <form action="{{route('actualizar_cotizacion', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off" enctype="multipart/form-data">
                 @csrf @method("put")
                 <div class="box-body">
-                    @include('cotizacion.form')
+                    @include('cotizacionaprobaracutec.form')
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
@@ -48,4 +48,5 @@
     </div>
 </div>
 @include('generales.modalpdf')
+@include('generales.mostraratycliche')
 @endsection

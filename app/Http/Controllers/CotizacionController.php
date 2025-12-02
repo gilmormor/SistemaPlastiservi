@@ -1065,17 +1065,21 @@ class CotizacionController extends Controller
             }else{
                 if($cotizacion->aprobstatus == "5"){ //Aprobar o rechazar acuerdo tecnico
                     if($request->valor == "3"){
+                        $aux_cont = 0;
                         foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
+                            $aux_cont++;
                             if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
                                 $array_acuerdotecnicotemp = $cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
                                 //BUSCAR ACUERDO TECNICO
                                 $at = AcuerdoTecnico::buscaratxcampos($array_acuerdotecnicotemp);
-                                if(count($at) > 0){
+                                if(count($at) > 0 and $array_acuerdotecnicotemp["at_impreso"] != 1){
                                     //SI EXISTE DEVUELVO EL ACUERDO TECNICO A LA VISTA
                                     return response()->json([
                                         'id' => 0,
-                                        'mensaje' => 'Acuerdo tecnico ya existe',
-                                        'at' => $at[0]
+                                        'mensaje' => 'Acuerdo tecnico ya existe. Item ' . $aux_cont,
+                                        'at' => $at[0],
+                                        'at_temp' => $array_acuerdotecnicotemp,
+                                        'item'=> $aux_cont
                                     ]);
                                 }
                             }

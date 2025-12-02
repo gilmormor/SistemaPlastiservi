@@ -54,9 +54,9 @@ $(document).ready(function () {
 	}
 	//$("#rut").numeric();
 	$("#cantM").numeric();
-	$("#precioM").numeric({decimalPlaces: 2});
+	$("#precioM").numeric({decimalPlaces: 3});
 	$(".numerico").numeric();
-	//$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
+	$( "#myModal" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBusqueda" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$( "#myModalBuscarProd" ).draggable({opacity: 0.35, handle: ".modal-header"});
 	$(".modal-body label").css("margin-bottom", -2);
@@ -127,24 +127,19 @@ $(document).ready(function () {
 		}
 	});
 	$("#btnbuscarproducto").click(function(e){
-		//e.preventDefault();
+		e.preventDefault();
 		$(this).val("");
 		$(".input-sm").val('');
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
-		/*San Bernardo sustituido por funcion cargardatospantprod();
-		data = datos();
-		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
-		*/
-		cargardatospantprod();
-		$("#DivchVerAcuTec").hide();
-		$('#myModal')
-			.modal('hide')
-			.on('hidden.bs.modal', function (e) {
-				$('#myModalBuscarProd').modal('show');
 
-				$(this).off('hidden.bs.modal'); // Remove the 'on' event binding
-			});
+		$('#myModal')
+               .modal('hide')
+               .on('hidden.bs.modal', function (e) {
+                   $('#myModalBuscarProd').modal('show');
+
+                   $(this).off('hidden.bs.modal'); // Remove the 'on' event binding
+               });
 
 	});
 
@@ -175,13 +170,12 @@ $(document).ready(function () {
 	aux_imagen = $("#imagen").val();
 	$('#oc_file').fileinput({
 		language: 'es',
-		allowedFileExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+		allowedFileExtensions: ['jpg', 'jpeg', 'png', "pdf"],
 		maxFileSize: 400,
 		initialPreview: [
 			// PDF DATA
 			'/storage/imagenes/notaventa/'+$("#imagen").val(),
 		],
-		initialPreviewShowDelete: false,
 		initialPreviewAsData: true, // identify if you are sending preview data only and not the raw markup
 		initialPreviewFileType: 'image', // image is the default and can be overridden in config below
 		initialPreviewDownloadUrl: 'https://kartik-v.github.io/bootstrap-fileinput-samples/samples/{filename}', // includes the dynamic `filename` tag to be replaced for each config
@@ -194,16 +188,6 @@ $(document).ready(function () {
 		dropZoneEnabled: false,
 		maxFileCount: 5,
         theme: "fa",
-	}).on('fileclear', function(event) {
-		//console.log("fileclear");
-		$('#oc_file').attr("data-initial-preview","");
-		$("#imagen").val("");
-		//alert('entro');
-	}).on('fileimageloaded', function(e, params) {
-		//console.log('Paso');
-		//console.log('File uploaded params', params);
-		//console.log($('#oc_file').val());
-		$("#imagen").val($('#oc_file').val());
 	});
 
 	$("#input-pd").fileinput({
@@ -212,7 +196,6 @@ $(document).ready(function () {
 		minFileCount: 2,
 		maxFileCount: 5,
 		overwriteInitial: false,
-		layoutTemplates: {actionDelete: ''}, // disable thumbnail deletion
 		initialPreview: [
 			// PDF DATA
 			'/storage/imagenes/notaventa/238.pdf',
@@ -229,14 +212,9 @@ $(document).ready(function () {
 			img_keywords: "happy, places"
 		}
 	}).on('filesorted', function(e, params) {
-		//console.log('File sorted params', params);
-		//alert('entro 1');
+		console.log('File sorted params', params);
 	}).on('fileuploaded', function(e, params) {
-		//console.log('File uploaded params', params);
-		//alert('entro 2');
-	}).on('fileclear', function(event) {
-		//console.log("fileclear");
-		//alert('entro');
+		console.log('File uploaded params', params);
 	});
 
 	$('#foto').fileinput({
@@ -261,16 +239,6 @@ $(document).ready(function () {
 		$("#vendedor_id").val($("#vendedor_idD").val());
 	});
 
-	fecha = charToDate($("#fechahora").val());
-	$("#plazoentrega").datepicker({
-		language: "es",
-		autoclose: true,
-        clearBtn : true,
-		startDate: fecha,
-		todayHighlight: true
-	}).datepicker("setDate");
-
-
 /*
 	$("#oc_file").fileinput({
 		autoReplace: true,
@@ -288,77 +256,11 @@ $(document).ready(function () {
 		allowedFileExtensions: ["jpg", "png", "gif", "pdf"]
 	});
 */
-
-	$(".kv-file-remove").hide();
-	$(".file-drag-handle").hide();
-
-	if($("#staapronv").val() == "1"){
-		/*
-		$("#cotizacion_id").prop('disabled', false);
-		$("#clientedirec_id").prop('disabled', false);
-		$("#plazoentrega").prop('disabled', false);
-		$("#lugarentrega").prop('disabled', false);
-		*/
-		
-		$("#vendedor_idD").prop('disabled', true);
-		$("#tipoentrega_id").prop('disabled', true);
-		$("#sucursal_id").prop('disabled', true);
-		$("#lugarentrega").prop('disabled', true);
-		$("#comunaentrega_id").prop('disabled', true);
-		$("#contacto").prop('disabled', true);
-		$("#oc_id").prop('disabled', true);
-		$("#contactotelf").prop('disabled', true);
-		$("#contactoemail").prop('disabled', true);
-		$("#observacion").prop('disabled', true);
-		$("#oc_file").prop('disabled', true);
-		$("#oc_file").prop('readonly', true);
-		$(".input-group .file-caption-main").hide();
-		
-	}
-
-	// Crear el array para almacenar los datos
-	const centroeconomicoArray = [];
-
-	// Recorrer las opciones del select
-	$('#centroeconomicoarray_id option').each(function () {
-		centroeconomicoArray.push({
-			sucursal_id: $(this).attr('sucursal_id'),
-			centroeconomico_id: $(this).attr('centroeconomico_id'),
-			nombre: $(this).text()
-		});
-	});
-	aux_centroeconomico_id = $('#centroeconomico01_id').val();
-	$('#sucursal_id').on('change', function () {
-		const sucursalId = parseInt($(this).val());
-		const centroeconomicoSelect = $('#centroeconomico_id');
-
-		// Limpiar el select de centroeconomicos
-		centroeconomicoSelect.empty();
-		centroeconomicoSelect.append('<option value="">Seleccione...</option>');
-		if (sucursalId) {
-			// Filtrar los centros económicos por sucursal_id
-			const filtrados = centroeconomicoArray.filter(centro => centro.sucursal_id == sucursalId);
-
-			// Agregar las opciones al select
-			filtrados.forEach(centro => {
-				aux_seleccionado = "";
-				if(aux_centroeconomico_id == centro.centroeconomico_id){
-					aux_seleccionado = "selected";
-				}
-				centroeconomicoSelect.append(
-					`<option value="${centro.centroeconomico_id}" ${aux_seleccionado}>${centro.nombre}</option>`
-				);
-			});
-			if (filtrados.length == 1){
-				centroeconomicoSelect.val(filtrados[0].centroeconomico_id);
-			}
-
-		}
-	});
-	$('#sucursal_id').change();
-
+	$(".input-group .file-caption-main").hide();
 });
-/*
+
+
+
 $("#botonNewProd").click(function(event)
 {
 	clientedirec_id = $("#clientedirec_id").val();
@@ -376,19 +278,14 @@ $("#botonNewProd").click(function(event)
 		$("#producto_idM").focus();	
 	}
 });
-*/
+
 
 function insertarTabla(){
 	$("#trneto").remove();
 	$("#triva").remove();
 	$("#trtotal").remove();
 	//aux_nfila = 1; 
-	aux_nfila = 0;
-	$("#tabla-data tr .filaproducto_id").each(function() {
-		fila = $(this).attr('fila') ;
-		aux_nfila = Number(fila);
-	});
-	//var aux_nfila = $("#tabla-data tbody tr").length;
+	var aux_nfila = $("#tabla-data tbody tr").length;
 	aux_nfila++;
 	//alert(aux_nfila);
 	aux_nombre = $("#nombreprodM").val();
@@ -405,16 +302,10 @@ function insertarTabla(){
 		aux_precioxkilo = 0; //$("#precioM").attr("valor");
 		aux_precioxkiloreal = 0; // $("#precioxkilorealM").val();
 	}
-	if($("#unidadmedida_idM option:selected").attr('value') == 7){
-		aux_precioxkilo = $("#precioM").attr("valor");
-		aux_precioxkiloreal = $("#precioM").attr("valor");		
-	}
 
-    var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '" class="cat' + $("#categoriaprod_id").val() + ' prod_id'  + $("#producto_idM").val() + '">'+
-			'<td name="producto_idTDT'+ aux_nfila + '" id="producto_idTDT'+ aux_nfila + '" style="text-align:center;" categoriaprod_id="' + $("#categoriaprod_id").val() + '" class="filaproducto_id" fila="'+ aux_nfila + '">'+  
-				$("#producto_idM").val() +
-			'</td>'+
-			'<td style="display:none;" name="NVdet_idTD'+ aux_nfila + '" id="NVdet_idTD'+ aux_nfila + '">'+ 
+
+    var htmlTags = '<tr name="fila'+ aux_nfila + '" id="fila'+ aux_nfila + '">'+
+			'<td name="NVdet_idTD'+ aux_nfila + '" id="NVdet_idTD'+ aux_nfila + '">'+ 
 				'0'+
 			'</td>'+
 			'<td style="display:none;">'+
@@ -423,7 +314,7 @@ function insertarTabla(){
 			'<td name="producto_idTD'+ aux_nfila + '" id="producto_idTD'+ aux_nfila + '" style="display:none;">'+ 
 				'<input type="text" name="producto_id[]" id="producto_id'+ aux_nfila + '" class="form-control" value="'+ $("#producto_idM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td style="display:none;" name="codintprodTD'+ aux_nfila + '" id="codintprodTD'+ aux_nfila + '">'+ 
+			'<td name="codintprodTD'+ aux_nfila + '" id="codintprodTD'+ aux_nfila + '">'+ 
 				codintprod+
 			'</td>'+
 			'<td style="display:none;">'+ 
@@ -435,14 +326,11 @@ function insertarTabla(){
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="cant[]" id="cant'+ aux_nfila + '" class="form-control" value="'+ $("#cantM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="nombreProdTD'+ aux_nfila + '" id="nombreProdTD'+ aux_nfila + '" categoriaprod_nombre="' + aux_nombre +'">'+ 
+			'<td name="nombreProdTD'+ aux_nfila + '" id="nombreProdTD'+ aux_nfila + '">'+ 
 				aux_nombre+
 			'</td>'+
 			'<td style="display:none;">'+ 
-				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="' + $("#unidadmedida_idM option:selected").attr('value') + '" style="display:none;"/>'+
-			'</td>'+
-			'<td name="unidadmedida_nombreTD'+ aux_nfila + '" id="unidadmedida_nombreTD'+ aux_nfila + '">' +
-				$("#unidadmedida_idM option:selected").html() +
+				'<input type="text" name="unidadmedida_id[]" id="unidadmedida_id'+ aux_nfila + '" class="form-control" value="4" style="display:none;"/>'+
 			'</td>'+
 			'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
 				$("#cla_nombreM").val()+
@@ -453,22 +341,20 @@ function insertarTabla(){
 			'<td style="display:none;">'+ 
 				'<input type="text" name="diamextmm[]" id="diamextmm'+ aux_nfila + '" class="form-control" value="'+ $("#diamextmmM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
-				$("#largoM").attr('valor')+
-			'</td>'+
-			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ $("#largoM").attr('valor') +'" style="display:none;"/>'+
-			'</td>'+
 			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA($("#espesor1M").attr('valor'),3)+
+				$("#espesorM").val()+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="espesor[]" id="espesor'+ aux_nfila + '" class="form-control" value="'+ $("#espesor1M").attr('valor') +'" style="display:none;"/>'+
-				'<input type="text" name="ancho[]" id="ancho'+ aux_nfila + '" class="form-control" value="'+ $("#anchoM").attr('valor') +'" style="display:none;"/>'+
-				'<input type="text" name="obs[]" id="obs'+ aux_nfila + '" class="form-control" value="'+ $("#obsM").val() +'" style="display:none;"/>'+
+				'<input type="text" name="espesor[]" id="espesor'+ aux_nfila + '" class="form-control" value="'+ $("#espesorM").val() +'" style="display:none;"/>'+
+			'</td>'+
+			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
+				$("#longM").val()+
+			'</td>'+
+			'<td style="text-align:right;display:none;">'+ 
+				'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ $("#longM").val() +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="pesoTD'+ aux_nfila + '" id="pesoTD'+ aux_nfila + '" style="text-align:right;">'+ 
-				MASKLA($("#pesoM").val(),3)+
+				$("#pesoM").val()+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ $("#pesoM").val() +'" style="display:none;"/>'+
@@ -489,13 +375,13 @@ function insertarTabla(){
 				'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="'+ $("#descuentoM option:selected").attr('value') +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA($("#precionetoM").attr("valor"),3) + //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
+				MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.000',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ $("#precionetoM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="precioxkiloTD'+ aux_nfila + '" id="precioxkiloTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA(aux_precioxkilo,3) + //MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
+				MASK(0, aux_precioxkilo, '-##,###,##0.000',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="precioxkilo[]" id="precioxkilo'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkilo +'" style="display:none;"/>'+
@@ -504,13 +390,13 @@ function insertarTabla(){
 				'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkiloreal +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="totalkilosTD'+ aux_nfila + '" id="totalkilosTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA($("#totalkilosM").attr("valor"),2) + //MASK(0, $("#totalkilosM").attr("valor"), '-##,###,##0.00',1)+
+				MASK(0, $("#totalkilosM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" valor="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
+				'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ $("#totalkilosM").attr("valor") +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
-				MASKLA($("#subtotalM").attr("valor"),0) + //MASK(0, $("#subtotalM").attr("valor"), '-#,###,###,##0.00',1)+
+				MASK(0, $("#subtotalM").attr("valor"), '-#,###,###,##0.00',1)+
 			'</td>'+
 			'<td class="subtotalCF" style="text-align:right;display:none;">'+ 
 				'<input type="text" name="subtotal[]" id="subtotal'+ aux_nfila + '" class="form-control" value="'+ $("#subtotalM").attr("valor") +'" style="display:none;"/>'+
@@ -525,13 +411,6 @@ function insertarTabla(){
 				'<a class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro" onclick="eliminarRegistro('+ aux_nfila +')">'+
 				'<i class="fa fa-fw fa-trash text-danger"></i></a>'+
 			'</td>'+
-			'<td style="text-align:right;display:none;">'+ 
-				'<input type="text" name="acuerdotecnico[]" id="acuerdotecnico'+ aux_nfila + '" class="form-control" value="0" style="display:none;"/>'+
-			'</td>'+
-			'<td style="text-align:right;display:none;">'+
-				'<input type="text" name="tipoprod[]" id="tipoprod'+ aux_nfila + '" class="form-control" value="' + $("#tipoprodM").attr('valor') + '" style="display:none;"/>'+
-			'</td>'+
-
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
 			'<td colspan="14" style="text-align:right"><b>Neto</b></td>'+
@@ -649,33 +528,17 @@ function ajaxRequest(data,url,funcion) {
 				$("#myModal").modal('show');
 			}
 			if(funcion=='aprobarnvsup'){
-				//console.log(respuesta.at);
-				if (respuesta.id == 1) {
-					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'success');
+				if (respuesta.mensaje == "ok") {
+					Biblioteca.notificaciones('El registro fue actualizado correctamente', 'Plastiservi', 'success');
 					// *** REDIRECCIONA A UNA RUTA*** 
 					var loc = window.location;
     				window.location = loc.protocol+"//"+loc.hostname+"/notaventaaprobar";
 					// ****************************** 
 				} else {
-					if (respuesta.id == 2){
-						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no puso se actualizado.', 'Plastiservi', 'error');
 					}else{
-						swal({
-							title: respuesta.mensaje,
-							text:  "CodProd: " +  + respuesta.at.producto_id + " " + respuesta.at.producto_nombre + ". Ver AT?",
-							icon: 'warning',
-							buttons: {
-								cancel: "No",
-								confirm: "Si"
-							},
-						}).then((value) => {
-							if (value) {
-								genpdfAcuTec(respuesta.at.id)
-							}
-						});
-				
-						//Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
-						//$("#cliente_id").val();
+						Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
 					}
 				}
 			}
@@ -704,7 +567,6 @@ $("#oc_id").blur(function(){
 	if(aux_ocid != "" ){
 		var data = {
 			oc_id: $("#oc_id").val(),
-			cliente_rut: eliminarFormatoRutret($("#rut").val()),
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
@@ -713,36 +575,18 @@ $("#oc_id").blur(function(){
 			data: data,
 			success: function (respuesta) {
 				if(respuesta.mensaje == 'ok'){
-					if(respuesta.mismocliente == 1){
-						swal({
-							title: 'Orden de compra Nro.' +data.oc_id+ ' no puede ser usada.',
-							text: "OC usada por el mismo cliente en Nota de Venta Nro:" + respuesta.notaventa_id,
-							icon: 'error',
-							buttons: {
-								confirm: "Aceptar"
-							},
-						}).then((value) => {
-							if (value) {
-								//$("#oc_id").focus();
-							}
-						});	
-						$("#oc_id").focus();
-						$("#oc_id").val("");
-					}else{
-						swal({
-							title: 'Orden de compra Nro.' +data.oc_id+ ' usada en otra NV.',
-							text: "Nro OC usada en Nota de Venta Nro:" + respuesta.notaventa_id + ' Cliente: ' + respuesta.cliente_nombre,
-							icon: 'info',
-							buttons: {
-								confirm: "Aceptar"
-							},
-						}).then((value) => {
-							if (value) {
-								//$("#oc_id").focus();
-							}
-						});	
-
-					}
+					swal({
+						title: 'Orden de compra N°.' +data.oc_id+ ' ya existe.',
+						text: "",
+						icon: 'error',
+						buttons: {
+							confirm: "Aceptar"
+						},
+					}).then((value) => {
+						if (value) {
+							//$("#oc_id").focus();
+						}
+					});
 				
 				}
 			}
@@ -781,7 +625,7 @@ $("#rut").blur(function(){
 			swal({
 				title: 'Dígito verificador no es Válido.',
 				text: "",
-				icon: 'warning',
+				icon: 'error',
 				buttons: {
 					confirm: "Aceptar"
 				},
@@ -793,85 +637,42 @@ $("#rut").blur(function(){
 			});
 			//$(this).val('');
 		}else{
-			/*
-			if(!validarRut($("#rut").val())){
-				swal({
-					title: 'RUT no es Válido.',
-					text: "",
-					icon: 'warning',
-					buttons: {
-						confirm: "Aceptar"
-					},
-				}).then((value) => {
-					if (value) {
-						//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-						$("#rut").focus();
-					}
-				});	
-				return 0;
-			}
-			*/
 			var data = {
-				rut   : codigo,
-				modulo_id : 2,
-				sta_consdeuda : 1,
+				rut: codigo,
 				_token: $('input[name=_token]').val()
 			};
 			$.ajax({
-				//url: '/cliente/buscarCliId',
-				url: '/cliente/buscarClixVenRut',
+				url: '/cliente/buscarCliId',
 				type: 'POST',
 				data: data,
 				success: function (respuesta) {
-					if(respuesta.cliente.length>0){
-						//console.log(respuesta.cliente);
+					if(respuesta.length>0){
 						//alert(respuesta[0]['vendedor_id']);
-							$("#razonsocial").val(respuesta.cliente[0].razonsocial);
-							$("#telefono").val(respuesta.cliente[0].telefono);
-							$("#email").val(respuesta.cliente[0].email);
-							$("#direccion").val(respuesta.cliente[0].direccion);
-							$("#direccioncot").val(respuesta.cliente[0].direccion);
-							$("#cliente_id").val(respuesta.cliente[0].id)
-							let contactonombre = respuesta.cliente[0].contactonombre;
-							if (/^\/$|^S\/$|^S\/C$/i.test(contactonombre.trim())) {
-								contactonombre = '';
-							}
-							$("#contacto").val(contactonombre);
-							let telefonocontacto = respuesta.cliente[0].contactotelef;
-							if (isNaN(Number(telefonocontacto))) {
-								telefonocontacto = '';
-							}
-							$("#contactotelf").val(telefonocontacto);
-							$("#contactoemail").val(respuesta.cliente[0].contactoemail.toLowerCase());
+						if(respuesta[0]['descripcion']==null){
+							$("#razonsocial").val(respuesta[0]['razonsocial']);
+							$("#telefono").val(respuesta[0]['telefono']);
+							$("#email").val(respuesta[0]['email']);
+							$("#direccion").val(respuesta[0]['direccion']);
+							$("#direccioncot").val(respuesta[0]['direccion']);
+							$("#cliente_id").val(respuesta[0]['id'])
+							$("#contacto").val(respuesta[0]['contactonombre']);
 							/*
 							$("#vendedor_id").val(respuesta[0]['vendedor_id']);
 							$("#vendedor_idD").val(respuesta[0]['vendedor_id']);
 							*/
-							$("#region_id").val(respuesta.cliente[0].regionp_id);
+							$("#region_id").val(respuesta[0]['regionp_id']);
 							//alert($("#region_id").val());
-							$("#provincia_id").val(respuesta.cliente[0].provinciap_id);
-							$("#comuna_id").val(respuesta.cliente[0].comunap_id);
-							$("#comuna_idD").val(respuesta.cliente[0].comunap_id);
-							$("#giro_id").val(respuesta.cliente[0].giro_id);
-							$("#giro_idD").val(respuesta.cliente[0].giro_id);
-							$("#plazopago_id").val(respuesta.cliente[0].plazopago_id);
-							$("#plazopago_idD").val(respuesta.cliente[0].plazopago_id);
-							$("#formapago_id").val(respuesta.cliente[0].formapago_id);
-							$("#formapago_idD").val(respuesta.cliente[0].formapago_id);
-
-							$("#sucursal_id option").remove();
-							$("#sucursal_id").prop("disabled",false);
-							$("#sucursal_id").prop("readonly",false);	
-							$('#sucursal_id').attr("required", true);
-							$("#sucursal_id").append("<option value=''>Seleccione...</option>")
-							for(var i=0;i<respuesta.sucursales.length;i++){
-								$("#sucursal_id").append("<option value='" + respuesta.sucursales[i].id + "'>" + respuesta.sucursales[i].nombre + "</option>")
-							}
-							if (respuesta.sucursales.length == 1){
-								$("#sucursal_id").val(respuesta.sucursales[0].id);
-							}
-							$('#sucursal_id').change();
-							/*
+							$("#provincia_id").val(respuesta[0]['provinciap_id']);
+							$("#comuna_id").val(respuesta[0]['comunap_id']);
+							$("#comuna_idD").val(respuesta[0]['comunap_id']);
+							$("#giro_id").val(respuesta[0]['giro_id']);
+							$("#giro_idD").val(respuesta[0]['giro_id']);
+							$("#plazopago_id").val(respuesta[0]['plazopago_id']);
+							$("#plazopago_idD").val(respuesta[0]['plazopago_id']);
+							$("#formapago_id").val(respuesta[0]['formapago_id']);
+							$("#formapago_idD").val(respuesta[0]['formapago_id']);
+	
+	
 							$("#clientedirec_id option").remove();
 							if(respuesta[0]['direcciondetalle']!=null){
 								$("#clientedirec_id").prop("disabled",false);
@@ -885,72 +686,38 @@ $("#rut").blur(function(){
 									$("#clientedirec_id").append("<option provincia_id='" + respuesta[i]['provincia_id'] + "' region_id='" + respuesta[i]['region_id'] + "' comuna_id='" + respuesta[i]['comuna_id'] + "' formapago_id='" + respuesta[i]['formapago_id'] + "' plazopago_id='" + respuesta[i]['plazopago_id'] + "' value='" + respuesta[i]['direc_id'] + "'>" + respuesta[i]['direcciondetalle'] + "</option>")
 								}
 							}
-							*/
 							activar_controles();
 	
 							$(".selectpicker").selectpicker('refresh');
-						if(respuesta.cliente[0].descripcion==null){
-
 						}else{
 							swal({
-								title: 'Informacion',
-								text: respuesta.cliente[0].descripcion,
-								icon: 'warning',
+								title: 'Condición financiera en revisión.',
+								text: respuesta[0]['descripcion'],
+								icon: 'error',
 								buttons: {
 									confirm: "Aceptar"
 								},
 							}).then((value) => {
 								if (value) {
 									//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-									/* $("#rut").val('');
-									$("#rut").focus(); */
+									$("#rut").val('');
+									$("#rut").focus();
 								}
 							});
 						}
 
 					}else{
-						$.ajax({
-							url: '/cliente/buscarCli',
-							type: 'POST',
-							data: data,
-							success: function (respuesta) {
-								if(respuesta.length>0){
-									if(respuesta[0].sucCoincidencia == 0){
-										aux_titulo = 'Cliente pertenece a otra Sucursal';
-										aux_texto = "Sucursales Usuario: " + respuesta[0].userSucNombreString + "\nSucursales Cliente: " + respuesta[0].clienteSucNombreString;
-									}else{
-										aux_titulo = 'Cliente pertenece a otro Vendedor';
-										aux_texto = "Cliente: " + respuesta[0].razonsocial + "\nVendedor: " + respuesta[0].vendedor_nombre;
-									}
-									swal({
-										title: aux_titulo,
-										text: aux_texto,
-										icon: 'warning',
-										buttons: {
-											confirm: "Aceptar"
-										},
-									}).then((value) => {
-										if (value) {
-											//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-											//$("#rut").val('');
-											$("#rut").focus();
-										}
-									});
-								}else{
-									swal({
-										title: 'Cliente no existe.',
-										text: "Presione F2 para buscar",
-										icon: 'warning',
-										buttons: {
-											confirm: "Aceptar"
-										},
-									}).then((value) => {
-										if (value) {
-											//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-											$("#rut").focus();
-										}
-									});			
-								}
+						swal({
+							title: 'Cliente no existe.',
+							text: "Presione F2 para buscar",
+							icon: 'error',
+							buttons: {
+								confirm: "Aceptar"
+							},
+						}).then((value) => {
+							if (value) {
+								//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+								$("#rut").focus();
 							}
 						});
 					}
@@ -959,6 +726,7 @@ $("#rut").blur(function(){
 		}
 	}
 });
+
 
 function mensaje(titulo,texto,icono){
 	swal({
@@ -1001,8 +769,6 @@ function limpiarCampos(){
 	$("#direccioncot").val('');
 	$("#cliente_id").val('')
 	$("#contacto").val('');
-	$("#contactotelf").val('');
-	$("#contactoemail").val('');
 	/*
 	$("#vendedor_id").val('');
 	$("#vendedor_idD").val('');
@@ -1024,15 +790,13 @@ function limpiarCampos(){
 	$("#giro_id").val('');
 	$("#giro_idD").val('');
 	
+	$("#contacto").val('');
 	$("#region_id").val('');
 	$("#provincia_id").val('');
 	//$("#usuario_id").val('');
 	$("#neto").val('');
 	$("#iva").val('');
 	$("#total").val('');
-	$("#oc_id").val('');
-	$("#tabla-data tbody").empty();
-	
 	totalizar();
 }
 
@@ -1057,7 +821,6 @@ $("#btnaprobarM").click(function(event)
 		},
 	}).then((value) => {
 		if (value) {
-			$("#myModalaprobcot").modal('hide');
 			ajaxRequest(data,ruta,'aprobarnvsup');
 		}
 	});
@@ -1085,7 +848,6 @@ $("#btnrechazarM").click(function(event)
 			},
 		}).then((value) => {
 			if (value) {
-				$("#myModalaprobcot").modal('hide');
 				ajaxRequest(data,ruta,'aprobarnvsup');
 			}
 		});
@@ -1099,11 +861,6 @@ $(".requeridos").keyup(function(){
 	//alert($(this).parent().attr('class'));
 	validacion($(this).prop('name'),$(this).attr('tipoval'));
 });
-$(".requeridos").change(function(){
-	//alert($(this).parent().attr('class'));
-	validacion($(this).prop('name'),$(this).attr('tipoval'));
-});
-
 function verificarAproRech()
 {
 	var v1=0;
@@ -1126,122 +883,12 @@ $("#btnverfoto").click(function(){
 });
 
 
-$('#form-general').submit(function(event) {
-	//event.preventDefault();
+$('#form-general').submit(function() {
 	//alert('prueba');
-	//return 0;
-	//console.log($("#oc_file").val());
-	if($("#imagen").val() ==""){
-		$("#imagen").val($('#oc_file').val());
-	}
-	$('#oc_id').prop('required', true);
-	$('#group_oc_id').removeClass('has-error');
-	$('#group_oc_file').removeClass('has-error');
-	if($("#sucursal_id option:selected").attr('value') == 2){
-		$('#oc_id').prop('required', false);
-	}
-	$("#oc_file-error").hide();
-	$('#oc_fileaux').prop('required', false);
-	aux_ocarchivo = $.trim($('#oc_file').val()) + $.trim($('#oc_file').attr("data-initial-preview"));
-	//if (($('#oc_id').val().length == 0) && (($('#oc_file').val().length != 0) || ($('#oc_file').attr("data-initial-preview").length != 0))) {
-	if ( (aux_ocarchivo.length != 0) && ($('#oc_id').val().length == 0) ) {
-		alertify.error("El campo Nro OrdenCompra es requerido cuando Adjuntar OC está presente.");
-		//$("#oc_id").addClass('has-error');
-		$('#oc_id').prop('required', true);
-		return false;
-	}
-	//if (($('#oc_id').val().length != 0) && (($('#oc_file').val().length == 0) && ($('#oc_file').attr("data-initial-preview").length == 0))) {
-	if (($('#oc_id').val().length != 0) && (aux_ocarchivo.length == 0)) {
-		alertify.error("El campo Adjuntar OC es requerido cuando Nro OrdenCompra está presente.");
-		$("#oc_file-error").show();
-		$("#group_oc_file").addClass('has-error');
-		$('#oc_fileaux').prop('required', true);
-		//$('#oc_file').prop('required', true);
-		return false;
-	}
 	$("#cotizacion_id").prop('disabled', false);
 	$("#clientedirec_id").prop('disabled', false);
 	$("#plazoentrega").prop('disabled', false);
 	$("#lugarentrega").prop('disabled', false);
 	$("#tipoentrega_id").prop('disabled', false);
-
     //Rest of code
 })
-
-/*
-$(document).on('click','.fileinput-remove-button', function(){
-
-    //your code here
-	alert('entro');
-	$('#oc_file').attr("data-initial-preview","");
-
- });
-*/
-
-/*
-$("#botonNewProd").click(function(event)
-{
-	clientedirec_id = $("#clientedirec_id").val();
-	aux_rut = $("#rut").val();
-	if(aux_rut==""){
-		mensaje('Debes Incluir RUT del cliente','','error');
-		return 0;
-	}else{
-		event.preventDefault();
-		limpiarInputOT();
-		quitarverificar();
-		$("#aux_sta").val('1');
-		$("#myModal").modal('show');
-		$("#direccionM").focus();	
-	}
-});
-*/
-/*
-$(".form-horizontal").on("submit", function(event){
-	var aux_nfila = $("#tabla-data tbody tr").length - 3;
-	//aux_nfila++;
-	aux_banacutec = 0;
-	for (i = 1; i <= aux_nfila; i++) {
-		if($("#tipoprod" + i).val() == 1){
-			aux_banacutec = 1;
-		}
-	}
-	if(aux_banacutec == 1){
-		event.preventDefault();
-		swal({
-			title: 'Se Crearán productos de Acuerdo Tecnico.',
-			text: "Desea Continuar S/N?",
-			icon: 'warning',
-			buttons: {
-				si: {
-					text: "Si",
-					value: "Si",
-				},	
-				no: {
-					text: "No",
-					value: "No",
-				},
-			},
-		}).then((value) => {
-			switch (value) {			 
-				case "Si":
-					//event.preventDefault();
-					event.target.submit();
-					break;
-				default:
-				  //swal("Got away safely!");
-			}
-	
-		});
-	}
-});
-*/
-
-function charToDate(fechachar){
-    var arregloFecha = fechachar.split("/");
-    var anio = arregloFecha[2];
-    var mes = arregloFecha[1] - 1;
-    var dia = arregloFecha[0];
-    var fecha = new Date(anio, mes, dia); 
-    return fecha;
-}

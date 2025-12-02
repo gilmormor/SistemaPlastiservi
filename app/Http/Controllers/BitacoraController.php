@@ -94,7 +94,7 @@ class BitacoraController extends Controller
 }
 
 
-function getRealIP(){
+/* function getRealIP(){
 
     if (isset($_SERVER["HTTP_CLIENT_IP"])){
 
@@ -121,4 +121,4 @@ function getRealIP(){
         return $_SERVER["REMOTE_ADDR"];
 
     }
-}       
+}        */

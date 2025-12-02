@@ -1206,18 +1206,24 @@ class NotaVentaController extends Controller
             $notaventa->aprobfechahora = date("Y-m-d H:i:s");
             $notaventa->aprobobs = $request->obs;
             if($notaventa->aprobstatus == 3){
+                $aux_cont = 0;
                 foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+                    $aux_cont++;
                     if(!isset($notaventadetalle->producto->acuerdotecnico) and $notaventadetalle->producto->tipoprod == 1 and isset($notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno)){
                         $array_acuerdotecnicotemp = $notaventadetalle->cotizaciondetalle->acuerdotecnicotempunoauno->attributesToArray();
                         //BUSCAR ACUERDO TECNICO
                         $at = AcuerdoTecnico::buscaratxcampos($array_acuerdotecnicotemp);
                         if(count($at) > 0){
                             //SI EXISTE DEVUELVO EL ACUERDO TECNICO A LA VISTA
-                            return response()->json([
-                                'id' => 0,
-                                'mensaje' => 'Acuerdo tecnico ya existe',
-                                'at' => $at[0]
-                            ]);
+                            if($at[0]->at_impreso != 1){ //SI EL ACUERDO TECNICO ENCONTRADO NO ESTA IMPRESO ENTONCES DEVUELVO EL MENSAJE DE QUE YA EXISTE
+                                return response()->json([
+                                    'id' => 0,
+                                    'mensaje' => 'Acuerdo tecnico ya existe. Item ' . $aux_cont,
+                                    'at' => $at[0],
+                                    'at_temp' => $array_acuerdotecnicotemp,
+                                    'item'=> $aux_cont
+                                ]);
+                            }
                         }
                     }
                 }

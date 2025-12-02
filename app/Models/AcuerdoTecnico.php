@@ -158,8 +158,11 @@ class AcuerdoTecnico extends Model
 
     public static function buscaratxcampos($request)
     {
-        $request = new Request($request);
-        //dd($request);
+        if ($request instanceof Model) {
+
+        }else{
+            $request = new Request($request);
+        }
         //dd($request);
         $aux_ta_fuelleCond = " true ";
         if(!is_null($request->at_fuelle)){
@@ -215,6 +218,10 @@ class AcuerdoTecnico extends Model
         //dd($sql);
         $datas = DB::select($sql);
         //dd($datas);
+        if(count($datas) > 0){
+            $producto = Producto::find($datas[0]->producto_id);
+            $datas[0]->producto_nombre = $producto->atributosProducto($datas[0]->producto_id)["nombre"];
+        }
         return $datas;
         //return datatables($datas)->toJson();
 

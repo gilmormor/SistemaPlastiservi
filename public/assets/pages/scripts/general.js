@@ -2843,11 +2843,12 @@ function genpdfAcuTecTemp(id,cliente_id,aux_venmodant = ""){ //GENERAR PDF Acuer
 	//$("#modal-bodymymodadpdf").attr("style","height: 75%");
 }
 
-function genpdfAcuTec(id,cliente_id,aux_venmodant = ""){ //GENERAR PDF Acuerdo Tecnico Temporar y final
+function genpdfAcuTec(id,cliente_id,sta_formamostrar,aux_venmodant = ""){ //GENERAR PDF Acuerdo Tecnico Temporar y final
 	//console.log(id);
 	//console.log(cliente_id);
 	let data = "?id="+id +
-    "&cliente_id="+cliente_id
+    "&cliente_id="+cliente_id +
+    "&sta_formamostrar="+sta_formamostrar //1 mostrar como PDF o 2 mostrar como html
 
 	$("#venmodant").val(""); //Ventana Modal Anterior
 	if(aux_venmodant!=""){
@@ -4317,4 +4318,65 @@ function initValidarTextoXML() {
             return false;
         }
     });
+}
+
+function crearTablaListaAT(respuesta){
+	// Contenedor donde quieres insertar la tabla (crea uno en tu HTML o usa body)
+	$("#tablamostrarat").empty(); // Limpia antes de crear la tabla
+
+	// Crear tabla
+	let tabla = $("<table></table>").attr("id", "miTabla").addClass("table display AllDataTables table-condensed table-hover");
+
+	// Crear fila de encabezado
+	let thead = $("<thead></thead>");
+	let filaHeader = $("<tr></tr>");
+
+	filaHeader.append("<th>Cod Producto</th>");
+	filaHeader.append("<th>Nombre</th>");
+	filaHeader.append("<th>Cliché</th>");
+
+	thead.append(filaHeader);
+	tabla.append(thead);
+
+	// Crear cuerpo de la tabla
+	let tbody = $("<tbody></tbody>");
+	let aux_productoId = '';			
+	$.each(respuesta, function(index, item) {
+		let fila = $("<tr></tr>");
+		aux_productoId = `<a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec(${item.id},null,1,'myMostrarAtCliche','ver-arte-acuerdo-tecnico')" data-original-title="Acuerdo Técnico PDF" aria-describedby="tooltip895039">
+										${item.producto_id}
+									</a>`
+		if(item.at_impresofoto == null || item.at_impresofoto == ''){
+			aux_cliche = "No";
+		}else{
+			aux_cliche = 
+					`<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cliche" onclick="verpdf2('at/${item.at_impresofoto}',2,'myMostrarAtCliche','ver-arte-acuerdo-tecnico')"> 
+						<i class="fa fa-fw fa-photo"></i>
+					</a>`;
+		}
+		fila.append("<td>" + aux_productoId + "</td>");
+		var complemento = item.at_complementonomprod ? ", " + item.at_complementonomprod : "";
+		fila.append(`<td>${item.producto_nombre}<br>
+						<small class="text-muted">${item.at_desc}${complemento}</small>
+					</td>`);
+		fila.append("<td>" + aux_cliche + "</td>");
+		tbody.append(fila);
+	});
+
+	tabla.append(tbody);
+
+	// Insertar la tabla en el contenedor
+	$("#tablamostrarat").append(tabla);
+	$("#miTabla").DataTable({
+		'paging'      : true, 
+		'lengthChange': true,
+		'searching'   : true,
+		'ordering'    : true,
+		'info'        : true,
+		'autoWidth'   : false,
+		"language": {
+			//"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+			"url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+		}
+	});
 }

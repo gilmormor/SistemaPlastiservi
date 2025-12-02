@@ -271,6 +271,7 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
+                            <th style="text-align:center;">item</th>
                             <th style="text-align:center;">Cod</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">cotizacionDetalle_ID</th>
@@ -329,7 +330,6 @@
                                     if ($CotizacionDetalle->acuerdotecnicotemp != null){
                                         $AcuTec = $CotizacionDetalle->acuerdotecnicotemp;
                                         $aux_staAT = true;
-
                                     }
                                     if ($CotizacionDetalle->producto->acuerdotecnico != null){
                                         $AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
@@ -351,6 +351,9 @@
                                     $aux_producto_nombre = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id,$CotizacionDetalle->id)['nombre'];
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$CotizacionDetalle->producto_id}}">
+                                    <td name="item{{$aux_nfila}}" id="item{{$aux_nfila}}" style="text-align:center">
+                                        {{$aux_nfila}}
+                                    </td>
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
                                             <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$CotizacionDetalle->acuerdotecnicotempunoauno->id}},{{$cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
@@ -536,15 +539,15 @@
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="14" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="15" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="14" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
+                                <td colspan="15" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="14" style="text-align:right"><b>Total</b></td>
+                                <td colspan="15" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif

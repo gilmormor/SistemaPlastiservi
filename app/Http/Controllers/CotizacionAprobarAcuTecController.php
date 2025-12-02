@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcuerdoTecnico;
 use App\Models\Certificado;
 use App\Models\Cliente;
 use App\Models\Color;

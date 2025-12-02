@@ -421,6 +421,7 @@
                 <table class="table table-striped table-bordered table-hover" id="tabla-data" style="font-size:14px">
                     <thead>
                         <tr>
+                            <th style="text-align:center;">item</th>
                             <th style="text-align:center;">Cod</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">NotaVentaDetalle_ID</th>
@@ -466,7 +467,7 @@
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
                                 <?php 
-                                $aux_nfila++; 
+                                    $aux_nfila++; 
                                     $acuerdotecnico = null;
                                     if ($detalle->producto->tipoprod == 1){
                                         //SI 
@@ -510,8 +511,11 @@
                                     }
                                     $cotizaciondetalle_id = $detalle->cotizaciondetalle_id ? $detalle->cotizaciondetalle_id : null;
                                     $aux_producto_nombre = $detalle->producto->atributosProducto($detalle->producto_id,$cotizaciondetalle_id)['nombre'];
-                                    ?>
+                                ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$detalle->producto_id}}">
+                                    <td name="item{{$aux_nfila}}" id="item{{$aux_nfila}}" style="text-align:center">
+                                        {{$aux_nfila}}
+                                    </td>
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
                                         @if ($detalle->producto->tipoprod == 1)
                                             <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$acuerdotecnico->id}},{{$data->cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
@@ -688,15 +692,15 @@
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="13" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="14" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="13" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
+                                <td colspan="14" style="text-align:right"><b>IVA {{$empresa->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="13" style="text-align:right"><b>Total</b></td>
+                                <td colspan="14" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif

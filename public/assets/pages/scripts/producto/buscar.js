@@ -91,7 +91,7 @@ function configTablaProd(){
                     ${data.id}
                 </a>`;
                 $('td', row).eq(0).html(aux_text);
-                $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"myModalBuscarProd");');
+                $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"myModalBuscarProd");');
             }
             if(data.tipoprod == 1){
                 $('td', row).eq(0).addClass('tooltipsC');

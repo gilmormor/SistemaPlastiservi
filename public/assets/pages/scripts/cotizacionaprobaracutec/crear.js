@@ -658,6 +658,7 @@ function ajaxRequest(data,url,funcion) {
 				$("#myModal").modal('show');
 			}
 			if(funcion=='aprobarcotsup'){
+				console.log(respuesta);
 				if (respuesta.mensaje == "ok") {
 					Biblioteca.notificaciones('El registro fue actualizado correctamente', 'Plastiservi', 'success');
 					// *** REDIRECCIONA A UNA RUTA*** 
@@ -676,24 +677,55 @@ function ajaxRequest(data,url,funcion) {
 						if (respuesta && respuesta.id !== undefined && respuesta.id !== null) {
 							if(respuesta.id == 0){
 								Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'error');
-								var loc = window.location;
+								/* var loc = window.location;
+								sessionStorage.setItem("mensaje", respuesta.mensaje);
+								sessionStorage.setItem("tipo_alert", respuesta.tipo_alert);
 								aux_paginaredirect = $("#aux_paginaredirect").val();
-								window.location = loc.protocol+"//"+loc.hostname+"/" + aux_paginaredirect;							
+								window.location = loc.protocol+"//"+loc.hostname+"/" + aux_paginaredirect; */
 							}
 						}
 						if($("#aprobstatus").val()== "5"){
 							if(respuesta.id !== undefined && respuesta.id == 0){
+								//console.log(respuesta.at_temp.at_impreso);
+								aux_botones = { 
+									cancel: "Cerrar",
+									verAT: {
+										text: "Ver AT",
+										value: "verAT",
+									}
+								};
+								
+								if(respuesta.at_temp.at_impreso == 1){
+									aux_botones.verCliche = {
+										text: "Ver Cliché",
+										value: "verCliche",
+									};
+								}
+
 								swal({
-									title: respuesta.mensaje + ": " + respuesta.at.at_desc,
-									text: "Ver Acuerdo Técnico?",
+									title: respuesta.mensaje,
+									text:  "CodProd: " +  + respuesta.at.producto_id + " " + respuesta.at.producto_nombre + ". Ver AT?",
 									icon: 'warning',
-									buttons: {
-										cancel: "No",
-										confirm: "Si"
-									},
+									buttons: aux_botones,
 								}).then((value) => {
-									if (value) {
-										genpdfAcuTec(respuesta.at.id,$("#cliente_id").val())
+									switch(value) {
+										case "verAT":
+											// Tu función actual
+											genpdfAcuTec(respuesta.at.id,$("#cliente_id").val());
+											break;
+
+										case "verCliche":
+											// Ejecutar verpdf2 con el archivo dinámico
+											verpdf2(
+												"at/" + respuesta.at.at_impresofoto, // archivo
+												2,                                    // parámetro 2
+												"",                                   // vacío
+												"ver-arte-acuerdo-tecnico"            // permiso
+											);
+											break;
+										default:
+											// Cerrar / cancel
+											break;
 									}
 								});	
 							}else{
@@ -706,17 +738,8 @@ function ajaxRequest(data,url,funcion) {
 			if(funcion=='buscardetcot'){
 				//console.log(respuesta);
 			}
-
 			if(funcion=='buscaratxcampos'){
 				if(respuesta.length > 0){
-					//console.log(respuesta);
-					/*
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Something went wrong!',
-						footer: '<a href="">Why do I have this issue?</a>'
-					  })*/
 					aux_botones = { 
 						cancel: "Cerrar",
 						verAT: {
@@ -751,28 +774,8 @@ function ajaxRequest(data,url,funcion) {
 					crearTablaListaAT(respuesta);
 					$("#titulomyMostrarAtCliche").html("Acuerdo Técnico ya existe! <span class='glyphicon glyphicon-info-sign has-warning' style='bottom: 0px;top: 2px;'></span>");
 					$("#myMostrarAtCliche").modal('show');
-					/* swal({
-						title: 'Acuerdo técnico ya existe',
-						text: respuesta.length + ' AT encontrados. Presione el boton Ver AT para ver la lista.',
-						icon: 'warning',
-						buttons: aux_botones,
-					}).then((value) => {
-						switch(value) {
-							case "verAT":
-								// Tu función actual
-								//genpdfAcuTec(respuesta[0].id, null, 1);
-								crearTablaListaAT(respuesta);
-								$("#titulomyMostrarAtCliche").html("Acuerdo Técnico encontrado");
-								$("#myMostrarAtCliche").modal('show');
-
-								break;
-							case "CrearProdImp":
-								seguirProcesoCrearAT();
-								break;
-						}
-					}); */
 				}else{
-					seguirProcesoCrearAT();
+					seguirProcesoCrearAT()
 					/* $("#myModalAcuerdoTecnico").modal('hide');
 					$("#acuerdotecnico" + datatemp.nfila).val(datatemp.objtxt); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
 					//alert($("#acuerdotecnico" + i).val());
@@ -829,8 +832,6 @@ function seguirProcesoCrearAT(){
 		$("#imagen" + datatemp.nfila).val("");
 	}
 }
-
-
 
 function copiar_rut(id,rut){
 	$("#myModalBusqueda").modal('hide');

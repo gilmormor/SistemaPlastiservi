@@ -116,7 +116,7 @@ class DespachoSol extends Model
         }else{
             $aux_conddespachosol_id = "despachosol.id='$request->despachosol_id'";
         }
-    
+        $aux_usuario_id = auth()->id();
         $sql = "SELECT despachosol.id,despachosol.fechahora,notaventa.cliente_id,cliente.razonsocial,notaventa.oc_id,
         notaventa.oc_file,despachosol.notaventa_id,
         '' as notaventaxk,comuna.nombre as comuna_nombre,
@@ -126,7 +126,7 @@ class DespachoSol extends Model
             FROM despachosoldev
             WHERE despachosol_id = despachosol.id
             ORDER by id DESC LIMIT 1) AS obsdev,
-        despachosol.updated_at,
+        $aux_usuario_id as creausuario_id,despachosol.usuario_id,despachosol.updated_at,
         (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
             FROM dteoc INNER JOIN dte
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)

@@ -130,7 +130,7 @@ function configTablaProdSelectMult(){
                     ${data.id}
                 </a>`;
                 $('td', row).eq(1).html(aux_text);
-                $('td', row).eq(1).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',1,"myModalBuscarProd");');
+                $('td', row).eq(1).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"myModalBuscarProd");');
             }
             if(data.tipoprod == 1){
                 $('td', row).eq(1).addClass('tooltipsC');
