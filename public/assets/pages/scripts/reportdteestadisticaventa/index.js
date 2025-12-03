@@ -335,7 +335,7 @@ function exportarExcelSantaEster() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto","DocOrigen","NDocOrigen","FechaOrigen","CentroEconomico_ID","CentroEconomico_Nombre"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto","DocOrigen","NDocOrigen","FechaOrigen","Sucursal","CentroEconomico_ID","CentroEconomico_Nombre"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalComision += registro.comision;
@@ -379,6 +379,7 @@ function exportarExcelSantaEster() {
                 aux_foliocontrolorigen_doc,
                 aux_dteorigen_nrodocto,
                 aux_dteorigen_fchemis,
+                registro.sucursal_nombre,
                 registro.centroeconomico_id,
                 registro.centroeconomico_nombre
             ];
@@ -444,10 +445,11 @@ function createExcelSantaEster(datosExcel) {
     ajustarcolumnaexcel(worksheet,"S");
     ajustarcolumnaexcel(worksheet,"T");
     ajustarcolumnaexcel(worksheet,"U");
+    ajustarcolumnaexcel(worksheet,"V");
     
 
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 21; i++) {
+    for (let i = 1; i <= 22; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
     }
