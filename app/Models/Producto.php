@@ -1011,7 +1011,7 @@ class Producto extends Model
             $aux_at_impresoCond = " acuerdotecnico.at_impreso in (1) ";
         }
 
-        if(!isset($request->grupocatprom_id) or empty($request->grupocatprom_id)){
+        if(!isset($request->grupocatprom_id) or empty($request->grupocatprom_id) or $request->grupocatprom_id == "undefined"){
             $aux_grupocatprom_idCond = "true";
         }else{
             $aux_grupocatprom_id = $request->grupocatprom_id;
@@ -1021,6 +1021,15 @@ class Producto extends Model
             $aux_grupocatprom_idCond = " grupocatpromcategoriaprod.grupocatprom_id in ($aux_grupocatprom_id) ";
         }
 
+        if(!isset($request->materiaprima_id) or empty($request->materiaprima_id) or $request->materiaprima_id == "undefined"){
+            $aux_materiaprima_idCond = "true";
+        }else{
+            $aux_materiaprima_id = $request->materiaprima_id;
+            if(is_array($request->materiaprima_id)){
+                $aux_materiaprima_id = implode(",", $request->materiaprima_id);
+            }
+            $aux_materiaprima_idCond = " acuerdotecnico.at_materiaprima_id in ($aux_materiaprima_id) ";
+        }
 
         $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
             producto.diamextmm,producto.diamextpg,
@@ -1051,6 +1060,7 @@ class Producto extends Model
             and tipoprod = 0
             and $aux_at_impresoCond
             AND $aux_grupocatprom_idCond
+            AND $aux_materiaprima_idCond
             ORDER BY producto.id;";
             $datas = DB::select($sql);
             $producto = New Producto();

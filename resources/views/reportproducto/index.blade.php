@@ -152,6 +152,26 @@ Reporte Productos
                                         </select>
                                     </div>
                                 </div>
+                                @if ($tablashtml['sucursales']->contains('id', 1))
+                                    <div class="col-xs-12 col-sm-6" title="Materia prima">
+                                        <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                            <label>Materia Prima</label>
+                                        </div>
+                                        <div class="col-xs-12 col-md-8 col-sm-8">
+                                            <select name="materiaprima_id" id="materiaprima_id" class="selectpicker form-control materiaprima_id" data-live-search='true' multiple data-actions-box='true' data-size="10">
+                                                @foreach($tablashtml['materiaprima'] as $materiaprima)
+                                                    <option
+                                                        value="{{$materiaprima->id}}"
+                                                        data-subtext="{{$materiaprima->desc}}"
+                                                        desc="{{$materiaprima->desc}}"
+                                                        >
+                                                        {{$materiaprima->nombre}}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>                                    
+                                @endif
                             </div>
 
                         </div>

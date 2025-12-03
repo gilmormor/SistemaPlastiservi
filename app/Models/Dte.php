@@ -2830,6 +2830,7 @@ class Dte extends Model
         }
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
+        dte.centroeconomico_id,centroeconomico.nombre as centroeconomico_nombre,
         persona.rut as vendedor_rut, CONCAT(persona.nombre,' ',persona.apellido) as vendedor_nombre,
         GROUP_CONCAT(DISTINCT dtedte.dter_id) AS dter_id,
         GROUP_CONCAT(DISTINCT notaventa.cotizacion_id) AS cotizacion_id,
@@ -2951,6 +2952,8 @@ class Dte extends Model
         ON tipoentrega.id = notaventa.tipoentrega_id and isnull(tipoentrega.deleted_at)
         LEFT JOIN dtencnd
         ON dtencnd.dte_id = dte.id
+        LEFT JOIN centroeconomico
+        ON centroeconomico.id = dte.centroeconomico_id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond

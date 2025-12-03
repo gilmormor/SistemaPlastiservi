@@ -129,6 +129,7 @@ function datosproducto(){
         rut               : eliminarFormatoRutret($("#rut").val()),
         at_impreso        : $("#at_impreso").val(),
         grupocatprom_id   : $("#grupocatprom_id").val(),
+        materiaprima_id   : $("#materiaprima_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -140,6 +141,7 @@ function datosproducto(){
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&rut="+data1.rut +
     "&grupocatprom_id="+data1.grupocatprom_id +
+    "&materiaprima_id="+data1.materiaprima_id +
     "&at_impreso="+data1.at_impreso
 
 

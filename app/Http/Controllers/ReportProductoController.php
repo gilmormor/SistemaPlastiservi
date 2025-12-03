@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
 use App\Models\CategoriaProd;
+use App\Models\CentroEconomico;
 use App\Models\Empresa;
 use App\Models\GrupoCatProm;
 use App\Models\InvBodega;
 use App\Models\InvMov;
+use App\Models\MateriaPrima;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -33,6 +35,7 @@ class ReportProductoController extends Controller
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         $tablashtml['grupocatprom'] = GrupoCatProm::orderBy('id')->get();
         $selecmultprod = 1;
+        $tablashtml['materiaprima'] = MateriaPrima::orderBy('id')->get();
         return view('reportproducto.index', compact('tablashtml','selecmultprod'));
     }
 
