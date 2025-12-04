@@ -108,3 +108,21 @@
         </select>
     </div>
 </div>
+<div class="form-group">
+    <label for="sta_editarnvcot" class="col-lg-3 control-label requerido" title="Permitir Editar Nota Venta y Cotizacion creada por otro usuario?">Editar NV/Cot otro usuarios?</label>
+    <div class="col-lg-9">
+        <select name="sta_editarnvcot" id="sta_editarnvcot" class="form-control select2 sta_editarnvcot" required>
+            <option value="">Seleccione...</option>
+            <option value="1"
+                @if (isset($data) and ($data->sta_editarnvcot=="1"))
+                    {{'selected'}}
+                @endif
+            >Si</option>
+            <option value="0"
+                @if (isset($data) and ($data->sta_editarnvcot=="0"))
+                    {{'selected'}}
+                @endif    
+            >No</option>
+        </select>
+    </div>    
+</div>

@@ -8,6 +8,7 @@ use App\Models\ClienteDesbloqueadoModulo;
 use App\Models\ClienteDesbloqueadoModuloDel;
 use App\Models\Dte;
 use App\Models\Empresa;
+use App\Models\LogCambio;
 use App\Models\Modulo;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -665,6 +666,162 @@ if (!function_exists('pesounitattemp')) {
             return 0;
         } */
         return round((($at->at_ancho * $at->at_largo * $at->at_espesor * $at->materiaprima->pe) / 1000) * $aux_doble,10 );
+    }
+}
+if (!function_exists('guardarLogCambio')) {
+    function guardarLogCambio($modeloNombre, $registroOriginal, $registroNuevo, $idTabla){
+        unset($registroOriginal['updated_at'], $registroNuevo['updated_at']);
+        // Comparar los arrays para detectar qué campos cambiaron
+        $diferencias = [];
+        foreach ($registroOriginal as $campo => $valorOriginal) {
+            $valorNuevo = $registroNuevo[$campo] ?? null;
+
+            // Comparamos sólo si cambiaron (puedes usar trim o strtolower si quieres comparar sin espacios o mayúsculas)
+            if ($valorOriginal != $valorNuevo) {
+                $diferencias[$campo] = [
+                    'anterior' => $valorOriginal,
+                    'nuevo' => $valorNuevo
+                ];
+            }
+        }
+
+        // Si no hay diferencias, no se guarda nada
+        if (empty($diferencias)) {
+            return;
+        }
+
+        // Guardamos el log
+        LogCambio::create([
+            'usuario_id' => auth()->id(),
+            'ip' => ObtenerRealIP(),
+            'tabla' => $modeloNombre,
+            'tabla_id' => $idTabla,
+            'operacion' => 'm',
+            'cambios' => json_encode($diferencias)
+        ]);
+    }
+}
+
+if (!function_exists('ObtenerRealIP')) {
+    function ObtenerRealIP(){
+
+        if (isset($_SERVER["HTTP_CLIENT_IP"])){
+
+            return $_SERVER["HTTP_CLIENT_IP"];
+
+        }elseif (isset($_SERVER["HTTP_X_FORWARDED_FOR"])){
+
+            return $_SERVER["HTTP_X_FORWARDED_FOR"];
+
+        }elseif (isset($_SERVER["HTTP_X_FORWARDED"])){
+
+            return $_SERVER["HTTP_X_FORWARDED"];
+
+        }elseif (isset($_SERVER["HTTP_FORWARDED_FOR"])){
+
+            return $_SERVER["HTTP_FORWARDED_FOR"];
+
+        }elseif (isset($_SERVER["HTTP_FORWARDED"])){
+
+            return $_SERVER["HTTP_FORWARDED"];
+
+        }else{
+
+            return $_SERVER["REMOTE_ADDR"];
+
+        }
+    }    
+}
+if (!function_exists('guardarLogCambioModelo')) {
+    function guardarLogCambioModelo($modeloActual, $relaciones = [], $modeloOriginal = null) 
+    {
+        if (!$modeloOriginal) {
+            $modeloOriginal = $modeloActual->fresh()->load($relaciones);
+        }
+
+        $original = $modeloOriginal->toArray();
+        $nuevo = $modeloActual->toArray();
+
+        unset($original['updated_at'], $original['created_at']);
+        unset($nuevo['updated_at'], $nuevo['created_at']);
+
+        $diferenciasPadre = [];
+        foreach ($original as $campo => $valorOriginal) {
+            if (is_array($valorOriginal)) continue;
+            if ($valorOriginal != ($nuevo[$campo] ?? null)) {
+                $diferenciasPadre[$campo] = [$valorOriginal, $nuevo[$campo] ?? null];
+            }
+        }
+
+        $diferenciasHijas = [];
+
+        foreach ($relaciones as $rel) {
+            $originalRelacion = collect($original[$rel] ?? [])->map(function ($item) {
+                unset($item['created_at'], $item['updated_at']);
+                return $item;
+            })->toArray();
+
+            $nuevoRelacion = collect($nuevo[$rel] ?? [])->map(function ($item) {
+                unset($item['created_at'], $item['updated_at']);
+                return $item;
+            })->toArray();
+
+            $relDiferencias = [];
+
+            // Modificados o eliminados
+            foreach ($originalRelacion as $origItem) {
+                $idItem = $origItem['id'] ?? null;
+                $nuevoItem = collect($nuevoRelacion)->firstWhere('id', $idItem);
+
+                if ($nuevoItem) {
+                    foreach ($origItem as $campo => $valorOriginal) {
+                        if ($valorOriginal != ($nuevoItem[$campo] ?? null)) {
+                            $relDiferencias[$idItem][$campo] = [$valorOriginal, $nuevoItem[$campo] ?? null];
+                        }
+                    }
+                } else {
+                    $relDiferencias['__eliminado'][] = $origItem;
+                }
+            }
+
+            // Nuevos
+            foreach ($nuevoRelacion as $nuevoItem) {
+                $idItem = $nuevoItem['id'] ?? null;
+                if (!$idItem || !collect($originalRelacion)->firstWhere('id', $idItem)) {
+                    $relDiferencias['__nuevo'][] = $nuevoItem;
+                }
+            }
+
+            if (!empty($relDiferencias)) {
+                $diferenciasHijas[$rel] = $relDiferencias;
+            }
+        }
+
+        if (empty($diferenciasPadre) && empty($diferenciasHijas)) {
+            return null;
+        }
+
+        $nombreTablaPadre = $modeloActual->getTable();
+        $idPadre = $modeloActual->id;
+
+        $diferencias = [
+            '1.0padre' => [
+                $nombreTablaPadre => [
+                    $idPadre => $diferenciasPadre
+                ]
+            ],
+            '1.1hijas' => $diferenciasHijas
+        ];
+
+        LogCambio::create([
+            'usuario_id' => auth()->id(),
+            'ip'         => request()->ip(),
+            'tabla'      => $nombreTablaPadre,
+            'tabla_id'   => $idPadre,
+            'operacion'  => 'm',
+            'cambios'    => json_encode($diferencias, JSON_UNESCAPED_UNICODE)
+        ]);
+        return 1;
     }
 }
 

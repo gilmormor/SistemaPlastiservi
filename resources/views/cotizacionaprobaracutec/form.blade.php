@@ -273,6 +273,12 @@
                         <tr>
                             <th style="text-align:center;">item</th>
                             <th style="text-align:center;">Cod</th>
+                            <th class="width30" class="tooltipsC" title="Marcar si el acuerdo técnico debe corregirse">
+                                <a class="btn-accion-tabla btn-sm tooltipsC" title="Marcar si el acuerdo técnico debe corregirse" style="padding-left: 0px;">
+                                    ⚠️
+                                </a>
+                            </th>
+                            <th title="Acuerdo tecnico firmado">At Firmado</th>
                             <th style="display:none;" class="width30">ID</th>
                             <th style="display:none;">cotizacionDetalle_ID</th>
                             <th style="display:none;">Codigo Producto</th>
@@ -310,6 +316,7 @@
                             <th style="display:none;">Array Acuerdo Tecnico</th>
                             <th style="display:none;">Tipo Producto</th>
                             <th class="width70"></th>
+                            <th class="width30"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -327,9 +334,17 @@
                                     $aux_categoria_nombre = $CotizacionDetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
+                                    //dd($CotizacionDetalle->acuerdotecnicotemp);
                                     if ($CotizacionDetalle->acuerdotecnicotemp != null){
                                         $AcuTec = $CotizacionDetalle->acuerdotecnicotemp;
                                         $aux_staAT = true;
+                                        foreach ($CotizacionDetalle->acuerdotecnicotemp->acuerdotecnicotempcvalatdets as $cvalatdet) {
+                                            $campo = 'at_cvalatdet' . $cvalatdet->cvalatdet_id;
+                                            $valor = $cvalatdet->valor;
+
+                                            // Agregas el atributo dinámicamente al objeto
+                                            $CotizacionDetalle->acuerdotecnicotemp->$campo = $valor;
+                                        }
                                     }
                                     if ($CotizacionDetalle->producto->acuerdotecnico != null){
                                         $AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
@@ -386,6 +401,7 @@
                                                     <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
                                                 </a>
                                                 <?php 
+                                                    $data_initial_preview = "";
                                                     if($CotizacionDetalle->acuerdotecnicotemp == null){
                                                         $aux_imagen = "";
                                                     }else{
@@ -397,6 +413,46 @@
                                                     <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept="*"/>
                                                     <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_impresofoto ?? '')}}">
                                                 </div>
+                                                <a id="verat_arte{{$aux_nfila}}" name="verat_arte{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Impresion Acuerdo Técnico" onclick='verpdf2("\attemp/{{$aux_at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                    <i class="fa fa-fw fa-photo"></i>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td style="text-align:center">
+                                        <input id="at_stacorregirat{{$aux_nfila}}" name="at_stacorregirat{{$aux_nfila}}" type="checkbox" class="tooltipsC" title="Marcar si este producto requiere corrección en el acuerdo técnico">
+                                    </td>
+                                    <td name="cotdet_atfirm{{$aux_nfila}}" id="cotdet_atfirm{{$aux_nfila}}">
+                                        @if ($CotizacionDetalle->producto->tipoprod == 1)
+                                            <div id="divMostrarImagenatfirma{{$aux_nfila}}" name="divMostrarImagenatfirma{{$aux_nfila}}">
+                                                <?php 
+                                                    if($CotizacionDetalle->acuerdotecnicotemp == null){
+                                                        $aux_imagen = "";
+                                                    }else{
+                                                        //$aux_at_impresofoto = "attempfirm" . $CotizacionDetalle->acuerdotecnicotemp->id . ".pdf"; //$CotizacionDetalle->acuerdotecnicotemp->at_firmado;
+                                                        $aux_at_firmado = $CotizacionDetalle->acuerdotecnicotemp->at_firmado;
+                                                        $filePath = "imagenes/attempfirm/$aux_at_firmado";
+
+                                                        // Validar existencia del archivo
+                                                        if (Storage::disk('public')->exists($filePath)) { // Ajusta 'public' según tu disco configurado
+                                                            $data_initial_preview=isset($aux_at_firmado) ? Storage::url("imagenes/attempfirm/$aux_at_firmado") : "";
+                                                        } else {
+                                                            $data_initial_preview = ""; // O asigna una imagen por defecto
+                                                        }
+                                                    }
+                                                ?>
+                                                <div class="Imagenatfirma">
+                                                    @if ($data_initial_preview != "")
+                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                            <i class="fa fa-fw fa-photo"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                                @if ($data_initial_preview == "")
+                                                    <a title="Falta Acuerdo Técnico Firmado" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" style="color: red;">
+                                                        <i class="fa fa-fw fa-question"></i>
+                                                    </a>
+                                                @endif
                                             </div>
                                         @endif
                                     </td>

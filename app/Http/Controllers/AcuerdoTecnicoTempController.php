@@ -8,6 +8,7 @@ use App\Models\Cliente;
 use App\Models\ClienteTemp;
 use App\Models\Cotizacion;
 use App\Models\CotizacionDetalle;
+use App\Models\CValAt;
 use App\Models\Empresa;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -96,6 +97,7 @@ class AcuerdoTecnicoTempController extends Controller
         if(can('ver-pdf-acuerdo-tecnico',false)){
             $aux_tituloreportte = "";
             $acuerdotecnico = AcuerdoTecnicoTemp::findOrFail($request->id);
+            //dd($acuerdotecnico->acuerdotecnicocvalatdets);
             $categoria_nombre = $acuerdotecnico->cotizaciondetalle->producto->categoriaprod->nombre;
             if($request->cliente_id == "0"){
                 $cotizaciondetalle = CotizacionDetalle::findOrFail($acuerdotecnico->at_cotizaciondetalle_id);
@@ -124,9 +126,10 @@ class AcuerdoTecnicoTempController extends Controller
                 $certificado_array[] = $aux_certificado->descripcion;
             }
             $tablas['certificados'] = implode(", ", $certificado_array);
+            $tablas['cvalats'] = CValAt::orderBy('orden')->get();
 
             //dd($empresa[0]['iva']);
-            //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
+            //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa','aux_tituloreporte','categoria_nombre','tablas'));
             if(env('APP_DEBUG')){
                 //return view('generales.acuerdotecnicopdf', compact('acuerdotecnico','cliente','empresa'));
             }

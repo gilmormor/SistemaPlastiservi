@@ -34,7 +34,6 @@ class CotizacionDetalle extends Model
         'color_id',
         'obs',
         'acuerdotecnicotemp_id'
-        
     ];
     //RELACION DE UNO A MUCHOS NotaVentaDetalle
     public function notaventadetalles()

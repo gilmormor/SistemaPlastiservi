@@ -5,6 +5,7 @@
 ?>
 
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
+<input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="nombre" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Nombre">Nombre</label>

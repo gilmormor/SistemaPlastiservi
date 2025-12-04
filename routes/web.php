@@ -1190,6 +1190,7 @@ Route::get('reportdtefac/listardtedet', 'ReportDTEFacController@listardtedet')->
 /*RUTAS ACUERDO TECNICO*/
 Route::post('acuerdotecnico/buscaratxcampos', 'AcuerdoTecnicoController@buscaratxcampos')->name('acuerdotecnico_buscaratxcampos');
 Route::get('acuerdotecnico/exportPdf', 'AcuerdoTecnicoController@exportPdf')->name('acuerdotecnico_exportPdf');
+Route::get('acuerdotecnico/obtenerCamposValidacion', 'AcuerdoTecnicoController@obtenerCamposValidacion')->name('acuerdotecnico_obtenerCamposValidacion');
 
 /*RUTAS ACUERDO TECNICO TEMPORAL*/
 Route::get('acuerdotecnicotemp/exportPdf', 'AcuerdoTecnicoTempController@exportPdf')->name('acuerdotecnicotemp_exportPdf');
@@ -1602,3 +1603,38 @@ Route::put('emailxlote/{id}', 'EmailxLoteController@actualizar')->name('actualiz
 Route::delete('emailxlote/{id}', 'EmailxLoteController@eliminar')->name('eliminar_emailxlote');
 
 Route::get('notaventa/llenarclienteproducto', 'NotaVentaController@llenarclienteproducto')->name('llenarclienteproducto_notaventa');
+
+/*RUTAS CValAt Campos adicionales para validar acuerdo tecnico*/
+Route::get('cvalat', 'CValAtController@index')->name('cvalat');
+Route::get('cvalatpage', 'CValAtController@cvalatpage')->name('cvalatpage');
+Route::get('cvalat/crear', 'CValAtController@crear')->name('crear_cvalat');
+Route::post('cvalat', 'CValAtController@guardar')->name('guardar_cvalat');
+Route::get('cvalat/{id}/editar', 'CValAtController@editar')->name('editar_cvalat');
+Route::put('cvalat/{id}', 'CValAtController@actualizar')->name('actualizar_cvalat');
+Route::delete('cvalat/{id}', 'CValAtController@eliminar')->name('eliminar_cvalat');
+
+/*RUTAS ACUERDO TECNICO FIRMADO */
+Route::get('cotizacionatfirmado', 'CotizacionAtFirmadoController@index')->name('cotizacionatfirmado');
+Route::get('cotizacionatfirmadopage', 'CotizacionAtFirmadoController@cotizacionatfirmadopage')->name('cotizacionatfirmadopage');
+Route::get('cotizacionatfirmado/{id}/editar', 'CotizacionAtFirmadoController@editar')->name('editar_cotizacionatfirmado');
+Route::get('cotizacionatfirmado/{id}/productobuscarpage', 'CotizacionAtFirmadoController@productobuscarpageid')->name('productobuscarpageid');
+Route::get('cotizacionatfirmado/{id}/clientebuscarpage', 'CotizacionAtFirmadoController@clientebuscarpageid')->name('clientebuscarpageid');
+Route::put('cotizacionatfirmado/{id}', 'CotizacionAtFirmadoController@actualizar')->name('actualizar_cotizacionatfirmado');
+Route::post('cotizacionatfirmado/enviarrev/{id}', 'CotizacionAtFirmadoController@enviarrev')->name('enviarrev_cotizacionatfirmado');
+Route::post('cotizacionatfirmado/devolver/{id}', 'CotizacionAtFirmadoController@devolver')->name('devolver_cotizacionatfirmado');
+
+/*RUTAS EDITAR AT PRODUCTO*/
+Route::get('ateditar', 'ATEditarController@index')->name('ateditar');
+Route::get('ateditarpage', 'ATEditarController@ateditarpage')->name('ateditarpage');
+Route::get('ateditar/reporte', 'ATEditarController@reporte')->name('ateditar_reporte');
+Route::get('ateditar/exportPdf', 'ATEditarController@exportPdf')->name('ateditar_exportPdf');
+Route::get('ateditar/{id}/editar', 'ATEditarController@editar')->name('editar_ateditar');
+Route::put('ateditar/{id}', 'ATEditarController@actualizar')->name('actualizar_ateditar');
+
+/*RUTAS EDITAR At FIRMADO*/
+Route::get('atfirmadosubir', 'ATFirmadoSubirController@index')->name('atfirmadosubir');
+Route::get('atfirmadosubirpage', 'ATFirmadoSubirController@atfirmadosubirpage')->name('atfirmadosubirpage');
+Route::get('atfirmadosubir/reporte', 'ATFirmadoSubirController@reporte')->name('atfirmadosubir_reporte');
+Route::get('atfirmadosubir/exportPdf', 'ATFirmadoSubirController@exportPdf')->name('atfirmadosubir_exportPdf');
+Route::get('atfirmadosubir/{id}/editar', 'ATFirmadoSubirController@editar')->name('editar_atfirmadosubir');
+Route::put('atfirmadosubir/{id}', 'ATFirmadoSubirController@actualizar')->name('actualizar_atfirmadosubir');

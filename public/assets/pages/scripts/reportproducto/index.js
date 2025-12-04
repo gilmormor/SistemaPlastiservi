@@ -47,6 +47,7 @@ $(document).ready(function () {
                 }*/
                 $('td', row).eq(0).attr('style','text-align:center');
                 if(data.acuerdotecnico_id != null){
+                    $('td', row).eq(0).attr('style','text-align:left');
                     //$('td', row).eq(0).html(aux_text);
                     if (data.hasOwnProperty('cliente_id')) {
                         aux_cliente_id = data.cliente_id;
@@ -54,12 +55,26 @@ $(document).ready(function () {
                         aux_cliente_id = 0;
                     }
                     aux_text = 
-                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${data.acuerdotecnico_id},${aux_cliente_id},1,"")'>
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm" title="Acuerdo Técnico" onclick='genpdfAcuTec(${data.acuerdotecnico_id},${aux_cliente_id},1,"")'>
                         ${data.producto_id}
                     </a>`;
+                    if(data.at_firmado == null){
+                        aux_text += 
+                            `<a class="btn-accion-tabla btn-sm" title="Falta AT Firmado">
+                                <i class="fa fa-fw fa-question"></i>
+                            </a>`;
+                    }else{
+                        aux_text += 
+                            `<a class="btn-accion-tabla btn-sm" title="Ver At Firmado" onclick='verpdf2(\"atfirm/${data.at_firmado}\",2,"","ver-acuerdo-tecnico-firmado")'>
+                                <i class="fa fa-fw fa-files-o"></i>
+                            </a>`;
+                    }
+
                     if(data.at_impresofoto != "" && data.at_impresofoto != null){
                         aux_text += 
-                            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
+                            //`<a class="btn-accion-tabla btn-sm" title="Ver Imagen" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
+                            //`<a class="btn-accion-tabla btn-sm" title="Ver Imagen arte Impreso" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
+                            `<a class="btn-accion-tabla btn-sm" title="Ver Imagen arte Impreso" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
                                 <i class="fa fa-fw fa-photo"></i>
                             </a>`;
                     }

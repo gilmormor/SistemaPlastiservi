@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use SplFileInfo;
 
 class AcuerdoTecnico extends Model
 {
@@ -79,6 +81,7 @@ class AcuerdoTecnico extends Model
         'at_certificados',
         'at_otrocertificado',
         'at_formatofilm',
+        'at_firmado',
         'usuariodel_id'
     ];    
 
@@ -156,6 +159,12 @@ class AcuerdoTecnico extends Model
         return $this->belongsTo(Producto::class);
     }
 
+    //RELACION DE UNO A MUCHOS acuerdotecnicocvalatdet
+    public function acuerdotecnicocvalatdets()
+    {
+        return $this->hasMany(AcuerdoTecnicoCValAtDet::class,"acuerdotecnico_id");
+    }
+
     public static function buscaratxcampos($request)
     {
         if ($request instanceof Model) {
@@ -228,6 +237,89 @@ class AcuerdoTecnico extends Model
 
         //return $respuesta;
         //return response()->json($productos->get());
+    }
+
+    public static function setImagen($request){
+        //dd($request);
+        //dd(isset($request->at_fileimpresofoto));
+        /* if (!is_null($request->namefileold) and $request->namefileold != "") {
+            Storage::disk('public')->delete("$request->url"."$request->namefileold");
+        }
+
+        if ($request->hasFile($request->nombrecampofile) && $request->file($request->nombrecampofile)->isValid()) {
+            $file = $request->file($request->nombrecampofile);
+            $nombre = $file->getClientOriginalName();
+            $info = new SplFileInfo($nombre);
+            $ext = strtolower($info->getExtension()); //Obtener extencion de un archivo
+            $imageName = $request->namefilenew . '.' . $ext;
+            $file->move(public_path() . "/storage" . "$request->url" , $imageName);
+            return $imageName;
+        } */
+
+        // Ruta completa para eliminación
+        $rutaCompleta = $request->url . $request->namefileold;
+        //dd($rutaCompleta . " del: " . $request->file_del);
+        if($request->file_del == "1"){
+            Storage::disk('public')->delete($rutaCompleta);           
+        }
+        // 1. Si el usuario NO envió un archivo nuevo:
+        /* if (!$request->hasFile($request->nombrecampofile)) {
+            // Si existía una imagen previa, eliminarla
+            if (!is_null($request->namefileold) && $request->namefileold != "" and $request->at_fileimpresofoto_deleted == "1") {
+                Storage::disk('public')->delete($rutaCompleta);
+                return null; // Indicamos que se eliminó
+            } else {
+                return null; // No hay nada que hacer
+            }
+        } */
+        // 2. Si se envió un archivo nuevo y es válido
+        if ($request->file_loader == "1" and $request->file($request->nombrecampofile)->isValid()) {
+            // Procesar nuevo archivo
+            $file = $request->file($request->nombrecampofile);
+            $nombre = $file->getClientOriginalName();
+            $ext = strtolower((new \SplFileInfo($nombre))->getExtension());
+
+            $imageName = $request->namefilenew . '.' . $ext;
+
+            // Mover archivo
+            $file->move(public_path() . "/storage" . $request->url, $imageName);
+            //$file->move(public_path("storage" . $request->url), $imageName);
+
+            return $imageName;
+        }else{
+            if($request->file_del == "1"){
+                return "del";
+            }
+            
+        }
+
+        return null; // No se cargó ni se eliminó nada
+    }
+
+        public static function setAtFirmado($foto,$id,$request,$at_imagen,$imagen, $actual = false){
+        //dd($foto);
+        if ($foto) {
+            if ($actual) {
+                Storage::disk('public')->delete("imagenes/attempfirm/$actual");
+            }
+            //dd($at_imagen);
+            $file = $request->file($at_imagen);
+            $nombre = $file->getClientOriginalName();
+            $info = new SplFileInfo($nombre);
+            $ext = strtolower($info->getExtension()); //Obtener extencion de un archivo
+            //$imageName = Str::random(10) . '.jpg';
+            $imageName = 'attempfirm' . $id . '.' . $ext;
+            $file->move(public_path() . "/storage/imagenes/attempfirm/" , $imageName);
+            //$request->file('')
+            return $imageName;
+        } else {
+            if ($actual and ($imagen == "" or is_null($imagen))) {
+                Storage::disk('public')->delete("imagenes/attempfirm/$actual");
+                return "del";
+            }else{
+                return false;
+            }
+        }
     }
 
 }

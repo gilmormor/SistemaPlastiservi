@@ -23,8 +23,16 @@ class ValidarCodigo extends FormRequest
      */
     public function rules()
     {
+        /* return [
+            'desc' => 'required|max:60|unique:codigo,desc,' . $this->route('id'),
+            'detalles' => 'nullable|array',
+            'detalles.*.descdet' => 'required|string|max:255',
+        ]; */
         return [
-            'desc' => 'required|max:60|unique:codigo,desc,' . $this->route('id')
+            'desc' => 'required|max:60|unique:codigo,desc,' . $this->route('id'),
+            'detalles' => 'nullable|array',
+            'detalles.*.id' => 'nullable|integer|exists:codigodet,id',
+            'detalles.*.descdet' => 'required|string|max:255',
         ];
     }
 }

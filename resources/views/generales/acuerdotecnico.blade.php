@@ -46,6 +46,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div id="div_valat">
+                        </div>
+                        {{-- <div class="row">
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Datos Adicionales</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row" id="div_valat"></div>
+                                </div>
+                            </div>
+                        </div> --}}
+
                         <div class="row">
                             <div class="box box-primary">
                                 <div class="box-header with-border">

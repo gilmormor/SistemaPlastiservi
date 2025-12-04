@@ -20,6 +20,7 @@ class Persona extends Model
         'ext',
         'email',
         'cargo_id',
+        'sta_editarnvcot', // Status para permitir editar todas las Notas de Venta y cotizaciones sin importar por quien fue creada 0=No, 1=Si
         'usuario_id',
         'activo'
     ];

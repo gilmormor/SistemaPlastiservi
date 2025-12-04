@@ -201,6 +201,25 @@ function ajaxRequest(data,url,funcion,form = false) {
                     if (respuesta.error == 0){
                         form.parents('tr').remove();
                     }
+                    /* if(respuesta.aprobstatus == 6){
+                        swal({
+                            title: 'AT debe ser firmado por el cliente',
+                            text: "Ir a subir Acuerdo Tecnico firmado?",
+                            icon: 'warning',
+                            buttons: {
+                                cancel: "No",
+                                confirm: "Si"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                                // *** REDIRECCIONA A UNA RUTA*** 
+                                var loc = window.location;
+                                window.location = loc.protocol+"//"+loc.hostname+"/cotizacionatfirmado"; // Cambia la ruta según sea necesario
+                                // *** REDIRECCIONA A UNA RUTA***
+                                // ****************************** 
+                            }
+                        });
+                    }else{ */
                     swal({
                         title: 'Informacion',
                         text: respuesta.mensaje,
@@ -209,6 +228,7 @@ function ajaxRequest(data,url,funcion,form = false) {
                             confirm: "Aceptar"
                         },
                     });
+                    /* } */
                     //Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
                 }else{
                     if (respuesta.mensaje == "ok") {
