@@ -108,7 +108,7 @@ $(document).ready(function () {
                 <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0,0)" style="padding-left: 0px;">
                     <i class="fa fa-fw fa-lock text-danger accioness fa-lg"></i>
                 </a>
-                <a ${aux_displaybtnac} href="cotizacion" class="btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons botonac${data.id}" title="Enviar a Nota de venta" style="padding-left: 0px;">
+                <a ${aux_displaybtnac} href="cotizacion" class="btn-accion-tabla btn-sm tooltipsC btnEnviarNV action-buttons botonac${data.id}" title="Enviar a Siguiente Módulo" style="padding-left: 0px;">
                     <i class="fa fa-fw fa-save accioness fa-lg"></i>
                 </a>
                 <a href="cotizacion" class="btn-accion-tabla tooltipsC btnEditar action-buttons" title="Editar este registro">

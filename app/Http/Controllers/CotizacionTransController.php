@@ -123,8 +123,8 @@ class CotizacionTransController extends Controller
                     $data->aux_color = "btn btn-danger";
                     break;
                 case 6:
-                    $data->aprobstatusdesc = "Cotizacion con acuerdo técnico Aprobado";
-                    $data->aux_icono = "glyphicon glyphicon-thumbs-up";
+                    $data->aprobstatusdesc = "Cargar AT Firmado";
+                    $data->aux_icono = "fa fa-cloud-upload";
                     $data->aux_color = "btn btn-success";            
                     break;
             }
