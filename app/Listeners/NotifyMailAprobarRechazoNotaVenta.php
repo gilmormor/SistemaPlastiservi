@@ -2,7 +2,9 @@
 
 namespace App\Listeners;
 
+use App\Jobs\EnviarCorreosAprobarRechazoNotaVenta;
 use App\Mail\MailAprobarRechazoNotaVenta;
+use App\Models\EmailxLote;
 use App\Models\Notificaciones;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,6 +30,24 @@ class NotifyMailAprobarRechazoNotaVenta
      */
     public function handle($event)
     {
+        /* $arrayUsuarios = [];
+
+        // Vendedor
+        $arrayUsuarios[] = [
+            "usuario_id" => $event->notaventa->vendedor->persona->usuario_id,
+            "nombre" => $event->notaventa->vendedor->persona->usuario->nombre,
+            "email" => $event->notaventa->vendedor->persona->usuario->email
+        ];
+
+        dispatch(
+            new EnviarCorreosAprobarRechazoNotaVenta(
+                $event->notaventa,
+                auth()->id(),
+                urlPrevio(),
+                urlActual(),
+                $arrayUsuarios
+            )
+        ); */
         $rutaPantalla = urlPrevio();
         $rutaOrigen = urlActual();
         $notaventa = $event->notaventa;
@@ -37,23 +57,29 @@ class NotifyMailAprobarRechazoNotaVenta
             $aux_mensaje = "Nota de Venta $notaventa->id fue APROBADA.";
             $aux_mensaje2 = "\nSi es el caso inicia el proceso de produccion y posterior despacho.";
             $aux_icono = "fa fa-fw fa-thumbs-o-up text-primary";    
-            //En comentario para que no envie correo a los usuarios que tengan acceso al menu de aprobar nota venta
-            //$arrayUsuarios = usuariosConAccesoMenuURL($notaventa,"despachosol");
-            $arrayUsuarios[] = [
-                "usuario_id" => $notaventa->vendedor->persona->usuario_id,
-                "nombre" => $notaventa->vendedor->persona->usuario->nombre,
-                "email" => $notaventa->vendedor->persona->usuario->email
-            ];
-
         }else{
             $aux_mensaje = "Nota de Venta $notaventa->id fue RECHAZADA.";
             $aux_icono = "fa fa-fw fa-thumbs-o-down text-red";
-            $arrayUsuarios[] = [
-                "usuario_id" => $notaventa->vendedor->persona->usuario_id,
-                "nombre" => $notaventa->vendedor->persona->usuario->nombre,
-                "email" => $notaventa->vendedor->persona->usuario->email
-            ];
         }
+        //En comentario para que no envie correo a los usuarios que tengan acceso al menu de aprobar nota venta
+        //$arrayUsuarios = usuariosConAccesoMenuURL($notaventa,"despachosol");
+        $arrayUsuarios[] = [
+            "usuario_id" => $notaventa->vendedor->persona->usuario_id,
+            "nombre" => $notaventa->vendedor->persona->usuario->nombre,
+            "email" => $notaventa->vendedor->persona->usuario->email
+        ];
+        $emailxlote = EmailxLote::where("id",4)->get();
+        if(count($emailxlote) > 0){
+            $emailxlote = EmailxLote::findOrFail(4);
+            foreach($emailxlote->personas as $persona){
+                $arrayUsuarios[] = [
+                    "usuario_id" => $persona->usuario_id,
+                    "nombre" => $persona->usuario->nombre,
+                    "email" => $persona->usuario->email
+                ];
+            }
+        }
+        //dd($arrayUsuarios);
         foreach ($arrayUsuarios as $arrayUsuario) {
             $notificaciones = new Notificaciones();
             $notificaciones->usuarioorigen_id = auth()->id();

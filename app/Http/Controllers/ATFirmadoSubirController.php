@@ -27,7 +27,7 @@ class ATFirmadoSubirController extends Controller
      */
     public function index()
     {
-        can('listar-reporte-productos');
+        can('listar-subir-at-firmado');
         $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
         $tablashtml['sucursales'] = Sucursal::orderBy('id')

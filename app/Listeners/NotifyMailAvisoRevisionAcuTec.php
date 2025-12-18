@@ -29,7 +29,7 @@ class NotifyMailAvisoRevisionAcuTec
      */
     public function handle($event)
     {
-        $emailxlote = EmailxLote::where("id",2)->get();
+        $emailxlote = EmailxLote::where("id",3)->get();
         if(count($emailxlote) > 0){
             $emailxlote = EmailxLote::findOrFail(3);
             foreach($emailxlote->personas as $persona){

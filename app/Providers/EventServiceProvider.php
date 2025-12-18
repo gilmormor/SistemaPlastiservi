@@ -96,7 +96,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         EnviarEmailFactxVencer::class => [
             NotifyMailFactxVencer::class,
-        ]
+        ],
+        AprobarRechazoNotaVenta::class => [
+            NotifyMailAprobarRechazoNotaVenta::class,
+        ],
     ];
 
     /**

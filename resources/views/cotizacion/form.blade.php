@@ -308,7 +308,7 @@
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
                             <th style="display:none;">Array Acuerdo Tecnico</th>
                             <th style="display:none;">Tipo Producto</th>
-                            <th class="width70"></th>
+                            <th class="width70">Accion</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -379,7 +379,7 @@
                                             @if ($CotizacionDetalle->acuerdotecnicotemp == null)
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                             @else
-                                                @if ($data->aprobstatus == '7' and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
+                                                @if ($data->aprobstatus == '7' and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1 and $data->fechahora > '2025-12-17 00:00:00')
                                                     <div class="Imagenatfirma">
                                                         <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$CotizacionDetalle->acuerdotecnicotemp->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                             <i class="fa fa-fw fa-photo"></i>
