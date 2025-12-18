@@ -287,8 +287,8 @@ class InvControlController extends Controller
                     $annomesini = date("Ym",strtotime($aux_annomes.'01'."+ 1 month"));
 
                     $aux_sucursal_id = $request->sucursal_id;
-                    $invmovdets = InvMov::join('invmovdet','invmov.id', '=', 'invmovdet.invmov_id')
-                            ->where("annomes","=",$aux_annomes)
+                    /* $invmovdets = InvMov::join('invmovdet','invmov.id', '=', 'invmovdet.invmov_id')
+                            ->where("invmov.annomes","=",$aux_annomes)
                             ->join('invbodega', 'invmovdet.invbodega_id', '=', 'invbodega.id')
                             ->select([
                                         'invbodegaproducto_id',
@@ -304,7 +304,14 @@ class InvControlController extends Controller
                             ->whereNull('invmovdet.deleted_at')
                             ->where("invbodega.sucursal_id",$aux_sucursal_id)
                             ->groupBy("invmovdet.invbodegaproducto_id")
-                            ->get();
+                            ->get(); */
+                    $sql = "SELECT invbodegaproducto_id,invmovdet.producto_id ,SUM(cant) as cant,sum(cantkg) as cantkg
+                            FROM invmov INNER JOIN invmovdet
+                            ON invmov.id = invmovdet.invmov_id
+                            WHERE invmov.annomes = $aux_annomes
+                            GROUP BY invmovdet.invbodegaproducto_id";
+                    $invmovdets = DB::select($sql);
+                    //dd($datas);
                     //LE ASIGNO 0 A TODOS LOS REGISTROS DE LA TABLA InvBodegaProducto PARA INICIALIZAR STOCK
                     InvBodegaProducto::query()->update([
                         'stock' => 0,
