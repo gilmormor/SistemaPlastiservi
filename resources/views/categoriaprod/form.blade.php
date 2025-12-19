@@ -180,6 +180,23 @@
 </div>
 <input type="hidden" name="stadespsinstock" id="stadespsinstock" value="{{old('stadespsinstock', $data->stadespsinstock ?? '0')}}">
 
+<div class="form-group">
+    <label for="omitiracutec" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Omitir en Cot y Nota de Venta Acuerdo Tecnico?">Omitir AT?</label>
+    <div class="col-lg-8">
+        <select name="omitiracutec" id="omitiracutec" class="form-control select2 omitiracutec" required>
+            <option value="1"
+                @if (isset($data) and ($data->omitiracutec=="1"))
+                    {{'selected'}}
+                @endif
+            >Si</option>
+            <option value="0"
+                @if (isset($data) and ($data->omitiracutec=="0"))
+                    {{'selected'}}
+                @endif
+            >No</option>
+        </select>
+    </div>
+</div>
 
 <div class="col-md-6">
     <div class="box box-primary">
