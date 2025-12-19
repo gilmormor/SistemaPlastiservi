@@ -300,7 +300,11 @@ class ProductoController extends Controller
             ->join('producto', 'categoriaprod.id', '=', 'producto.categoriaprod_id')
             ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
             ->leftJoin('unidadmedida', 'categoriaprod.unidadmedidafact_id', '=', 'unidadmedida.id')
-            ->leftJoin('acuerdotecnico', 'producto.id', '=', 'acuerdotecnico.producto_id')
+            //->leftJoin('acuerdotecnico', 'producto.id', '=', 'acuerdotecnico.producto_id')
+            ->leftJoin('acuerdotecnico', function($join) {
+                $join->on('producto.id', '=', 'acuerdotecnico.producto_id')
+                    ->where('categoriaprod.omitiracutec', 0);
+            })
             ->leftJoin('tiposello', 'acuerdotecnico.at_tiposello_id', '=', 'tiposello.id')
             ->select([
                     'producto.id',
@@ -336,16 +340,14 @@ class ProductoController extends Controller
                     'acuerdotecnico.at_unidadmedida_id',
                     'claseprod.cla_descripcion'
                     ])
-                    ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
-                    ->where('producto.deleted_at','=',null)
-                    ->groupBy('producto.id');
-            //dd($productos);
+            ->whereIn('categoriaprodsuc.sucursal_id', $sucurArray)
+            ->where('producto.deleted_at','=',null)
+            ->groupBy('producto.id');
             //****************** */
             $array_productos = $productos->get()->toArray();
             $respuesta = array();
             if(count($array_productos) > 0){
                 $respuesta = $array_productos[0];
-                //dd($respuesta);
                 if($request->cliente_id){
                     $cliente = Cliente::findOrFail($request->cliente_id);
                     $categoriaprod_giro = CategoriaProd_Giro::where('categoriaprod_id', $array_productos[0]["categoriaprod_id"])
@@ -358,6 +360,8 @@ class ProductoController extends Controller
                 }
                 //dd($respuesta);
                 $producto = Producto::findOrFail($request->id);
+                $respuesta['nombre'] = $producto->atributosProducto($request->id)["nombre"];
+                //dd($respuesta);
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();
                 //$respuesta['areaproduccion'] = $producto->categoriaprod->areaproduccion->toArray();
                 $respuesta['areaproduccionsucs'] = $producto->categoriaprod->areaproduccion->areaproduccionsucs->toArray();

@@ -82,7 +82,14 @@ class ReportProductoController extends Controller
         $datas = Producto::productosxUsuarioRep($request);
         foreach ($datas as $data) {
             $producto = Producto::findOrFail($data->producto_id);
-            $producto->nombre = $producto->atributosProducto($producto->id)['nombre'];
+            //dd($producto);
+            $productoAttr = $producto->atributosProducto($producto->id);
+            //dd($productoAttr);
+            //$producto->nombre = $productoAttr['nombre'];
+            $producto->nombre = $producto->descripcion;
+            $producto->espesor = $productoAttr['at_espesor'];
+            $producto->diametro = $productoAttr['at_ancho'];
+            $producto->peso = $productoAttr['at_peso'];
             //dd($producto->nombre);
             $producto->save();
         }
