@@ -349,7 +349,7 @@
                                                 {{$CotizacionDetalle->producto_id}}
                                             </a>
                                             @if ($CotizacionDetalle->acuerdotecnicotemp->at_impreso==1)
-                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen arte Impresa" onclick='verpdf2("attemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver imagen (Cliché)" onclick='verpdf2("attemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
                                                     <i class="fa fa-fw fa-photo"></i>
                                                 </a>
                                             @endif
@@ -359,7 +359,7 @@
                                                     {{$CotizacionDetalle->producto_id}}
                                                 </a>
                                                 @if ($CotizacionDetalle->producto->acuerdotecnico->at_impreso==1)
-                                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen arte Impresa" onclick='verpdf2("attemp/{{$CotizacionDetalle->producto->acuerdotecnico->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                    <a class="btn-accion-tabla btn-sm tooltipsC" title="Ver imagen (Cliché)" onclick='verpdf2("attemp/{{$CotizacionDetalle->producto->acuerdotecnico->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
                                                         <i class="fa fa-fw fa-photo"></i>
                                                     </a>
                                                 @endif
@@ -387,7 +387,7 @@
                                             <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}">
                                                 @if ($data->aprobstatus == 8 and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
                                                     <div class="Imagenatfirma">
-                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$CotizacionDetalle->acuerdotecnicotemp->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
+                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\atfirmtemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                             <i class="fa fa-fw fa-photo"></i>
                                                         </a>
                                                     </div>
@@ -404,13 +404,13 @@
                                                         if($CotizacionDetalle->acuerdotecnicotemp == null){
                                                             $aux_imagen = "";
                                                         }else{
-                                                            //$aux_at_impresofoto = "attempfirm" . $CotizacionDetalle->acuerdotecnicotemp->id . ".pdf"; //$CotizacionDetalle->acuerdotecnicotemp->at_firmado;
+                                                            //$aux_at_impresofoto = "atfirmtemp" . $CotizacionDetalle->acuerdotecnicotemp->id . ".pdf"; //$CotizacionDetalle->acuerdotecnicotemp->at_firmado;
                                                             $aux_at_firmado = $CotizacionDetalle->acuerdotecnicotemp->at_firmado;
-                                                            $filePath = "imagenes/attempfirm/$aux_at_firmado";
+                                                            $filePath = "imagenes/atfirmtemp/$aux_at_firmado";
 
                                                             // Validar existencia del archivo
                                                             if (Storage::disk('public')->exists($filePath)) { // Ajusta 'public' según tu disco configurado
-                                                                $data_initial_preview=isset($aux_at_firmado) ? Storage::url("imagenes/attempfirm/$aux_at_firmado") : "";
+                                                                $data_initial_preview=isset($aux_at_firmado) ? Storage::url("imagenes/atfirmtemp/$aux_at_firmado") : "";
                                                             } else {
                                                                 $data_initial_preview = ""; // O asigna una imagen por defecto
                                                             }
@@ -421,7 +421,7 @@
                                                         <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_firmado ?? '')}}">
                                                     </div>
                                                     @if ($data_initial_preview != "")
-                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
+                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\atfirmtemp/{{$aux_at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                             <i class="fa fa-fw fa-photo"></i>
                                                         </a>
                                                     @endif

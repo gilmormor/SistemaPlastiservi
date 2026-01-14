@@ -80,7 +80,7 @@ $(document).ready(function () {
 
                     if(data.at_impresofoto != "" && data.at_impresofoto != null){
                         aux_text += 
-                            `<a class="btn-accion-tabla btn-sm" title="Ver Imagen arte Impreso" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
+                            `<a class="btn-accion-tabla btn-sm" title="Ver imagen (Cliché)" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
                                 <i class="fa fa-fw fa-photo"></i>
                             </a>`;
                     }
@@ -248,7 +248,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
 
                 if(data.at_impresofoto != "" && data.at_impresofoto != null){
                     aux_text += 
-                        `<a class="btn-accion-tabla btn-sm" title="Ver Imagen arte Impreso" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
+                        `<a class="btn-accion-tabla btn-sm" title="Ver imagen (Cliché)" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
                             <i class="fa fa-fw fa-photo"></i>
                         </a>`;
                 }
@@ -294,21 +294,19 @@ var eventFired = function ( type ) {
 
 function datosproducto(){
     var data1 = {
-        mesanno           : $("#annomes").val(),
-        sucursal_id       : $("#sucursal_id").val(),
-        invbodega_id      : $("#invbodega_id").val(),
-        producto_id       : $("#producto_idPxP").val(),
-        categoriaprod_id  : $("#categoriaprod_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
-        rut               : eliminarFormatoRutret($("#rut").val()),
-        at_impreso        : $("#at_impreso").val(),
-        at_firmadosta     : $("#at_firmadosta").val(),
-        at_impresostaeli  : $("#at_impresostaeli").val(),
-        _token            : $('input[name=_token]').val()
+        mesanno             : $("#annomes").val(),
+        invbodega_id        : $("#invbodega_id").val(),
+        producto_id         : $("#producto_idPxP").val(),
+        categoriaprod_id    : $("#categoriaprod_id").val(),
+        areaproduccion_id   : $("#areaproduccion_id").val(),
+        rut                 : eliminarFormatoRutret($("#rut").val()),
+        at_impreso          : $("#at_impreso").val(),
+        at_firmadosta       : $("#at_firmadosta").val(),
+        at_impresostaeli    : $("#at_impresostaeli").val(),
+        _token              : $('input[name=_token]').val()
     };
 
     var data2 = "?mesanno="+data1.mesanno +
-    "&sucursal_id="+data1.sucursal_id +
     "&invbodega_id="+data1.invbodega_id +
     "&producto_id="+data1.producto_id +
     "&categoriaprod_id="+data1.categoriaprod_id +

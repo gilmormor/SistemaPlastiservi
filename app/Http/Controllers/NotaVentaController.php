@@ -1295,7 +1295,7 @@ class NotaVentaController extends Controller
 
                             //COPIO AL ACUERDOTECNICO DEFINITIVO el At FirmadoY COPIO EL ARCHIVO
                             if($array_acuerdotecnicotemp["at_firmado"] != null){
-                                $fileOrigen = 'imagenes/attempfirm/' . $array_acuerdotecnicotemp["at_firmado"];
+                                $fileOrigen = 'imagenes/atfirmtemp/' . $array_acuerdotecnicotemp["at_firmado"];
                                 $extension = File::extension($fileOrigen);
                                 $fileDestino = 'atfirm' . $acuerdotecnico->id . '.' . $extension;
                                 $newName = 'imagenes/atfirm/' . $fileDestino;

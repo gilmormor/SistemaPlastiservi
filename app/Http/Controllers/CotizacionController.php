@@ -1014,7 +1014,7 @@ class CotizacionController extends Controller
                         $aux_attemp = $cotizaciondetalle->acuerdotecnicotempunoauno;
                         if ($aux_attemp->at_firmado != null and $aux_aprobstatus == 7 and $aux_attemp->at_stacorregirat == 1) {
                             $aux_atfirmado = $aux_attemp->at_firmado;
-                            Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
+                            Storage::disk('public')->delete("imagenes/atfirmtemp/$aux_atfirmado");
                             $aux_attemp->at_firmado = null; //asigno null para que se pueda subir el AT firmado
                             $aux_attemp->save();
                             $cotizacion->aprobstatus = 8; //Si al menos 1 AT fue enviado a correccion, vuelve a estado de revision AcuTec
@@ -1032,7 +1032,7 @@ class CotizacionController extends Controller
                         if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
                             if ($cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado != null) {
                                 $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;
-                                Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
+                                Storage::disk('public')->delete("imagenes/atfirmtemp/$aux_atfirmado");
                                 $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null; //asigno null para que se pueda subir el AT firmado
                                 $cotizaciondetalle->acuerdotecnicotempunoauno->save();
                             }
@@ -1308,7 +1308,7 @@ class CotizacionController extends Controller
                         /* foreach ($cotizacion->cotizaciondetalles as $cotizaciondetalle) {
                             if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
                                 $aux_atfirmado = $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado;
-                                Storage::disk('public')->delete("imagenes/attempfirm/$aux_atfirmado");
+                                Storage::disk('public')->delete("imagenes/atfirmtemp/$aux_atfirmado");
                                 $cotizaciondetalle->acuerdotecnicotempunoauno->at_firmado = null;
                                 $cotizaciondetalle->acuerdotecnicotempunoauno->save();
                             }

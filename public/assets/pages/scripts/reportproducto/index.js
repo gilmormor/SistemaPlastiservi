@@ -74,7 +74,7 @@ $(document).ready(function () {
                         aux_text += 
                             //`<a class="btn-accion-tabla btn-sm" title="Ver Imagen" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
                             //`<a class="btn-accion-tabla btn-sm" title="Ver Imagen arte Impreso" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
-                            `<a class="btn-accion-tabla btn-sm" title="Ver Imagen arte Impreso" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
+                            `<a class="btn-accion-tabla btn-sm" title="Ver imagen (Cliché)" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
                                 <i class="fa fa-fw fa-photo"></i>
                             </a>`;
                     }

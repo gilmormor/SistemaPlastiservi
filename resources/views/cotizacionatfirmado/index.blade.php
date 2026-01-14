@@ -28,7 +28,7 @@ Cotización - Subir AT firmado
                                 <th>Cliente</th>
                                 <th>Vendedor</th>
                                 <th class="width30">PDF</th>
-                                <th class="width30" style="text-align: center;">Firmado</th>
+                                <th class="width30" style="text-align: center;">Con Firma</th>
                                 <th class="width30" style="text-align: center;">Sin Firma</th>
                                 <th class="ocultar">aprobstatus</th>
                                 <th class="width80">Acción</th>

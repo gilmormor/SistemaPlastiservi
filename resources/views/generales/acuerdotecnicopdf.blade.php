@@ -100,22 +100,32 @@
 
 		</tr>
 		@foreach ($tablas['cvalats'] as $cvalat)
-			<tr>
-				<td class="info_cliente">
-					<div>
-						<span class="h3" style="margin-bottom: 0px;">{{$cvalat->nombre}}</span>
-						<div class="datos_cliente" style="margin-bottom: 10px;">
-							@foreach ($acuerdotecnico->acuerdotecnicocvalatdets as $atvalatdet)
-								@if ($atvalatdet->cvalatdet->cvalat_id == $cvalat->id)
-									<span style="margin-right: 30px;">
-										<strong>{{$atvalatdet->cvalatdet->nombre}}:</strong> {{$atvalatdet->valor == 1 ? "Si" : "No"}}
-									</span>									
-								@endif
-							@endforeach
+			<?php
+				$aux_contador = 0;
+				foreach ($acuerdotecnico->acuerdotecnicocvalatdets as $atvalatdet){
+					if ($atvalatdet->cvalatdet->cvalat_id == $cvalat->id){
+						$aux_contador++;
+					}
+				}
+			?>
+			@if ($aux_contador > 0)
+				<tr>
+					<td class="info_cliente">
+						<div>
+							<span class="h3" style="margin-bottom: 0px;">{{$cvalat->nombre}}</span>
+							<div class="datos_cliente" style="margin-bottom: 10px;">
+								@foreach ($acuerdotecnico->acuerdotecnicocvalatdets as $atvalatdet)
+									@if ($atvalatdet->cvalatdet->cvalat_id == $cvalat->id)
+										<span style="margin-right: 30px;">
+											<strong>{{$atvalatdet->cvalatdet->nombre}}:</strong> {{$atvalatdet->valor == 1 ? "Si" : "No"}}
+										</span>									
+									@endif
+								@endforeach
+							</div>
 						</div>
-					</div>
-				</td>
-			</tr>
+					</td>
+				</tr>				
+			@endif
 		@endforeach
 
 		<tr>

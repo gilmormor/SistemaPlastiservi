@@ -198,15 +198,11 @@ $(document).ready(function () {
                     aux_titlehacersoldesp += `. OT Nro. ${data.ot_id} aprobada`;
                 }
                 aux_text += 
-                `<a ${aux_displaybtnac} href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="${aux_titlehacersoldesp}">
-                    <button type="button" class="btn btn-default btn-xs">
-                        <i class="fa fa-fw ${data_icono}"></i>
-                    </button>
+                `<a ${aux_displaybtnac} href="${nuevaaux_rutadespsol}" class="btn btn-default btn-xs tooltipsC enlace-soldesp botonac${data.id}" title="${aux_titlehacersoldesp}">
+                    <i class="fa fa-fw ${data_icono}"></i>
                 </a>
-                <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
-                    <button type="button" class="btn btn-default btn-xs">
-                        <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
-                    </button>
+                <a ${aux_displaybtnbl} class="btn btn-default btn-xs tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
+                    <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
                 </a>`;
             }
 
@@ -244,6 +240,7 @@ $(document).ready(function () {
                 aux_title = "Anulada Fecha: " + data.anulada;
                 //$nuevoSolDesp = "";
             }
+            $('td', row).eq(11).attr('class','elementosjuntos');
             $('td', row).eq(11).html(aux_text);
         }
     });

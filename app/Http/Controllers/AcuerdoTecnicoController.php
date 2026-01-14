@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AcuerdoTecnico;
+use App\Models\AcuerdoTecnicoCValAtDet;
 use App\Models\AcuerdoTecnicoTemp;
 use App\Models\Certificado;
 use App\Models\Cliente;
@@ -96,6 +97,7 @@ class AcuerdoTecnicoController extends Controller
     public function buscaratxcampos(Request $request)
     {
         if($request->ajax()){
+            //dd($request);
             /* $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
                         FROM acuerdotecnico INNER JOIN producto
                         on acuerdotecnico.producto_id = producto.id
@@ -165,20 +167,97 @@ class AcuerdoTecnicoController extends Controller
             and $aux_Condacuerdotecnico_idEditAct;";
             
             $datas = DB::select($sql);
+            $dataresultado = [];
             //dd($datas);
             foreach ($datas as &$data) {
                 $producto = Producto::find($data->producto_id);
                 $producto_atributos = $producto->atributosProducto($data->producto_id);
                 $data->producto_nombre = $producto_atributos['nombre'];
-            }
 
-            return $datas;
+                // 1. Obtener TODOS los registros del acuerdo técnico
+                $registros = AcuerdoTecnicoCValAtDet::where('acuerdotecnico_id', $data->id)->get();
+                // 2. Obtener todos los campos at_cvalatdet del request
+                $camposCValAtDet = $this->obtenerCamposCValAtDet($request);
+                
+                // 3. CASO 1: No hay registros en BD
+                if ($registros->isEmpty()) {
+                    // Verificar si TODOS los campos del request son "0"
+                    $todosSonCero = $this->todosLosCamposSonCero($camposCValAtDet);
+                    $data->coincide = $todosSonCero;
+                    if($data->coincide){
+                        $dataresultado[] = $data;
+                    }
+                    continue;
+                    //return $todosSonCero;
+                }
+                
+                // 4. CASO 2: Hay registros en BD
+                $totalRegistros = $registros->count();
+                $matchCount = 0;
+                
+                foreach ($registros as $registro) {
+                    $fieldName = 'at_cvalatdet' . $registro->cvalatdet_id;
+                    
+                    // Verificar si el campo existe en el request
+                    if ($request->has($fieldName)) {
+                        // Comparar el valor del request con el valor en BD
+                        if ($request->get($fieldName) == $registro->valor) {
+                            $matchCount++;
+                        }
+                    }
+                }
+                //dd($data);
+                // 5. Si todos los registros coinciden, retornar true
+                if ($matchCount === $totalRegistros){
+                    $data->coincide = true;
+                } else {
+                    $data->coincide = false;
+                }
+                if($data->coincide == true){
+                    $dataresultado[] = $data;
+                }
+            }
+            //dd($dataresultado);
+            return $dataresultado;
             //return datatables($datas)->toJson();
     
 
             //return $respuesta;
             //return response()->json($productos->get());
         }
+    }
+    /**
+     * Método auxiliar: Obtener todos los campos at_cvalatdet del request
+     */
+    private function obtenerCamposCValAtDet(Request $request): array
+    {
+        $campos = [];
+        
+        foreach ($request->all() as $key => $value) {
+            if (str_starts_with($key, 'at_cvalatdet')) {
+                $campos[$key] = $value;
+            }
+        }
+        
+        return $campos;
+    }
+    
+    /**
+     * Método auxiliar: Verificar si TODOS los campos son "0"
+     */
+    private function todosLosCamposSonCero(array $campos): bool
+    {
+        if (empty($campos)) {
+            return true; // Si no hay campos, se considera válido
+        }
+        
+        foreach ($campos as $valor) {
+            if ($valor != "0") {
+                return false;
+            }
+        }
+        
+        return true;
     }
 /*
     public function exportPdf($id,$stareport = '1')

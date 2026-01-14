@@ -203,65 +203,87 @@ function ajaxRequest(data,url,funcion) {
 			}
 			if(funcion=='buscaratxcampos'){
 				if(respuesta.length > 0){
-					//console.log(respuesta);
-					/*
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: 'Something went wrong!',
-						footer: '<a href="">Why do I have this issue?</a>'
-					  })*/
-					swal({
-						title: 'Acuerdo técnico ya existe',
-						text: 'Producto Cod: ' + respuesta[0].producto_id + ', ' + respuesta[0].producto_nombre,
-						icon: 'warning',
-						buttons: {
-							cancel: "Cerrar",
-							confirm: "Ver AT"
-						},
-						}).then((value) => {
-							if(value){
-								genpdfAcuTec(respuesta[0].id,$("#cliente_id").val(),1);
-							}
-							/*
-							fila = $(this).closest("tr");
-							form = $(this);
-							id = fila.find('td:eq(0)').text();
-							//alert(id);
-							var data = {
-								_token  : $('input[name=_token]').val(),
-								id      : id
-							};
-							if (value) {
-								ajaxRequest(data,form.attr('href')+'/'+id+'/anular','anular',form);
-							}*/
-						});
+					aux_botones = { 
+						cancel: "Cerrar",
+						verAT: {
+							text: "Ver AT",
+							value: "verAT",
+						}
+					};
+					
+					if(datatemp.at_impreso == 1){
+						/* aux_botones.verCliche = {
+							text: "Ver Cliché",
+							value: "verCliche",
+						}; */
+
+						aux_botones.CrearProdImp = {
+							text: "Editar Producto nuevo cliché",
+							value: "CrearProdImp",
+						};
+						if ($("#btncrearAT").length === 0) {
+							$("#contenedorBotonesAT").append(`
+								<button type="button" id="btncrearAT" class="btn btn-primary" title="Modificar Acuerdo Tecnico?" onclick="seguirProcesoCrearAT()" data-dismiss="modal">
+									Editar AT
+								</button>
+							`);
+						}
+					}else{
+						// Si existe, lo elimino
+    					//$("#btncrearAT").remove();
+						swal({
+							title: 'Acuerdo técnico ya existe',
+							text: 'Producto Cod: ' + respuesta[0].producto_id + ', ' + respuesta[0].producto_nombre,
+							icon: 'warning',
+							buttons: {
+								cancel: "Cerrar",
+								confirm: "Ver AT"
+							},
+							}).then((value) => {
+								if(value){
+									genpdfAcuTec(respuesta[0].id,$("#cliente_id").val(),1);
+								}
+							});
+					}
+					
+					//mostrarVentAtExiste(respuesta,"myModalAcuerdoTecnico");
+					crearTablaListaAT(respuesta);
+					$("#titulomyMostrarAtCliche").html("Acuerdo Técnico ya existe! <span class='glyphicon glyphicon-info-sign has-warning' style='bottom: 0px;top: 2px;'></span>");
+					$("#myMostrarAtCliche").modal('show');
+						
 				}else{
-					$("#myModalAcuerdoTecnico").modal('hide');
+					seguirProcesoCrearAT();
+					/* $("#myModalAcuerdoTecnico").modal('hide');
 					$("#acuerdotecnico" + datatemp.nfila).val(datatemp.objtxt); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
-					//alert($("#acuerdotecnico" + i).val());
 					$("#icoat" + datatemp.nfila).attr('class','fa fa-cog text-aqua');
 					$("#nombreProdTD" + datatemp.nfila).html($("#at_desc").val());
-					/* $("#diamextmmTD" + datatemp.nfila).html($("#at_ancho").val());
-					$("#ancho" + datatemp.nfila).val($("#at_ancho").val());
-					$("#longTD" + datatemp.nfila).html($("#at_largo").val());
-					$("#espesorTD" + datatemp.nfila).html($("#at_espesor").val());
-					$("#cla_nombreTD" + datatemp.nfila).html($("#at_claseprod_id option:selected").html());
-					$("#unidadmedida_nomnreTD" + datatemp.nfila).html($("#at_unidadmedida_id option:selected").html());
-					$("#unidadmedida_id" + datatemp.nfila).val($("#at_unidadmedida_id option:selected").val()); */
 					if($("#at_impreso").val() == 1){
 						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'inline'});
 					}else{
 						$("#divMostrarImagenat" + datatemp.nfila).css({'display':'none'});
 						$("#at_imagen" + datatemp.nfila).val("");
 						$("#imagen" + datatemp.nfila).val("");
-					}
+					} */
 				}
 			}
 		},
 		error: function () {
 		}
 	});
+}
+
+function seguirProcesoCrearAT(){
+	$("#myModalAcuerdoTecnico").modal('hide');
+	$("#acuerdotecnico" + datatemp.nfila).val(datatemp.objtxt); //ACTUALIZO EN LA TABLA EL VALOR DEL CAMPO ACUERDO TECNICO
+	$("#icoat" + datatemp.nfila).attr('class','fa fa-cog text-aqua');
+	$("#nombreProdTD" + datatemp.nfila).html($("#at_desc").val());
+	if($("#at_impreso").val() == 1){
+		$("#divMostrarImagenat" + datatemp.nfila).css({'display':'inline'});
+	}else{
+		$("#divMostrarImagenat" + datatemp.nfila).css({'display':'none'});
+		$("#at_imagen" + datatemp.nfila).val("");
+		$("#imagen" + datatemp.nfila).val("");
+	}
 }
 
 $("#at_ancho").blur(function(event){

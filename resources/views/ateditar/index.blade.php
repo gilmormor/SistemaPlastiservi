@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Reporte Productos
+Editar Acuerdos Técnicos de Productos
 @endsection
 
 @section("scripts")
@@ -22,7 +22,7 @@ Reporte Productos
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Reporte Productos</h3>
+                <h3 class="box-title">Editar Acuerdos Técnicos de Productos</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
@@ -32,32 +32,7 @@ Reporte Productos
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" >Sucursal</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <?php
-                                            $sucursal_id = 0;
-                                            if(count($tablashtml['sucursales']) == 1){
-                                                $sucursal_id = $tablashtml['sucursales'][0]->id;
-                                            }
-                                        ?>
-                                        <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
-                                            <option value="x">Seleccione...</option>
-                                            @foreach($tablashtml['sucursales'] as $sucursal)
-                                                <option
-                                                    value="{{$sucursal->id}}"
-                                                    @if ( $sucursal->id == $sucursal_id )
-                                                        {{'selected'}}
-                                                    @endif
-                                                >
-                                                    {{$sucursal->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+                                
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="producto_idPxP" class="control-label">Producto</label>

@@ -44,7 +44,12 @@ if (!function_exists('canUser')) {
                 if ($redirect) {
                     if (!request()->ajax())
                         return redirect()->route('inicio')->with('mensaje', 'No tienes permisos para entrar en este módulo' . nomPermiso($permiso))->send();
-                    abort(403, 'No tiene permiso');
+                    return abort(403, 'No tiene permiso para realizar esta acción' . nomPermiso($permiso));
+                    /* return response()->json([
+                        'error' => 1,
+                        'mensaje' => 'No tiene permiso para realizar esta acción' . nomPermiso($permiso),
+                        'tipo_alert' => "error"
+                    ]); */
                 } else {
                     return false;
                 }

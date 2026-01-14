@@ -51,4 +51,5 @@
     </div>
     @include('generales.acuerdotecnico')
     @include('generales.modalpdf')
+    @include('generales.mostraratycliche')
 @endsection

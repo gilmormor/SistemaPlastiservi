@@ -300,7 +300,7 @@ class AcuerdoTecnico extends Model
         //dd($foto);
         if ($foto) {
             if ($actual) {
-                Storage::disk('public')->delete("imagenes/attempfirm/$actual");
+                Storage::disk('public')->delete("imagenes/atfirmtemp/$actual");
             }
             //dd($at_imagen);
             $file = $request->file($at_imagen);
@@ -308,13 +308,13 @@ class AcuerdoTecnico extends Model
             $info = new SplFileInfo($nombre);
             $ext = strtolower($info->getExtension()); //Obtener extencion de un archivo
             //$imageName = Str::random(10) . '.jpg';
-            $imageName = 'attempfirm' . $id . '.' . $ext;
-            $file->move(public_path() . "/storage/imagenes/attempfirm/" , $imageName);
+            $imageName = 'atfirmtemp' . $id . '.' . $ext;
+            $file->move(public_path() . "/storage/imagenes/atfirmtemp/" , $imageName);
             //$request->file('')
             return $imageName;
         } else {
             if ($actual and ($imagen == "" or is_null($imagen))) {
-                Storage::disk('public')->delete("imagenes/attempfirm/$actual");
+                Storage::disk('public')->delete("imagenes/atfirmtemp/$actual");
                 return "del";
             }else{
                 return false;

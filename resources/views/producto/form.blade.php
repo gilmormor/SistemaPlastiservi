@@ -31,9 +31,8 @@
                     <option value="" precio="0">Seleccione...</option>
                     @foreach($categoriaprods as $categoriaprod)
                         <option
-                            value="{{$categoriaprod->id}}" precio="{{$categoriaprod->precio}}">
-                            {{$categoriaprod->nombre}}
-                        </option>
+                            value="{{$categoriaprod->id}}" precio="{{$categoriaprod->precio}}"
+                            >{{$categoriaprod->nombre}}</option>
                     @endforeach
                 </select>
             </div>
@@ -58,9 +57,7 @@
                             @if ($data->categoriaprod_id==$categoriaprod->id)
                                 {{'selected'}}
                             @endif
-                            >
-                            {{$categoriaprod->nombre}}
-                        </option>
+                            >{{$categoriaprod->nombre}}</option>
                     @endforeach
                 </select>
             </div>
@@ -75,9 +72,7 @@
                             @if ($data->claseprod_id==$claseprod->id)
                                 {{'selected'}}
                             @endif
-                            >
-                            {{$claseprod->cla_nombre}}
-                        </option>
+                            >{{$claseprod->cla_nombre}}</option>
                     @endforeach
                 </select>
             </div>
@@ -121,9 +116,7 @@
                             @if ($data->grupoprod_id==$grupoprod->id)
                                 {{'selected'}}
                             @endif
-                            >
-                            {{$grupoprod->gru_nombre}}
-                        </option>
+                            >{{$grupoprod->gru_nombre}}</option>
                     @endforeach
                 </select>
             </div>

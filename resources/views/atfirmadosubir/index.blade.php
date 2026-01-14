@@ -32,32 +32,6 @@ Subir Acuerdo Técnico Firmado
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" title="Sucursal">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" >Sucursal</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <?php
-                                            $sucursal_id = 0;
-                                            if(count($tablashtml['sucursales']) == 1){
-                                                $sucursal_id = $tablashtml['sucursales'][0]->id;
-                                            }
-                                        ?>
-                                        <select name="sucursal_id" id="sucursal_id" class="selectpicker form-control" required>
-                                            <option value="x">Seleccione...</option>
-                                            @foreach($tablashtml['sucursales'] as $sucursal)
-                                                <option
-                                                    value="{{$sucursal->id}}"
-                                                    @if ( $sucursal->id == $sucursal_id )
-                                                        {{'selected'}}
-                                                    @endif
-                                                >
-                                                    {{$sucursal->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="col-xs-12 col-sm-6" title="Código Producto">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="producto_idPxP" class="control-label">Producto</label>

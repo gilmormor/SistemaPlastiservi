@@ -13,7 +13,7 @@
 
 <div class="form-group col-xs-12 col-sm-4">
     <label for="nombreProdTD" class="control-label">Nombre Producto</label>
-    <input type="text" name="nombreProdTD{{$data->acuerdotecnico->id}}" id="nombreProdTD{{$data->acuerdotecnico->id}}" class="form-control" value="{{old('nombreProdTD', $tablas["atributoProd"]["nombre"] ?? '')}}" required placeholder="Nombre Producto" categoriaprod_nombre={{$data->categoriaprod->nombre}} readonly/>
+    <input type="text" name="nombreProdTD{{$data->acuerdotecnico->id}}" id="nombreProdTD{{$data->acuerdotecnico->id}}" class="form-control" value="{{old('nombreProdTD', $tablas["atributoProd"]["nombre"] ?? '')}}" required placeholder="Nombre Producto" categoriaprod_nombre="{{$data->categoriaprod->nombre}}" readonly/>
 </div>
 <div class="form-group col-xs-12 col-sm-4">
     <label for="acuerdotecnico" class="control-label requerido" title="Editar Acuerdo Tecnico">Editar AT</label>
@@ -44,7 +44,7 @@
 </div>-->
 @if ($data->acuerdotecnico->at_impreso == 1)
     <div id="group_at_impresofoto" class="form-group col-xs-12 col-sm-4">
-        <label id="lboc_at_impresofoto" name="lboc_at_impresofoto" for="at_fileimpresofoto" class="control-label">Arte impresion</label>
+        <label id="lboc_at_impresofoto" name="lboc_at_impresofoto" for="at_fileimpresofoto" class="control-label">Cliché impresion</label>
         <div class="input-group">
             <?php 
                 $aux_at_impresofoto = $data->acuerdotecnico->at_impresofoto ?? null;

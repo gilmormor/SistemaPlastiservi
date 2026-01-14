@@ -2893,7 +2893,7 @@ function consulta($request,$aux_sql,$orden){
                             $aux_staStock3 = 1;
                         }
                         if(($aux_statusstockReg) == 0 or ($aux_statusstockReg == 1)){
-                            if($invbodegaproducto->stock){
+                            if($invbodegaproducto->stock and $invbodegaproducto->stock > 0){
                                 $aux_statusstockReg = 1;
                                 //break;
                             }

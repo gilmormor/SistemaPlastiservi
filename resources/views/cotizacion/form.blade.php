@@ -379,9 +379,10 @@
                                             @if ($CotizacionDetalle->acuerdotecnicotemp == null)
                                                 <i id="icoat{{$aux_nfila}}" class="fa fa-cog text-red girarimagen"></i>
                                             @else
-                                                @if ($data->aprobstatus == '7' and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1 and $data->fechahora > '2025-12-17 00:00:00')
+                                                {{-- A partir del 14 de Enero de 2026, todos los Acuerdos Técnicos deben ser firmados digitalmente. --}}
+                                                @if ($data->aprobstatus == '7' and $CotizacionDetalle->producto->tipoprod == 1 and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1 and $data->fechahora > '2026-01-14 00:00:00')
                                                     <div class="Imagenatfirma">
-                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$CotizacionDetalle->acuerdotecnicotemp->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
+                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\atfirmtemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                             <i class="fa fa-fw fa-photo"></i>
                                                         </a>
                                                     </div>
@@ -398,21 +399,21 @@
                                             <?php 
                                                 $sta_divMostrarImagenat = "";
                                             ?>
-                                            @if ($CotizacionDetalle->acuerdotecnicotemp->at_impresofoto != null and $data->aprobstatus == '7' and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
+                                            @if ($CotizacionDetalle->acuerdotecnicotemp->at_impresofoto != null and $data->aprobstatus == '7' and $CotizacionDetalle->producto->tipoprod == 1 and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
                                                 <div class="Imagenatfirma">
                                                     <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver arte" onclick='verpdf2("\attemp/{{$CotizacionDetalle->acuerdotecnicotemp->at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
                                                         <i class="fa fa-fw fa-photo"></i>
                                                     </a>
                                                 </div>
                                             @endif
-                                            @if ($data->aprobstatus == '7' and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
+                                            @if ($data->aprobstatus == '7' and $CotizacionDetalle->producto->tipoprod == 1 and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
                                                 <?php 
                                                     $sta_divMostrarImagenat = "display:none;";
                                                 ?>
                                             @endif
                                             <div style="{{$sta_divMostrarImagenat}}">
                                                 <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}" style={{$aux_mostrarimagenat}}>
-                                                    <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
+                                                    <a class="btn-accion-tabla tooltipsC" title="Cliché Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
                                                         <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
                                                     </a>
                                                     <?php 
@@ -555,7 +556,7 @@
                                                     $aux_acutec = 1;
                                                 }
                                             ?>
-                                            @if ($data->aprobstatus == '7' and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
+                                            @if ($data->aprobstatus == '7' and $CotizacionDetalle->producto->tipoprod == 1 and $CotizacionDetalle->acuerdotecnicotemp->at_stacorregirat != 1)
                                             @else
                                                 <a  id="editarRegistro{{$aux_nfila}}" name="editarRegistro{{$aux_nfila}}"  class="btn-accion-tabla tooltipsC" title="Editar este registro" onclick="editarRegistro({{$aux_nfila}},{{$aux_acutec}})">
                                                     <i class="fa fa-fw fa-pencil"></i>

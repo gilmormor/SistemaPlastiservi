@@ -415,7 +415,7 @@ function insertarTabla(){
 		aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
 		'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>' +
 		'<div id="divMostrarImagenat'+ aux_nfila + '" name="divMostrarImagenat'+ aux_nfila + '" style="display:none;">' +
-			'<a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro('+ aux_nfila + ')">' +
+			'<a class="btn-accion-tabla tooltipsC" title="Cliché Acuerdo Técnico" onclick="ocultarMostrarFiltro('+ aux_nfila + ')">' +
 				'<i id="btnmostrarocultar'+ aux_nfila + '" class="fa fa-plus"></i>' +
 			'</a>' +
 			'<div id="div_at_imagen'+ aux_nfila + '" name="div_at_imagen'+ aux_nfila + '" style="display: none;">' +
@@ -1551,7 +1551,7 @@ $(".form-horizontal").on("submit", function(event){
 				let at_imagen = $("#at_imagen" + i).val();
 				if($("#imagen" + i).val() == ""){
 					if(at_imagen == 0 || at_imagen == "null" || at_imagen == null || at_imagen == ""){
-						$("#lblitemcompletos").html("Arte Acuerdo técnico item:" + j);
+						$("#lblitemcompletos").html("Cliché Acuerdo técnico item:" + j);
 						$("#itemcompletos").val("");
 						break;
 					}	
@@ -1938,7 +1938,7 @@ function insertarItem(){
 				aux_botonAcuTec = ' <a class="btn-accion-tabla tooltipsC" title="Editar Acuerdo tecnico" onclick="crearEditarAcuTec('+ aux_nfila +')">'+
 				'<i id="icoat' + aux_nfila + '" class="fa fa-cog text-red girarimagen"></i> </a>' +
 				'<div id="divMostrarImagenat'+ aux_nfila + '" name="divMostrarImagenat'+ aux_nfila + '" style="display:none;">' +
-					'<a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro('+ aux_nfila + ')">' +
+					'<a class="btn-accion-tabla tooltipsC" title="Cliché Acuerdo Técnico" onclick="ocultarMostrarFiltro('+ aux_nfila + ')">' +
 						'<i id="btnmostrarocultar'+ aux_nfila + '" class="fa fa-plus"></i>' +
 					'</a>' +
 					'<div id="div_at_imagen'+ aux_nfila + '" name="div_at_imagen'+ aux_nfila + '" style="display: none;">' +

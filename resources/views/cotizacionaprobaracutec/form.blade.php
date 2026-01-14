@@ -398,9 +398,9 @@
                                                 @endif
                                             {{-- </a> --}}
                                             <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}" style={{$aux_mostrarimagenat}}>
-                                                <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
+                                                {{-- <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
                                                     <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
-                                                </a>
+                                                </a> --}}
                                                 <?php 
                                                     $data_initial_preview = "";
                                                     if($CotizacionDetalle->acuerdotecnicotemp == null){
@@ -414,7 +414,7 @@
                                                     <input type="file" name="at_imagen{{$aux_nfila}}" id="at_imagen{{$aux_nfila}}" class="form-control at_imagen" data-initial-preview='{{$data_initial_preview}}' accept="*"/>
                                                     <input type="hidden" name="imagen{{$aux_nfila}}" id="imagen{{$aux_nfila}}" value="{{old("imagen$aux_nfila", $aux_at_impresofoto ?? '')}}">
                                                 </div>
-                                                <a id="verat_arte{{$aux_nfila}}" name="verat_arte{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Impresion Acuerdo Técnico" onclick='verpdf2("\attemp/{{$aux_at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                <a id="verat_arte{{$aux_nfila}}" name="verat_arte{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Impresion Acuerdo Técnico (Cliché)" onclick='verpdf2("\attemp/{{$aux_at_impresofoto}}",2,"","ver-arte-acuerdo-tecnico")'>
                                                     <i class="fa fa-fw fa-photo"></i>
                                                 </a>
                                             </div>
@@ -430,13 +430,13 @@
                                                     if($CotizacionDetalle->acuerdotecnicotemp == null){
                                                         $aux_imagen = "";
                                                     }else{
-                                                        //$aux_at_impresofoto = "attempfirm" . $CotizacionDetalle->acuerdotecnicotemp->id . ".pdf"; //$CotizacionDetalle->acuerdotecnicotemp->at_firmado;
+                                                        //$aux_at_impresofoto = "atfirmtemp" . $CotizacionDetalle->acuerdotecnicotemp->id . ".pdf"; //$CotizacionDetalle->acuerdotecnicotemp->at_firmado;
                                                         $aux_at_firmado = $CotizacionDetalle->acuerdotecnicotemp->at_firmado;
-                                                        $filePath = "imagenes/attempfirm/$aux_at_firmado";
+                                                        $filePath = "imagenes/atfirmtemp/$aux_at_firmado";
 
                                                         // Validar existencia del archivo
                                                         if (Storage::disk('public')->exists($filePath)) { // Ajusta 'public' según tu disco configurado
-                                                            $data_initial_preview=isset($aux_at_firmado) ? Storage::url("imagenes/attempfirm/$aux_at_firmado") : "";
+                                                            $data_initial_preview=isset($aux_at_firmado) ? Storage::url("imagenes/atfirmtemp/$aux_at_firmado") : "";
                                                         } else {
                                                             $data_initial_preview = ""; // O asigna una imagen por defecto
                                                         }
@@ -444,7 +444,7 @@
                                                 ?>
                                                 <div class="Imagenatfirma">
                                                     @if ($data_initial_preview != "")
-                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-arte-acuerdo-tecnico")'>
+                                                        <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\atfirmtemp/{{$aux_at_firmado}}",2,"","ver-arte-acuerdo-tecnico")'>
                                                             <i class="fa fa-fw fa-photo"></i>
                                                         </a>
                                                     @endif

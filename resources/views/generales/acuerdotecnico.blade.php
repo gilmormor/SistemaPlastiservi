@@ -243,7 +243,7 @@
                                                 <div class="row">
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_ancho" class="control-label requerido" data-toggle='tooltip' title="Ancho">Ancho</label>
-                                                        <input type="text" name="at_ancho" id="at_ancho" class="form-control form_acutec numerico valorrequerido" placeholder="Ancho" tipoval="texto"/>
+                                                        <input type="text" name="at_ancho" id="at_ancho" class="form-control form_acutec numerico valorrequerido" placeholder="Ancho" tipoval="texto" style="padding-right: 10px;padding-left: 7px;" maxlength="6"/>
                                                         <span class="help-block"></span>
                                                     </div>
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
@@ -269,10 +269,10 @@
                                                         <span class="help-block"></span>
                                                     </div>
                                                 </div>
-                                                <div class="row">                    
+                                                <div class="row">
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_largo" class="control-label requerido" data-toggle='tooltip' title="Largo">Largo</label>
-                                                        <input type="text" name="at_largo" id="at_largo" class="form-control form_acutec numerico valorrequerido" placeholder="Largo" tipoval="texto"/>
+                                                        <input type="text" name="at_largo" id="at_largo" class="form-control form_acutec numerico valorrequerido" placeholder="Largo" tipoval="texto" style="padding-right: 10px;padding-left: 7px;" maxlength="6"/>
                                                         <span class="help-block"></span>
                                                     </div>
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
@@ -307,7 +307,7 @@
                                                 <div class="row">
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
                                                         <label for="at_fuelle" class="control-label requerido" data-toggle='tooltip' title="Fuelle">Fuelle</label>
-                                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec numerico valorrequerido" placeholder="Fuelle" tipoval="texto"/>
+                                                        <input type="text" name="at_fuelle" id="at_fuelle" class="form-control form_acutec numerico valorrequerido" placeholder="Fuelle" tipoval="texto" style="padding-right: 10px;padding-left: 7px;" maxlength="6"/>
                                                         <span class="help-block" style="margin-top: -2px; display: none;"></span>
                                                     </div>
                                                     <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">

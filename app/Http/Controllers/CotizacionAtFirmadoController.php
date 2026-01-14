@@ -71,11 +71,14 @@ class CotizacionAtFirmadoController extends Controller
                 ON vendedor.persona_id = persona.id
                 INNER JOIN cotizaciondetalle
                 ON cotizacion.id = cotizaciondetalle.cotizacion_id
+                INNER JOIN producto
+                ON cotizaciondetalle.producto_id = producto.id
                 LEFT JOIN acuerdotecnicotemp
                 ON cotizaciondetalle.id = acuerdotecnicotemp.at_cotizaciondetalle_id
                 where (aprobstatus=6 or aprobstatus=8)
                 and cotizacion.deleted_at is null
                 AND cotizacion.sucursal_id in ($sucurcadena)
+                AND producto.tipoprod = 1
                 GROUP BY cotizacion.id;";
         //where usuario_id='.auth()->id();
         //dd($sql);

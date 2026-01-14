@@ -388,7 +388,7 @@
                                             @endif
                                             {{-- </a> --}}
                                             <div id="divMostrarImagenat{{$aux_nfila}}" name="divMostrarImagenat{{$aux_nfila}}" style={{$aux_mostrarimagenat}}>
-                                                <a class="btn-accion-tabla tooltipsC" title="Arte Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
+                                                <a class="btn-accion-tabla tooltipsC" title="Cliché Acuerdo Técnico" onclick="ocultarMostrarFiltro({{$aux_nfila}})">
                                                     <i id="btnmostrarocultar{{$aux_nfila}}" class="fa fa-plus"></i>
                                                 </a>
                                                 <?php 
@@ -414,20 +414,20 @@
                                                     if($CotizacionDetalle->acuerdotecnicotemp == null){
                                                         $aux_imagen = "";
                                                     }else{
-                                                        //$aux_at_impresofoto = "attempfirm" . $CotizacionDetalle->acuerdotecnicotemp->id . ".pdf"; //$CotizacionDetalle->acuerdotecnicotemp->at_firmado;
+                                                        //$aux_at_impresofoto = "atfirmtemp" . $CotizacionDetalle->acuerdotecnicotemp->id . ".pdf"; //$CotizacionDetalle->acuerdotecnicotemp->at_firmado;
                                                         $aux_at_firmado = $CotizacionDetalle->acuerdotecnicotemp->at_firmado;
-                                                        $filePath = "imagenes/attempfirm/$aux_at_firmado";
+                                                        $filePath = "imagenes/atfirmtemp/$aux_at_firmado";
 
                                                         // Validar existencia del archivo
                                                         if (Storage::disk('public')->exists($filePath)) { // Ajusta 'public' según tu disco configurado
-                                                            $data_initial_preview=isset($aux_at_firmado) ? Storage::url("imagenes/attempfirm/$aux_at_firmado") : "";
+                                                            $data_initial_preview=isset($aux_at_firmado) ? Storage::url("imagenes/atfirmtemp/$aux_at_firmado") : "";
                                                         } else {
                                                             $data_initial_preview = ""; // O asigna una imagen por defecto
                                                         }
                                                     }
                                                 ?>
                                                 @if ($data_initial_preview != "")
-                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\attempfirm/{{$aux_at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
+                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\atfirmtemp/{{$aux_at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
                                                         <i class="fa fa-fw fa-photo"></i>
                                                     </a>
                                                 @endif
