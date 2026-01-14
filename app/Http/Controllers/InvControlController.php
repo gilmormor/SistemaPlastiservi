@@ -306,12 +306,11 @@ class InvControlController extends Controller
                             ->groupBy("invmovdet.invbodegaproducto_id")
                             ->get(); */
                     $sql = "SELECT invbodegaproducto_id,invmovdet.producto_id ,SUM(cant) as cant,sum(cantkg) as cantkg
-                            FROM invmov INNER JOIN invmovdet
-                            ON invmov.id = invmovdet.invmov_id
-                            WHERE invmov.annomes = $aux_annomes
-                            GROUP BY invmovdet.invbodegaproducto_id";
-                    $invmovdets = DB::select($sql);
-                    //dd($datas);
+                                FROM invmov INNER JOIN invmovdet
+                                ON invmov.id = invmovdet.invmov_id
+                                WHERE invmov.annomes = $aux_annomes
+                                GROUP BY invmovdet.invbodegaproducto_id;";
+                    $invmovdets = DB::select($sql);                        
                     //LE ASIGNO 0 A TODOS LOS REGISTROS DE LA TABLA InvBodegaProducto PARA INICIALIZAR STOCK
                     InvBodegaProducto::query()->update([
                         'stock' => 0,

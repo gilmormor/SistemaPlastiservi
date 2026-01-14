@@ -1272,6 +1272,7 @@ class Producto extends Model
 
             $AcuTec = $acuerdotecnico;
             $aux_formatofilm = $AcuTec->at_formatofilm > 0 ? " " . number_format($AcuTec->at_formatofilm, 2, ',', '.') . "Kg." : "";
+            $at_peso = $AcuTec->at_formatofilm > 0 ? $AcuTec->at_formatofilm : $at_peso;
             $aux_color =  empty($AcuTec->color->descripcion) ? "" : " " . $AcuTec->color->descripcion;
             $aux_at_complementonomprod = empty($AcuTec->at_complementonomprod) ? "" : " " . $AcuTec->at_complementonomprod;
             $aux_atribAcuTec = $AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
@@ -1279,7 +1280,7 @@ class Producto extends Model
                 $aux_cla_nombre =str_replace("N/A","",$acuerdotecnico->claseprod->cla_descripcion);
             }
             //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
-            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, '.', ',')) . " " . $aux_cla_nombre . $sta_nomattemp;
+            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . trim($aux_atribAcuTec) . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, '.', ',')) . " " . $aux_cla_nombre . $sta_nomattemp;
             $at_materiaprima = $acuerdotecnico->materiaprima->nombre;
             $aux_unidmed = $acuerdotecnico->unidadmedida->nombre;
             $unidadmedida_id = $acuerdotecnico->unidadmedida->id;
