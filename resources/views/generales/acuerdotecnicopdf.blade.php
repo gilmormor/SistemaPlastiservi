@@ -307,7 +307,7 @@
 		@if (isset($cliente->telefono))
 			<!-- FIRMA -->
 			<tr style="page-break-inside: avoid;">
-				<td style="text-align: center;padding-top: 140px;">
+				<td style="text-align: center;padding-top: 70px;">
 					<div style="border-top: 1px solid #000; width: 250px; margin: 0 auto;"></div>
 					<div style="margin-top: 6px; font-size: 12px;">Firma</div>
 				</td>

@@ -10,6 +10,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : "productopage",
+        'pageLength'  : 10,
         'columns'     : [
             {data: 'id'},
             {data: 'nombre_producto'},
