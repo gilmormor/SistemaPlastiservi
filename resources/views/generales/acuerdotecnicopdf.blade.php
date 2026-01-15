@@ -286,22 +286,30 @@
 				</div>
 			</td>
 		</tr>
+		
+		<tr>
+			<td class="info_cliente">
+				<div>
+					<span class="h3" style="margin-bottom: 0px;">Certificados</span>
+					<table class="datos_cliente" style="padding-top: 0px;">
+						<tr class="headtarial">
+							<td style="width: 40% !important;">
+								<strong>Certificados:</strong> {{$tablas['certificados']}}
+							</td>
+							<td style="width: 40% !important;">
+								<strong>Otro:</strong> {{$acuerdotecnico->at_otrocertificado}}
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
 		@if (isset($cliente->telefono))
-			<tr>
-				<td class="info_cliente">
-					<div>
-						<span class="h3" style="margin-bottom: 0px;">Certificados</span>
-						<table class="datos_cliente" style="padding-top: 0px;">
-							<tr class="headtarial">
-								<td style="width: 40% !important;">
-									<strong>Certificados:</strong> {{$tablas['certificados']}}
-								</td>
-								<td style="width: 40% !important;">
-									<strong>Otro:</strong> {{$acuerdotecnico->at_otrocertificado}}
-								</td>
-							</tr>
-						</table>
-					</div>
+			<!-- FIRMA -->
+			<tr style="page-break-inside: avoid;">
+				<td style="text-align: center;padding-top: 140px;">
+					<div style="border-top: 1px solid #000; width: 250px; margin: 0 auto;"></div>
+					<div style="margin-top: 6px; font-size: 12px;">Firma</div>
 				</td>
 			</tr>
 		@endif
