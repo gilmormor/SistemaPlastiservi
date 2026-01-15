@@ -593,7 +593,7 @@ class NotaVentaController extends Controller
                         $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $notaventadetalle->descuento = $request->descuento[$i];
                         $notaventadetalle->preciounit = $request->preciounit[$i];
-                        $notaventadetalle->peso = $producto->peso;
+                        $notaventadetalle->peso = $request->peso[$i];
                         $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
                         $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                         $notaventadetalle->totalkilos = $request->totalkilos[$i];
@@ -892,7 +892,7 @@ class NotaVentaController extends Controller
                         $notaventadetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $notaventadetalle->descuento = $request->descuento[$i];
                         $notaventadetalle->preciounit = $request->preciounit[$i];
-                        $notaventadetalle->peso = $producto->peso;
+                        $notaventadetalle->peso = $request->peso[$i];
                         $notaventadetalle->precioxkilo = $request->precioxkilo[$i];
                         $notaventadetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                         $notaventadetalle->totalkilos = $request->totalkilos[$i];
@@ -924,7 +924,7 @@ class NotaVentaController extends Controller
                                 'unidadmedida_id' => $request->unidadmedida_id[$i],
                                 'descuento' => $request->descuento[$i],
                                 'preciounit' => $request->preciounit[$i],
-                                'peso' => $producto->peso,
+                                'peso' => $request->peso[$i],
                                 'precioxkilo' => $request->precioxkilo[$i],
                                 'precioxkiloreal' => $request->precioxkiloreal[$i],
                                 'totalkilos' => $request->totalkilos[$i],

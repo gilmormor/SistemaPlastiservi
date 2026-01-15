@@ -719,6 +719,13 @@ function mmAPg(aux_valor){
 
 //FUNCIONES DE COTIZACION Y NOTA DE VENTA
 function totalizarItem(aux_estprec){
+	//console.log($("#unidadmedida_idM").val());
+	if($("#unidadmedida_idM").val() == 7){
+		$("#pesoM").val(1);
+	}else{
+		$("#pesoM").val($("#pesoM").attr('valorini'));
+	}
+
 	$("#precioM").attr("valor",$("#precioM").val());
 	if($("#pesoM").val()==0){
 		aux_peso = 1;
@@ -1278,6 +1285,9 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 					$("#totalkilosM").prop("disabled", true);	
 					$("#totalkilosM").prop("readonly", true);	
 				}
+				aux_peso = respuesta['peso'];
+				aux_peso = aux_peso.toFixed(3);
+				$("#pesoM").attr('valorini',aux_peso);
 				$(".selectpicker").selectpicker('refresh');
 				activarCajasPreciokgUni();
 			}
@@ -1858,6 +1868,7 @@ $("#producto_idM").blur(function(){
 					aux_peso = respuesta['peso'];
 					aux_peso = aux_peso.toFixed(3);
 					$("#pesoM").val(aux_peso);
+					$("#pesoM").attr('valorini',aux_peso);
 					$("#tipounionM").val(respuesta['tipounion']);
 					$("#precioM").val(respuesta['precio']);
 					$("#precioM").attr('valor',respuesta['precio']);

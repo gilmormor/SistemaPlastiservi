@@ -620,10 +620,10 @@
                                         <input type="text" name="long[]" id="long{{$aux_nfila}}" class="form-control" value="{{$detalle->largo}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{number_format($detalle->producto->peso, 3, ',', '.')}}
+                                        {{number_format($detalle->peso, 3, ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
-                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->peso}}" style="display:none;"/>
+                                        <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->peso}}" style="display:none;"/>
                                     </td>
                                     <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
                                         {{$detalle->producto->tipounion}}

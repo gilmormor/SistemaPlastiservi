@@ -306,7 +306,7 @@ class CotizacionController extends Controller
                         $cotizaciondetalle->unidadmedida_id = $request->unidadmedida_id[$i];
                         $cotizaciondetalle->descuento = $request->descuento[$i];
                         $cotizaciondetalle->preciounit = $request->preciounit[$i];
-                        $cotizaciondetalle->peso = $producto->peso;
+                        $cotizaciondetalle->peso = $request->peso[$i];
                         $cotizaciondetalle->precioxkilo = $request->precioxkilo[$i];
                         $cotizaciondetalle->precioxkiloreal = $request->precioxkiloreal[$i];
                         $cotizaciondetalle->totalkilos = $request->totalkilos[$i];
@@ -774,7 +774,7 @@ class CotizacionController extends Controller
                                 'unidadmedida_id' => $request->unidadmedida_id[$i],
                                 'descuento' => $request->descuento[$i],
                                 'preciounit' => $request->preciounit[$i],
-                                'peso' => $producto->peso,
+                                'peso' => $request->peso[$i],
                                 'precioxkilo' => $request->precioxkilo[$i],
                                 'precioxkiloreal' => $request->precioxkiloreal[$i],
                                 'totalkilos' => $request->totalkilos[$i],
