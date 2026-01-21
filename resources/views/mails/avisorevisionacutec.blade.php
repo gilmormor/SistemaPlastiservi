@@ -25,8 +25,13 @@
         </li>
         <li><b>Fecha Cotización:</b> {{date("d-m-Y h:i:s A", strtotime($tabla->fechahora))}}</li>
         <li><b>Fecha Validación:</b> {{date("d-m-Y h:i:s A", strtotime($tabla->aprobfechahora))}}</li>
-        <li><b>RUT:</b> {{ $tabla->cliente->rut }}</li>
-        <li><b>Razon Social:</b> {{ $tabla->cliente->razonsocial }}</li>
+        @if (isset($tabla->cliente))
+            <li><b>RUT:</b> {{ $tabla->cliente->rut }}</li>
+            <li><b>Razon Social:</b> {{ $tabla->cliente->razonsocial }}</li>            
+        @else
+            <li><b>RUT:</b> {{ $tabla->clientetemp->rut }}</li>
+            <li><b>Razon Social:</b> {{ $tabla->clientetemp->razonsocial }}</li>            
+        @endif
         <li><b>Vendedor:</b> {{ $tabla->vendedor->persona->nombre . " " . $tabla->vendedor->persona->apellido}}</li>
     </ul>
     <p>
