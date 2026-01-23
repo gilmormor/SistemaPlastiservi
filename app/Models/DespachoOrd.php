@@ -230,8 +230,8 @@ class DespachoOrd extends Model
         }else{
             $aux_conddespachoord_id = "despachoord.id='$request->despachoord_id'";
         }
-    
-        $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
+        //SQL ORIGONAL ANTES DE OPTIMIZAR CON JOIN EN VEZ DE NOT IN
+        /* $sql = "SELECT despachoord.id,despachoord.despachosol_id,despachoord.fechahora,despachoord.fechaestdesp,
         notaventa.cliente_id,cliente.razonsocial,notaventa.oc_id,notaventa.oc_file,despachoord.notaventa_id,
         '' as notaventaxk,comuna.nombre as comuna_nombre, sucursal.nombre as sucursal_nombre,
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,clientebloqueado.descripcion as clientebloqueado_descripcion,
@@ -300,7 +300,134 @@ class DespachoOrd extends Model
         AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
         AND despachosol.sucursal_id in ($sucurcadena)
         AND $aux_conddespachoord_id
-        GROUP BY despachoorddet.despachoord_id;";
+        GROUP BY despachoorddet.despachoord_id;"; */
+
+        $sql = "SELECT
+                    despachoord.id,
+                    despachoord.despachosol_id,
+                    despachoord.fechahora,
+                    despachoord.fechaestdesp,
+                    notaventa.cliente_id,
+                    cliente.razonsocial,
+                    notaventa.oc_id,
+                    notaventa.oc_file,
+                    despachoord.notaventa_id,
+                    '' AS notaventaxk,
+                    comuna.nombre AS comuna_nombre,
+                    sucursal.nombre AS sucursal_nombre,
+                    tipoentrega.nombre AS tipoentrega_nombre,
+                    tipoentrega.icono,
+                    clientebloqueado.descripcion AS clientebloqueado_descripcion,
+
+                    SUM(
+                        despachoorddet.cantdesp *
+                        (notaventadetalle.totalkilos / notaventadetalle.cant)
+                    ) AS aux_totalkg,
+
+                    despachoord.updated_at,
+
+                    IF(
+                        cliente.plazopago_id = 1,
+                        'Condición pago: Contado',
+                        clientebloqueado.descripcion
+                    ) AS clientebloqueado_desc,
+
+                    cliente.limitecredito,
+
+                    IFNULL(vista_datacobranza.tfac, 0) AS datacobranza_tfac,
+                    IFNULL(vista_datacobranza.tdeuda, 0) AS datacobranza_tdeuda,
+                    IFNULL(vista_datacobranza.tdeudafec, 0) AS datacobranza_tdeudafec,
+                    IFNULL(vista_datacobranza.nrofacdeu, '') AS datacobranza_nrofacdeu,
+
+                    modulo.stamodapl AS modulo_stamodapl,
+                    clientedesbloqueadomodulo.modulo_id,
+                    IFNULL(clientedesbloqueadopro.obs, '') AS clientedesbloqueadopro_obs
+
+                FROM despachoord
+                INNER JOIN notaventa
+                    ON despachoord.notaventa_id = notaventa.id
+                    AND despachoord.deleted_at IS NULL
+                    AND notaventa.deleted_at IS NULL
+
+                INNER JOIN cliente
+                    ON cliente.id = notaventa.cliente_id
+                    AND cliente.deleted_at IS NULL
+
+                INNER JOIN comuna
+                    ON comuna.id = despachoord.comunaentrega_id
+                    AND comuna.deleted_at IS NULL
+
+                INNER JOIN despachoorddet
+                    ON despachoorddet.despachoord_id = despachoord.id
+                    AND despachoorddet.deleted_at IS NULL
+
+                INNER JOIN notaventadetalle
+                    ON notaventadetalle.id = despachoorddet.notaventadetalle_id
+                    AND notaventadetalle.deleted_at IS NULL
+
+                INNER JOIN producto
+                    ON producto.id = notaventadetalle.producto_id
+                    AND producto.deleted_at IS NULL
+
+                INNER JOIN categoriaprod
+                    ON categoriaprod.id = producto.categoriaprod_id
+                    AND categoriaprod.deleted_at IS NULL
+
+                INNER JOIN categoriaprodsuc
+                    ON categoriaprodsuc.categoriaprod_id = categoriaprod.id
+                    AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu)
+
+                INNER JOIN tipoentrega
+                    ON tipoentrega.id = despachoord.tipoentrega_id
+                    AND tipoentrega.deleted_at IS NULL
+
+                INNER JOIN despachosol
+                    ON despachoord.despachosol_id = despachosol.id
+                    AND despachosol.deleted_at IS NULL
+
+                INNER JOIN sucursal
+                    ON despachosol.sucursal_id = sucursal.id
+                    AND sucursal.deleted_at IS NULL
+
+                LEFT JOIN clientebloqueado
+                    ON clientebloqueado.cliente_id = notaventa.cliente_id
+                    AND clientebloqueado.deleted_at IS NULL
+
+                LEFT JOIN vista_datacobranza
+                    ON vista_datacobranza.cliente_id = notaventa.cliente_id
+
+                LEFT JOIN clientedesbloqueado
+                    ON clientedesbloqueado.cliente_id = notaventa.cliente_id
+                    AND clientedesbloqueado.notaventa_id = notaventa.id
+                    AND clientedesbloqueado.deleted_at IS NULL
+
+                LEFT JOIN clientedesbloqueadomodulo
+                    ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id
+                    AND clientedesbloqueadomodulo.modulo_id = 8
+
+                LEFT JOIN modulo
+                    ON modulo.id = clientedesbloqueadomodulo.modulo_id
+
+                LEFT JOIN clientedesbloqueadopro
+                    ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id
+                    AND clientedesbloqueadopro.deleted_at IS NULL
+                /* 🔥 reemplazo NOT IN despachoordanul */
+                LEFT JOIN despachoordanul
+                    ON despachoordanul.despachoord_id = despachoord.id
+                    AND despachoordanul.deleted_at IS NULL
+
+                /* 🔥 reemplazo NOT IN notaventacerrada */
+                LEFT JOIN notaventacerrada
+                    ON notaventacerrada.notaventa_id = despachoord.notaventa_id
+                    AND notaventacerrada.deleted_at IS NULL
+
+                WHERE
+                    despachoord.aprguiadesp IS NULL
+                    AND despachoordanul.despachoord_id IS NULL
+                    AND notaventacerrada.notaventa_id IS NULL
+                    AND despachosol.sucursal_id in ($sucurcadena)
+                    AND $aux_conddespachoord_id
+                GROUP BY despachoord.id;";
 
         return DB::select($sql);
     
