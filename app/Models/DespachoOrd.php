@@ -454,7 +454,7 @@ class DespachoOrd extends Model
             ) AS aux_totalkg */
             //$i++;
         }
-        $request->merge(['totalGenKg' => $aux_totalGenkg]);
+        //$request->merge(['totalGenKg' => $aux_totalGenkg]);
         //Total General Kilos
         //$datas["totalGenKg"] = $aux_totalkg;
         //dd($datas);

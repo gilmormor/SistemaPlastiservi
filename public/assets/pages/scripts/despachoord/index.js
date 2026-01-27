@@ -17,14 +17,14 @@ $(document).ready(function () {
 
 
                             // Captura el total general enviado desde PHP
-                            let totalGeneral = parseFloat(json.input.totalGenKg || 0);
+                            //let totalGeneral = parseFloat(json.input.totalGenKg || 0);
 
 
                             // Formatea y muestra en el HTML
-                            $('#totalkg').text(totalGeneral.toLocaleString('es-CL', {
+                            /* $('#totalkg').text(totalGeneral.toLocaleString('es-CL', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2
-                            }));
+                            })); */
 
 
                             // Retorna solo los datos para DataTables
@@ -184,6 +184,7 @@ var eventFired = function ( type ) {
 		total += valorNum;
 	});
     $("#subtotalkg").html(MASKLA(total,2))
+    $('#totalkg').html(MASKLA(total,2));
 }
 
 
