@@ -65,17 +65,26 @@ class DespachoOrdController extends Controller
 
     public function despachoordpage(Request $request){
         //$datas = consultaindex($request);
+        //$request->merge(['totalGenKg' => 7]);
+        //dd($request);
         $datas = DespachoOrd::consultaindex($request);
-        $i = 0;
-        foreach ($datas as $data) {
+        //$i = 0;
+        /* $aux_totalkg = 0;
+        foreach ($datas as &$data) {
             //dd($datas[$i]);
-            $datas[$i]->obsdevolucion = ""; //Observacion devolucion
+            $data->obsdevolucion = ""; //Observacion devolucion
             $despachoord = DespachoOrd::findOrFail($data->id);
             if($despachoord->despachoordanulguiafacts->count()>0){
-                $datas[$i]->obsdevolucion = $despachoord->despachoordanulguiafacts->last()->observacion;
+                $data->obsdevolucion = $despachoord->despachoordanulguiafacts->last()->observacion;
             }
-            $i++;
-        }
+            //dd($despachoord->despachoorddets());
+            foreach ($despachoord->despachoorddets as $despachoorddet) {
+                //dd($despachoorddet->notaventadetalle);
+                $aux_totalkg += $despachoorddet->cantdesp *
+                ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant);
+            }
+            $data->aux_totalkg = $aux_totalkg;
+        } */
         return datatables($datas)->toJson();
     }
 

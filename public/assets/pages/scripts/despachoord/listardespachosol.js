@@ -420,7 +420,7 @@ function ajaxRequest(data,url,funcion) {
                             cancel: "Cerrar",
                         },
                     });
-                    return 0;
+                    /* return 0;
                     if (respuesta.mensaje == "sp"){
                         Biblioteca.notificaciones('Usuario no tiene permiso para eliminar.', 'Plastiservi', 'error');
                     }else{
@@ -437,7 +437,7 @@ function ajaxRequest(data,url,funcion) {
                                 }
                             }
                         }
-                    }
+                    } */
                 }
                 $("#myModaldevsoldeps").modal('hide');
             }
@@ -696,7 +696,17 @@ $("#rut").blur(function(){
 });
 
 $("#btnbuscarcliente").click(function(event){
+    /* $("#rut").val("");
+    $("#myModalBusqueda").modal('show'); */
     $("#rut").val("");
+
+
+    if (!tablaClienteInicializada) {
+        configTablaCliente(); // ← AQUÍ recién se inicializa
+        tablaClienteInicializada = true;
+    }
+
+
     $("#myModalBusqueda").modal('show');
 });
 

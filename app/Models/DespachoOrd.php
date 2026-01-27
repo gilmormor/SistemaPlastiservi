@@ -319,10 +319,10 @@ class DespachoOrd extends Model
                     tipoentrega.icono,
                     clientebloqueado.descripcion AS clientebloqueado_descripcion,
 
-                    SUM(
+                    /* SUM(
                         despachoorddet.cantdesp *
                         (notaventadetalle.totalkilos / notaventadetalle.cant)
-                    ) AS aux_totalkg,
+                    ) AS aux_totalkg, */
 
                     despachoord.updated_at,
 
@@ -357,7 +357,7 @@ class DespachoOrd extends Model
                     ON comuna.id = despachoord.comunaentrega_id
                     AND comuna.deleted_at IS NULL
 
-                INNER JOIN despachoorddet
+                /* INNER JOIN despachoorddet
                     ON despachoorddet.despachoord_id = despachoord.id
                     AND despachoorddet.deleted_at IS NULL
 
@@ -375,7 +375,7 @@ class DespachoOrd extends Model
 
                 INNER JOIN categoriaprodsuc
                     ON categoriaprodsuc.categoriaprod_id = categoriaprod.id
-                    AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu)
+                    AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu) */
 
                 INNER JOIN tipoentrega
                     ON tipoentrega.id = despachoord.tipoentrega_id
@@ -425,11 +425,41 @@ class DespachoOrd extends Model
                     despachoord.aprguiadesp IS NULL
                     AND despachoordanul.despachoord_id IS NULL
                     AND notaventacerrada.notaventa_id IS NULL
-                    AND despachosol.sucursal_id in ($sucurcadena)
+                    AND despachosol.sucursal_id in ($sucurcadena) AND despachosol.sucursal_id IN ($arraySucFisxUsu)
                     AND $aux_conddespachoord_id
                 GROUP BY despachoord.id;";
-
-        return DB::select($sql);
+        //dd($sql);
+        $datas = DB::select($sql);
+        $aux_totalGenkg = 0; //Total General Kilos
+        foreach ($datas as &$data) {
+            //dd($datas[$i]);
+            $data->obsdevolucion = ""; //Observacion devolucion
+            $despachoord = DespachoOrd::findOrFail($data->id);
+            if($despachoord->despachoordanulguiafacts->count()>0){
+                $data->obsdevolucion = $despachoord->despachoordanulguiafacts->last()->observacion;
+            }
+            //dd($despachoord->despachoorddets());
+            $aux_totalkg = 0;
+            foreach ($despachoord->despachoorddets as $despachoorddet) {
+                //dd($despachoorddet->notaventadetalle);
+                $aux_totalkg += $despachoorddet->cantdesp *
+                ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant);
+            }
+            $data->aux_totalkg = $aux_totalkg;
+            $aux_totalGenkg += $aux_totalkg; //Total General Kilos
+            //$aux_totalkg = 0;
+            /* SUM(
+                despachoorddet.cantdesp *
+                (notaventadetalle.totalkilos / notaventadetalle.cant)
+            ) AS aux_totalkg */
+            //$i++;
+        }
+        $request->merge(['totalGenKg' => $aux_totalGenkg]);
+        //Total General Kilos
+        //$datas["totalGenKg"] = $aux_totalkg;
+        //dd($datas);
+        //return DB::select($sql);
+        return $datas;
     
     }
 }

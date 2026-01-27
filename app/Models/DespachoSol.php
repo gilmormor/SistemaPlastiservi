@@ -693,7 +693,7 @@ class DespachoSol extends Model
                 IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
                 vista_despsoltotales.totalkilos,
                 vista_despsoltotales.subtotalsoldesp,despachosol.updated_at,
-                (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
+                /* (SELECT CONCAT(dte.nrodocto,';',oc_id,';',oc_folder,'/',oc_file,';',dte.id) as nrodocto
                     FROM dteoc INNER JOIN dte
                     ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
                     INNER JOIN dteguiadesp
@@ -706,7 +706,7 @@ class DespachoSol extends Model
                                                     FROM dteanul 
                                                     WHERE dteanul.dte_id = dteguiadesp.dte_id 
                                                     and ISNULL(dteanul.deleted_at))
-                    GROUP BY dteoc.oc_id) as dte_nrodocto,
+                    GROUP BY dteoc.oc_id) as dte_nrodocto1, */
                 despachosol.aprorddesp,
                 clientebloqueado.descripcion as clientebloqueado_descripcion,
                 despachosolenvorddesp.despachosol_id as despachosolenvorddesp_despachosol_id,

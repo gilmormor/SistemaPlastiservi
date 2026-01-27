@@ -11,7 +11,26 @@ $(document).ready(function () {
         'autoWidth'   : false,
         'processing'  : true,
         'serverSide'  : true,
-        'ajax'        : "despachoordpage/" + cadena,
+        'ajax'        : {
+                            url: "despachoordpage/" + cadena,
+                            dataSrc: function (json) {
+
+
+                            // Captura el total general enviado desde PHP
+                            let totalGeneral = parseFloat(json.input.totalGenKg || 0);
+
+
+                            // Formatea y muestra en el HTML
+                            $('#totalkg').text(totalGeneral.toLocaleString('es-CL', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                            }));
+
+
+                            // Retorna solo los datos para DataTables
+                            return json.data;
+                            }
+                        },
         "order"       : [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
@@ -144,8 +163,7 @@ $(document).ready(function () {
         .on('draw', function () {
             eventFired( 'Page' );
         });
-
-    $.ajax({
+    /* $.ajax({
         url: '/despachoord/totalizarindex',
         type: 'GET',
         success: function (datos) {
@@ -153,7 +171,7 @@ $(document).ready(function () {
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
-    });
+    }); */
     
 
 });
@@ -302,7 +320,7 @@ function aprobarord(i,id){
         if (value) {
             ajaxRequestOD(data,ruta,'aproborddesp');
         }
-    });
+    });/* 
     return 0;
     var data = {
 		id         : id,
@@ -333,5 +351,5 @@ function aprobarord(i,id){
 		if (value) {
 			ajaxRequestOD(data,ruta,'aproborddesp');
 		}
-	});
+	}); */
 }
