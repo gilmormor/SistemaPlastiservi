@@ -149,4 +149,15 @@ class InvBodega extends Model
         return $arrayBodegasPicking;
     }
 
+    public static function saldoPickingSolDespDet($despachosoldet){
+        $aux_stockPickingSDD = 0;
+        if(isset($despachosoldet->despachosoldet_invbodegaproductos)){
+            foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
+                    $aux_stockPickingSDD += $invmovdet_bodsoldesp->invmovdet->cant;
+                }
+            }
+        }
+        return $aux_stockPickingSDD;
+    }
 }
