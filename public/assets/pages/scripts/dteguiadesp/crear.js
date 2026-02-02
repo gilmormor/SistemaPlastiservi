@@ -133,46 +133,6 @@ function editKilosa(id){
 	$("#auxeditcampo").attr('fila_id',id);
 	$("#auxeditcampo").val(aux_kilos.trim());
 	$("#myModalEditarCampoNum").modal('show');
-	return 0;
-	let input = document.createElement("input");
-	aux_kilos = $("#aux_kilos" + id).html();
-	input.value = aux_kilos.trim();
-	input.type = 'text';
-	input.className = 'swal-content__input';
-	input.onKeyPress="if ( isNaN( String.fromCharCode(event.keyCode) )) return false;"
-	input.Id = "auxeditcampo";
-	input.Name = "auxeditcampo";
-	//$(".swal-content__input").numeric();
-
-	var prueba = {
-		element: "input",
-		onKeyPress : "if ( isNaN( String.fromCharCode(event.keyCode) )) return false;",
-		attributes: {
-			value : aux_kilos.trim(),
-			placeholder: "Ingrese los Kilos",
-			className : 'swal-content__input numerico',
-			type: "text",
-		},
-		
-	};
-	swal({
-		text: "Editar Kilos",
-		content: prueba,
-		buttons: {
-			cancel: "Cancelar",
-			confirm: "Aceptar"
-		},
-	}).then((value) => {
-		if (value) {
-			if ( isNaN( String.fromCharCode(value) )){
-				swal('Solo se permiten valores numericos.')
-			}else{
-				$("#aux_kilos" + id).html(input.value)
-				$("#totalkilos" + id).val(input.value)
-				$("#itemkg" + id).val(input.value)
-			}
-		}
-	});	
 }
 
 $("#btnaceptarMN").click(function(event){
@@ -186,6 +146,9 @@ $("#btnaceptarMN").click(function(event){
 			$("#aux_kilos" + id).attr('valor', $("#auxeditcampoN").val());
 			$("#totalkilos" + id).val($("#auxeditcampoN").val());
 			$("#totalkilos" + id).attr('valor', $("#auxeditcampoN").val());
+			$("#totalkilosreq" + id).val($("#auxeditcampoN").val());
+			$("#totalkilosreq" + id).valid();
+			
 			$("#itemkg" + id).val($("#auxeditcampoN").val());	
 		}
 

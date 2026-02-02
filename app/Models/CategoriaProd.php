@@ -26,7 +26,8 @@ class CategoriaProd extends Model
         'asoprodcli',
         'stakilos',
         'stadespsinstock',
-        'omitiracutec'
+        'omitiracutec',
+        'stakgguiadesp'
     ];
 
     public function productos()

@@ -451,15 +451,21 @@
                                     <input type="text" name="dscitem[]" id="dscitem{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->dscitem : ''}}" style="display:none;"/>
                                 </td>
                                 <td style="text-align:right;"> 
-                                    @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
-                                        <a id="aux_kilos{{$aux_nfila}}" name="aux_kilos{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar Kilos" data-toggle="tooltip" valor={{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}} fila="{{$aux_nfila}}" tipocampo="numerico" nomcampo="aux_kilos">
-                                            {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}
-                                        </a>                                        
-                                    @else
-                                        {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}                                        
-                                    @endif
-                                    <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}}" style="display:none;" valor={{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}} fila="{{$aux_nfila}}"/>
-                                    <input type="text" name="itemkg[]" id="itemkg{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}}" style="display:none;"/>
+                                    <div class="form-group">
+                                        @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
+                                            <a id="aux_kilos{{$aux_nfila}}" name="aux_kilos{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar Kilos" data-toggle="tooltip" valor={{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}} fila="{{$aux_nfila}}" tipocampo="numerico" nomcampo="aux_kilos">
+                                                {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}
+                                            </a>                                        
+                                        @else
+                                            {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}                                        
+                                        @endif
+                                        @if ($detalle->notaventadetalle->categoriaprod->stakgguiadesp == 1)
+                                            <label for="totalkilosreq{{$aux_nfila}}" class="control-label requerido" title="Kilos" style="display:none;">Kilos item {{$aux_nfila}}</label>
+                                            <input type="text" name="totalkilosreq{{$aux_nfila}}" id="totalkilosreq{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos > 0 ? $aux_kilos : ''}}" valor="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos > 0 ? $aux_kilos : ''}}" fila="{{$aux_nfila}}" style="display:none;" required/>
+                                        @endif
+                                    </div>                                    
+                                    <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos > 0 ? $aux_kilos : ''}}" valor="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos > 0 ? $aux_kilos : ''}}" fila="{{$aux_nfila}}" style="display:none;"/>
+                                    <input type="text" name="itemkg[]" id="itemkg{{$aux_nfila}}" class="form-control" value="{{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos > 0 ? $aux_kilos : ''}}" style="display:none;"/>
                                 </td>
                                 <td name="descuentoTD{{$aux_nfila}}" id="descuentoTD{{$aux_nfila}}" style="text-align:right;display:none;">
                                     <?php $aux_descPorc = isset($dteguiadesp) ? 0 : $NVDet->descuento * 100; ?>

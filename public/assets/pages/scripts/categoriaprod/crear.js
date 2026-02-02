@@ -55,6 +55,12 @@ $(document).ready(function () {
         $("#aux_stadespsinstock").prop("checked", false);    
     }
 
+        if($("#stakgguiadesp").val() == '1'){
+        $("#aux_stakgguiadesp").prop("checked", true);    
+    }else{
+        $("#aux_stakgguiadesp").prop("checked", false);    
+    }
+
 });
 
 $("#aux_mostdatosad").change(function() {
@@ -93,6 +99,14 @@ $("#aux_stadespsinstock").change(function() {
     $("#stadespsinstock").val('0');
     if(estaSeleccionado){
         $("#stadespsinstock").val('1');
+    }
+});
+
+$("#aux_stakgguiadesp").change(function() {
+    estaSeleccionado = $("#aux_stakgguiadesp").is(":checked");
+    $("#stakgguiadesp").val('0');
+    if(estaSeleccionado){
+        $("#stakgguiadesp").val('1');
     }
 });
 

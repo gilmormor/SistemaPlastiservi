@@ -2826,9 +2826,12 @@ function consulta($request,$aux_sql,$orden){
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
         $newDatas = [];
+        $aux_totalkgPend = 0;
+        $aux_totalDineroPend = 0;
         foreach ($datas as &$data) {
             //dd($data->nvdetalle);
-    
+            $aux_totalkgPend += ($data->totalkilos - $data->totalkgsoldesp);
+            $aux_totalDineroPend += ($data->subtotal - $data->totalsubtotalsoldesp);
             // Array para almacenar el resultado final
             $detalleArrayFinal = [];
     
@@ -2966,6 +2969,10 @@ function consulta($request,$aux_sql,$orden){
     }
     if($aux_condFlagStock != ""){
         $datas = $newDatas;
+    }
+    if(count($datas)>0){
+        $datas[0]->aux_totalkgPend = $aux_totalkgPend;
+        $datas[0]->aux_totalDineroPend = $aux_totalDineroPend;
     }
     //dd($datas);
     filtrarclientesbloqueados($request,$datas);

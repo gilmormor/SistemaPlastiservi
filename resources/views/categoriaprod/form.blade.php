@@ -181,6 +181,17 @@
 <input type="hidden" name="stadespsinstock" id="stadespsinstock" value="{{old('stadespsinstock', $data->stadespsinstock ?? '0')}}">
 
 <div class="form-group">
+    <div class="checkbox">
+        <label class="col-sm-offset-3" style="font-size: 1.2em;display:flex;align-items: center;">
+            <input type="checkbox" id="aux_stakgguiadesp" name="aux_stakgguiadesp">
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Marcar para que sea obligatorio ingresar los Kg del producto en la guia de despacho.
+        </label>
+    </div>
+</div>
+<input type="hidden" name="stakgguiadesp" id="stakgguiadesp" value="{{old('stakgguiadesp', $data->stakgguiadesp ?? '0')}}">
+
+<div class="form-group">
     <label for="omitiracutec" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Omitir en Cot y Nota de Venta Acuerdo Tecnico?">Omitir AT?</label>
     <div class="col-lg-8">
         <select name="omitiracutec" id="omitiracutec" class="form-control select2 omitiracutec" required>

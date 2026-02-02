@@ -81,6 +81,10 @@ $(document).ready(function () {
         "createdRow": function ( row, data, index ) {
             $(row).attr('id','fila' + data.id);
             $(row).attr('name','fila' + data.id);
+            if (index == 0 && ('aux_totalkgPend' in data)) {
+                $("#totalgenkg").html(MASKLA(data.aux_totalkgPend,2));
+                $("#totalgendin").html(MASKLA(data.aux_totalDineroPend,2));
+            }
 
             aux_flag = ``;
             if(data.statusstockreg == 0){
@@ -366,14 +370,14 @@ function totalizar(){
             eventFired( 'Page' );
         });
     data = datoslnv1();
-    $.ajax({
+    /* $.ajax({
         url: '/despachosol/totalizarlistarnvpage/' + data.data2,
         type: 'GET',
         success: function (datos) {
             $("#totalgenkg").html(MASKLA(datos.aux_kgpend,2));
             $("#totalgendin").html(MASKLA(datos.aux_dinpend,2));
         }
-    });
+    }); */
 }
 
 var eventFired = function ( type ) {
@@ -643,6 +647,10 @@ $("#rut").blur(function(){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    if (!tablaClienteInicializada) {
+        configTablaCliente(); // ← AQUÍ recién se inicializa
+        tablaClienteInicializada = true;
+    }
     $("#myModalBusqueda").modal('show');
 });
 

@@ -134,6 +134,10 @@ $(document).ready(function () {
 			}
 			*/
 			$("#rut").val("");
+			if (!tablaClienteInicializada) {
+				configTablaCliente(); // ← AQUÍ recién se inicializa
+				tablaClienteInicializada = true;
+			}
 			$(".input-sm").val('');
 			$("#myModalBusqueda").modal('show');	
 
@@ -153,6 +157,11 @@ $(document).ready(function () {
 		data = datos();
 		$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
 		*/
+
+		if (!tablaProductoInicializada) {
+			configTablaProd(); // ← AQUÍ recién se inicializa
+			tablaProductoInicializada = true;
+		}
 
 		cargardatospantprod();
 	
@@ -1749,6 +1758,10 @@ function arrayAcuerdoTecnico(){
 }); */
 $("#botonNewProdLote").click(function(event){
     //$(this).val("");
+	if (!tablaProductoInicializadaSM) {
+		configTablaProdSelectMult(); // ← AQUÍ recién se inicializa
+		tablaProductoInicializadaSM = true;
+	}
 	cargardatospantprodms();
 	$('#aceptarmbpsm').prop('disabled', false);
 
