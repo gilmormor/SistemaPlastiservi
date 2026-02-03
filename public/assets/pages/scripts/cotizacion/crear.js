@@ -1041,7 +1041,12 @@ $("#rut").blur(function(){
 						activar_controles();
 						formato_rut($("#rut"));
 						data = datos();
-						$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+						//$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+						/* if (!tablaProductoInicializada) {
+							configTablaProd(); // ← AQUÍ recién se inicializa
+							tablaProductoInicializada = true;
+						} */
+
 						$(".selectpicker").selectpicker('refresh');
 					}else{
 						$.ajax({
