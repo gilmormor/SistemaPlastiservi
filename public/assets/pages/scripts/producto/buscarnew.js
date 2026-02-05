@@ -155,7 +155,7 @@ function configTablaProd(){
             $('td', row).eq(8).html(MASKLA(data.precioneto,0));
 
             $('td', row).eq(9).attr('data-order',data.precio);
-            $('td', row).eq(9).attr('data-search',data.precio);
+            $('td', row).eq(9).attr('data-search',data.precio); 
             $('td', row).eq(9).attr('style','text-align:right');
             $('td', row).eq(9).html(MASKLA(data.precio,0));
 
