@@ -474,13 +474,11 @@
                                     $aux_espesor = $detalle->notaventadetalle->producto->espesor;
                                     $aux_largo = $detalle->notaventadetalle->producto->long . "Mts";
                                     $aux_cla_sello_nombre = isset($detalle->notaventadetalle->producto->claseprod) ? $detalle->notaventadetalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->notaventadetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
                                     if ($detalle->notaventadetalle->producto->acuerdotecnico != null){
                                         $AcuTec = $detalle->notaventadetalle->producto->acuerdotecnico;
-                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->notaventadetalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                                         $aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
@@ -488,7 +486,7 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_staAT = true;
                                     }
-                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->atributosProducto($detalle->notaventadetalle->producto_id)['nombre'];
+                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->glosa;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">

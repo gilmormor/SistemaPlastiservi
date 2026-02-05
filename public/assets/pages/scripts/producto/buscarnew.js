@@ -38,6 +38,7 @@ function configTablaProd(){
         'ajax'        : "productobuscarpage/" + data.data2 + "&producto_id=",
         'columns'     : [
             {data: 'id'},
+            {data: 'sku'},
             {data: 'nombre',"width": "250px"},
             {data: 'cla_nombre'},
             {data: 'diametro'},
@@ -92,16 +93,16 @@ function configTablaProd(){
                 `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_atribAT}">
                     ${data.id}
                 </a>`;
-                $('td', row).eq(0).html(aux_text);
-                $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"myModalBuscarProd");');
+                $('td', row).eq(1).html(aux_text);
+                $('td', row).eq(1).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"myModalBuscarProd");');
             }
             if(data.tipoprod == 1){
-                $('td', row).eq(0).addClass('tooltipsC');
-                $('td', row).eq(0).attr('title', "Producto base para crear acuerdo técnico");    
+                $('td', row).eq(1).addClass('tooltipsC');
+                $('td', row).eq(1).attr('title', "Producto base para crear acuerdo técnico");    
                 aux_text = 
                     data.id +
                 " <i id='icoat1' class='fa fa-cog text-red girarimagen'></i>";
-                $('td', row).eq(0).html(aux_text);
+                $('td', row).eq(1).html(aux_text);
 
             }
 
@@ -115,48 +116,48 @@ function configTablaProd(){
                 $('td', row).eq(1).html(aux_text);
             }
 
-            $('td', row).eq(5).attr('data-order',data.peso);
-            $('td', row).eq(5).attr('data-search',data.peso);
-            $('td', row).eq(5).html(MASKLA(data.peso,3));
+            $('td', row).eq(6).attr('data-order',data.peso);
+            $('td', row).eq(6).attr('data-search',data.peso);
+            $('td', row).eq(6).html(MASKLA(data.peso,3));
 
 */
             if(data.cla_nombre == 0 || data.cla_nombre == "" || data.cla_nombre == null){
-                $('td', row).eq(2).html("");
-                $('td', row).eq(2).attr('data-order',"");
-                $('td', row).eq(2).attr('data-search',"");    
-            }
-            if(data.diametro == 0 || data.diametro == "" || data.diametro == null){
                 $('td', row).eq(3).html("");
                 $('td', row).eq(3).attr('data-order',"");
                 $('td', row).eq(3).attr('data-search',"");    
             }
-            //$('td', row).eq(3).html(MASKLA(data.diametro,2));
-            $('td', row).eq(3).attr('style','text-align:center');
-            if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
+            if(data.diametro == 0 || data.diametro == "" || data.diametro == null){
                 $('td', row).eq(4).html("");
                 $('td', row).eq(4).attr('data-order',"");
-                $('td', row).eq(4).attr('data-search',"");
+                $('td', row).eq(4).attr('data-search',"");    
             }
+            //$('td', row).eq(4).html(MASKLA(data.diametro,2));
             $('td', row).eq(4).attr('style','text-align:center');
-            if(data.peso == 0 || data.peso == "" || data.peso == null){
+            if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
                 $('td', row).eq(5).html("");
                 $('td', row).eq(5).attr('data-order',"");
-                $('td', row).eq(5).attr('data-search',"");    
-            }else{
-                $('td', row).eq(5).attr('data-order',data.peso);
-                $('td', row).eq(5).attr('data-search',data.peso);
-                $('td', row).eq(5).html(MASKLA(data.peso,3));
+                $('td', row).eq(5).attr('data-search',"");
             }
             $('td', row).eq(5).attr('style','text-align:center');
-            $('td', row).eq(7).attr('data-order',data.precioneto);
-            $('td', row).eq(7).attr('data-search',data.precioneto);
-            $('td', row).eq(7).attr('style','text-align:right');
-            $('td', row).eq(7).html(MASKLA(data.precioneto,0));
-
-            $('td', row).eq(8).attr('data-order',data.precio);
-            $('td', row).eq(8).attr('data-search',data.precio);
+            if(data.peso == 0 || data.peso == "" || data.peso == null){
+                $('td', row).eq(6).html("");
+                $('td', row).eq(6).attr('data-order',"");
+                $('td', row).eq(6).attr('data-search',"");    
+            }else{
+                $('td', row).eq(6).attr('data-order',data.peso);
+                $('td', row).eq(6).attr('data-search',data.peso);
+                $('td', row).eq(6).html(MASKLA(data.peso,3));
+            }
+            $('td', row).eq(6).attr('style','text-align:center');
+            $('td', row).eq(8).attr('data-order',data.precioneto);
+            $('td', row).eq(8).attr('data-search',data.precioneto);
             $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).html(MASKLA(data.precio,0));
+            $('td', row).eq(8).html(MASKLA(data.precioneto,0));
+
+            $('td', row).eq(9).attr('data-order',data.precio);
+            $('td', row).eq(9).attr('data-search',data.precio);
+            $('td', row).eq(9).attr('style','text-align:right');
+            $('td', row).eq(9).html(MASKLA(data.precio,0));
 
             $("#totalreg").val(aux_nfila);
 

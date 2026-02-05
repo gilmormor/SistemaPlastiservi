@@ -1248,6 +1248,7 @@ class NotaVentaController extends Controller
                             $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
                             $array_producto["tipoprod"] = 0;
                             $array_producto["usuario_id"] = auth()->id();
+                            $array_producto["sku"] = "xyz9999";
                             $productonew = Producto::create($array_producto);
                             //dd($notaventa->vendedor_id);
                             //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
@@ -1288,9 +1289,9 @@ class NotaVentaController extends Controller
                                 $acuerdotecnico->at_impresofoto = $fileDestino;
                                 $acuerdotecnico->save();
                             }
-                            $atributoProd = $productonew->atributosProducto($productonew->id);
-                            $aux_producto_nombre = $atributoProd["nombre"];
-                            $productonew->nombre = $aux_producto_nombre;
+                            $productonew->sku = $productonew->id;
+                            
+                            $productonew->glosa = $productonew->atributosProducto($notaventadetalle->producto_id,$notaventadetalle->cotizaciondetalle_id)['nombre'];
                             $productonew->save();
 
                             //COPIO AL ACUERDOTECNICO DEFINITIVO el At FirmadoY COPIO EL ARCHIVO
@@ -1338,7 +1339,7 @@ class NotaVentaController extends Controller
                 DB::rollBack();
                 return response()->json([
                     'id' => 2,
-                    'mensaje' => 'Error al guardar.'
+                    'mensaje'=> 'Error: ' . $e->getMessage()
                 ]);
             }
             Event(new AprobarRechazoNotaVenta($notaventa)); //NOTIFICACION A VENDEDOR SOBRE APROBACION O RECHAZO DE NOTA DE VENTA

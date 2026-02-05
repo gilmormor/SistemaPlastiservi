@@ -203,7 +203,7 @@
                                                 }
                                             }
                                         }
-                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->atributosProducto($detalle->notaventadetalle->producto_id)['nombre'];
+                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->glosa;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="proditems">
                                     <td style="display:none;" name="despachosoldet_id{{$aux_nfila}}" id="despachosoldet_id{{$aux_nfila}}">
