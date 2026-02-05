@@ -81,7 +81,6 @@
 			<tbody id="detalle_productos">
 				@foreach($notaventaDetalles as $notaventaDetalle)
 					<?php 
-						$aux_producto_nombre = $notaventaDetalle->producto->nombre;
 						$aux_ancho = $notaventaDetalle->producto->diametro;
 						$aux_largo = $notaventaDetalle->producto->long . "Mts";
 						$aux_espesor = ""; //number_format($notaventaDetalle->producto->espesor, 3, ',', '.');
@@ -97,14 +96,13 @@
 							$aux_staAT = true;
 						}
 						if($aux_staAT){
-							$aux_producto_nombre = $AcuTec->at_desc;
 							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
 							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 						}
-						$aux_producto_nombre = $notaventaDetalle->producto->atributosProducto($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id)['nombre'];
+						$aux_producto_nombre = $notaventaDetalle->producto->atribNomProd($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id);
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>

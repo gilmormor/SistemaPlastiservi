@@ -203,11 +203,12 @@ class ATEditarController extends Controller
                     ]
                 );
             }
-            $producto = Producto::findOrFail($request->producto_id);
-            $producto->peso = $arrayAT["at_formatofilm"];
-            $producto->save();
             $aux_at = AcuerdoTecnico::where("id","=",$request->acuerdotecnico_id)
             ->update($arrayAT);
+            $producto = Producto::findOrFail($request->producto_id);
+            $producto->peso = $arrayAT["at_formatofilm"];
+            $producto->claseprod_id = $arrayAT["at_claseprod_id"];
+            $producto->save();
 
             /* $request->merge([
                 'id' => $request->acuerdotecnico_id,

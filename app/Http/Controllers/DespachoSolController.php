@@ -1790,8 +1790,7 @@ class DespachoSolController extends Controller
                                             }
                                             */
                                             $aux_producto_id = $despachosoldet->notaventadetalle->producto_id;
-                                            $atributoProd = Producto::atributosProducto($aux_producto_id);
-                                            $aux_producto_nombre = $atributoProd["nombre"];
+                                            $aux_producto_nombre = $despachosoldet->notaventadetalle->producto->glosa;
                                             $aux_cantNV = number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".");
                                             $aux_cantSD = number_format($despachosoldet->cantsoldesp, 0, ",", ".");
                                             $aux_unimed = $despachosoldet->notaventadetalle->unidadmedida->nombre;
@@ -2850,8 +2849,9 @@ function consulta($request,$aux_sql,$orden){
             $aux_ContProdStockParcial = 0;
             $aux_ContProd = 0;
             foreach ($detalleArray as $index => $detalle) {
-                $productoarray = Producto::atributosProducto($productoIds[$index]);
+                //$productoarray = Producto::atributosProducto($productoIds[$index]);
                 $producto = Producto::findOrFail($productoIds[$index]);
+                $productoarray["nombre"] = $producto->glosa;
                 //dd($producto->invbodegaproductos);
                 //Esta linea me estaba dando error porque a veces no venian los 8 elementos 
                 //list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);

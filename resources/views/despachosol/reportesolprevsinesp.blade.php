@@ -129,14 +129,12 @@
 						}
 						/*************************/
 
-						$aux_producto_nombre = $notaventaDetalle->producto->nombre;
 						$aux_ancho = $notaventaDetalle->producto->diametro;
 						$aux_largo = $notaventaDetalle->producto->long . "Mts";
 						$aux_espesor = $notaventaDetalle->producto->tipounion;
 						$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
 						if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){
 							$AcuTecTemp = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp;
-							$aux_producto_nombre = $AcuTecTemp->at_desc;
 							$aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "");
 							$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTecTemp->at_espesor, 3, ',', '.');
@@ -144,13 +142,12 @@
 						}
 						if ($notaventaDetalle->producto->acuerdotecnico != null){
 							$AcuTec = $notaventaDetalle->producto->acuerdotecnico;
-							$aux_producto_nombre = $AcuTec->at_desc;
 							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 						}
-						$aux_producto_nombre = $notaventaDetalle->producto->atributosProducto($notaventaDetalle->producto_id)['nombre'];
+						$aux_producto_nombre = $notaventaDetalle->producto->glosa;
 
 						if($notaventaDetalle->cant > $sumacantsoldesp){
 							$aux_saldo = $notaventaDetalle->cant - $sumacantsoldesp;

@@ -814,6 +814,22 @@ function totalizarItem(aux_estprec){
 function insertarModificar(){
 	if($("#aux_sta").val()=="1"){
 		insertarTabla();
+		//Si el producto es compuesto, insertar sus componentes, encomentario porque inicialmente se queria que se insertaran los componentes al agregar el producto padre
+		/* aux_cantProdPadre = $("#cantM").val();
+		aux_datosproducto.productocomps.forEach(function (item, index) {
+			// Acceder al objeto producto
+			if (item.producto) {
+				limpiarInputOT();
+				$("#producto_idM").val(item.producto.id);
+				llenarPantallaProductoNew(item.producto)
+				aux_cant = item.cant * aux_cantProdPadre;
+				$("#cantM").val(aux_cant);
+				$("#precionetoM").val(item.precioneto);
+				$("#totalkilosM").val(aux_cant * item.peso);
+				$("#precionetoM").blur();
+				insertarTabla();
+			}
+		}); */
 	}else{
 		modificarTabla($("#aux_numfila").val());
 	}
@@ -1796,8 +1812,9 @@ function configurarTablageneral(aux_tabla){
 		}
 	});    
 }
-
+let aux_datosproducto
 $("#producto_idM").blur(function(){
+	aux_datosproducto = null;
 	codigo = $("#producto_idM").val();
 	limpiarInputOT();
 	$("#producto_idM").val(codigo);
@@ -1821,7 +1838,7 @@ $("#producto_idM").blur(function(){
 			_token: $('input[name=_token]').val()
 		};
 		$.ajax({
-			url: '/producto/buscarUnProducto',
+			url: '/producto/buscarUnProductoComp',
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
@@ -1844,6 +1861,10 @@ $("#producto_idM").blur(function(){
 						return 0;	
 					}
 					//console.log(respuesta['nombre']);
+					//console.log(respuesta);
+					aux_datosproducto = respuesta;
+					llenarPantallaProductoNew(respuesta);
+					return 0;
 					$("#nombreprodM").val(respuesta['nombre']);
 					$("#codintprodM").val(respuesta['codintprod']);
 					$("#cla_nombreM").val(respuesta['cla_nombre']);
@@ -1926,7 +1947,7 @@ $("#producto_idM").blur(function(){
 					totalizarItem(1);
 					if($("#precionetoM").attr("valor")>0){
 						$("#precionetoM").blur();
-					}					
+					}
 				}else{
 					swal({
 						title: 'Producto no existe.',
@@ -4574,4 +4595,136 @@ function desvAnchoLargo(aux_valor){
 		}	
 	}
 	return aux_desv;
+}
+
+$("#btnbuscarproductogenNew").click(function(event){
+    //$(this).val("");
+    $(".input-sm").val('');
+    aux_id = $("#producto_idPxP").val();
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+	if (!tablaProductoInicializada) {
+		configTablaProd(); // ← AQUÍ recién se inicializa
+		tablaProductoInicializada = true;
+	}
+    $("#myModalBuscarProd").modal('show');
+});
+let aux_nomCamProductoNew = "";
+function buscarproductoGenNew(obj){
+    $(".input-sm").val('');
+    aux_id = $($(obj).attr("nomCampProducto")).val();
+	aux_nomCamProductoNew = $(obj).attr("nomCampProducto");
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+	if (!tablaProductoInicializada) {
+		configTablaProd(); // ← AQUÍ recién se inicializa
+		tablaProductoInicializada = true;
+	}
+    $("#myModalBuscarProd").modal('show');
+
+}
+
+function llenarPantallaProductoNew(respuesta){
+	console.log(respuesta);
+	$("#nombreprodM").val(respuesta['nombre']);
+	$("#codintprodM").val(respuesta['codintprod']);
+	$("#cla_nombreM").val(respuesta['cla_nombre']);
+	$("#diamextmmM").val(respuesta['diametro']);
+	if(respuesta['espesor'] == 0){
+		$("#espesorM").val('');
+		$("#espesor1M").val('');
+		$("#espesor1M").attr('valor','');
+	}else{
+		$("#espesorM").val(respuesta['espesor']);
+		$("#espesor1M").val(respuesta['espesor']);
+		$("#espesor1M").attr('valor',respuesta['espesor']);
+	}
+	$("#longM").val(respuesta['long']);
+	if(respuesta['long'] == 0){
+		$("#largoM").val('');
+		$("#largoM").attr('valor','');
+	}else{
+		$("#largoM").val(respuesta['long']);
+		$("#largoM").attr('valor',respuesta['long']);	
+	}
+	aux_peso = respuesta['peso'];
+	aux_peso = aux_peso.toFixed(3);
+	$("#pesoM").val(aux_peso);
+	$("#pesoM").attr('valorini',aux_peso);
+	$("#tipounionM").val(respuesta['tipounion']);
+	$("#precioM").val(respuesta['precio']);
+	$("#precioM").attr('valor',respuesta['precio']);
+	$("#precioM").attr('preciokgini',respuesta['precio']);
+	$("#precioxkilorealM").val(respuesta['precio']);
+	$("#precioxkilorealM").attr('valor',respuesta['precio']);
+	$("#precionetoM").val(respuesta['precioneto']);
+	$("#precionetoM").attr('valor',respuesta['precioneto']);
+	//alert(respuesta['precio']);
+
+	$("#unidadmedida_idM").val(respuesta['unidadmedidafact_id']);
+	$("#anchoM").val('');
+	$("#anchoM").attr('valor','');
+	if(respuesta['at_ancho'] != null){
+		$("#anchoM").val(respuesta['at_ancho']);
+		$("#anchoM").attr('valor',respuesta['at_ancho']);	
+		$("#diamextmmM").val(respuesta['at_ancho']);
+		$("#diamextmmM").attr('valor',respuesta['at_ancho']);	
+	}
+	if(respuesta['at_largo'] != null){
+		$("#longM").val(respuesta['at_largo']);
+		$("#longM").attr('valor',respuesta['at_largo']);	
+		$("#largoM").val(respuesta['at_largo']);
+		$("#largoM").attr('valor',respuesta['at_largo']);
+	}
+	if(respuesta['at_espesor'] != null){
+		$("#espesorM").val(respuesta['at_espesor']);
+		$("#espesorM").attr('valor',respuesta['at_espesor']);	
+		$("#espesor1M").val(respuesta['at_espesor']);
+		$("#espesor1M").attr('valor',respuesta['at_espesor']);
+	}
+	/*
+	if(respuesta['at_tiposello_desc'] != null){
+		$("#cla_nombreM").val(respuesta['at_tiposello_desc']);
+		$("#cla_nombreM").attr('valor',respuesta['at_tiposello_desc']);	
+	}
+	*/
+	$("#obsM").val('');
+	$("#tipoprodM").attr('valor',respuesta['tipoprod']);
+	$("#stakilos").val(respuesta['stakilos']);
+	$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
+	$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id']);
+	$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id']);
+	activarCajasPreciokgUni();
+	mostrardatosadUniMed(respuesta);
+	llenarselectbodega(respuesta);
+
+	llenarcampostockM(respuesta);
+
+	$(".selectpicker").selectpicker('refresh');					
+	//$("#cantM").change();
+	quitarverificar();
+	$("#producto_idM").keyup();
+	$("#cantM").focus();
+	totalizarItem(1);
+	if($("#precionetoM").attr("valor")>0){
+		$("#precionetoM").blur();
+	}
 }

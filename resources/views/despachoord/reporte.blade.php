@@ -112,13 +112,13 @@
 						$aux_espesor = $despachoorddet->notaventadetalle->producto->tipounion;
 						$aux_largo = $despachoorddet->notaventadetalle->producto->long . "Mts";
 						$aux_cla_sello_nombre = isset($despachoorddet->notaventadetalle->producto->claseprod) ? $despachoorddet->notaventadetalle->producto->claseprod->cla_nombre : "";
-						$aux_producto_nombre = $despachoorddet->notaventadetalle->producto->nombre;
+						//$aux_producto_nombre = $despachoorddet->notaventadetalle->producto->nombre;
 						$aux_categoria_nombre = $despachoorddet->notaventadetalle->producto->categoriaprod->nombre;
 						$aux_atribAcuTec = "";
                         $aux_staAT = false;
 						if ($despachoorddet->notaventadetalle->producto->acuerdotecnico != null){
 							$AcuTec = $despachoorddet->notaventadetalle->producto->acuerdotecnico;
-							$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+							// $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
 							$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
@@ -126,7 +126,7 @@
 							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                             $aux_staAT = true;
 						}
-						$aux_producto_nombre = $despachoorddet->notaventadetalle->producto->atributosProducto($despachoorddet->notaventadetalle->producto_id)['nombre'];
+						$aux_producto_nombre = $despachoorddet->notaventadetalle->producto->glosa;
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto_id}}</td>

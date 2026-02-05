@@ -476,7 +476,6 @@
                                     $aux_espesor = $detalle->espesor;
                                     $aux_largo = $detalle->largo;
                                     $aux_cla_sello_nombre = isset($detalle->producto->claseprod->cla_nombre) ? $detalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
                                     //dd($detalle);
                                     $aux_atribAcuTec = "";
@@ -490,7 +489,6 @@
                                         $aux_staAT = true;
                                     }
                                     if($aux_staAT){
-                                        $aux_producto_nombre = $AcuTec->at_desc;
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "") ;
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "") ;
                                         $aux_espesor = $AcuTec->at_espesor;
@@ -503,7 +501,7 @@
                                     }else{
                                         $cotizaciondetalle_id = $detalle->cotizaciondetalle_id ? $detalle->cotizaciondetalle_id : null;
                                     }
-                                    $aux_producto_nombre = $detalle->producto->atributosProducto($detalle->producto_id,$cotizaciondetalle_id)['nombre'];
+                                    $aux_producto_nombre = $detalle->producto->atribNomProd($detalle->producto_id,$cotizaciondetalle_id);
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$detalle->producto_id}}">
                                     <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$detalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">

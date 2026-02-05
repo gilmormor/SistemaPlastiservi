@@ -1,7 +1,9 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
-    configTablaProd();
+    //configTablaProd();
 });
+let tablaProductoInicializada = false;
+let tablaProductos = null;
 
 function datos(){
     var data1 = {
@@ -72,7 +74,7 @@ function configTablaProd(){
             //$(row).attr('data-toggle', data.id);
             //$(row).attr('title', "Click para seleccionar producto");
             //$(row).attr('onClick', aux_onclick + ';');
-            for(i=1; i<=11; i++){
+            for(i=1; i<=10; i++){
                 $('td', row).eq(i).attr('onClick',  aux_onclick + ';');
                 //$('td', row).eq(i).attr('data-toggle', data.id);
                 //$('td', row).eq(i).addClass('tooltipsC');
@@ -91,16 +93,16 @@ function configTablaProd(){
                 `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_atribAT}">
                     ${data.id}
                 </a>`;
-                $('td', row).eq(0).html(aux_text);
-                $('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"myModalBuscarProd");');
+                $('td', row).eq(1).html(aux_text);
+                $('td', row).eq(1).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"myModalBuscarProd");');
             }
             if(data.tipoprod == 1){
-                $('td', row).eq(0).addClass('tooltipsC');
-                $('td', row).eq(0).attr('title', "Producto base para crear acuerdo técnico");    
+                $('td', row).eq(1).addClass('tooltipsC');
+                $('td', row).eq(1).attr('title', "Producto base para crear acuerdo técnico");    
                 aux_text = 
                     data.id +
                 " <i id='icoat1' class='fa fa-cog text-red girarimagen'></i>";
-                $('td', row).eq(0).html(aux_text);
+                $('td', row).eq(1).html(aux_text);
 
             }
 

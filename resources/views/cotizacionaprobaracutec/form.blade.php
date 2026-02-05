@@ -330,7 +330,6 @@
                                     $aux_espesor = $CotizacionDetalle->espesor;
                                     $aux_largo = $CotizacionDetalle->largo;
                                     $aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod ? $CotizacionDetalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $CotizacionDetalle->producto->nombre;
                                     $aux_categoria_nombre = $CotizacionDetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
@@ -351,7 +350,7 @@
                                         $aux_staAT = true;
                                     }
                                     if($aux_staAT){
-                                        $aux_producto_nombre = $AcuTec->at_desc; //nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                                        //$aux_producto_nombre = $AcuTec->at_desc; //nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                                         $aux_espesor = $AcuTec->at_espesor;
@@ -363,13 +362,13 @@
                                     if($data->cliente_id != 0 and $data->cliente_id != null){
                                         $cliente_id = $clienteselec[0]->id;
                                     }
-                                    $aux_producto_nombre = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id,$CotizacionDetalle->id)['nombre'];
+                                    $aux_producto_nombre = $CotizacionDetalle->producto->atribNomProd($CotizacionDetalle->producto_id,$CotizacionDetalle->id);
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$CotizacionDetalle->producto_id}}">
                                     <td name="item{{$aux_nfila}}" id="item{{$aux_nfila}}" style="text-align:center">
                                         {{$aux_nfila}}
                                     </td>
-                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="white-space: nowrap; text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
                                             <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$CotizacionDetalle->acuerdotecnicotempunoauno->id}},{{$cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
                                                 {{$CotizacionDetalle->producto_id}}
@@ -421,7 +420,13 @@
                                         @endif
                                     </td>
                                     <td style="text-align:center">
-                                        <input id="at_stacorregirat{{$aux_nfila}}" name="at_stacorregirat{{$aux_nfila}}" type="checkbox" class="tooltipsC" title="Marcar si este producto requiere corrección en el acuerdo técnico">
+                                        <?php
+                                            $aux_displaystacorregirat = "";
+                                            if ($CotizacionDetalle->producto->acuerdotecnico){
+                                                $aux_displaystacorregirat = "display:none;";
+                                            }
+                                        ?>
+                                        <input style="{{$aux_displaystacorregirat}}" id="at_stacorregirat{{$aux_nfila}}" name="at_stacorregirat{{$aux_nfila}}" type="checkbox" class="tooltipsC" title="Marcar si este producto requiere corrección en el acuerdo técnico">
                                     </td>
                                     <td name="cotdet_atfirm{{$aux_nfila}}" id="cotdet_atfirm{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
@@ -455,6 +460,14 @@
                                                     </a>
                                                 @endif
                                             </div>
+                                        @else
+                                            @if ($CotizacionDetalle->producto->acuerdotecnico->at_firmado)
+                                                <div class="Imagenatfirma">
+                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\atfirm/{{$CotizacionDetalle->producto->acuerdotecnico->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
+                                                        <i class="fa fa-fw fa-photo"></i>
+                                                    </a>
+                                                </div>
+                                            @endif
                                         @endif
                                     </td>
                                     <td style="display:none;" name="cotdet_idTD{{$aux_nfila}}" id="cotdet_idTD{{$aux_nfila}}">
