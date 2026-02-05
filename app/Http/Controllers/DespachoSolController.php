@@ -164,7 +164,7 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
-        return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml','miVariableGlobal'));
+        return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
     /**
@@ -251,7 +251,7 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
-        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','array_bodegasmodulo','tablas'));
+        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','array_bodegasmodulo','tablas'));
     }
 
     /**
@@ -511,7 +511,7 @@ class DespachoSolController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
 
         //dd($clientedirecs);
-        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
+        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
   
     }
 

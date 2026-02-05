@@ -424,5 +424,5 @@ function editar($id){
 
         $aux_sta=2;
 
-        return view('cotizacionatfirmado.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));
+        return view('cotizacionatfirmado.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','tablas'));
 }

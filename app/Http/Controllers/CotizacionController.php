@@ -1735,6 +1735,5 @@ function editar($id){
         $tablas['usuario'] = Usuario::findOrFail(auth()->id());
 
         $aux_sta=2;
-
-        return view('cotizacion.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));
+        return view('cotizacion.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','tablas'));
 }

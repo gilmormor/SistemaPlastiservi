@@ -500,7 +500,7 @@ class NotaVentaController extends Controller
         session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
-        return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
+        return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','tablas','vendedor_id'));
 
     }
 
@@ -817,7 +817,7 @@ class NotaVentaController extends Controller
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->where("mostrarnv", 1)->get();
         $tablas['usuario'] = Usuario::findOrFail(auth()->id());
 
-        return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
+        return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','vendedor_id','tablas'));
     }
 
     /**

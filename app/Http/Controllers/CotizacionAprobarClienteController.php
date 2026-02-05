@@ -166,7 +166,7 @@ class CotizacionAprobarClienteController extends Controller
         $aux_sta=2;
         $aux_statusPant = 0;
         //dd($clientedirecs);
-        return view('cotizacionAprobarCliente.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','comunas','provincias','regiones','formapagos','plazopagos','vendedores','productos','fecha','empresa','tipoentregas','giros','sucurArray','sucursales','aux_sta','aux_cont','aux_statusPant'));
+        return view('cotizacionAprobarCliente.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','cotizacionDetalles','comunas','provincias','regiones','formapagos','plazopagos','vendedores','productos','fecha','empresa','tipoentregas','giros','sucurArray','sucursales','aux_sta','aux_statusPant'));
     }
 
     /**

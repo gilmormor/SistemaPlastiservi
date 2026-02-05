@@ -256,7 +256,7 @@ class GuiaDespIntController extends Controller
         $tablas['unidadmedida'] = UnidadMedida::orderBy('id')->where('mostrarfact',1)->get();
         $aux_sta=2;
 
-        return view('guiadespint.editar', compact('data','clienteselec','clientes','guiadespintdetalles','productos','fecha','aux_sta','aux_cont','tablas'));
+        return view('guiadespint.editar', compact('data','clienteselec','clientes','guiadespintdetalles','productos','fecha','aux_sta','tablas'));
     }
 
     /**

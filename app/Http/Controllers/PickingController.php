@@ -204,7 +204,7 @@ class PickingController extends Controller
 
 
         //dd($clientedirecs);
-        return view('picking.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
+        return view('picking.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
         
     }
     /**
