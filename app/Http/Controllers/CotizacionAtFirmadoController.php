@@ -46,6 +46,19 @@ class CotizacionAtFirmadoController extends Controller
 
     public function cotizacionatfirmadopage(){
         $user = Usuario::findOrFail(auth()->id());
+        $sql= 'SELECT COUNT(*) AS contador
+            FROM vendedor INNER JOIN persona
+            ON vendedor.persona_id=persona.id and vendedor.deleted_at is null
+            INNER JOIN usuario 
+            ON persona.usuario_id=usuario.id and persona.deleted_at is null
+            WHERE usuario.id=' . auth()->id() . ';';
+        $counts = DB::select($sql);
+        if($counts[0]->contador>0){
+            $vendedor_id=$user->persona->vendedor->id;
+            $aux_condvend = 'cotizacion.vendedor_id = ' . $vendedor_id;
+        }else{
+            $aux_condvend = 'true';
+        }
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
 
@@ -75,8 +88,9 @@ class CotizacionAtFirmadoController extends Controller
                 ON cotizaciondetalle.producto_id = producto.id
                 LEFT JOIN acuerdotecnicotemp
                 ON cotizaciondetalle.id = acuerdotecnicotemp.at_cotizaciondetalle_id
-                where (aprobstatus=6 or aprobstatus=8)
-                and cotizacion.deleted_at is null
+                where $aux_condvend
+                AND (aprobstatus=6 or aprobstatus=8)
+                AND cotizacion.deleted_at is null
                 AND cotizacion.sucursal_id in ($sucurcadena)
                 AND producto.tipoprod = 1
                 GROUP BY cotizacion.id;";
