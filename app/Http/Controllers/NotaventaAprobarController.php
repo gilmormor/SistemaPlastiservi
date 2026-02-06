@@ -293,7 +293,7 @@ class NotaventaAprobarController extends Controller
         $tablas['grupocatproms'] = GrupoCatProm::arraygrupocatprom();
 
         //dd($clientedirecs);
-        return view('notaventaAprobar.editar', compact('data','clienteselec','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
+        return view('notaventaAprobar.editar', compact('data','clienteselec','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','tablas','vendedor_id'));
     }
 
     /**

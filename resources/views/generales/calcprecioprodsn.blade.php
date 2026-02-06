@@ -105,7 +105,7 @@
                     <span class="help-block"></span>
                 </div>
                 <div class="col-xs-12 col-sm-2" classorig="col-xs-12 col-sm-2">
-                    <label for="precionetoM" class="control-label" data-toggle='tooltip'>PrecioUnit</label>
+                    <label for="precionetoM" class="control-label" data-toggle='tooltip' title="Precio Unitario">PrecioUnit</label>
                     <input type="text" name="precionetoM" style="text-align:right" id="precionetoM" class="form-control numericoblanco requeridos" tipoval="texto" value="{{old('precionetoM', $data->precioneto ?? '')}}" placeholder="PrecioUnit" valor="0.00"/>
                     <span class="help-block"></span>
                 </div>

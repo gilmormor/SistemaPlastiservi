@@ -323,7 +323,6 @@
                                     $aux_espesor = $CotizacionDetalle->espesor;
                                     $aux_largo = $CotizacionDetalle->largo;
                                     $aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod ? $CotizacionDetalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $CotizacionDetalle->producto->nombre;
                                     $aux_categoria_nombre = $CotizacionDetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
@@ -344,14 +343,14 @@
                                         $aux_staAT = true;
                                     }
                                     if($aux_staAT){
-                                        $aux_producto_nombre = $AcuTec->at_desc; //nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                                        //$aux_producto_nombre = $AcuTec->at_desc; //nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                                         $aux_espesor = $AcuTec->at_espesor;
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                     }
-                                    $aux_producto_nombre = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id,$CotizacionDetalle->id)['nombre'];
+                                    $aux_producto_nombre = $CotizacionDetalle->producto->atribNomProd($CotizacionDetalle->producto_id,$CotizacionDetalle->id);
                                     $aux_mostrarimagenat = "display:none;";
                                     $cliente_id = 0;
                                     if($data->cliente_id != 0 and $data->cliente_id != null){
@@ -432,6 +431,14 @@
                                                     </a>
                                                 @endif
                                             </div>
+                                        @else
+                                            @if ($CotizacionDetalle->producto->acuerdotecnico->at_firmado)
+                                                <div class="Imagenatfirma">
+                                                    <a id="verat_firmado{{$aux_nfila}}" name="verat_firmado{{$aux_nfila}}" class="btn-accion-tabla btn-sm tooltipsC Imagenatfirma" title="Ver Acuerdo Técnico Firmado" onclick='verpdf2("\atfirm/{{$CotizacionDetalle->producto->acuerdotecnico->at_firmado}}",2,"","ver-acuerdo-tecnico-firmado")'>
+                                                        <i class="fa fa-fw fa-photo"></i>
+                                                    </a>
+                                                </div>
+                                            @endif
                                         @endif
                                     </td>
 

@@ -99,7 +99,7 @@
 						$totalkilos = ($peso) * $despachoordrecdet->cantrec;
 						$subtotal = $despachoordrecdet->cantrec * $despachoordrecdet->despachoorddet->notaventadetalle->preciounit;
 						$neto += $subtotal;
-						$aux_producto_nombre = $despachoordrecdet->despachoorddet->notaventadetalle->producto->atributosProducto($despachoordrecdet->despachoorddet->notaventadetalle->producto_id)['nombre'];
+						$aux_producto_nombre = $despachoordrecdet->despachoorddet->notaventadetalle->producto->glosa;
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$despachoordrecdet->despachoorddet->notaventadetalle->producto_id}}</td>

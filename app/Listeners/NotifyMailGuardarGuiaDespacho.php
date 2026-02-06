@@ -184,8 +184,7 @@ class NotifyMailGuardarGuiaDespacho
                     $aux_qtyitem = (isset($dtedets[$notaventadetalle_id]) ? $dtedets[$notaventadetalle_id]["qtyitem"] : 0);
                     $sumacantdespPrev = $sumacantdesp - $aux_qtyitem;
                     $aux_producto_id = $notaventadetalle->producto_id;
-                    $atributoProd = Producto::atributosProducto($aux_producto_id);
-                    $aux_producto_nombre = $atributoProd["nombre"];
+                    $aux_producto_nombre = $notaventadetalle->producto->glosa;
                     $aux_cantGuiaDesp = $aux_qtyitem;
                     $aux_nvcantsaldo = $notaventadetalle_cant - $sumacantdesp;
                     $aux_nvcantsaldo = $aux_nvcantsaldo > 0 ? $aux_nvcantsaldo : 0;

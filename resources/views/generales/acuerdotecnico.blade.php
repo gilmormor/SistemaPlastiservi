@@ -434,20 +434,20 @@
                         <div class="row">
                             <div class="box box-primary">
                                 <div class="box-header with-border">
-                                    <h3 class="box-title">Tipo de Sello</h3>
+                                    <h3 class="box-title">Tipo de Sello/Clase</h3>
                                 </div>
                                 <div class="box-body">
 
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-4" classorig="col-xs-12 col-sm-4">
-                                            <label for="at_claseprod_id" class="control-label requerido" data-toggle='tooltip' title="Clase">Tipo Sello</label>
+                                            <label for="at_claseprod_id" class="control-label requerido" data-toggle='tooltip' title="Tipo Sello/Clase">Tipo Sello/Clase</label>
                                             <select name="at_claseprod_id" id="at_claseprod_id" class="selectpicker form-control at_claseprod_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
                                             </select>
                                             <span class="help-block"></span>
                                         </div>
     
                                         <div class="col-xs-12 col-sm-3" classorig="col-xs-12 col-sm-3" style="display: none;">
-                                            <label for="at_tiposello_id" class="control-label requerido" data-toggle='tooltip' title="Tipo de Sello">Tipo Sello</label>
+                                            <label for="at_tiposello_id" class="control-label requerido" data-toggle='tooltip' title="Tipo de Sello/Clase">Tipo Sello/Clase</label>
                                             <select name="at_tiposello_id" id="at_tiposello_id" class="selectpicker form-control tiposello_id form_acutec valorrequerido" data-live-search='true' tipoval="combobox">
                                                 <option value="">Seleccione...</option>
                                                 @foreach($tablas['tipoSello'] as $tiposello)

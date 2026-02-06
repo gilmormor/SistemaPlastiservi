@@ -38,6 +38,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
+                                                    <th>SKU</th>
                                                     <th>Nombre</th>
                                                     <th>Clase<br>Sello</th>
                                                     <th>Diamet/<br>Ancho</th>
@@ -55,6 +56,7 @@
                                             <tfoot>
                                                 <tr>
                                                     <th>ID</th>
+                                                    <th>SKU</th>
                                                     <th>Nombre</th>
                                                     <th>Clase</th>
                                                     <th>Diametro</th>

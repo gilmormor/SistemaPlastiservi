@@ -198,7 +198,7 @@ class AcuerdoTecnico extends Model
             $aux_Condat_formatofilm = "at_formatofilm = 0";
         }    
         $json = json_decode($request->objtxt);
-        $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
+        $sql = "SELECT acuerdotecnico.*, producto.glosa as producto_nombre
         FROM acuerdotecnico INNER JOIN producto
         on acuerdotecnico.producto_id = producto.id
         WHERE at_claseprod_id = $request->at_claseprod_id
@@ -226,11 +226,6 @@ class AcuerdoTecnico extends Model
         and isnull(acuerdotecnico.deleted_at)";
         //dd($sql);
         $datas = DB::select($sql);
-        //dd($datas);
-        if(count($datas) > 0){
-            $producto = Producto::find($datas[0]->producto_id);
-            $datas[0]->producto_nombre = $producto->atributosProducto($datas[0]->producto_id)["nombre"];
-        }
         return $datas;
         //return datatables($datas)->toJson();
 
@@ -322,4 +317,18 @@ class AcuerdoTecnico extends Model
         }
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function (AcuerdoTecnico $acuerdo) {
+            if ($acuerdo->producto) {
+                $producto = $acuerdo->producto;
+
+                if ($producto->recalcularNombreCompSiCambio()) {
+                    $producto->save();
+                }
+            }
+        });
+    }
 }

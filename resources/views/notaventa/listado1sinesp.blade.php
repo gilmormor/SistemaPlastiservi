@@ -66,11 +66,11 @@
 					<tr>
 						<th width="30px">Cant.</th>
 						<th class="textcenter">UN</th>
-						<th class="textleft">Descripción</th>
-						<th class="textleft">Clase<br>Sello</th>
+						<th class="textleft" width="190px">Descripción</th>
+						{{-- <th class="textleft">Clase<br>Sello</th>
 						<th class="textcenter">Diam<br>Ancho</th>
 						<th class="textcenter">Largo</th>
-						<th class="textcenter">TU<br>Esp</th>
+						<th class="textcenter">TU<br>Esp</th> --}}
 						<th class="textright">Peso</th>
 						<th class="textright">$ x Kg</th>
 						<th class="textright">Total Kg</th>
@@ -96,14 +96,12 @@
 								$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 							}
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
-							$aux_producto_nombre = $notaventaDetalle->producto->nombre;
 							$aux_ancho = $notaventaDetalle->producto->diametro;
 							$aux_largo = $notaventaDetalle->producto->long . "Mts";
 							$aux_espesor = $notaventaDetalle->producto->tipounion;
 							$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
 							if ($notaventaDetalle->cotizaciondetalle and $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp != null){
 								$AcuTecTemp = $notaventaDetalle->cotizaciondetalle->acuerdotecnicotemp;
-								$aux_producto_nombre = $AcuTecTemp->at_desc;
 								$aux_ancho = $AcuTecTemp->at_ancho . " " . ($AcuTecTemp->at_ancho ? $AcuTecTemp->anchounidadmedida->nombre : "");
 								$aux_largo = $AcuTecTemp->at_largo . " " . ($AcuTecTemp->at_largo ? $AcuTecTemp->largounidadmedida->nombre : "");
 								$aux_espesor = number_format($AcuTecTemp->at_espesor, 3, ',', '.');
@@ -111,22 +109,21 @@
 							}
 							if ($notaventaDetalle->producto->acuerdotecnico != null){
 								$AcuTec = $notaventaDetalle->producto->acuerdotecnico;
-								$aux_producto_nombre = $AcuTec->at_desc;
 								$aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
 								$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 								$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 								$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 							}
-							$aux_producto_nombre = $notaventaDetalle->producto->atributosProducto($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id)['nombre'];
+							$aux_producto_nombre = $notaventaDetalle->producto->atribNomProd($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id);
 						?>
 						<tr class="headt" style="height:150%;">
 							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
 							<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
 							<td class="textleft">{{$aux_producto_nombre}}</td>
-							<td class="textleft">{{$aux_cla_sello_nombre}}</td>
+							{{-- <td class="textleft">{{$aux_cla_sello_nombre}}</td>
 							<td class="textcenter">{{$aux_ancho}}</td>
 							<td class="textcenter">{{$aux_largo}}</td>
-							<td class="textcenter">{{$aux_espesor}}</td>
+							<td class="textcenter">{{$aux_espesor}}</td> --}}
 							<td class="textright">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 0, ",", ".")}}</td>
 							<td class="textright">{{number_format($notaventaDetalle->totalkilos, 2, ",", ".")}}</td>
@@ -137,18 +134,18 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="8" class="textright"><span><strong>Totales</strong></span></td>
+						<td colspan="4" class="textright"><span><strong>Totales</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 0, ",", ".")}}</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 0, ",", ".")}}</strong></span></td>
 						<td class="textright"><span><strong>NETO</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($notaventa->neto, 0, ",", ".")}}</strong></span></td>
 					</tr>
 					<tr>
-						<td colspan="11" class="textright"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
+						<td colspan="7" class="textright"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($notaventa->iva, 0, ",", ".")}}</strong></span></td>
 					</tr>
 					<tr>
-						<td colspan="11" class="textright"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
+						<td colspan="7" class="textright"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
 						<td class="textright"><span><strong>{{number_format($notaventa->total, 0, ",", ".")}}</strong></span></td>
 					</tr>
 		
@@ -175,53 +172,62 @@
 	</div>
 -->
 	<br>
-	<div class="round1" style="padding-bottom: 0px;">
-		<span class="h3">Información</span>
-		<table id="factura_detalle">
-			<!--
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($notaventa->plazoentrega))}}</span></td>
-			</tr>
-			-->
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Comuna: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->comunaentrega->nombre}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->lugarentrega}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->plazopago->descripcion}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->tipoentrega->nombre}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->contacto}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto email: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{strtolower($notaventa->contactoemail)}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto Teléfono: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->contactotelf}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Orden de Compra: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{$notaventa->oc_id}}</span></td>
-			</tr>
-			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>No. Cotización: </strong></span></td>
-				<td class="textleft" width="50%"><span>{{str_pad($notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT)}}</span></td>
-			</tr>
-		</table>
-	</div>
+	<table width="100%">
+		<tr>
+			<td width="40%">
+				<div class="round2" style="padding-bottom: 0px;">
+					<span class="h3">Información</span>
+					<table id="factura_detalle">
+						<!--
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($notaventa->plazoentrega))}}</span></td>
+						</tr>
+						-->
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Comuna: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{$notaventa->comunaentrega->nombre}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{$notaventa->lugarentrega}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{$notaventa->plazopago->descripcion}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{$notaventa->tipoentrega->nombre}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Contacto: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{$notaventa->contacto}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Contacto email: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{strtolower($notaventa->contactoemail)}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Contacto Teléfono: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{$notaventa->contactotelf}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>Orden de Compra: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{$notaventa->oc_id}}</span></td>
+						</tr>
+						<tr>
+							<td colspan="7" class="textleft" width="40%"><span><strong>No. Cotización: </strong></span></td>
+							<td class="textleft" width="50%"><span>{{str_pad($notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT)}}</span></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+			<td>
+				@include('generales.politicadevolucion')
+			</td>
+		</tr>
+	</table>
 	<br>
 	@if (!is_null($notaventa->observacion))
 		<div>

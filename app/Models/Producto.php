@@ -12,7 +12,10 @@ class Producto extends Model
     use SoftDeletes;
     protected $table = "producto";
     protected $fillable = [
+        'sku',
         'nombre',
+        'glosa',
+        'glosaaut',
         'descripcion',
         'estado',
         'codintprod',
@@ -87,6 +90,17 @@ class Producto extends Model
         return $this->belongsToMany(Cliente::class, 'cliente_producto')->withTimestamps();
     }
 
+    //RELACION UNO A MUCHOS ProductoComp
+    public function productocomps()
+    {
+        return $this->hasMany(ProductoComp::class,'producto_id');
+    }
+    //RELACION UNO A MUCHOS ProductoComp
+    public function productocompcs()
+    {
+        return $this->hasMany(ProductoComp::class,"productocomp_id");
+    }
+
     public static function productosxUsuario($sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
         if($sucursal_id){
@@ -134,8 +148,7 @@ class Producto extends Model
     public function vendedores()
     {
         return $this->belongsToMany(Vendedor::class, 'producto_vendedor');
-    }
-    
+    }    
 
     public static function productosxUsuarioSQL($sucursal_id = false){
         $users = Usuario::findOrFail(auth()->id());
@@ -153,7 +166,7 @@ class Producto extends Model
         }
         //dd($aux_at_impresoCond);
 
-        $sql = "SELECT producto.id,producto.nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+        $sql = "SELECT producto.id,producto.sku,producto.glosa as nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 if(isnull(at_claseprod_id),CAST(claseprod.cla_nombre AS CHAR),at_claseprod.cla_nombre) as cla_nombre,
                 if(isnull(at_ancho),CAST(producto.diametro AS CHAR),at_ancho) as diametro,
                 if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
@@ -186,7 +199,7 @@ class Producto extends Model
                 ORDER BY producto.id asc;";
         //dd($sql);
         $datas = DB::select($sql);
-        $colores = Color::all()->keyBy('id');
+        /* $colores = Color::all()->keyBy('id');
         $materias = MateriaPrima::all()->keyBy('id');
         foreach ($datas as &$data) {
             if($data->acuerdotecnico_id != null){
@@ -200,7 +213,7 @@ class Producto extends Model
                 $aux_nombreprod = nl2br($data->categoriaprod_nombre . " " . $aux_atribAcuTec) . " (" . $data->at_unidadmedida_nombre . ")"; // . " " . $data->at_ancho . "x" . $data->at_largo . "x" . number_format($data->at_espesor, 3, ',', '.'));
                 $data->nombre = $aux_nombreprod; 
             }
-        }
+        } */
 
         return $datas;
     }
@@ -238,7 +251,7 @@ class Producto extends Model
             $tipoprodCond = " producto.tipoprod != 1";
         }
 
-        $sql = "SELECT producto.id,producto.nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+        $sql = "SELECT producto.id,producto.sku,producto.glosa as nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 if(isnull(at_claseprod_id),CAST(claseprod.cla_nombre AS CHAR),at_claseprod.cla_nombre) as cla_nombre,
                 if(isnull(at_ancho),CAST(producto.diametro AS CHAR),at_ancho) as diametro,
                 if(isnull(at_espesor),producto.espesor,at_espesor) as espesor,
@@ -278,7 +291,7 @@ class Producto extends Model
                 ORDER BY producto.id asc;";
         //dd($sql);
         $datas = DB::select($sql);
-        foreach ($datas as &$data) {
+        /* foreach ($datas as &$data) {
             if($data->acuerdotecnico_id != null){
                 $acuerdotecnico = AcuerdoTecnico::findOrFail($data->acuerdotecnico_id);
                 $aux_formatofilm = $data->at_formatofilm > 0 ? number_format($data->at_formatofilm, 2, ',', '.') . "Kg." : "";
@@ -293,7 +306,7 @@ class Producto extends Model
                 //dd($aux_nombreprod);
                 //dd($data);    
             }
-        }
+        } */
         return $datas;
     }
 
@@ -1053,7 +1066,8 @@ class Producto extends Model
         }
         //dd(isset($request->sucursal_id));
         if(isset($request->sucursal_id)){
-            $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
+            $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.glosa as producto_nombre,producto.sku,
+                claseprod.cla_nombre,producto.codintprod,
                 producto.diamextmm,producto.diamextpg,
                 producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
                 categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,
@@ -1088,7 +1102,8 @@ class Producto extends Model
                 and $aux_at_impresostaeliCond
                 ORDER BY producto.id;";
         }else{
-            $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.nombre as producto_nombre,claseprod.cla_nombre,producto.codintprod,
+            $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.glosa as producto_nombre,producto.sku,
+                claseprod.cla_nombre,producto.codintprod,
                 producto.diamextmm,producto.diamextpg,
                 producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,
                 categoriaprod.nombre as categoria_nombre,categoriaprod.precio,categoriaprod.unidadmedida_id,
@@ -1120,9 +1135,9 @@ class Producto extends Model
         }
 
         $datas = DB::select($sql);
-        $producto = New Producto();
+        /* $producto = New Producto();
         foreach ($datas as &$data) {
-            /* if($data->acuerdotecnico_id != null){
+            if($data->acuerdotecnico_id != null){
                 $acuerdotecnico = AcuerdoTecnico::findOrFail($data->acuerdotecnico_id);
 
                 $at_ancho = $acuerdotecnico->at_ancho;
@@ -1161,14 +1176,12 @@ class Producto extends Model
 
                 //dd($aux_nombreprod);
                 //dd($data);    
-            } */
+            }
             $aux_producto = $producto->atributosProducto($data->producto_id);
             $data->producto_nombre = $aux_producto['nombre'];
-        }
-            
+        } */
         //dd($datas);
         return $datas;
-        
     }
 
     public static function atributosProductoxxx($producto_id){
@@ -1249,7 +1262,7 @@ class Producto extends Model
             if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
                 $acuerdotecnico = $cotizaciondetalle->acuerdotecnicotempunoauno;
                 $sta_atTemporal = true;
-                $sta_nomattemp = " (Prod Temp.)";
+                //$sta_nomattemp = " (Prod Temp.)";
             }
         }
         if((isset($producto->acuerdotecnico) or ($sta_atTemporal))){
@@ -1276,11 +1289,15 @@ class Producto extends Model
             $aux_color =  empty($AcuTec->color->descripcion) ? "" : " " . $AcuTec->color->descripcion;
             $aux_at_complementonomprod = empty($AcuTec->at_complementonomprod) ? "" : " " . $AcuTec->at_complementonomprod;
             $aux_atribAcuTec = $AcuTec->materiaprima->descfact . $aux_color . $aux_at_complementonomprod . $aux_formatofilm;
+            $aux_atribAcuTec = trim($aux_atribAcuTec);
+            if($aux_atribAcuTec != ""){
+                $aux_atribAcuTec .= " ";
+            }
             if(isset($acuerdotecnico->claseprod)){
                 $aux_cla_nombre =str_replace("N/A","",$acuerdotecnico->claseprod->cla_descripcion);
             }
             //CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
-            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . trim($aux_atribAcuTec) . " " . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, '.', ',')) . " " . $aux_cla_nombre . $sta_nomattemp;
+            $aux_nombreprod = nl2br($producto->categoriaprod->nombre . " " . $aux_atribAcuTec . $at_ancho . "x" . $at_largo . "x" . number_format($AcuTec->at_espesor, 3, '.', ',')) . " " . $aux_cla_nombre . $sta_nomattemp;
             $at_materiaprima = $acuerdotecnico->materiaprima->nombre;
             $aux_unidmed = $acuerdotecnico->unidadmedida->nombre;
             $unidadmedida_id = $acuerdotecnico->unidadmedida->id;
@@ -1311,6 +1328,9 @@ class Producto extends Model
             $aux_unidmed = $producto->categoriaprod->unidadmedida->nombre;
             $unidadmedida_id = $producto->categoriaprod->unidadmedida->id;
         }
+        /* if($producto->glosaaut == 0 and $producto->tipoprod == 0){
+            $aux_nombreprod = $producto->glosa;
+        } */
         $atributoProducto = [
             "nombre" => $aux_nombreprod,
             "at_ancho" => $at_ancho,
@@ -1328,6 +1348,17 @@ class Producto extends Model
             
         ];
         return $atributoProducto;
+    }
+
+    public static function atribNomProd($producto_id,$cotizaciondetalle_id = null){
+        $producto = Producto::findOrFail($producto_id);
+        $aux_nombprod = $producto->glosa;
+        if(($producto->tipoprod == 1 and $cotizaciondetalle_id > 0)){
+            $cotizaciondetalle = CotizacionDetalle::findOrFail($cotizaciondetalle_id);
+            $sta_nomattemp = " (Prod Temp.)";
+            $aux_nombprod = $cotizaciondetalle->acuerdotecnicotempunoauno->at_glosa . $sta_nomattemp;
+        }
+        return $aux_nombprod;
     }
 
     public static function pendxprod($request){
@@ -1537,6 +1568,35 @@ class Producto extends Model
         }
         
         //return datatables($datas)->toJson();
+    }
+
+    public function generarNombreComp() //Genera el nombre compuesto del producto
+    {
+        $atributos = $this->atributosProducto($this->id);
+        return $atributos['nombre'];
+    }
+
+    public function recalcularNombreCompSiCambio()
+    {
+        $nuevoNombre = $this->generarNombreComp();
+
+        if ($this->glosaaut == 1 and $this->glosa !== $nuevoNombre) {
+            $this->glosa = $nuevoNombre;
+            return true;
+        }
+
+        return false;
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function (Producto $producto) {
+            // Evitar recalcular antes de que exista el ID
+            if ($producto->exists) {
+                $producto->recalcularNombreCompSiCambio();
+            }
+        });
     }
 
 }

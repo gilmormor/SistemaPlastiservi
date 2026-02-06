@@ -31,10 +31,12 @@ Productos
                         <thead>
                             <tr>
                                 <th class="width30">ID</th>
-                                <th>Nombre</th>
+                                <th class="width30">SKU</th>
+                                <th>Glosa</th>
                                 <th>Categoria</th>
                                 <th>Grupo</th>
                                 <th>Grupo Cat. Prom.</th>
+                                <th>Clase</th>
                                 <th>Diametro</th>
                                 <th>Espesor mm</th>
                                 <th>Largo</th>

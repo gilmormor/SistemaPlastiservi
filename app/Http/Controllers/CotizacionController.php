@@ -73,7 +73,7 @@ class CotizacionController extends Controller
         $counts = DB::select($sql);
         if($counts[0]->contador>0){
             $vendedor_id=$user->persona->vendedor->id;
-            $aux_condvend = 'cotizacion.vendedor_id = ' . $vendedor_id;
+            $aux_condvend = 'c.vendedor_id = ' . $vendedor_id;
         }else{
             $aux_condvend = 'true';
         }
@@ -81,7 +81,7 @@ class CotizacionController extends Controller
         $sucurcadena = implode(",", $sucurArray);
 
         //Se consultan los registros que estan sin aprobar por vendedor null o 0 y los rechazados por el supervisor rechazado por el supervisor=4
-        $sql = "SELECT cotizacion.id,fechahora,
+        /* $sql = "SELECT cotizacion.id,fechahora,
                     cotizacion.cliente_id,
                     if(isnull(cliente.razonsocial),clientetemp.razonsocial,cliente.razonsocial) as razonsocial,
                     aprobstatus,aprobobs,'' as pdfcot,
@@ -122,14 +122,80 @@ class CotizacionController extends Controller
                 where $aux_condvend and (isnull(aprobstatus) or aprobstatus=0 or aprobstatus=4 or aprobstatus=7) 
                 and cotizacion.deleted_at is null
                 AND cotizacion.sucursal_id in ($sucurcadena)
-                ORDER BY cotizacion.id desc;";
+                ORDER BY cotizacion.id desc;"; */
 
+        $sql ="SELECT 
+                    c.id,
+                    acutec.id AS acuerdotecnico_id,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'producto_id', cd.producto_id,
+                            'glosa', p.glosa,
+                            'cant', cd.cant,
+                            'precio', cd.preciounit,
+                            'subtotal', cd.subtotal,
+                            'acuerdotecnicotemp_id', cd.acuerdotecnicotemp_id,
+                            'acuerdotecnico_id', acutec.id,
+                            'at_glosa', acutectemp.at_glosa,
+                            'tipoprod', p.tipoprod 
+                        )
+                    ) AS cotdet,
+
+                    MAX(c.fechahora) AS fechahora,
+                    MAX(c.cliente_id) AS cliente_id,
+
+                    MAX(
+                        IF(cli.razonsocial IS NULL, ct.razonsocial, cli.razonsocial)
+                    ) AS razonsocial,
+
+                    MAX(c.aprobstatus) AS aprobstatus,
+                    MAX(c.aprobobs) AS aprobobs,
+                    '' AS pdfcot,
+
+                    IFNULL(MAX(cdagg.contador), 0) AS contador,
+                    IFNULL(MAX(cdagg.contacutec), 0) AS contacutec,
+
+                    MAX(c.updated_at) AS updated_at,
+                    MAX(cli.limitecredito) AS limitecredito
+
+                FROM cotizacion c
+
+                INNER JOIN cotizaciondetalle cd 
+                    ON c.id = cd.cotizacion_id
+
+                INNER JOIN producto p
+                    ON p.id = cd.producto_id
+
+                LEFT JOIN cliente cli 
+                    ON c.cliente_id = cli.id
+
+                LEFT JOIN clientetemp ct 
+                    ON c.clientetemp_id = ct.id
+
+                LEFT JOIN (
+                    SELECT 
+                        cotizacion_id,
+                        SUM(CASE WHEN precioxkilo < precioxkiloreal THEN 1 ELSE 0 END) AS contador,
+                        SUM(CASE WHEN acuerdotecnicotemp_id IS NOT NULL AND deleted_at IS NULL THEN 1 ELSE 0 END) AS contacutec
+                    FROM cotizaciondetalle
+                    GROUP BY cotizacion_id
+                ) cdagg ON cdagg.cotizacion_id = c.id
+                LEFT JOIN acuerdotecnico acutec
+                    ON p.id = acutec.producto_id
+                LEFT JOIN acuerdotecnicotemp acutectemp
+                    ON cd.id = acutectemp.at_cotizaciondetalle_id
+                WHERE 
+                    $aux_condvend
+                    AND (c.aprobstatus IS NULL OR c.aprobstatus IN (0,4,7))
+                    AND c.deleted_at IS NULL
+                    AND c.sucursal_id IN (1,2,3)
+
+                GROUP BY c.id
+                ORDER BY c.id DESC"; //
+        //dd($sql);
         $datas = DB::select($sql);
         //dd($datas);
-
-        return datatables($datas)->toJson();
-
-        
+        return datatables($datas)->rawColumns(['cotdet'])->toJson();
     }
 /*
     public function productobuscarpage(Request $request){
@@ -340,6 +406,9 @@ class CotizacionController extends Controller
                                 $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                                 $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
                                 $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                                $atributos = Producto::atributosProducto($cotizaciondetalle->producto_id,$cotizaciondetalle->id);
+                                AcuerdoTecnicoTemp::where("at_cotizaciondetalle_id","=",$cotizaciondetalle->id)
+                                                                ->update(['at_glosa' => $atributos['nombre']]);
                                 $acuerdotecnicotemp_cliente = AcuerdoTecnicoTemp_Cliente::create([
                                     "acuerdotecnicotemp_id" => $acuerdotecnicotemp->id,
                                     "cliente_id" => $request->cliente_id,
@@ -732,6 +801,9 @@ class CotizacionController extends Controller
                                 $arrayAT["at_cotizaciondetalle_id"] = $cotizaciondetalle->id;
                                 $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
                                 $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                                $atributos = Producto::atributosProducto($cotizaciondetalle->producto_id,$cotizaciondetalle->id);
+                                AcuerdoTecnicoTemp::where("at_cotizaciondetalle_id","=",$cotizaciondetalle->id)
+                                                                ->update(['at_glosa' => $atributos['nombre']]);
                                 if($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
                                     $data = AcuerdoTecnicoTemp::findOrFail($acuerdotecnicotemp->id);
                                     if($foto=="del"){
@@ -796,6 +868,9 @@ class CotizacionController extends Controller
                             $arrayAT["at_unidadmedida_id"] = $request->unidadmedida_id[$i];
                             if($cotizaciondetalle->acuerdotecnicotemp_id == null){
                                 $acuerdotecnicotemp = AcuerdoTecnicoTemp::create($arrayAT);
+                                $atributos = Producto::atributosProducto($cotizaciondetalle->producto_id,$cotizaciondetalle->id);
+                                AcuerdoTecnicoTemp::where("at_cotizaciondetalle_id","=",$cotizaciondetalle->id)
+                                                                ->update(['at_glosa' => $atributos['nombre']]);
                                 if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$acuerdotecnicotemp->id,$request,$at_imagen,$request->$imagen,$at_imagen)){
                                     if($foto=="del"){
                                         $foto = null;
@@ -836,7 +911,10 @@ class CotizacionController extends Controller
                                     );
                                 }
                                 AcuerdoTecnicoTemp::where("id","=",$cotizaciondetalle->acuerdotecnicotemp_id)
-                                ->update($arrayAT);
+                                                    ->update($arrayAT);
+                                $atributos = Producto::atributosProducto($cotizaciondetalle->producto_id,$cotizaciondetalle->id);
+                                AcuerdoTecnicoTemp::where("at_cotizaciondetalle_id","=",$cotizaciondetalle->id)
+                                                                ->update(['at_glosa' => $atributos['nombre']]);
                                 $data = AcuerdoTecnicoTemp::findOrFail($cotizaciondetalle->acuerdotecnicotemp_id);
                                 //dd($data->at_impresofoto);
                                 if ($foto = AcuerdoTecnicoTemp::setImagen($request->$at_imagen,$cotizaciondetalle->acuerdotecnicotemp_id,$request,$at_imagen,$request->$imagen,$data->at_impresofoto)){
@@ -1657,6 +1735,5 @@ function editar($id){
         $tablas['usuario'] = Usuario::findOrFail(auth()->id());
 
         $aux_sta=2;
-
-        return view('cotizacion.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));
+        return view('cotizacion.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','tablas'));
 }

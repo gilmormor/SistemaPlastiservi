@@ -500,7 +500,7 @@ class NotaVentaController extends Controller
         session(['editaracutec' => '0']);
 
         //dd($aux_aproNV);
-        return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','tablas','vendedor_id'));
+        return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','tablas','vendedor_id'));
 
     }
 
@@ -817,7 +817,7 @@ class NotaVentaController extends Controller
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->where("mostrarnv", 1)->get();
         $tablas['usuario'] = Usuario::findOrFail(auth()->id());
 
-        return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','tablas'));
+        return view('notaventa.editar', compact('data','detalles','clienteselec','clienteDirec','clientedirecs','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','vendedor_id','tablas'));
     }
 
     /**
@@ -1248,6 +1248,7 @@ class NotaVentaController extends Controller
                             $array_producto["precioneto"] = $notaventadetalle->precioxkilo;
                             $array_producto["tipoprod"] = 0;
                             $array_producto["usuario_id"] = auth()->id();
+                            $array_producto["sku"] = "xyz9999";
                             $productonew = Producto::create($array_producto);
                             //dd($notaventa->vendedor_id);
                             //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
@@ -1288,9 +1289,9 @@ class NotaVentaController extends Controller
                                 $acuerdotecnico->at_impresofoto = $fileDestino;
                                 $acuerdotecnico->save();
                             }
-                            $atributoProd = $productonew->atributosProducto($productonew->id);
-                            $aux_producto_nombre = $atributoProd["nombre"];
-                            $productonew->nombre = $aux_producto_nombre;
+                            $productonew->sku = $productonew->id;
+                            
+                            $productonew->glosa = $productonew->atributosProducto($notaventadetalle->producto_id,$notaventadetalle->cotizaciondetalle_id)['nombre'];
                             $productonew->save();
 
                             //COPIO AL ACUERDOTECNICO DEFINITIVO el At FirmadoY COPIO EL ARCHIVO
@@ -1338,7 +1339,7 @@ class NotaVentaController extends Controller
                 DB::rollBack();
                 return response()->json([
                     'id' => 2,
-                    'mensaje' => 'Error al guardar.'
+                    'mensaje'=> 'Error: ' . $e->getMessage()
                 ]);
             }
             Event(new AprobarRechazoNotaVenta($notaventa)); //NOTIFICACION A VENDEDOR SOBRE APROBACION O RECHAZO DE NOTA DE VENTA

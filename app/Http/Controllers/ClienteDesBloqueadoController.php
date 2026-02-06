@@ -110,12 +110,12 @@ class ClienteDesBloqueadoController extends Controller
         }
         if(count($clientedesbloqueado) > 0){
             if(isset($request->notaventa_id)){
-                $mensaje = 'Ya existe un desbloqueo por Id Nota de Venta!';
+                $mensaje = 'Nota de Venta ya esta habilitada!';
             }else{
                 if(isset($request->cotizacion_id)){
-                    $mensaje = 'Ya existe desbloqueo Cotizacion Nro: ' . $request->cotizacion_id;
+                    $mensaje = 'Cotizacion ya esta habilitada  Nro: ' . $request->cotizacion_id;
                 }else{
-                    $mensaje = 'Ya existe desbloqueo por RUT de cliente!';
+                    $mensaje = 'RUT de cliente ya esta habilitado!';
                 }
             }
             return redirect('clientedesbloqueado')->with([

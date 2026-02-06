@@ -80,28 +80,4 @@ class ReportProductoController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         } 
     }
-
-    public function actnomprodat(Request $request){
-        $datas = Producto::productosxUsuarioRep($request);
-        foreach ($datas as $data) {
-            $producto = Producto::findOrFail($data->producto_id);
-            //dd($producto);
-            $productoAttr = $producto->atributosProducto($producto->id);
-            //dd($productoAttr);
-            //$producto->nombre = $productoAttr['nombre'];
-            $producto->nombre = $producto->descripcion;
-            $producto->espesor = $productoAttr['at_espesor'];
-            $producto->diametro = $productoAttr['at_ancho'];
-            $producto->peso = $productoAttr['at_peso'];
-            //dd($producto->nombre);
-            $producto->save();
-        }
-        //return datatables($datas)->toJson();
-/*
-        return datatables()
-        ->eloquent(InvMov::stock($request))
-        ->toJson();
-*/
-    }
-
 }

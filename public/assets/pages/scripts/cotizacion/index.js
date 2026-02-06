@@ -1,7 +1,7 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
-    $('#tabla-data-cotizacion').DataTable({
+    let table = $('#tabla-data-cotizacion').DataTable({
     'paging'      : true, 
     'lengthChange': true,
     'searching'   : true,
@@ -14,6 +14,12 @@ $(document).ready(function () {
     "order": [[ 0, "desc" ]],
     'columns'     : [
         {data: 'id'},
+        {
+            className: 'dt-control',
+            orderable: false,
+            data: null,
+            defaultContent: '<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>'
+        },
         {data: 'fechahora'},
         {data: 'razonsocial'},
         {data: 'pdfcot'},
@@ -31,17 +37,30 @@ $(document).ready(function () {
         "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
     },
     "createdRow": function ( row, data, index ) {
+        let detalleArray = data.cotdet; // o data.detallecot
+        // Si viene como string, convertirlo a array
+        /* if (typeof detalleArray === 'string') {
+            detalleArray = JSON.parse(detalleArray);
+        }
+        $.each(detalleArray, function (i, item) {
+            console.log(item.producto_id);
+            console.log(item.glosa);
+            console.log(item.cant);
+        }); */
+
+        /* let detalleArray = JSON.parse(detalleStr);
+        console.log(detalleArray); */
 
         //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
         aux_text = 
             "<a class='btn-accion-tabla btn-sm tooltipsC action-buttons' title='Cotizacion: " + data.id + "' onclick='genpdfCOT(" + data.id + ",1)'>"+
                 "<i class='fa fa-fw fa-file-pdf-o'></i>"+
             "</a>";
-        $('td', row).eq(3).html(aux_text);
+        $('td', row).eq(4).html(aux_text);
 
-        $('td', row).eq(1).attr('data-order',data.fechahora);
+        $('td', row).eq(2).attr('data-order',data.fechahora);
         aux_fecha = new Date(data.fechahora);
-        $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+        $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
 
         if ( (data.contador * 1 > 0) || (data.aprobstatus == "7" )) {
             //console.log(row);
@@ -70,7 +89,7 @@ $(document).ready(function () {
 				"<a class='btn-sm tooltipsC action-buttons' title='" + aux_title + "'>" +
 					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
 				"</a>";
-            $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
+            $('td', row).eq(4).html($('td', row).eq(4).html() + aux_text);
             //$('td', row).parent().prop("title","Precio menor al valor en tabla")
         }
         //console.log(data.aprobstatus);
@@ -82,12 +101,12 @@ $(document).ready(function () {
 				"<a class='btn-sm tooltipsC' title='" + aux_title + "'>" +
 					"<i class='fa fa-fw fa-question-circle " + colorinfo + "'></i>" + 
 				"</a>";
-            $('td', row).eq(3).html($('td', row).eq(3).html() + aux_text);
+            $('td', row).eq(4).html($('td', row).eq(4).html() + aux_text);
 
         }
-        $('td', row).eq(7).html(data.updated_at);
-        $('td', row).eq(7).attr("id","updated_at"+data.id);
-        $('td', row).eq(7).attr("name","updated_at"+data.id);
+        $('td', row).eq(8).html(data.updated_at);
+        $('td', row).eq(8).attr("id","updated_at"+data.id);
+        $('td', row).eq(8).attr("name","updated_at"+data.id);
 
         /* aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
         aux_displaybtnac = ``;
@@ -120,11 +139,101 @@ $(document).ready(function () {
         </div>`;
 
         //$('td', row).eq(9).attr('style','padding-top: 0px;padding-bottom: 0px;');
-        $('td', row).eq(9).html(aux_text);
+        $('td', row).eq(10).html(aux_text);
 
     }
     });
+
+    // Add event listener for opening and closing details
+    table.on('click', 'td.dt-control', function (e) {
+        let tr = e.target.closest('tr');
+        let row = table.row(tr);
+    
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            $(this).html('<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>');
+        }
+        else {
+            // Open this row
+            row.child(format(row.data())).show();
+            $(this).html('<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-bottom text-aqua" title="Mostrar Detalle"></i>');
+        }
+    });
+
 });
+
+// Formatting function for row details - modify as you need
+function format(d) {
+    // Descomponer el campo nvdetalle
+    //console.log(d);
+    //console.log(d.nvdetalle);
+    let detalleArray1 = JSON.parse(d.cotdet);
+    /* if (typeof d.cotdet === 'string') {
+        detalleArray = JSON.parse(d.cotdet);
+    }*/
+    // Generar tabla HTML
+    //console.log(detalleArray1);
+    let tableHtml = `<div style="display: flex; align-items: flex-start;"> <!-- Contenedor Flex (flecha al principio) -->
+            <div style="margin-left: 20px;">&#8627;</div> <!-- Flecha desplazada un poco a la derecha -->
+            <div class="table-responsive">
+            <table class="table table-bordered table-striped AllDataTables table-hover table-condensed" style="width: auto; margin-left: 5px;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;" title="ID Producto">ID Prod</th>
+                        <th>Nombre Producto</th>
+                        <th style="text-align: center;" title="Cantidad">Cant</th>
+                        <th style="text-align: right;">Precio</th>
+                        <th style="text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    // Recorrer los detalles y agregar filas a la tabla
+    detalleArray1.forEach(detalle => {
+        aux_producto_id = detalle.producto_id;
+        if(detalle.acuerdotecnico_id != null){
+            aux_producto_id = 
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${detalle.acuerdotecnico_id},${d.cliente_id},"")'>
+                ${detalle.producto_id}
+            </a>`;
+        }else{
+            if(detalle.acuerdotecnicotemp_id != null){
+                aux_producto_id = 
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTecTemp(${detalle.acuerdotecnicotemp_id},${d.cliente_id},"")'>
+                    ${detalle.producto_id}
+                </a>`;    
+            }
+        }
+        if(detalle.tipoprod == 0){
+            aux_glosa = detalle.glosa;
+        }else{
+            aux_glosa = detalle.at_glosa;
+        }
+        tableHtml += `
+            <tr>
+                <td style="text-align: center;">${aux_producto_id}</td>
+                <td>${aux_glosa}</td>
+                <td style="text-align: center;">${detalle.cant}</td>
+                <td style="text-align: right;">${detalle.precio.toFixed(2)}</td>
+                <td style="text-align: right;">${detalle.subtotal.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+    // Cerrar la tabla
+    tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- Fin del contenedor Flex -->
+    `;
+
+    // Devolver la tabla HTML
+    return tableHtml;
+    
+}
 
 $(document).on("click", ".btnEnviarNV", function(event){
     event.preventDefault();

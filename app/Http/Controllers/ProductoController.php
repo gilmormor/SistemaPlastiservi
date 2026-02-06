@@ -46,7 +46,9 @@ class ProductoController extends Controller
             )
             ->toJson();
         */
-        $sql = "SELECT producto.*,categoriaprod.nombre AS categorianombre,gru_nombre,
+        $sql = "SELECT producto.*,producto.glosa as nombre_producto,
+        claseprod.cla_nombre,
+        categoriaprod.nombre AS categorianombre,gru_nombre,
         grupocatprom.nombre AS grupocatprom_nombre
         FROM producto INNER JOIN categoriaprod
         ON producto.categoriaprod_id = categoriaprod.id
@@ -56,13 +58,10 @@ class ProductoController extends Controller
         ON grupocatpromcategoriaprod.categoriaprod_id = producto.categoriaprod_id
         LEFT JOIN grupocatprom
         ON grupocatprom.id = grupocatpromcategoriaprod.grupocatprom_id AND isnull(grupocatprom.deleted_at)
+        LEFT JOIN claseprod
+        ON claseprod.id = producto.claseprod_id AND isnull(claseprod.deleted_at)
         WHERE isnull(producto.deleted_at) AND isnull(categoriaprod.deleted_at)";
         $datas = DB::select($sql);
-        $producto = New Producto();
-        foreach ($datas as $data) {
-            //$producto = Producto::findOrFail($data->id);
-            $data->nombre_producto = $producto->atributosProducto($data->id)['nombre'];
-        }
         return datatables($datas)->toJson();
         /*
         return datatables()
@@ -140,8 +139,24 @@ class ProductoController extends Controller
         can('guardar-producto');
         DB::beginTransaction();
         try {
-            Producto::create($request->all());
+            $producto = Producto::create($request->all());
             //return redirect('producto')->with('mensaje','Producto creado con exito');
+            $producto->sku = $producto->id;
+            $producto->save();
+
+            // Procesar componentes
+            if ($request->has('detalles')) {
+                foreach ($request->detalles as $detalle) {
+                    // Crear nuevo detalle
+                    $producto->productocomps()->create([
+                        'producto_id' => $producto->id,
+                        'productocomp_id' => trim($detalle['productocompiddet']),
+                        'cant' => trim($detalle['cantdet']),
+                        'obs' => trim($detalle['obsdet']),
+                        'usuario_id' => auth()->id()
+                    ]);
+                }
+            }            
             DB::commit();
             return redirect('producto/crear')->with('mensaje','Producto creado con exito');
         } catch (\Exception $e) {
@@ -221,6 +236,10 @@ class ProductoController extends Controller
     {
         can('guardar-producto');
         //dd($request);
+        /* $Producto = Producto::findOrFail($id);
+        $detallesActuales = $Producto->productocomps()->pluck('id')->toArray();
+        dd($detallesActuales); */
+
         DB::beginTransaction();
         try {
             $Producto = Producto::findOrFail($id);
@@ -232,6 +251,73 @@ class ProductoController extends Controller
                 [],
                 $ProductoOriginal // <- se lo pasamos como estado original
             );
+            if(isset($Producto->acuerdotecnico)){
+                $Producto->acuerdotecnico->at_claseprod_id = $Producto->claseprod_id;
+                $Producto->acuerdotecnico->save();
+            }
+            // Procesar componentes
+            $detallesActuales = $Producto->productocomps()->pluck('id')->toArray();
+            $detallesIds = [];
+
+
+            if ($request->filled('detalles')) {
+
+
+                foreach ($request->detalles as $detalle) {
+
+
+                    if (!empty($detalle['id'])) {
+                        // Actualizar
+                        $detalleModel = $Producto->productocomps()->find($detalle['id']);
+
+
+                        if ($detalleModel) {
+                            $detalleModel->update([
+                            'productocomp_id' => trim($detalle['productocompiddet']),
+                            'cant' => trim($detalle['cantdet']),
+                            'obs' => trim($detalle['obsdet']),
+                            'usuario_id' => auth()->id()
+                            ]);
+
+
+                        $detallesIds[] = $detalleModel->id;
+                    }
+
+
+                    } else {
+                        // Crear
+                        $newDetalle = $Producto->productocomps()->create([
+                        'productocomp_id' => trim($detalle['productocompiddet']),
+                        'cant' => trim($detalle['cantdet']),
+                        'obs' => trim($detalle['obsdet']),
+                        'usuario_id' => auth()->id()
+                        ]);
+
+
+                    $detallesIds[] = $newDetalle->id;
+                    }
+                }
+
+
+                // Eliminar los que ya no vienen
+                $detallesAEliminar = array_diff($detallesActuales, $detallesIds);
+
+
+            } else {
+                // 🔥 NO vienen detalles → eliminar TODOS
+                $detallesAEliminar = $detallesActuales;
+            }
+
+            // Ejecutar eliminación
+            foreach ($detallesAEliminar as $detalleId) {
+                $detalle = $Producto->productocomps()->find($detalleId);
+
+
+                if ($detalle) {
+                    $detalle->update(['usuariodel_id' => auth()->id()]);
+                    $detalle->delete();
+                }
+            }
             DB::commit();
             return redirect('producto')->with('mensaje','Producto actualizado con exito');
         } catch (\Exception $e) {
@@ -298,6 +384,16 @@ class ProductoController extends Controller
         return response()->json($productos);
     }
 
+    public function buscarUnProductoComp(Request $request){
+        $respuesta = $this->buscarUnProducto($request);
+        foreach ($respuesta['productocomps'] as &$productocomp) {
+            $requestComp = $request;
+            $requestComp->id = $productocomp->productocomp_id;
+            $productocomp["producto"] = $this->buscarUnProducto($requestComp);
+        }
+        return $respuesta;
+    }
+
     public function buscarUnProducto(Request $request)
     {
         if($request->ajax()){
@@ -312,9 +408,22 @@ class ProductoController extends Controller
             // BUscar un producto dependiendo si el usuario tiene acceso a dicho producto. Por la sucursal del Usuario y producto
             $users = Usuario::findOrFail(auth()->id());
             $sucurArray = $users->sucursales->pluck('id')->toArray();
+
+            $valor = $request->id;
+
+            $productoBase = Producto::where('id', $valor)
+                ->orWhere('sku', $valor)
+                ->whereNull('deleted_at')
+                ->first();
+            if ($productoBase) {
+                $productoId = $productoBase->id;
+            } else {
+                $productoId = 0;
+            }
+            $productoId = $valor;
             //Filtrando las categorias por sucursal, dependiendo de las sucursales asignadas al usuario logueado
             //******************* */
-            $productos = CategoriaProd::where('producto.id',$request->id)
+            $productos = CategoriaProd::where('producto.id',$productoId)
             ->when(!$mostrarTodo,function ($query) {
                 // Si $mostrarTodo es falso, agrega la condición para tipoprod=0
                 return $query->where(function ($q) {
@@ -336,6 +445,7 @@ class ProductoController extends Controller
             ->select([
                     'producto.id',
                     'producto.nombre',
+                    'producto.glosa',
                     'claseprod.cla_nombre',
                     'producto.codintprod',
                     'producto.diamextmm',
@@ -386,9 +496,19 @@ class ProductoController extends Controller
                     }
                 }
                 //dd($respuesta);
-                $producto = Producto::findOrFail($request->id);
-                $respuesta['nombre'] = $producto->atributosProducto($request->id)["nombre"];
+                $producto = Producto::findOrFail($productoId);
+                //dd($producto->productocomps); // Cargar los componentes relacionados
+                $respuesta['nombre'] = $producto->glosa;
+                $respuesta['sku'] = $producto->sku;
+                $respuesta['precioneto'] = $producto->precioneto;
+                foreach ($producto->productocomps as &$productocomp) {
+                    $productocomp->precioneto = $productocomp->productocomp->precioneto;
+                }
+                $respuesta['productocomps'] = $producto->productocomps;
+                //dd($producto->productocomps);
                 //dd($respuesta);
+                $respuesta['precioneto'] = $producto->precioneto;
+
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();
                 //$respuesta['areaproduccion'] = $producto->categoriaprod->areaproduccion->toArray();
                 $respuesta['areaproduccionsucs'] = $producto->categoriaprod->areaproduccion->areaproduccionsucs->toArray();
@@ -401,7 +521,7 @@ class ProductoController extends Controller
                 //dd($respuesta['bodegas']);
                 foreach ($respuesta['bodegas'] as &$bodega) {
                     $request1 = new Request();
-                    $request1["producto_id"] = $request->id;
+                    $request1["producto_id"] = $productoId;
                     $request1["invbodega_id"] = $bodega["id"];
                     $request1["tipo"] = 2;
                     $aux_stosk = InvBodegaProducto::existencia($request1);
