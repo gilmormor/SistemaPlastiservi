@@ -4,9 +4,10 @@
             <div class="col-lg-2">
                 <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{old('notaventa_id', $data->notaventa_id ?? '')}}" maxlength="12" required placeholder="F2 Buscar"/>
             </div>
+            {{-- EN COMENTARIO PORQUE ESTA DANTO ERROR EN /despachosol/reportesoldespcerrarNV' 11/02/2026
             <div class="col-lg-1">
                 <button class="btn btn-default" type="button" id="btnbuscarNotaVenta" name="btnbuscarNotaVenta" data-toggle='tooltip' title="Buscar">Buscar</button>
-            </div>
+            </div> --}}
         @else
             <div class="col-lg-2">
                 <input type="hidden" name="notaventa_id" id="notaventa_id" value="{{old('notaventa_id', $data->notaventa_id ?? '')}}">

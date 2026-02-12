@@ -16,7 +16,7 @@
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/dtefactura/crear.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/dtefactura/buscardteguiadesp.js")}}" type="text/javascript"></script>
 @endsection
 

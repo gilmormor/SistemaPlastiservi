@@ -11,7 +11,7 @@ $(document).ready(function () {
 		todayHighlight: true
     }).datepicker("setDate");
 
-    consultarcerrarNV(datos());
+    //consultarcerrarNV(datos()); //EN COMENTARIO PORQUE ESTA DANTO ERROR EN /despachosol/reportesoldespcerrarNV' 11/02/2026
     $("#btnconsultarcerrarNV").click(function()
     {
         consultarcerrarNV(datos());
@@ -113,7 +113,7 @@ $("#notaventa_id").blur(function(){
                 }else{
                     swal({
                         title: respuesta.title,
-                        text: "",
+                        text: respuesta.mensaje,
                         icon: respuesta.tipo_alert,
                         buttons: {
                             confirm: "Aceptar"

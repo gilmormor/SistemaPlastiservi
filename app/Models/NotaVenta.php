@@ -892,4 +892,26 @@ class NotaVenta extends Model
         ];
     }
 
+    public static function pickingactivo($notaventa_id)
+    {
+        $notaventa = Notaventa::findOrFail($notaventa_id);
+        foreach ($notaventa->notaventadetalles as $notaventadetalle) {
+            if($notaventadetalle->producto->categoriaprod->stadespsinstock == 0){
+                foreach ($notaventadetalle->despachosoldets as $despachosoldet) {
+                    $pickingcant = DespachoSol::pickingxitem($despachosoldet->id);
+                    if($pickingcant > 0){
+                        return [
+                            "pickingactivo" => true,
+                            "despachosol_id" => $despachosoldet->despachosol_id,
+                            "producto_id" => $notaventadetalle->producto_id,
+                            "pickingcant" => $pickingcant
+                        ];
+                    }
+                }
+            }
+        }
+        return [
+            "pickingactivo" => false
+        ];
+    }
 }

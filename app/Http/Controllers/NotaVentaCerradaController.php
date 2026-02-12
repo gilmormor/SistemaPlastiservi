@@ -13,6 +13,7 @@ use App\Models\Comuna;
 use App\Models\DespachoOrd;
 use App\Models\DespachoSol;
 use App\Models\Giro;
+use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -94,6 +95,13 @@ class NotaVentaCerradaController extends Controller
     public function guardar(Request $request)
     {
         can('guardar-cerrar-nota-venta');
+        $pickingactivo = NotaVenta::pickingactivo($request->notaventa_id);
+        if($pickingactivo["pickingactivo"]){
+            return redirect('notaventacerrada')->with([
+                'mensaje' => nl2br("Nota venta tiene picking activo. \n" . "Solicitud despacho Nro. " . $pickingactivo["despachosol_id"] . "\nCod Prod: " . $pickingactivo["producto_id"] . "\nCant: " . $pickingactivo["pickingcant"]),
+                'tipo_alert' => "alert-error"
+            ]);
+        };
         $despachosolcontroller = New DespachoSolController();
         $despachosolAGDs = $despachosolcontroller->consultarSolDesp($request);
         $aux_mensaje = "";

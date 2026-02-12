@@ -274,6 +274,10 @@ $("#rut").blur(function(){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    if (!tablaClienteInicializada) {
+        configTablaCliente(); // ← AQUÍ recién se inicializa
+        tablaClienteInicializada = true;
+    }
     $("#myModalBusqueda").modal('show');
 });
 

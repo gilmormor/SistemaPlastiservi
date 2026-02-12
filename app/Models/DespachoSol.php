@@ -811,4 +811,16 @@ class DespachoSol extends Model
         return $datas;
     }
 
+    public static function pickingxitem($despachosoldet_id)
+    {
+        $despachosoldet = DespachoSolDet::findOrFail($despachosoldet_id);
+        $aux_cant = 0;
+        foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+            foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                $aux_cant += $invmovdet_bodsoldesp->invmovdet->cant;
+            }
+        }
+        return $aux_cant;
+    }
+
 }

@@ -170,6 +170,10 @@ function editKilos(id){
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    if (!tablaClienteInicializada) {
+        configTablaCliente(); // ← AQUÍ recién se inicializa
+        tablaClienteInicializada = true;
+    }
 	$('#botonNewGuia').hide();
     $("#myModalBusqueda").modal('show');
 });
