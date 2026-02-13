@@ -174,6 +174,7 @@ $("#notaventa_id").blur(function(){
         var data = {
             id: codigo,
             sta_cerrarNV : 1, // = 0 no estoy consultando nota de venta para cerrar, estoy consultando para desbloquear cliente
+            sta_conspicking : 0, // = 0 no estoy consultando nota de venta para despacho, estoy consultando para desbloquear cliente
             _token: $('input[name=_token]').val()
         };
         $.ajax({
@@ -193,7 +194,7 @@ $("#notaventa_id").blur(function(){
                     $("#btnguardargen").hide();
                     swal({
                         title: respuesta.title,
-                        text: "",
+                        text: respuesta.mensaje,
                         icon: respuesta.tipo_alert,
                         buttons: {
                             confirm: "Aceptar"

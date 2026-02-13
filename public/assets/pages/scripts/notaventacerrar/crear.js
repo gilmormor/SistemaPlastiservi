@@ -98,6 +98,7 @@ $("#notaventa_id").blur(function(){
         var data = {
             id: codigo,
             sta_cerrarNV : 1, //Estatus consulta para desbloquear NV
+            sta_conspicking : 1, //Estatus consulta para despacho NV
             _token: $('input[name=_token]').val()
         };
         $.ajax({
