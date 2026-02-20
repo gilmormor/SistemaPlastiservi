@@ -42,6 +42,11 @@ class InvMov extends Model
         return $this->belongsTo(Sucursal::class);
     }
     
+    //RELACION INVERSA User
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class);
+    }
 
     public static function stock($request,$agrupar = "invbodegaproducto_id"){
         $aux_annomes = CategoriaGrupoValMes::annomes($request->mesanno);

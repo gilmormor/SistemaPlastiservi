@@ -122,6 +122,10 @@ $(document).ready(function () {
 		$(".input-sm").val('');
 		//$("#myModal").modal('hide');
 		//$("#myModalBuscarProd").modal('show');
+		if (!tablaProductoInicializada) {
+			configTablaProd(); // ← AQUÍ recién se inicializa
+			tablaProductoInicializada = true;
+		}
 		cargardatospantprod();
 		$("#staprodxcli").hide();
 		$('#myModal')

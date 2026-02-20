@@ -19,7 +19,7 @@ p, label, span, table{
 	font-family: 'BrixSansBlack';
 	font-size: 12pt;
 	display: block;
-	background: rgb(0, 119, 255);
+	background: rgb(97, 171, 255);
 	color: #FFF;
 	text-align: center;
 	padding: 3px;
@@ -101,12 +101,12 @@ p, label, span, table{
 	border-collapse: collapse;
 }
 #factura_detalle thead th{
-	background: rgb(0, 119, 255);
+	background: rgb(97, 171, 255);
 	color: #FFF;
 	padding: 5px;
 }
 #detalle_productos tr:nth-child(even) {
-    background: #ededed;
+    background: #ededed43;
 }
 #detalle_totales span{
 	font-family: 'BrixSansBlack';

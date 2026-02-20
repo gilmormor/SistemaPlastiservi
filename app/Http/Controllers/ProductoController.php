@@ -390,6 +390,15 @@ class ProductoController extends Controller
                 $respuesta['nombre'] = $producto->atributosProducto($request->id)["nombre"];
                 //dd($respuesta);
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();
+                $respuesta['bodegasPicking'] = $producto->invbodegaproductos()
+                                                ->whereHas('invbodega', function($query) {
+                                                    $query->where('tipo', 1)->where('activo', 1);
+                                                })
+                                                ->with([
+                                                    'invbodega.sucursal', // Bodega con su sucursal
+                                                    'producto.categoriaprod' // Producto con su categoría
+                                                ])
+                                                ->get();
                 //$respuesta['areaproduccion'] = $producto->categoriaprod->areaproduccion->toArray();
                 $respuesta['areaproduccionsucs'] = $producto->categoriaprod->areaproduccion->areaproduccionsucs->toArray();
                 $respuesta['areaproduccionsuclineas'] = AreaProduccionSucLinea::get();

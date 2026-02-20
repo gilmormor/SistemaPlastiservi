@@ -53,4 +53,10 @@ class DespachoOrdDet extends Model
     {
         return $this->hasOne(GuiaDespDet::class,"despachoorddet_id");
     }
+
+    //Relacion uno a uno con dtedet_despachoorddet
+    public function dtedet_despachoorddets()
+    {
+        return $this->hasMany(DteDet_DespachoOrdDet::class,"despachoorddet_id");
+    }
 }

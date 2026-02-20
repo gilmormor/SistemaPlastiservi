@@ -2325,6 +2325,17 @@ $("#btnGuardarInvM").click(function(event)
 	{
 		//$("#invmovtipo_idM").val()
 		aux_tipomov = $("#invmovtipo_idM option:selected").attr('tipomov');
+		if($("#invbodega_idM").val() == "0"){
+			swal({
+				title: 'Bodega: ' + $("#invbodega_idM option:selected").attr("bodega_nombre"),
+				text: "No permite movimiento de entrada o salida de inventario.",
+				icon: 'info',
+				buttons: {
+					cancel: "Cerrar"
+				},
+			});
+			return 0;
+		}
 		if(aux_tipomov < 0){
 			var data = {
 				producto_id : $("#producto_idM").val(),
@@ -2389,6 +2400,10 @@ function llenarselectbodega(respuesta){
 		$.each(respuesta['bodegas'], function(id,value){
 			//console.log(respuesta['bodegas'][id]);
 			$("#invbodega_idM").append(`<option value="${respuesta['bodegas'][id].id}">${respuesta['bodegas'][id].nombre} ${respuesta['bodegas'][id].sucursal_nombre} / Stock: ${respuesta['bodegas'][id].stock}</option>`);
+		});
+		$.each(respuesta['bodegasPicking'], function(id,value){
+			//console.log(respuesta['bodegas'][id]);
+			$("#invbodega_idM").append(`<option value="0" bodega_nombre="${respuesta['bodegasPicking'][id]['invbodega'].nombre}">${respuesta['bodegasPicking'][id]['invbodega'].nombre} ${respuesta['bodegasPicking'][id]['invbodega']['sucursal'].nombre} / Stock: ${respuesta['bodegasPicking'][id].stock}</option>`);
 		});
 		$("#invbodega_idM").selectpicker('refresh');
 	}	

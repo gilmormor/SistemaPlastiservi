@@ -150,6 +150,7 @@ function consultarpage(data){
         'order': [[ 1, "asc" ]],
         'columns'     : [
             {data: 'id'},
+            {data: 'usuario'},
             {data: 'invmovdet_id'},
             {data: 'invmovmodulo_id'},
             {data: 'fechahora'},
@@ -179,7 +180,7 @@ function consultarpage(data){
 			$('td', row).eq(0).html(aux_text);
 
             $('td', row).eq(0).attr('data-search',data.id);
-            $('td', row).eq(1).attr('data-search',data.invmovdet_id);
+            $('td', row).eq(2).attr('data-search',data.invmovdet_id);
             aux_text = "";
             switch (data.invmovmodulo_id) {
 				case 1:
@@ -231,30 +232,30 @@ function consultarpage(data){
                 default:
 					//aux_text = "Falta asignar PDF"
 			}
-			$('td', row).eq(2).html(aux_text);
+			$('td', row).eq(3).html(aux_text);
 
-            $('td', row).eq(3).attr('data-order',data.fechahora);
+            $('td', row).eq(4).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
-            $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha));
+            $('td', row).eq(4).html(fechaddmmaaaa(aux_fecha));
 
             if(data.acuerdotecnico_id != null){
                 aux_text = 
                 `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico">
                     ${data.producto_id}
                 </a>`;
-                $('td', row).eq(5).html(aux_text);
-                $('td', row).eq(5).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"");');
+                $('td', row).eq(6).html(aux_text);
+                $('td', row).eq(6).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"");');
             }
             
-            $('td', row).eq(9).attr('data-order',data.cant);
-            $('td', row).eq(9).attr('style','text-align:right');
+            $('td', row).eq(10).attr('data-order',data.cant);
+            $('td', row).eq(10).attr('style','text-align:right');
             aux_text = MASKLA(data.cant,2);
-            $('td', row).eq(9).html(aux_text);
+            $('td', row).eq(10).html(aux_text);
             if(data.cant != 0){
                 aux_text = MASKLA(data.cantkg,2);
-                $('td', row).eq(9).attr('title',aux_text + ' Kg.');
+                $('td', row).eq(10).attr('title',aux_text + ' Kg.');
             }else{
-                $('td', row).eq(9).attr('title','0 Kg.');
+                $('td', row).eq(10).attr('title','0 Kg.');
             }
         }
       });

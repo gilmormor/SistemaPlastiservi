@@ -391,7 +391,6 @@ class CotizacionController extends Controller
             DB::rollBack();
             return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
         }
-
     }
 
     /**

@@ -20,7 +20,8 @@
 				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Pesaje</span>
 					<p>Nro: <strong> {{ str_pad($datas->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
-					<p>Fecha: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
+					<p>Fecha Produccion: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
+					<p>Fecha Creado: {{date('d/m/Y h:i:s A', strtotime($datas->created_at))}}</p>
 					<p>Usuario: {{$datas->usuario->nombre}}</p>
 					<p>Estado: 
 						@switch($datas->staaprob)
@@ -103,7 +104,8 @@
 				?>
 				@foreach($datas->pesajedets as $pesajedet)
 					<?php 
-						$aux_producto_nombre = $pesajedet->invbodegaproducto->producto->nombre . " D:" . $pesajedet->invbodegaproducto->producto->diametro . " C:" . $pesajedet->invbodegaproducto->producto->claseprod->cla_nombre . " L:" . $pesajedet->invbodegaproducto->producto->long . " TU:" . $pesajedet->invbodegaproducto->producto->tipounion;
+						// $aux_producto_nombre = $pesajedet->invbodegaproducto->producto->nombre . " D:" . $pesajedet->invbodegaproducto->producto->diametro . " C:" . $pesajedet->invbodegaproducto->producto->claseprod->cla_nombre . " L:" . $pesajedet->invbodegaproducto->producto->long . " TU:" . $pesajedet->invbodegaproducto->producto->tipounion;
+						$aux_producto_nombre = $pesajedet->producto->atributosProducto($pesajedet->producto_id)['nombre'];
 						$total_tara += $pesajedet->tara;
 						$total_cant += $pesajedet->cant;
 						$total_pesobaltotal += $pesajedet->pesobaltotal;

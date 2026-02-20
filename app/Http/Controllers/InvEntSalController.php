@@ -85,50 +85,57 @@ class InvEntSalController extends Controller
     public function guardar(ValidarInvEntSal $request)
     {
         can('guardar-entrada-salida-inventario');
-        $dateInput = explode('/',$request->fechahora);
-        $request["fechahora"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0] . ' 06:00:00';
-        //dd($request);
+        DB::beginTransaction();
+        try {
+            $dateInput = explode('/',$request->fechahora);
+            $request["fechahora"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0] . ' 06:00:00';
+            //dd($request);
 
-        $request->request->add(['invmovmodulo_id' => 1]);
-        $request->request->add(['usuario_id' => auth()->id()]);
-        /*
-        $invmov = InvMov::create($request->all());
-        $request->request->add(['invmov_id' => $invmov->id]);
-        */
-        //dd($request);
-        $inventsal = InvEntSal::create($request->all());
-        $inventsal_id = $inventsal->id;
-        $cont_producto = count($request->producto_id);
-        if($cont_producto>0){
-            for ($i=0; $i < $cont_producto ; $i++){
-                if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
-                    $producto = Producto::findOrFail($request->producto_id[$i]);
-                    $invmovtipo = InvMovTipo::findOrFail($request->invmovtipo_idTD[$i]);
-                    $inventsaldet = new InvEntSalDet();
-                    $inventsaldet->inventsal_id = $inventsal_id;
-                    $inventsaldet->producto_id = $request->producto_id[$i];
-                    $inventsaldet->cant = $request->cant[$i] * $invmovtipo->tipomov;
-                    $inventsaldet->cantgrupo = $request->cant[$i] * $invmovtipo->tipomov;
-                    $inventsaldet->cantxgrupo = 1;
-                    $inventsaldet->peso = $producto->peso;
-                    $inventsaldet->cantkg = $request->totalkilos[$i] * $invmovtipo->tipomov;
-                    $inventsaldet->unidadmedida_id = $request->unidadmedida_id[$i];
-                    $inventsaldet->invbodega_id = $request->invbodega_idTD[$i];
-                    $inventsaldet->invmovtipo_id = $request->invmovtipo_idTD[$i];
-                    $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                        ['producto_id' => $inventsaldet->producto_id,'invbodega_id' => $inventsaldet->invbodega_id],
-                        [
-                            'producto_id' => $inventsaldet->producto_id,
-                            'invbodega_id' => $inventsaldet->invbodega_id
-                        ]
-                    );
-                    $inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
-                    $inventsaldet->sucursal_id = $invbodegaproducto->invbodega->sucursal_id;
-                    $inventsaldet->save();
+            $request->request->add(['invmovmodulo_id' => 1]);
+            $request->request->add(['usuario_id' => auth()->id()]);
+            /*
+            $invmov = InvMov::create($request->all());
+            $request->request->add(['invmov_id' => $invmov->id]);
+            */
+            //dd($request);
+            $inventsal = InvEntSal::create($request->all());
+            $inventsal_id = $inventsal->id;
+            $cont_producto = count($request->producto_id);
+            if($cont_producto>0){
+                for ($i=0; $i < $cont_producto ; $i++){
+                    if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
+                        $producto = Producto::findOrFail($request->producto_id[$i]);
+                        $invmovtipo = InvMovTipo::findOrFail($request->invmovtipo_idTD[$i]);
+                        $inventsaldet = new InvEntSalDet();
+                        $inventsaldet->inventsal_id = $inventsal_id;
+                        $inventsaldet->producto_id = $request->producto_id[$i];
+                        $inventsaldet->cant = $request->cant[$i] * $invmovtipo->tipomov;
+                        $inventsaldet->cantgrupo = $request->cant[$i] * $invmovtipo->tipomov;
+                        $inventsaldet->cantxgrupo = 1;
+                        $inventsaldet->peso = $producto->peso;
+                        $inventsaldet->cantkg = $request->totalkilos[$i] * $invmovtipo->tipomov;
+                        $inventsaldet->unidadmedida_id = $request->unidadmedida_id[$i];
+                        $inventsaldet->invbodega_id = $request->invbodega_idTD[$i];
+                        $inventsaldet->invmovtipo_id = $request->invmovtipo_idTD[$i];
+                        $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                            ['producto_id' => $inventsaldet->producto_id,'invbodega_id' => $inventsaldet->invbodega_id],
+                            [
+                                'producto_id' => $inventsaldet->producto_id,
+                                'invbodega_id' => $inventsaldet->invbodega_id
+                            ]
+                        );
+                        $inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
+                        $inventsaldet->sucursal_id = $invbodegaproducto->invbodega->sucursal_id;
+                        $inventsaldet->save();
+                    }
                 }
             }
+            DB::commit();
+            return redirect('inventsal')->with('mensaje','Registro creado con exito.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
         }
-        return redirect('inventsal')->with('mensaje','Registro creado con exito.');
     }
 
     /**
@@ -175,59 +182,65 @@ class InvEntSalController extends Controller
     public function actualizar(Request $request, $id)
     {
         can('guardar-entrada-salida-inventario');
-        //dd($request->all());
-        $inventsal = InvEntSal::findOrFail($id);
-        $dateInput = explode('/',$request->fechahora);
-        $request["fechahora"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0] . ' 06:00:00';
-        if($inventsal->updated_at == $request->updated_at){
-            $inventsal->updated_at = date("Y-m-d H:i:s");
-            $inventsal->update($request->all());
-            $auxNVDet=InvEntSalDet::where('inventsal_id',$id)->whereNotIn('id', $request->NVdet_id)->pluck('id')->toArray(); //->destroy();
-            for ($i=0; $i < count($auxNVDet) ; $i++){
-                InvEntSalDet::destroy($auxNVDet[$i]);
-            }
-            $cont_cotdet = count($request->NVdet_id);
-            if($cont_cotdet>0){
-                for ($i=0; $i < count($request->NVdet_id) ; $i++){
-                    $invmovtipo = InvMovTipo::findOrFail($request->invmovtipo_idTD[$i]);
-                    $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                        ['producto_id' => $request->producto_id[$i],'invbodega_id' => $request->invbodega_idTD[$i]],
-                        [
-                            'producto_id' => $request->producto_id[$i],
-                            'invbodega_id' => $request->invbodega_idTD[$i]
-                        ]
-                    );
-                    //$inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
-                    $producto = Producto::findOrFail($request->producto_id[$i]);
+            //dd($request->all());
+            $inventsal = InvEntSal::findOrFail($id);
+            $dateInput = explode('/',$request->fechahora);
+            $request["fechahora"] = $dateInput[2].'-'.$dateInput[1].'-'.$dateInput[0] . ' 06:00:00';
+            if($inventsal->updated_at == $request->updated_at){
+                DB::beginTransaction();
+                try {
+                    $inventsal->updated_at = date("Y-m-d H:i:s");
+                    $inventsal->update($request->all());
+                    $auxNVDet=InvEntSalDet::where('inventsal_id',$id)->whereNotIn('id', $request->NVdet_id)->pluck('id')->toArray(); //->destroy();
+                    for ($i=0; $i < count($auxNVDet) ; $i++){
+                        InvEntSalDet::destroy($auxNVDet[$i]);
+                    }
+                    $cont_cotdet = count($request->NVdet_id);
+                    if($cont_cotdet>0){
+                        for ($i=0; $i < count($request->NVdet_id) ; $i++){
+                            $invmovtipo = InvMovTipo::findOrFail($request->invmovtipo_idTD[$i]);
+                            $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                                ['producto_id' => $request->producto_id[$i],'invbodega_id' => $request->invbodega_idTD[$i]],
+                                [
+                                    'producto_id' => $request->producto_id[$i],
+                                    'invbodega_id' => $request->invbodega_idTD[$i]
+                                ]
+                            );
+                            //$inventsaldet->invbodegaproducto_id = $invbodegaproducto->id;
+                            $producto = Producto::findOrFail($request->producto_id[$i]);
 
-                    DB::table('inventsaldet')->updateOrInsert(
-                        ['id' => $request->NVdet_id[$i], 'inventsal_id' => $id],
-                        [
-                            'producto_id' => $request->producto_id[$i],
-                            'unidadmedida_id' => $request->unidadmedida_id[$i],
-                            'invbodega_id' => $request->invbodega_idTD[$i],
-                            'cant' => $request->cant[$i] * $invmovtipo->tipomov,
-                            'cantgrupo' => $request->cant[$i] * $invmovtipo->tipomov,
-                            'cantxgrupo' => 1,
-                            'peso' => $producto->peso,
-                            'cantkg' => $request->totalkilos[$i] * $invmovtipo->tipomov,
-                            'invmovtipo_id' => $request->invmovtipo_idTD[$i],
-                            'invbodegaproducto_id' => $invbodegaproducto->id,
-                            'sucursal_id' =>  $invbodegaproducto->invbodega->sucursal_id
-                        ]
-                    );
+                            DB::table('inventsaldet')->updateOrInsert(
+                                ['id' => $request->NVdet_id[$i], 'inventsal_id' => $id],
+                                [
+                                    'producto_id' => $request->producto_id[$i],
+                                    'unidadmedida_id' => $request->unidadmedida_id[$i],
+                                    'invbodega_id' => $request->invbodega_idTD[$i],
+                                    'cant' => $request->cant[$i] * $invmovtipo->tipomov,
+                                    'cantgrupo' => $request->cant[$i] * $invmovtipo->tipomov,
+                                    'cantxgrupo' => 1,
+                                    'peso' => $producto->peso,
+                                    'cantkg' => $request->totalkilos[$i] * $invmovtipo->tipomov,
+                                    'invmovtipo_id' => $request->invmovtipo_idTD[$i],
+                                    'invbodegaproducto_id' => $invbodegaproducto->id,
+                                    'sucursal_id' =>  $invbodegaproducto->invbodega->sucursal_id
+                                ]
+                            );
+                        }
+                    }
+                    return redirect('inventsal')->with([
+                                                                        'mensaje'=>'Registro Actualizado con exito.',
+                                                                        'tipo_alert' => 'alert-success'
+                                                                    ]);
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
                 }
+            }else{
+                return redirect('inventsal')->with([
+                                                                    'mensaje'=>'Registro no fue modificado. Registro fue Editado por otro usuario. Fecha Hora: '.$inventsal->updated_at,
+                                                                    'tipo_alert' => 'alert-error'
+                                                                ]);
             }
-            return redirect('inventsal')->with([
-                                                                'mensaje'=>'Registro Actualizado con exito.',
-                                                                'tipo_alert' => 'alert-success'
-                                                            ]);
-        }else{
-            return redirect('inventsal')->with([
-                                                                'mensaje'=>'Registro no fue modificado. Registro fue Editado por otro usuario. Fecha Hora: '.$inventsal->updated_at,
-                                                                'tipo_alert' => 'alert-error'
-                                                            ]);
-        }
     }
 
     /**

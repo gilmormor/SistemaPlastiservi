@@ -64,5 +64,11 @@ class InvMovDet extends Model
     {
         return $this->hasOne(InvMovDet_BodOrdDesp::class);
     }
-    
+
+    //RELACION INVERSA Producto
+    public function producto()
+    {
+        return $this->belongsTo(Producto::class);
+    }
+
 }

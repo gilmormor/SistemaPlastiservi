@@ -22,8 +22,9 @@
 				<div class="round" style="padding-bottom: 3px;">
 					<span class="h3">Movimiento de Inventario</span>
 					<p>Nro: <strong> {{ str_pad($datas->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
+					<p>Fecha MovInv: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
 					<p>Fecha Creación: {{date('d/m/Y h:i:s A', strtotime($datas->created_at))}}</p>
-					<p>Fecha Inv: {{date('d/m/Y', strtotime($datas->fechahora))}}</p>
+					<p>Usuario: {{$datas->usuario->usuario}}</p>
 				</div>
 			</td>
 		</tr>
@@ -56,22 +57,22 @@
 			<thead>
 				<tr>
 					<th width="30px">Cod</th>
-					<th width="100px">Nombre Producto</th>
-					<th width="100px">Categoria</th>
-					<th width="100px">Bodega</th>
-					<th class="textleft" width="60px">Clase<br>Sello</th>
+					<th width="200px" class="textleft">Nombre Producto</th>
+					<th width="100px" class="textleft">Categoria</th>
+					<th width="60px" class="textleft">Bodega</th>
+					{{-- <th class="textleft" width="60px">Clase<br>Sello</th>
 					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textcenter">Largo</th>
-					<th class="textcenter">TU<br>Esp</th>
-					<th class="textcenter" width="70px">UniMed</th>
-					<th class="textcenter" width="70px">Cant</th>
+					<th class="textcenter">TU<br>Esp</th> --}}
+					<th class="textcenter" width="30px">UniMed</th>
+					<th class="textcenter" width="30px">Cant</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
 				<?php $aux_totalcant = 0; ?>
 				@foreach($datas->invmovdets as $invmovdet)
 					<?php 
-						$aux_ancho = $invmovdet->invbodegaproducto->producto->diametro;
+						/* $aux_ancho = $invmovdet->invbodegaproducto->producto->diametro;
 						$aux_largo = $invmovdet->invbodegaproducto->producto->long . "Mts";
 						$aux_espesor = $invmovdet->invbodegaproducto->producto->tipounion;
 						$aux_cla_sello_nombre = $invmovdet->invbodegaproducto->producto->claseprod->cla_nombre;
@@ -84,17 +85,18 @@
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-						}
+						} */
+						$aux_producto_nombre = $invmovdet->producto->atributosProducto($invmovdet->producto_id)['nombre'];
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto_id}}</td>
-						<td class="textleft">{{$invmovdet->invbodegaproducto->producto->nombre}}</td>
+						<td class="textleft">{{$aux_producto_nombre}}</td>
 						<td class="textleft">{{$invmovdet->invbodegaproducto->producto->categoriaprod->nombre}}</td>
 						<td class="textleft">{{$invmovdet->invbodegaproducto->invbodega->nombre}} / {{$invmovdet->invbodegaproducto->invbodega->sucursal->nombre}}</td>
-						<td class="textcenter">{{$invmovdet->invbodegaproducto->producto->claseprod->cla_nombre}}</td>
+						{{-- <td class="textcenter">{{$invmovdet->invbodegaproducto->producto->claseprod->cla_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
-						<td class="textcenter">{{$aux_espesor}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td> --}}
 						<td class="textcenter">{{$invmovdet->unidadmedida->nombre}}</td>
 						<td class="textcenter">{{number_format($invmovdet->cant, 0, ",", ".")}}</td>
 					</tr>
@@ -106,7 +108,7 @@
 	<div class="round" style="padding-bottom: 0px;padding-top: 8px;margin-bottom: 3px;">
 		<table id="factura_detalle">
 			<tr>
-				<td colspan="9" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
+				<td colspan="5" class="textright" width="90%"><span><strong>TOTAL</strong></span></td>
 				<td class="textcenter" width="10%"><span><strong>{{number_format($aux_totalcant, 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>

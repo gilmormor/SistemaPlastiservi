@@ -71,16 +71,20 @@
 			<thead>
 				<tr>
 					<th width="30px">Cod</th>
-					<th width="30px">Cant.</th>
-					<th width="30px">Sol</th>
+					{{-- <th width="30px">Cant.</th> --}}
+					<th width="30px">Cant Despachar</th>
 					<th width="20px" class="textcenter">UN</th>
 					<th width="120px" class="textleft">Descripción</th>
-					<th width="40px" class="textcenter">Sello</th>
+					{{-- <th width="40px" class="textcenter">Sello</th>
 					<th width="20px" class="textcenter">Ancho</th>
 					<th width="20px" class="textcenter">Largo</th>
-					<th width="20px" class="textcenter">Esp</th>
-					<th class="textright" width="50px">Precio Unit {{$datosArray["modena_desc"]}}</th>
-					<th class="textright" width="60px">Total Neto {{$datosArray["modena_desc"]}}</th>
+					<th width="20px" class="textcenter">Esp</th> --}}
+					<th width="20px" class="textright">Despachado</th>
+					<th width="60px" class="textright">Peso</th>
+					<th width="60px" class="textright">Total Kg</th>
+
+					{{-- <th class="textright" width="50px">Precio Unit {{$datosArray["modena_desc"]}}</th>
+					<th class="textright" width="60px">Total Neto {{$datosArray["modena_desc"]}}</th> --}}
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -99,6 +103,12 @@
 				@endforeach
 				@foreach($despachoorddets as $despachoorddet)
 					<?php
+						$aux_cantGD = 0;
+						foreach ($despachoorddet->dtedet_despachoorddets as $dtedet_despachoorddet) {
+							if(!isset($dtedet_despachoorddet->dtedet->dte->dteanul) and $dtedet_despachoorddet->dtedet->dte->foliocontrol_id == 2){
+								$aux_cantGD = $dtedet_despachoorddet->dtedet->qtyitem;
+							}
+						}
 						//$aux_promPonderadoPrecioxkilo += ($despachoorddet->notaventadetalle->precioxkilo * (($despachoorddet->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 						$peso = $despachoorddet->notaventadetalle->totalkilos/$despachoorddet->notaventadetalle->cant;
 						$totalkilos = ($peso) * $despachoorddet->cantdesp;
@@ -127,37 +137,53 @@
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->producto_id}}</td>
-						<td class="textcenter">{{number_format($despachoorddet->despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
-						<td class="textcenter">{{number_format($despachoorddet->cantdesp, 0, ",", ".")}}</td>
+						{{-- <td class="textcenter">{{number_format($despachoorddet->despachosoldet->cantsoldesp, 0, ",", ".")}}</td> --}}
+						<td class="textcenter"><b>({{number_format($despachoorddet->cantdesp, 0, ",", ".")}})</b></td>
 						<td class="textcenter">{{$despachoorddet->notaventadetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}
 							{{-- @if ($aux_staAT)
 								<br><span class="small-text">{{$aux_atribAcuTec}}</span>
 							@endif --}}
 						</td>
-						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
+						{{-- <td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
-						<td class="textcenter">{{$aux_espesor}}</td>
-						<td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit,  $datosArray["monedaLocal"] ? 2 : 3, ",", ".")}}</td>
-						<td class="textright">{{number_format($subtotal, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td> --}}
+						@if ($aux_cantGD > 0)
+							<td class="textright">{{number_format($aux_cantGD, 0, ",", ".")}}</td>
+						@else
+							<td style="border: 0.5px solid rgb(144, 144, 144); 
+									width: 40px; 
+									height: 25px;">
+							</td>
+						@endif
+						<td class="textright">{{number_format($peso, 3, ",", ".")}}</td>
+						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
+						{{-- <td class="textright">{{number_format($despachoorddet->notaventadetalle->preciounit,  $datosArray["monedaLocal"] ? 2 : 3, ",", ".")}}</td>
+						<td class="textright">{{number_format($subtotal, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</td> --}}
 					</tr>
 				@endforeach
 			</tbody>
 			<tfoot>
+				<tr>
+					<td colspan="5" class="textright"><span><strong>Totales</strong></span></td>
+					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
+				</tr>
+			</tfoot>
+			{{-- <tfoot>
 				<tr class="headt">
-					<td colspan="10" class="textright" width="90%"><span><strong>NETO</strong></span></td>
+					<td colspan="5" class="textright" width="90%"><span><strong>NETO</strong></span></td>
 					<td class="textright" width="10%"><span><strong>{{number_format($neto, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr class="headt">
-					<td colspan="10" class="textright" width="90%"><span><strong>IVA {{$despachoord->notaventa->piva}}%</strong></span></td>
+					<td colspan="5" class="textright" width="90%"><span><strong>IVA {{$despachoord->notaventa->piva}}%</strong></span></td>
 					<td class="textright" width="10%"><span><strong>{{number_format(($neto * $despachoord->notaventa->piva)/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr class="headt">
-					<td colspan="10" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
+					<td colspan="5" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
 					<td class="textright" width="10%"><span><strong>{{number_format($neto * ($despachoord->notaventa->piva+100)/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
-			</tfoot>
+			</tfoot> --}}
 		</table>
 	</div>
 	<div>

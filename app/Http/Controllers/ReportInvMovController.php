@@ -121,7 +121,9 @@ function consultainvmov($request){
     if(!empty($request->buscarxdesc)){
         $aux_condbuscarxdesc = "invmov.desc LIKE '%$request->buscarxdesc%'";
     }
-    $sql = "SELECT invmov.id,invmovdet.id as invmovdet_id,invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,
+    $sql = "SELECT invmov.id,invmovdet.id as invmovdet_id,
+            usuario.usuario,
+            invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,
             invmov.idmovmod,invmovmodulo.nombre as invmovmodulo_nombre,
             CONCAT (invbodega.nombre, ' / ' , sucursal.abrev) as invbodega_nombre,sucursal.nombre as sucursal_nombre,
             producto.nombre as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant,
@@ -143,6 +145,8 @@ function consultainvmov($request){
             on invmovmodulo.id=invmov.invmovmodulo_id and isnull(invmovmodulo.deleted_at)
             LEFT JOIN acuerdotecnico
             ON producto.id = acuerdotecnico.producto_id and isnull(acuerdotecnico.deleted_at)
+            INNER JOIN usuario
+            ON usuario.id = invmov.usuario_id and isnull(usuario.deleted_at)
             WHERE $aux_condannomes
             and $aux_condsucursal_id
             and $aux_condFecha
