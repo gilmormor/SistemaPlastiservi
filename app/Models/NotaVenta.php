@@ -501,7 +501,7 @@ class NotaVenta extends Model
         return $datas;
     }
 
-    public static function consultatotcantod($id){
+    public static function consultatotcantodOld($id){
         //TOMANDO EN CUENTA QUE EN PLANTA SANTA ESTER PERMITE DESPACHAR POR ENCIMA DEL LA CANT EN NV
         //VALIDAR, SI LA CANTIDAD DESPACHADA ES MAYOR AL ITEM DE LA NV, SE DEBE TOMAR PARA CONTROL LA CANTIDAD DE LA NV
         //ESTO PARA NO SUMAR LO TOTAL DESPACHADO, YA QUE PUEDE SOBREPASAR EL TOTAL EN CANTIDAD DE LA NV
@@ -524,18 +524,6 @@ class NotaVenta extends Model
         if($nvdets){
             foreach ($nvdets as $nvdet) {
                 $aux_totalcantnv += $nvdet->cantnv;
-                /* $sql = "SELECT despachoord.notaventa_id,notaventadetalle.id as notaventadetalle_id,
-                        notaventadetalle.producto_id,notaventadetalle.cant AS cantnv,
-                        sum(despachoorddet.cantdesp) AS canddespreal
-                        FROM despachoord JOIN despachoorddet 
-                        ON despachoord.id = despachoorddet.despachoord_id
-                        INNER JOIN notaventadetalle
-                        ON notaventadetalle.id = despachoorddet.notaventadetalle_id
-                        WHERE NOT(despachoord.id IN (SELECT despachoordanul.despachoord_id FROM despachoordanul))
-                        and despachoord.guiadespacho is not null
-                        and despachoorddet.notaventadetalle_id = $nvdet->notaventadetalle_id
-                        and isnull(despachoord.deleted_at) and isnull(despachoorddet.deleted_at)
-                        group by notaventadetalle.id;"; */
 
                 $sql = "SELECT notaventadetalle.notaventa_id,notaventadetalle.id as notaventadetalle_id,
                         notaventadetalle.producto_id,notaventadetalle.cant AS cantnv,
@@ -595,6 +583,83 @@ class NotaVenta extends Model
             }    
         }
         return $aux_cant;
+    }
+
+    /**
+     * VERSIÓN ULTRA OPTIMIZADA - Todo en una sola consulta SQL
+     */
+    public static function consultatotcantod($notaventa_id)
+    {
+        $sql = "
+            SELECT 
+                nvdet.id AS notaventadetalle_id,
+                nvdet.cant AS cantnv,
+                COALESCE((
+                    SELECT SUM(oddet.cantdesp)
+                    FROM despachoorddet oddet
+                    INNER JOIN despachoord od ON oddet.despachoord_id = od.id
+                    WHERE oddet.notaventadetalle_id = nvdet.id
+                    AND od.guiadespacho IS NOT NULL
+                    AND od.deleted_at IS NULL
+                    AND oddet.deleted_at IS NULL
+                    AND NOT EXISTS (
+                        SELECT 1 FROM despachoordanul 
+                        WHERE despachoordanul.despachoord_id = od.id 
+                            AND despachoordanul.deleted_at IS NULL
+                    )
+                ), 0) AS total_despachado,
+                COALESCE((
+                    SELECT SUM(rdet.cantrec)
+                    FROM despachoorddet oddet
+                    INNER JOIN despachoord od ON oddet.despachoord_id = od.id
+                    INNER JOIN despachoordrec rec ON od.id = rec.despachoord_id
+                    INNER JOIN despachoordrecdet rdet ON rec.id = rdet.despachoordrec_id
+                    WHERE oddet.notaventadetalle_id = nvdet.id
+                    AND rec.aprobstatus = 2
+                    AND rec.anulada IS NULL
+                    AND rec.deleted_at IS NULL
+                    AND rdet.deleted_at IS NULL
+                    AND od.guiadespacho IS NOT NULL
+                    AND od.deleted_at IS NULL
+                    AND oddet.deleted_at IS NULL
+                    AND NOT EXISTS (
+                        SELECT 1 FROM despachoordanul 
+                        WHERE despachoordanul.despachoord_id = od.id 
+                            AND despachoordanul.deleted_at IS NULL
+                    )
+                ), 0) AS total_rechazado
+            FROM notaventadetalle nvdet
+            WHERE nvdet.notaventa_id = ?
+            AND EXISTS (
+                SELECT 1
+                FROM despachoorddet oddet
+                INNER JOIN despachoord od ON oddet.despachoord_id = od.id
+                WHERE oddet.notaventadetalle_id = nvdet.id
+                    AND od.guiadespacho IS NOT NULL
+                    AND od.deleted_at IS NULL
+                    AND oddet.deleted_at IS NULL
+                    AND NOT EXISTS (
+                        SELECT 1 FROM despachoordanul 
+                        WHERE despachoordanul.despachoord_id = od.id 
+                        AND despachoordanul.deleted_at IS NULL
+                    )
+            )
+            GROUP BY nvdet.id, nvdet.cant
+        ";
+        
+        $resultados = DB::select($sql, [$notaventa_id]);
+        
+        $total = 0;
+        foreach ($resultados as $row) {
+            $neto = $row->total_despachado - $row->total_rechazado;
+            if ($neto > $row->cantnv) {
+                $total += $row->cantnv;
+            } else {
+                $total += $neto;
+            }
+        }
+        
+        return $total;
     }
 
     public static function consultagrupcatprom($request){

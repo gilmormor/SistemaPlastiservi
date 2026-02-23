@@ -243,6 +243,10 @@ $("#btnbuscarcliente1").click(function(event){
 });
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+    if (!tablaClienteInicializada) {
+        configTablaCliente(); // ← AQUÍ recién se inicializa
+        tablaClienteInicializada = true;
+    }
     $(".input-sm").val('');
     $("#myModalBusqueda").modal('show');
 });
@@ -325,6 +329,10 @@ $("#btnbuscarproducto1").click(function(event){
 });
 $("#btnbuscarproducto").click(function(event){
     $(this).val("");
+    if (!tablaProductoInicializada) {
+        configTablaProd(); // ← AQUÍ recién se inicializa
+        tablaProductoInicializada = true;
+    }
     $(".input-sm").val('');
     data = datos();
     $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();

@@ -65,17 +65,17 @@
 					<th width="30px">Sol</th>
 					<th width="30px">Desp</th>
 					<th width="30px">Rechazo</th>
-					<th class="textcenter">Unidad</th>
-					<th class="textleft">Descripción</th>
-					<th class="textleft">Diam</th>
+					<th class="textcenter" width="30px">Unidad</th>
+					<th class="textleft" width="200px">Descripción</th>
+					{{-- <th class="textleft">Diam</th>
 					<th class="textleft">Clase</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU</th>
-					<th class="textright">Peso</th>
+					<th class="textcenter">TU</th> --}}
+					<th class="textright" width="40px">Peso</th>
 					<!--<th class="textright">$ x Kg</th>-->
-					<th class="textright">Total Kg</th>
-					<th class="textright" width="90px">Precio Unit</th>
-					<th class="textright" width="90px">Total Neto</th>
+					<th class="textright" width="50px">Total Kg</th>
+					<th class="textright" width="50px">Precio Unit</th>
+					<th class="textright" width="50px">Total Neto</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -108,12 +108,12 @@
 						<td class="textcenter">{{number_format($despachoordrecdet->cantrec, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachoordrecdet->despachoorddet->notaventadetalle->producto->categoriaprod->unidadmedidafact->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
-						<td class="textcenter">
+						{{-- <td class="textcenter">
 							{{$despachoordrecdet->despachoorddet->notaventadetalle->producto->diametro}}
 						</td>
 						<td class="textcenter">{{$despachoordrecdet->despachoorddet->notaventadetalle->producto->claseprod->cla_nombre}}</td>
 						<td class="textright">{{$despachoordrecdet->despachoorddet->notaventadetalle->producto->long}} mts</td>
-						<td class="textcenter">{{$despachoordrecdet->despachoorddet->notaventadetalle->producto->tipounion}}</td>
+						<td class="textcenter">{{$despachoordrecdet->despachoorddet->notaventadetalle->producto->tipounion}}</td> --}}
 						<td class="textright">{{number_format($peso, 3, ",", ".")}}</td>
 						<!--<td class="textright">{{number_format($despachoordrecdet->despachoorddet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>-->
 						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
@@ -124,17 +124,17 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="7" class="textright"><span><strong>Totales</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>NETO</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($neto, 0, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="13" class="textright"><span><strong>IVA {{$despachoordrec->despachoord->notaventa->piva}}%</strong></span></td>
+					<td colspan="9" class="textright"><span><strong>IVA {{$despachoordrec->despachoord->notaventa->piva}}%</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round(($neto * $despachoordrec->despachoord->notaventa->piva)/100), 0, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="13" class="textright"><span><strong>TOTAL</strong></span></td>
+					<td colspan="9" class="textright"><span><strong>TOTAL</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round($neto * ($despachoordrec->despachoord->notaventa->piva+100)/100), 0, ",", ".")}}</strong></span></td>
 				</tr>
 		

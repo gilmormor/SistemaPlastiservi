@@ -1550,7 +1550,7 @@ class DespachoOrdController extends Controller
         }
     }
 
-    public function listarorddespxnv(Request $request){
+    public function listarorddespxnvOld(Request $request){
         $respuesta = array();
 		$respuesta['exito'] = false;
 		$respuesta['mensaje'] = "Código no Existe";
@@ -2099,6 +2099,519 @@ class DespachoOrdController extends Controller
 
         }
         return $respuesta;
+    }
+
+    public function listarorddespxnv(Request $request)
+    {
+        $respuesta = [
+            'exito' => false,
+            'mensaje' => 'Código no Existe',
+            'tabla' => ''
+        ];
+
+        if ($request->ajax()) {
+            // 1. OBTENER LA NOTA DE VENTA CON TODAS LAS RELACIONES NECESARIAS
+            $notaventa = NotaVenta::with([
+                // Relaciones para la TABLA 1 (Órdenes de Despacho)
+                'despachoords' => function ($q) {
+                    $q->with([
+                        'notaventa.cliente',
+                        'dteguiadesps.dte' => function ($q2) {
+                            $q2->with([
+                                'dteanul.usuario',
+                                'dtedters.dte.foliocontrol'
+                            ]);
+                        },
+                        'despachoordanul.usuario'
+                    ]);
+                },
+                // Relaciones para la TABLA 2 (Detalle de Órdenes de Despacho)
+                'despachoords.despachoorddets' => function ($q) {
+                    $q->with([
+                        'notaventadetalle.producto.categoriaprod.unidadmedidafact',
+                        'notaventadetalle.producto.claseprod',
+                        'despachosoldet',
+                        'despachoordrecdets.despachoordrec',
+                        'despachoord'
+                    ]);
+                },
+                // Relaciones para la TABLA 3 (Trazabilidad de Solicitudes de Despacho)
+                'despachosols' => function ($q) {
+                    $q->with([
+                        'despachosolanul.usuario',
+                        'despachoords' => function ($q2) {
+                            $q2->with([
+                                'despachoordanul.usuario',
+                                'dteguiadesps.dte' => function ($q3) {
+                                    $q3->with([
+                                        'dteanul.usuario',
+                                        'dtedters.dte.foliocontrol'
+                                    ]);
+                                }
+                            ]);
+                        }
+                    ]);
+                }
+            ])->findOrFail($request->id);
+            //dd($notaventa->despachoords);
+
+            // 2. GENERAR HTML DE LAS TABLAS
+            $tab1 = $this->generarTabla1($notaventa);
+            $tab2 = $this->generarTabla2($notaventa, $request->producto_id);
+            $tab3 = $this->generarTabla3($notaventa);
+
+            // 3. ARMAR RESPUESTA FINAL
+            $respuesta['exito'] = true;
+            $respuesta['tabla'] = "
+            <div class='nav-tabs-custom' id='tabs'>
+                <ul class='nav nav-tabs'>
+                    <li class='active'><a href='#tab_1' data-toggle='tab' id='tab1' name='tab1'>Orden de despacho</a></li>
+                    <li><a href='#tab_2' data-toggle='tab' id='tab2' name='tab2'>Detalle Orden Despacho</a></li>
+                    <li><a href='#tab_3' data-toggle='tab' id='tab3' name='tab3' title='Trazabilidad Solicitud Despacho'>Trazabilidad SD</a></li>
+                </ul>
+                <div class='tab-content'>
+                    <div class='tab-pane active' id='tab_1'>$tab1</div>
+                    <div class='tab-pane' id='tab_2'>$tab2</div>
+                    <div class='tab-pane' id='tab_3'>$tab3</div>
+                </div>
+            </div>";
+        }
+        return $respuesta;
+    }
+
+    /**
+     * Genera el HTML para la Tabla 1 (Órdenes de Despacho)
+     */
+    private function generarTabla1($notaventa)
+    {
+        $tab1 = $this->iniciarTabla('tabladespachoord', ['OD', 'SD', 'Fecha', 'Guia', 'FecFact', 'Nfact', 'Total', 'NC ND']);
+        foreach ($notaventa->despachoords as $despachoord) {
+            if (isset($despachoord->despachoordanul)) {
+                continue; // Saltar OD anulada
+            }
+            $aux_enlaceguia = $this->generarEnlaceGuia($despachoord);
+            $aux_enlacefactura = '';
+            $aux_totalFact = '';
+            $aux_enlacencnd = '';
+
+            if (!is_null($despachoord->numfactura)) {
+                $dteguiadesp = $despachoord->dteguiadesps->last();
+                //dd($dteguiadesp->dte->dtedter->dte);
+                $dte = $dteguiadesp->dte->dtedter ? $dteguiadesp->dte->dtedter->dte : null;
+                if ($dte) {
+                    $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dte->id\",0,\"myModalTablaOD\")' data-original-title='Factura'>$dte->nrodocto</a>";
+                    $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");
+                    
+                    foreach ($dte->dtedtefacasosiadas as $dtefac) {
+                        if (in_array($dtefac->dte->foliocontrol_id, [5,6])) {
+                            $aux_enlacencnd .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dte->id\",1,\"myModalTablaOD\")' data-original-title='{$dtefac->dte->foliocontrol->desc}'>
+                                {$dtefac->dte->nrodocto}
+                            </a>";
+                        }
+                    }
+                }
+            }
+
+            $aux_fechaFact = $despachoord->fechafactura ? date('d/m/Y', strtotime($despachoord->fechafactura)) : "";
+
+            $tab1 .= "<tr>
+                <td><a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoord->id,1,\"myModalTablaOD\")'>$despachoord->id</a></td>
+                <td><a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD($despachoord->despachosol_id,1,\"myModalTablaOD\")'>$despachoord->despachosol_id</a></td>
+                <td>" . date('d/m/Y', strtotime($despachoord->created_at)) . "</td>
+                <td class='textcenter'>$aux_enlaceguia</td>
+                <td class='textcenter'>$aux_fechaFact</td>
+                <td class='textcenter'>$aux_enlacefactura</td>
+                <td style='text-align:right'>$aux_totalFact</td>
+                <td style='text-align:right'>$aux_enlacencnd</td>
+            </tr>";
+        }
+        $tab1 .= "</tbody></table>";
+        return $tab1;
+    }
+
+    /**
+     * Genera el HTML para la Tabla 2 (Detalle de Órdenes de Despacho)
+     */
+    private function generarTabla2($notaventa, $productoFiltro = null)
+    {
+        $tab2 = $this->iniciarTabla('tabladespachoorddet', ['ID OD', 'Fecha', 'CodProd', 'Solic', 'Entregado', 'Unidad', 'Descripción', 'Peso', 'Guia', 'FecFact', 'Nfact']);
+        $i = 0;
+        $aux_totalcantdesp = 0;
+        foreach ($notaventa->despachoords as $despachoord) {
+            if (isset($despachoord->despachoordanul)) {
+                continue; // Saltar OD anulada
+            }
+            foreach ($despachoord->despachoorddets as $despachoorddet) {
+                $nvDetalle = $despachoorddet->notaventadetalle;
+                if ($productoFiltro && $nvDetalle->producto_id != $productoFiltro) {
+                    continue;
+                }
+
+                $i++;
+                $unidades = $nvDetalle->producto->categoriaprod->unidadmedidafact->nombre ?? '';
+                $producto = $nvDetalle->producto;
+                $aux_producto_nombre = $producto->atributosProducto($nvDetalle->producto_id)['nombre'];
+                $cantsoldesp = $despachoorddet->despachosoldet->cantsoldesp ?? 0;
+
+                $tablaOrdTrab = $this->generarTablaRechazos($despachoorddet, $i);
+
+                $aux_saldoentregado = $despachoorddet->cantdesp;
+                $aux_botonMostrar = $tablaOrdTrab ? "<a class='btn-accion-tabla btn-sm tooltipsC' title='Rechazo' onclick='mostrarH($i,\"botonD\",\"divTabOT\")'><i name='botonD$i' id='botonD$i' class='fa fa-fw fa-caret-down'></i></a>" : "";
+
+                $fechafact = $despachoorddet->despachoord->fechafactura ? date('d/m/Y', strtotime($despachoorddet->despachoord->fechafactura)) : "";
+                $tab2 .= "<tr id='fila$i' name='fila$i'>
+                    <td><a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoorddet->despachoord_id,1,\"myModalTablaOD\")'>$despachoorddet->despachoord_id</a></td>
+                    <td>" . date('d/m/Y', strtotime($despachoorddet->created_at)) . "</td>
+                    <td style='text-align:center'>" . $producto->id . "</td>
+                    <td style='text-align:right'>" . number_format($cantsoldesp, 0, ",", ".") . "</td>
+                    <td style='text-align:right'>$aux_botonMostrar" . number_format($despachoorddet->cantdesp, 0, ",", ".") . "
+                        <div id='divTabOT$i' style='display:none;'>$tablaOrdTrab</div>
+                    </td>
+                    <td class='textcenter'>$unidades</td>
+                    <td class='textleft'>" . $aux_producto_nombre . "</td>
+                    <td class='textcenter'>" . $nvDetalle->peso . "</td>
+                    <td class='textcenter'>" . $despachoorddet->despachoord->guiadespacho . "</td>
+                    <td class='textcenter'>$fechafact</td>
+                    <td class='textcenter'>" . $despachoorddet->despachoord->numfactura . "</td>
+                </tr>";
+                $aux_totalcantdesp += $despachoorddet->cantdesp;
+            }
+        }
+
+        $tab2 .= "</tbody>";
+        if ($i > 0) {
+            $tab2 .= "<tfoot><tr><th colspan='4' style='text-align:left'>TOTALES</th><th style='text-align:right'>" . number_format($aux_totalcantdesp, 0, ",", ".") . "</th>
+            <th colspan='6'></th></tr></tfoot>";
+        }
+        $tab2 .= "</table>";
+        return $tab2;
+    }
+
+    /**
+     * Genera el HTML para la Tabla 3 (Trazabilidad de Solicitudes de Despacho)
+     */
+    private function generarTabla3($notaventa)
+    {
+        $tab3 = $this->iniciarTabla('tablatrazabilidaddespachosol', ['SD', 'Fecha', 'OD/Guias/Facturas']);
+        foreach ($notaventa->despachosols as $despachosol) {
+            $aux_anuladaSD = $this->generarBadgeAnulacion($despachosol->despachosolanul);
+
+            // Pre-cargar conteos para los enlaces (para evitar consultas repetitivas)
+            $enlaceIndexDespachoSol = $this->tieneRegistrosIndexDespachoSol($despachosol->id);
+            $enlacePendODPicking = $this->tieneRegistrosPendODPicking($despachosol->id);
+            $enlaceDespachoSolEnviadoAOrd = $this->tieneRegistrosDespachoSolEnviadoAOrd($despachosol->id);
+            $enlacePickingEnviadoAOrd = $this->tieneRegistrosPickingEnviadoAOrd($despachosol->id);
+
+            $aux_orddespnro = '';
+            foreach ($despachosol->despachoords as $despachoord) {
+                $aux_anuladaOD = $this->generarBadgeAnulacion($despachoord->despachoordanul, "OD $despachoord->id");
+
+                // Pre-cargar conteos para los enlaces de OD
+                //dd($despachoord->despachoordanul);
+                $enlaceIndexDespachoOrd = $this->tieneRegistrosIndexDespachoOrd($despachoord->id); //$this->tieneRegistrosIndexDespachoOrd($despachoord->id);
+                $enlaceHacerGuia = $this->tieneRegistrosHacerGuia($despachoord->id);
+
+                $aux_verguia = $this->generarEnlacesGuiasYFacturas($despachoord);
+
+                $aux_orddespnro .= "
+                <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Orden de Despacho' onclick='genpdfOD($despachoord->id,1,\"myModalTablaOD\")'>OD:$despachoord->id</a>
+                " . ($enlaceIndexDespachoOrd ? "<a href='despachoord' target='_blank' title='Buscar en: Orden despacho.'><i class='fa fa-external-link'></i></a>" : "") . "
+                " . ($enlaceHacerGuia ? "<a href='dteguiadesp/listarorddesp' target='_blank' title='Buscar en: hacer Guia Despacho.'><i class='fa fa-external-link'></i></a>" : "") . "
+                $aux_anuladaOD
+                $aux_verguia
+                <br>";
+            }
+
+            $tab3 .= "<tr id='filasol$despachosol->id' name='filasol$despachosol->id'>
+                <td>
+                    <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Solicitud de Despacho' onclick='genpdfSD($despachosol->id,1,\"myModalTablaOD\")'>$despachosol->id</a>
+                    " . ($enlaceIndexDespachoSol ? "<a href='despachosol' target='_blank' title='Buscar en: Solicitud despacho.'><i class='fa fa-external-link'></i></a>" : "") . "
+                    " . ($enlacePendODPicking ? "<a href='picking' target='_blank' title='Buscar en: Picking.'><i class='fa fa-external-link'></i></a>" : "") . "
+                    " . ($enlaceDespachoSolEnviadoAOrd ? "<a href='despachoord/listarsoldesp' target='_blank' title='Buscar en: hacer Orden Despacho sin aprobar desde Picking.'><i class='fa fa-external-link'></i></a>" : "") . "
+                    " . ($enlacePickingEnviadoAOrd ? "<a href='despachoord/listarsoldespsolenvord' target='_blank' title='Buscar en: hacer Orden Despacho aprobadas desde Picking.'><i class='fa fa-external-link'></i></a>" : "") . "
+                    $aux_anuladaSD
+                </td>
+                <td>" . date('d/m/Y', strtotime($despachosol->created_at)) . "</td>
+                <td>$aux_orddespnro</td>
+            </tr>";
+        }
+        $tab3 .= "</tbody></table>";
+        return $tab3;
+    }
+
+    /**
+     * Inicia una tabla HTML con los headers proporcionados
+     */
+    private function iniciarTabla($id, $headers)
+    {
+        $thead = "<thead><tr>";
+        foreach ($headers as $h) {
+            $thead .= "<th>$h</th>";
+        }
+        $thead .= "</tr></thead><tbody>";
+        return "<table id='$id' name='$id' class='table display AllDataTables table-hover table-condensed' data-page-length='10'>$thead";
+    }
+
+    /**
+     * Genera el badge de anulación (A roja) con tooltip
+     */
+    private function generarBadgeAnulacion($anulacion, $textoAdicional = '')
+    {
+        if (!$anulacion || !$anulacion->usuario) {
+            return '';
+        }
+
+        $fecha = date('d/m/Y h:i:s A', strtotime($anulacion->updated_at));
+        $usuario = $anulacion->usuario->nombre;
+        $obs = $anulacion->obs ?? '';
+
+        $titulo = "Anulada $fecha<br>Usuario: $usuario";
+        if ($obs) {
+            $titulo .= "<br>Obs: $obs";
+        }
+
+        return "<a class='btn-accion-tabla tooltipsC' title='$titulo'><small class='label label-danger'>A</small></a>";
+    }
+
+    /**
+     * Genera el enlace para ver una guía de despacho
+     */
+    private function generarEnlaceGuia($despachoord)
+    {
+        $dteguiadesp = $despachoord->dteguiadesps->first();
+        if (!$dteguiadesp || !$dteguiadesp->dte) return '';
+
+        $dte = $dteguiadesp->dte;
+        $tipotrasladoLetra = $dte->indtraslado == 1 ? "V" : "T";
+        return "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dte->id\",1,\"myModalTablaOD\")' data-original-title='Guia Despacho'>$dte->nrodocto $tipotrasladoLetra</a>";
+    }
+
+    /**
+     * Genera los enlaces de guías y facturas para la tabla de trazabilidad
+     */
+    private function generarEnlacesGuiasYFacturas($despachoord)
+    {
+        $html = '';
+        foreach ($despachoord->dteguiadesps as $dteguiadesp) {
+            $dte = $dteguiadesp->dte;
+            if (!$dte) continue;
+
+            $aux_tipoGD = $dte->indtraslado == 1 ? "V" : "T";
+            $aux_anuladaGD = $this->generarBadgeAnulacion($dte->dteanul, "Guia $dte->nrodocto");
+
+            // Verificar si hay guías pendientes (ir_indexGuiaDesp)
+            $tieneGuiasPendientes = $this->tieneGuiasDespachoSinAprobar($dte->id);
+            $ir_indexGuiaDesp = $tieneGuiasPendientes ? "<a href='dteguiadesp' target='_blank' title='Buscar en: Guia Despacho sin aprobar.'><i class='fa fa-external-link'></i></a>" : "";
+
+            // Verificar si hay facturas pendientes (ir_hacerdteFactura)
+            $tieneFacturasPendientes = $dte->indtraslado == 1 ? $this->tieneGuiasPorFacturar($dte->id) : false;
+            $ir_hacerdteFactura = $tieneFacturasPendientes ? "<a href='dtefactura/listarguiadesp' target='_blank' title='Buscar en: Guias por Facturar.'><i class='fa fa-external-link'></i></a>" : "";
+
+            $aux_enlacefactura = '';
+            foreach ($dte->dtedters as $dtedter) {
+                if ($dtedter->dte && $dtedter->dte->nrodocto) {
+                    $factura = $dtedter->dte;
+                    $aux_enlacefactura .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$factura->id\",0,\"myModalTablaOD\")' data-original-title='Factura'>FC:$factura->nrodocto</a>";
+                    foreach ($factura->dtedters as $facdtedter) {
+                        $dtendnc = $facdtedter->dte;
+                        if ($dtendnc) {
+                            $aux_enlacefactura .= "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$facdtedter->dte_id\",0,\"myModalTablaOD\")' data-original-title='{$dtendnc->foliocontrol->desc} de FC:$factura->nrodocto'>
+                                {$dtendnc->foliocontrol->doc}:{$dtendnc->nrodocto}
+                            </a>";
+                        }
+                    }
+                }
+            }
+
+            $html .= "
+            <a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Guia Despacho' onclick='genpdfFACDin(\"$dte->id\",0,\"myModalTablaOD\")'>GD$aux_tipoGD:$dte->nrodocto</a>
+            $ir_indexGuiaDesp
+            $ir_hacerdteFactura
+            $aux_anuladaGD
+            $aux_enlacefactura";
+        }
+        return $html;
+    }
+
+    /**
+     * Genera la tabla de rechazos para un detalle de orden de despacho
+     */
+    private function generarTablaRechazos($despachoorddet, $index)
+    {
+        if ($despachoorddet->despachoordrecdets->isEmpty()) return '';
+
+        $tabla = "<table class='table display AllDataTables table-hover table-condensed' data-page-length='10'>
+        <thead><tr><th style='text-align:right' title='Id Rechazo'>ID</th><th style='text-align:right' title='Cant Rechazada'>Cant</th></tr></thead><tbody>";
+        $aux_saldoentregado = $despachoorddet->cantdesp;
+        foreach ($despachoorddet->despachoordrecdets as $despachoordrecdet) {
+            $despachoordrec = $despachoordrecdet->despachoordrec;
+            $tabla .= "<tr>
+                <td><a class='btn-accion-tabla btn-sm tooltipsC' title='Ver Rechazo OD' onclick='genpdfODRec($despachoordrec->id,1,\"myModalTablaOD\")'>$despachoordrec->id</a></td>
+                <td style='text-align:right'>$despachoordrecdet->cantrec</td>
+            </tr>";
+            $aux_saldoentregado -= $despachoordrecdet->cantrec;
+        }
+        $tabla .= "</tbody><tfoot><tr><th style='text-align:right'></th><th style='text-align:right' title='Entregado'>" . number_format($aux_saldoentregado, 0, ",", ".") . "</th></tr></tfoot></table>";
+        return $tabla;
+    }
+
+    // ============================================================================
+    // FUNCIONES DE VERIFICACIÓN PARA LOS ENLACES (Solo se muestran si hay registros)
+    // ============================================================================
+
+    /**
+     * Verifica si hay registros en el índice de solicitudes de despacho
+     */
+    private function tieneRegistrosIndexDespachoSol($despachosolId)
+    {
+        return DB::table('despachosol')
+            ->where('id', $despachosolId)
+            ->where('aprorddesp','!=', 1)
+            ->whereNull('deleted_at')
+            ->whereNotIn('id', function ($q) {
+                $q->select('despachosol_id')->from('despachosolanul')->whereNull('deleted_at');
+            })
+            ->exists();
+    }
+
+    /**
+     * Verifica si hay registros en Picking para esta SD
+     */
+    private function tieneRegistrosPendODPicking($despachosolId)
+    {
+        return DB::table('despachosol')
+            ->join('notaventa', 'despachosol.notaventa_id', '=', 'notaventa.id')
+            ->where('despachosol.id', $despachosolId)
+            ->whereIn('notaventa.aprobstatus', [1, 3])
+            ->where('despachosol.aprorddesp', 1)
+            ->whereNull('despachosol.deleted_at')
+            ->whereNotIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')->from('despachosolanul')->whereNull('deleted_at');
+            })
+            ->whereNotIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')->from('despachosolenvorddesp')->whereNull('deleted_at');
+            })
+            ->whereNotIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')->from('despachoord')->whereNull('deleted_at')
+                ->whereNotIn('despachoord.id', function ($q) {
+                    $q->select('despachoord_id')->from('despachoordanul')->whereNull('deleted_at');
+                });
+            })
+            ->whereIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')->from('despachosoldet')->where('despachosoldet.cantsoldesp', '>', 0)->whereNull('deleted_at');
+            })
+            ->exists();
+    }
+
+    /**
+     * Verifica si hay solicitudes enviadas a orden de despacho (sin aprobar)
+     */
+    private function tieneRegistrosDespachoSolEnviadoAOrd($despachosolId)
+    {
+        return DB::table('despachosol')
+            ->where('id', $despachosolId)
+            ->whereNull('aprorddesp')
+            ->whereNull('deleted_at')
+            ->whereNotIn('id', function ($q) {
+                $q->select('despachosol_id')->from('despachosolanul')->whereNull('deleted_at');
+            })
+            ->whereNotIn('notaventa_id', function ($q) {
+                $q->select('notaventa_id')->from('notaventacerrada')->whereNull('deleted_at');
+            })
+            ->whereIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')->from('despachosoldet')->where('despachosoldet.cantsoldesp', '>', 0)->whereNull('deleted_at');
+            })
+            ->exists();
+    }
+
+    /**
+     * Verifica si hay solicitudes enviadas a orden de despacho (aprobadas)
+     */
+    private function tieneRegistrosPickingEnviadoAOrd($despachosolId)
+    {
+        return DB::table('despachosol')
+            ->join('despachosolenvorddesp', 'despachosol.id', '=', 'despachosolenvorddesp.despachosol_id')
+            ->where('despachosol.id', $despachosolId)
+            ->where('despachosolenvorddesp.staenvdesp', 1)
+            ->whereNull('despachosol.deleted_at')
+            ->whereNotIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')->from('despachosolanul')->whereNull('deleted_at');
+            })
+            ->whereIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')->from('despachosoldet')->where('despachosoldet.cantsoldesp', '>', 0)->whereNull('deleted_at');
+            })
+            ->exists();
+    }
+
+    /**
+     * Verifica si hay registros en el índice de órdenes de despacho
+     */
+    private function tieneRegistrosIndexDespachoOrd($despachoordId)
+    {
+        return DB::table('despachoord')
+            ->where('id', $despachoordId)
+            ->whereNull('aprguiadesp')
+            ->whereNull('deleted_at')
+            ->whereNotIn('id', function ($q) {
+                $q->select('despachoord_id')->from('despachoordanul')->whereNull('deleted_at');
+            })
+            ->exists();
+    }
+
+    /**
+     * Verifica si hay guías pendientes por hacer para esta OD
+     */
+    private function tieneRegistrosHacerGuia($despachoordId)
+    {
+        /* return DB::table('dteguiadesp')
+            ->join('dte', 'dteguiadesp.dte_id', '=', 'dte.id')
+            ->where('dteguiadesp.despachoord_id', $despachoordId)
+            ->whereNull('dte.deleted_at')
+            ->whereNull('dteguiadesp.deleted_at')
+            ->exists(); */
+        return DB::table('despachoord')
+            ->where('id', $despachoordId)
+            ->where('aprguiadesp', 1)
+            ->whereNull('deleted_at')
+            ->whereNotIn('id', function ($q) {
+                $q->select('despachoord_id')->from('despachoordanul')->whereNull('deleted_at');
+            })
+            ->whereNotIn('despachoord.id', function ($q) {
+                $q->select('despachoord_id')->from('dteguiadesp')->whereNull('deleted_at')
+                    ->whereIn('dteguiadesp.dte_id', function ($q) {
+                        $q->select('dteguiadesp.dte_id')->from('dteanul')->whereNull('deleted_at');
+                    });
+
+            })
+
+            ->exists();
+
+    }
+
+    /**
+     * Verifica si hay guías de despacho sin aprobar (para el ícono ir_indexGuiaDesp)
+     */
+    private function tieneGuiasDespachoSinAprobar($dteId)
+    {
+        $request1 = new Request(['dte_id' => $dteId]);
+        $aux_dteGuiaDesp = Dte::guiadespconsultaindex($request1);
+        return count($aux_dteGuiaDesp) > 0;
+    }
+
+    /**
+     * Verifica si hay guías por facturar (para el ícono ir_hacerdteFactura)
+     */
+    private function tieneGuiasPorFacturar($dteId)
+    {
+        $request1 = new Request([
+            'dte_id' => $dteId,
+            'aprobstatus' => 3,
+            'filtro' => 1,
+            'dtenotnull' => 1,
+            'dteguiausada' => 1
+        ]);
+        $aux_hacerdteFactura = Dte::consultalistarguiadesppage($request1);
+        return count($aux_hacerdteFactura) > 0;
     }
 
     public function buscarguiadesp(Request $request)

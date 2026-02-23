@@ -166,7 +166,7 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="5" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="6" class="textright"><span><strong>Totales</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 				</tr>
 			</tfoot>

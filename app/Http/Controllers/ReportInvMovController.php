@@ -154,7 +154,7 @@ function consultainvmov($request){
             and $aux_condproducto_idPxP
             and $aux_condinvbodega_id
             and $aux_condbuscarxdesc
-            ORDER BY invbodega.orden,invmov.fechahora;";
+            ORDER BY invmov.id,invbodega.orden;";
     //dd($sql);
     $datas = DB::select($sql);
     return $datas;

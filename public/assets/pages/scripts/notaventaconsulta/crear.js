@@ -126,6 +126,10 @@ $(document).ready(function () {
 	});
 	$("#btnbuscarproducto").click(function(event){
 		$(this).val("");
+		if (!tablaProductoInicializada) {
+			configTablaProd(); // ← AQUÍ recién se inicializa
+			tablaProductoInicializada = true;
+		}
 		$(".input-sm").val('');
 		$("#myModal").modal('hide');
 		$("#myModalBuscarProd").modal('show');
