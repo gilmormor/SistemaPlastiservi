@@ -2529,7 +2529,8 @@ class DespachoOrdController extends Controller
      */
     private function tieneRegistrosPickingEnviadoAOrd($despachosolId)
     {
-        return DB::table('despachosol')
+        return DespachoSol::solDespConPickingEnvAOrdDespAct($despachosolId);
+        /* return DB::table('despachosol')
             ->join('despachosolenvorddesp', 'despachosol.id', '=', 'despachosolenvorddesp.despachosol_id')
             ->where('despachosol.id', $despachosolId)
             ->where('despachosolenvorddesp.staenvdesp', 1)
@@ -2540,7 +2541,7 @@ class DespachoOrdController extends Controller
             ->whereIn('despachosol.id', function ($q) {
                 $q->select('despachosol_id')->from('despachosoldet')->where('despachosoldet.cantsoldesp', '>', 0)->whereNull('deleted_at');
             })
-            ->exists();
+            ->exists(); */
     }
 
     /**

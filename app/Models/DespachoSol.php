@@ -823,4 +823,47 @@ class DespachoSol extends Model
         return $aux_cant;
     }
 
+    /**
+     * Verifica si una solicitud de despacho tiene órdenes con cantidades mayores
+     * considerando que las órdenes no estén anuladas
+     * 
+     * @param int $despachosolId
+     * @return bool
+     */
+    public static function solDespConPickingEnvAOrdDespAct($despachosolId)
+    {
+        return DB::table('despachosol')
+            ->join('despachosolenvorddesp', 'despachosol.id', '=', 'despachosolenvorddesp.despachosol_id')
+            ->where('despachosol.id', $despachosolId)
+            ->where('despachosolenvorddesp.staenvdesp', 1)
+            ->whereNull('despachosol.deleted_at')
+            ->whereNotIn('despachosol.id', function ($q) {
+                $q->select('despachosol_id')
+                ->from('despachosolanul')
+                ->whereNull('deleted_at');
+            })
+            ->whereExists(function ($q) {
+                $q->select(DB::raw(1))
+                ->from('despachosoldet')
+                ->whereColumn('despachosoldet.despachosol_id', 'despachosol.id')
+                ->where('despachosoldet.cantsoldesp', '>', 0)
+                ->whereNull('despachosoldet.deleted_at')
+                // ✅ Suma de cantdesp en OD < cantidad solicitada en SD
+                ->whereRaw('(
+                    SELECT COALESCE(SUM(oddet.cantdesp), 0)
+                    FROM despachoorddet oddet
+                    INNER JOIN despachoord od ON oddet.despachoord_id = od.id
+                    WHERE oddet.despachosoldet_id = despachosoldet.id
+                        AND od.deleted_at IS NULL
+                        AND oddet.deleted_at IS NULL
+                        AND NOT EXISTS (
+                            SELECT 1 FROM despachoordanul 
+                            WHERE despachoordanul.despachoord_id = od.id 
+                            AND despachoordanul.deleted_at IS NULL
+                        )
+                ) < despachosoldet.cantsoldesp');
+            })
+            ->exists();
+    }
+
 }
