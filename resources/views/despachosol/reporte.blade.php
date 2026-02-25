@@ -32,9 +32,8 @@
 							<small class="btn btn-danger btn-xs">Anulado</small>
 						@endif
 					</p>
+					<p>Fecha SD:  {{date('d-m-Y h:i:s A', strtotime($despachosol->fechahora))}}</p>
 					<p>Fecha Act: {{date('d-m-Y h:i:s A')}}</p>
-					<p>Fecha: {{date('d-m-Y', strtotime($despachosol->fechahora))}}</p>
-					<p>Hora: {{date("h:i:s A", strtotime($despachosol->fechahora))}}</p>
 					<p>Vendedor: {{$despachosol->notaventa->vendedor->persona->nombre . " " . $despachosol->notaventa->vendedor->persona->apellido}} </p>
 					<p>Teléfono: {{$despachosol->notaventa->vendedor->persona->telefono}} </p>
 					<p>email: {{$despachosol->notaventa->vendedor->persona->email}} </p>

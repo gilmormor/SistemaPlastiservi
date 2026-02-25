@@ -25,9 +25,8 @@
 				<div>
 					<span class="h3">Nota Venta Interna / {{$notaventa->sucursal->nombre}}</span>
 					<p>Nro: <strong> {{ str_pad($notaventa->id, 10, "0", STR_PAD_LEFT) }}</strong></p>
+					<p>Fecha NV:  {{date('d-m-Y h:i:s A', strtotime($notaventa->fechahora))}}</p>
 					<p>Fecha Act: {{date('d-m-Y h:i:s A')}}</p>
-					<p>Fecha: {{date('d-m-Y', strtotime($notaventa->fechahora))}}</p>
-					<p>Hora: {{date("h:i:s A", strtotime($notaventa->fechahora))}}</p>
 					<p>Vendedor: {{$notaventa->vendedor->persona->nombre . " " . $notaventa->vendedor->persona->apellido}} </p>
 					<p>Teléfono: {{$notaventa->vendedor->persona->telefono}} </p>
 					<p>email: {{$notaventa->vendedor->persona->email}} </p>
