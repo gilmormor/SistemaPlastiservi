@@ -85,6 +85,7 @@ function configTablaProdSelectMult(){
         'columns'     : [
             {data: 'id'},
             {data: 'id'},
+            {data: 'sku'},
             {data: 'nombre',"width": "250px"},
             {data: 'cla_nombre'},
             {data: 'diametro'},
@@ -95,6 +96,8 @@ function configTablaProdSelectMult(){
             {data: 'precio'},
             {data: 'tipoprod',className:"ocultar"},
 			{data: 'acuerdotecnico_id',className:"ocultar"},
+            {data: 'producto_peso',className:"ocultar"},
+            {data: 'espesor',className:"ocultar"},
         ],
         "order": [[1, 'asc']], // Ordenar por la columna 2 (índice 2) en orden ascendente
         "columnDefs": [
@@ -160,42 +163,42 @@ function configTablaProdSelectMult(){
 
 */
             if(data.cla_nombre == 0 || data.cla_nombre == "" || data.cla_nombre == null){
-                $('td', row).eq(3).html("");
-                $('td', row).eq(3).attr('data-order',"");
-                $('td', row).eq(3).attr('data-search',"");    
-            }
-            if(data.diametro == 0 || data.diametro == "" || data.diametro == null){
                 $('td', row).eq(4).html("");
                 $('td', row).eq(4).attr('data-order',"");
                 $('td', row).eq(4).attr('data-search',"");    
             }
-            //$('td', row).eq(4).html(MASKLA(data.diametro,2));
-            $('td', row).eq(4).attr('style','text-align:center');
-            if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
+            if(data.diametro == 0 || data.diametro == "" || data.diametro == null){
                 $('td', row).eq(5).html("");
                 $('td', row).eq(5).attr('data-order',"");
-                $('td', row).eq(5).attr('data-search',"");
+                $('td', row).eq(5).attr('data-search',"");    
             }
+            //$('td', row).eq(5).html(MASKLA(data.diametro,2));
             $('td', row).eq(5).attr('style','text-align:center');
-            if(data.peso == 0 || data.peso == "" || data.peso == null){
+            if(data.long1 == 0 || data.long1 == "" || data.long1 == null){
                 $('td', row).eq(6).html("");
                 $('td', row).eq(6).attr('data-order',"");
-                $('td', row).eq(6).attr('data-search',"");    
-            }else{
-                $('td', row).eq(6).attr('data-order',data.peso);
-                $('td', row).eq(6).attr('data-search',data.peso);
-                $('td', row).eq(6).html(MASKLA(data.peso,3));
+                $('td', row).eq(6).attr('data-search',"");
             }
             $('td', row).eq(6).attr('style','text-align:center');
-            $('td', row).eq(8).attr('data-order',data.precioneto);
-            $('td', row).eq(8).attr('data-search',data.precioneto);
-            $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).html(MASKLA(data.precioneto,0));
-
-            $('td', row).eq(9).attr('data-order',data.precio);
-            $('td', row).eq(9).attr('data-search',data.precio);
+            if(data.peso == 0 || data.peso == "" || data.peso == null){
+                $('td', row).eq(7).html("");
+                $('td', row).eq(7).attr('data-order',"");
+                $('td', row).eq(7).attr('data-search',"");    
+            }else{
+                $('td', row).eq(7).attr('data-order',data.peso);
+                $('td', row).eq(7).attr('data-search',data.peso);
+                $('td', row).eq(7).html(MASKLA(data.peso,3));
+            }
+            $('td', row).eq(7).attr('style','text-align:center');
+            $('td', row).eq(9).attr('data-order',data.precioneto);
+            $('td', row).eq(9).attr('data-search',data.precioneto);
             $('td', row).eq(9).attr('style','text-align:right');
-            $('td', row).eq(9).html(MASKLA(data.precio,0));
+            $('td', row).eq(9).html(MASKLA(data.precioneto,0));
+
+            $('td', row).eq(10).attr('data-order',data.precio);
+            $('td', row).eq(10).attr('data-search',data.precio);
+            $('td', row).eq(10).attr('style','text-align:right');
+            $('td', row).eq(10).html(MASKLA(data.precio,0));
 
             $("#totalreg").val(aux_nfila);
 
@@ -245,6 +248,7 @@ function configTablaProdSelectMult(){
             aux_peso = data.peso;
             aux_peso = aux_peso.toFixed(3);
             $(row).attr('peso', aux_peso);
+            $(row).attr('producto_peso', data.producto_peso);
             $(row).attr('tipounion', data.tipounion);
             $(row).attr('precio', data.precio);
             $(row).attr('precioneto', data.precioneto);
