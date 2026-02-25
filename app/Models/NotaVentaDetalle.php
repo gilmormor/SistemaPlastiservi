@@ -97,5 +97,10 @@ class NotaVentaDetalle extends Model
     {
         return $this->belongsTo(CategoriaProd::class);
     }
-    
+
+    public function doccompdets()
+    {
+        return $this->hasMany(DocCompDet::class, 'origendet_id', 'id')
+            ->where('origentipo', 'NV');
+    }
 }

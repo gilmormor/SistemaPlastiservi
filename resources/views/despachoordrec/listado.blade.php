@@ -96,9 +96,9 @@
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($cotizacionDetalles as $CotizacionDetalle)
-				<?php 
-					$aux_producto_nombre = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id)['nombre'];
-				?>
+					<?php 
+						$aux_producto_nombre = $CotizacionDetalle->producto->glosa;
+					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>
 						<td class="textcenter">{{number_format($CotizacionDetalle->cant, 0, ",", ".")}}</td>

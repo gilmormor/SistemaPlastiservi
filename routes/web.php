@@ -186,6 +186,7 @@ Route::get('producto/productobuscarpage', 'ProductoController@productobuscarpage
 Route::get('productobuscarpage', 'ProductoController@productobuscarpage')->name('productobuscarpage');
 Route::get('{id}/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid');
 Route::get('producto/{id}/productobuscarpage', 'ProductoController@productobuscarpageid')->name('productobuscarpageid_producto');
+Route::post('producto/buscarUnProductoComp', 'ProductoController@buscarUnProductoComp')->name('buscarUnProductoComp');
 
 
 
@@ -1378,7 +1379,6 @@ Route::get('reportproductopage', 'ReportProductoController@reportproductopage')-
 Route::get('reportproducto/reporte', 'ReportProductoController@reporte')->name('reportproducto_reporte');
 Route::get('reportproducto/exportPdf', 'ReportProductoController@exportPdf')->name('reportproducto_exportPdf');
 Route::get('reportproducto/totalizarindex', 'ReportProductoController@totalizarindex')->name('reportproducto_totalizarindex');
-Route::get('reportproducto/actnomprodat', 'ReportProductoController@actnomprodat')->name('reportproducto_actnomprodat');
 
 /*RUTAS REPORTE LIBRO VENTAS*/
 Route::get('reportdtelibroventas', 'ReportDTELibroVentasController@index')->name('reportdtelibroventas');

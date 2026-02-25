@@ -487,19 +487,16 @@
                                     $aux_espesor = $detalle->espesor;
                                     $aux_largo = $detalle->largo;
                                     $aux_cla_sello_nombre = isset($detalle->producto->claseprod->cla_nombre) ? $detalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
                                     $aux_staAT = false;
             						$aux_atribAcuTec = "";
                                     //dd($detalle);
                                     if ($detalle->acuerdotecnicotempunoauno){
                                         $AcuTec = $detalle->acuerdotecnicotempunoauno;
-                                        $aux_producto_nombre = nl2br($detalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
                                         $aux_staAT = true;
                                     }
                                     if ($detalle->producto->acuerdotecnico != null){
                                         $AcuTec = $detalle->producto->acuerdotecnico;
-                                        $aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
                                         $aux_staAT = true;
                                     }
                                     if($aux_staAT){
@@ -510,7 +507,7 @@
                                         $aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
                                     }
                                     $cotizaciondetalle_id = $detalle->cotizaciondetalle_id ? $detalle->cotizaciondetalle_id : null;
-                                    $aux_producto_nombre = $detalle->producto->atributosProducto($detalle->producto_id,$cotizaciondetalle_id)['nombre'];
+                                    $aux_producto_nombre = $detalle->producto->atribNomProd($detalle->producto_id,$cotizaciondetalle_id);
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$detalle->producto_id}}">
                                     <td name="item{{$aux_nfila}}" id="item{{$aux_nfila}}" style="text-align:center">
@@ -651,6 +648,7 @@
                                     </td>
                                     <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
                                         {{number_format($detalle->preciounit, 3, ',', '.')}}
+                                        {!! precioUnitSinCompEmbalaje($detalle->doccompdets, $detalle->preciounit) !!}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>

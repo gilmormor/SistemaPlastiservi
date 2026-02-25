@@ -3,9 +3,49 @@
     use App\Models\InvMov;
     $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
 ?>
-
+@include('generales.buscarproductobd')
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
+@if (isset($data))
+    <div class="row">
+        <div class="form-group col-xs-12 col-sm-6">
+            <label for="sku" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="SKU">SKU</label>
+            <div class="col-lg-9">
+                <input type="text" name="sku" id="sku" class="form-control" value="{{old('sku', $data->sku ?? '')}}" required maxlength="35"/>
+            </div>
+        </div>
+    </div>    
+@endif
+<div class="row">
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="glosa" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Glosa">Glosa</label>
+        <div class="col-lg-9">
+            <textarea name="glosa" id="glosa" class="form-control validar-texto-xml" value="{{old('glosa', $data->glosa ?? '')}}"  maxlength="250" required
+                    @if(isset($data) && $data->glosaaut == 1)
+                        readonly
+                    @endif
+                >{{old('glosa', $data->glosa ?? '')}}</textarea>
+        </div>
+    </div>
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="glosaaut" class="col-lg-3 control-label requerido" title="Glosa Automatica">Glosa Automatica?</label>
+        <div class="col-lg-9">
+            <select name="glosaaut" id="glosaaut" class="form-control select2 glosaaut" required>
+                <option value="">Seleccione...</option>
+                <option value="1"
+                    @if (isset($data) and ($data->glosaaut=="1"))
+                        {{'selected'}}
+                    @endif
+                >Si</option>
+                <option value="0"
+                    @if (isset($data) and ($data->glosaaut=="0"))
+                        {{'selected'}}
+                    @endif    
+                >No</option>
+            </select>
+        </div>    
+    </div>
+</div>
 <div class="row">
     <div class="form-group col-xs-12 col-sm-6">
         <label for="nombre" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Nombre">Nombre</label>
@@ -284,6 +324,11 @@
                         {{'selected'}}
                     @endif
                 >Servicio</option>
+                <option value="4"
+                    @if (isset($data) and ($data->tipoprod=='4'))
+                        {{'selected'}}
+                    @endif
+                >Embalaje</option>
             </select>
         </div>
     </div>
@@ -307,7 +352,7 @@
     </div>
 
 </div>
-<!-- EN COMENTARIO PORQUE ES LENTO LA CARGA DEL STOCK
+
 <div class="col-md-8 col-md-offset-2">
     <div class="box box-primary">
         <div class="box-header with-border">
@@ -324,28 +369,14 @@
             </thead>
             <tbody id="tbody">
                 <?php 
-                    $aux_nfila = 0; 
-                    $aux_stockValor = 0;
                     $totalStockinvbodega = 0;
                 ?>
                 @if ($aux_sta==2)
                     @foreach ($invbodegaproductos->get() as $invbodegaproducto)
                         <?php 
-                        /*
-                            $aux_nfila++; 
-                            $aux_request = new Request();
-                            $aux_request->mesanno = $aux_mesanno;
-                            $aux_request->sucursal_id = $invbodegaproducto->invbodega->sucursal_id;
-                            $aux_request->producto_id = $invbodegaproducto->producto_id;
-                            $aux_request->invbodega_id = $invbodegaproducto->invbodega_id;
-                            //$aux_stock = InvMov::stock($aux_request);
-                            //$aux_stock = $aux_stock->get();
-                            $aux_stock = InvMov::stocksql($aux_request);
-                            $aux_stockValor = sizeof($aux_stock) > 0 ? $aux_stock[0]->stock : 0;
-                            $totalStockinvbodega += $aux_stockValor;
-                        */
+                            $totalStockinvbodega += $invbodegaproducto->stock;
                         ?>
-                        <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
+                        <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                             <td>
                                 {{$invbodegaproducto->invbodega->sucursal->nombre}}
                             </td>
@@ -353,7 +384,7 @@
                                 {{$invbodegaproducto->invbodega->nombre}}
                             </td>
                             <td style='text-align:center'>
-                                {{$aux_stockValor}}
+                                {{$invbodegaproducto->stock}}
                             </td>
                         </tr>
                     @endforeach            
@@ -371,4 +402,117 @@
         </table>
     </div>
 </div>
--->
+{{-- <hr>
+<div class="form-group">
+    <label class="col-lg-3 control-label">Componentes</label>
+    <div class="col-lg-9">
+        <table class="table table-bordered" id="tabla-detalles">
+            <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>Nombre</th>
+                    <th>Glosa</th>
+                    <th style="width: 50px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(isset($data) && $data->productocomps)
+                    @foreach($data->productocomps as $det)
+                        <tr>
+                            <td>
+                                <input type="hidden" name="detalles[{{$loop->index}}][id]" value="{{ $det->id }}">
+                                <input type="text" name="detalles[{{$loop->index}}][productocompiddet]" class="form-control" value="{{ old('detalles.'.$loop->index.'.productocompiddet', $det->productocomp_id) }}" required>
+                            </td>
+                            <td>
+                                <input type="text" name="detalles[{{$loop->index}}][nombredet]" class="form-control" value="{{ old('detalles.'.$loop->index.'.nombredet', $det->productocomp->nombre) }}" required>
+                            </td>
+                            <td>
+                                <input type="text" name="detalles[{{$loop->index}}][glosadet]" class="form-control" value="{{ old('detalles.'.$loop->index.'.glosadet', $det->productocomp->glosa) }}" required>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-success btn-sm" id="btn-agregar-detalle"><i class="fa fa-plus"></i> Agregar detalle</button>
+    </div>
+</div> --}}
+<div class="col-md-8 col-md-offset-2">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Componentes</h3>
+        </div>
+        <table class="table table-striped table-bordered table-hover" id="tabla-detalles">
+            <thead>
+                <tr>
+                    <th style="width: 120px">Codigo</th>
+                    <th style="width: 100px">Cant</th>
+                    <th>Glosa</th>
+                    <th>Obs</th>
+                    <th style="width: 120px">Precio</th>
+                    <th style="width: 50px"></th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                @if(isset($data) && $data->productocomps)
+                    @foreach($data->productocomps as $det)
+                        <tr>
+                            <td>
+                                <input type="hidden" name="detalles[{{$loop->index}}][id]" value="{{ $det->id }}">
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        name="detalles[{{$loop->index}}][productocompiddet]"
+                                        id="producto_id{{$loop->index}}"
+                                        item="{{$loop->index}}"
+                                        class="form-control numerico"
+                                        required
+                                        onblur="onBlurProducto_id(this)"
+                                        onkeyup="buscarProdKeyUp(this,event)"
+                                        value="{{ old('detalles.'.$loop->index.'.productocompiddet', $det->productocomp_id) }}"
+                                        maxlength="4"
+                                        style="text-align:right;"
+                                        valor=""
+                                    >
+                                    <span class="input-group-btn">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-primary btn-buscar-producto"
+                                            title="Buscar Producto"
+                                            item="{{$loop->index}}"
+                                            data-toggle="modal"
+                                            data-target="#buscarProductoBDModal"
+                                            onclick="buscarproductoGenNew(this,event)"
+                                            nomCampProducto="producto_id{{$loop->index}}"
+                                            >
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="detalles[{{$loop->index}}][cantdet]" id="cantdet{{$loop->index}}" class="form-control numerico" value="{{ old('detalles.'.$loop->index.'.cantdet', $det->cant) }}" required style="text-align:right">
+                            </td>
+                            <td>
+                                <input type="text" name="detalles[{{$loop->index}}][glosadet]" id="glosadet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.glosadet', $det->productocomp->glosa) }}" required readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="detalles[{{$loop->index}}][obsdet]" id="obsdet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.obsdet', $det->obs) }}" required>
+                            </td>
+                            <td>
+                                <input type="text" name="detalles[{{$loop->index}}][precionetodet]" id="precionetodet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.precionetodet', number_format($det->productocomp->precioneto, 2, ',', '.')) }}" required readonly style="text-align:right">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-success btn-sm" id="btn-agregar-detalle"><i class="fa fa-plus" title="Agregar Complemento"></i> Agregar</button>
+    </div>
+</div>

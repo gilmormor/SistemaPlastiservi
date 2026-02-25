@@ -317,12 +317,12 @@
                             ?>
                             @foreach($cotizacionDetalles as $CotizacionDetalle)
                                 <?php 
+                                    //dd($CotizacionDetalle->doccompdets);
                                     $aux_nfila++;
                                     $aux_ancho = $CotizacionDetalle->producto->diametro;
                                     $aux_espesor = $CotizacionDetalle->espesor;
                                     $aux_largo = $CotizacionDetalle->largo;
                                     $aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod ? $CotizacionDetalle->producto->claseprod->cla_nombre : "";
-                                    $aux_producto_nombre = $CotizacionDetalle->producto->nombre;
                                     $aux_categoria_nombre = $CotizacionDetalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
@@ -345,7 +345,7 @@
                                         $aux_staAT = true;
                                     }
                                     if($aux_staAT){
-                                        $aux_producto_nombre = $AcuTec->at_desc; //nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
+                                        //$aux_producto_nombre = $AcuTec->at_desc; //nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                                         $aux_espesor = $AcuTec->at_espesor;
@@ -357,10 +357,10 @@
                                     if($data->cliente_id != 0 and $data->cliente_id != null){
                                         $cliente_id = $clienteselec[0]->id;
                                     }
-                                    $aux_producto_nombre = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id,$CotizacionDetalle->id)['nombre'];
+                                    $aux_producto_nombre = $CotizacionDetalle->producto->atribNomProd($CotizacionDetalle->producto_id,$CotizacionDetalle->id);
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$CotizacionDetalle->producto_id}}">
-                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
+                                    <td name="producto_idTDT{{$aux_nfila}}" id="producto_idTDT{{$aux_nfila}}" style="white-space: nowrap;text-align:center;" categoriaprod_id="{{$CotizacionDetalle->producto->categoriaprod_id}}" class="filaproducto_id" fila="{{$aux_nfila}}">
                                         @if ($CotizacionDetalle->producto->tipoprod == 1)
                                             <a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTecTemp({{$CotizacionDetalle->acuerdotecnicotempunoauno->id}},{{$cliente_id}},1)" data-original-title="Acuerdo Técnico PDF">
                                                 {{$CotizacionDetalle->producto_id}}
@@ -514,6 +514,7 @@
                                     </td>
                                     <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
                                         {{number_format($CotizacionDetalle->preciounit, 3, ',', '.')}}
+                                        {!! precioUnitSinCompEmbalaje($CotizacionDetalle->doccompdets, $CotizacionDetalle->preciounit) !!}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->preciounit}}" style="display:none;"/>

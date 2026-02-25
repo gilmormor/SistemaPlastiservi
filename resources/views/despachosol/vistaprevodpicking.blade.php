@@ -103,8 +103,7 @@
 							$aux_espesornum = $AcuTec->at_espesor;
 							$aux_staAT = true;
 						}
-						$atributoProd = Producto::atributosProducto($detalle->notaventadetalle->producto_id);
-						$aux_producto_nombre = $atributoProd["nombre"];
+						$aux_producto_nombre = $detalle->notaventadetalle->producto->glosa;
 
 						if($detalle->cantsoldesp > $sumacantorddesp){
 							$aux_totalrecABodSolDesp = 0;

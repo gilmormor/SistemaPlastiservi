@@ -330,5 +330,5 @@ function editar($id){
         $tablas['modulo_id'] = 26;
         $aux_sta=2;
 
-        return view('cotizacionaprobar.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','aux_cont','tablas'));
+        return view('cotizacionaprobar.editar', compact('data','clienteselec','cotizacionDetalles','fecha','aux_sta','tablas'));
 }

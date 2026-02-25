@@ -310,11 +310,11 @@ class DespachoOrdController extends Controller
         //dd($clientedirecs);
         if(isset($valores[0]) and $valores[0] == 2){
             $despachosol = DespachoSol::findOrFail($id);
-            $pdf = PDF::loadView('despachosol.vistaprevodpicking', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord','despachosol','notaventa'));
+            $pdf = PDF::loadView('despachosol.vistaprevodpicking', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord','despachosol','notaventa'));
             //return $pdf->download('cotizacion.pdf');
             return $pdf->stream(str_pad($data->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $data->notaventa->cliente->razonsocial . '.pdf');
         }else{
-            return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord'));
+            return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord'));
         }
          
     }
@@ -328,9 +328,9 @@ class DespachoOrdController extends Controller
             $rut = number_format( substr ( $despachosol->notaventa->cliente->rut, 0 , -1 ) , 0, "", ".") . '-' . substr ( $despachosol->notaventa->cliente->rut, strlen($despachosol->notaventa->cliente->rut) -1 , 1 );
             if($stareport == '1'){
                 if(env('APP_DEBUG')){
-                    return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord'));
+                    return view('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord'));
                 }
-                $pdf = PDF::loadView('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord'));
+                $pdf = PDF::loadView('despachoord.crear', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking','solenvord'));
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($despachosol->notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $despachosol->notaventa->cliente->razonsocial . '.pdf');
             }else{
@@ -695,7 +695,7 @@ class DespachoOrdController extends Controller
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","ORDDESP")->get();
         $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-        return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_cont','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
+        return view('despachoord.editar', compact('data','clienteselec','clientes','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','productos','fecha','empresa','tipoentregas','giros','despachoobss','sucurArray','aux_sta','aux_statusPant','vendedor_id','array_bodegasmodulo','arrayBodegasPicking'));
   
   
     }

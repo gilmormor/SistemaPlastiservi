@@ -47,6 +47,7 @@
                                                         </div>
                                                     </th>
                                                     <th>ID</th>
+                                                    <th>SKU</th>
                                                     <th>Nombre</th>
                                                     <th>Clase<br>Sello</th>
                                                     <th>Diamet/<br>Ancho</th>
@@ -57,6 +58,8 @@
                                                     <th style="text-align:right">Precio</th>
                                                     <th class="ocultar">tipoprod</th>
                                                     <th class="ocultar">acuerdotecnico_id</th>
+                                                    <th class="ocultar">peso</th>
+                                                    <th class="ocultar">espesor</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -65,6 +68,7 @@
                                                 <tr>
                                                     <th>check</th>
                                                     <th>ID</th>
+                                                    <th>SKU</th>
                                                     <th>Nombre</th>
                                                     <th>Clase</th>
                                                     <th>Diametro</th>
@@ -75,6 +79,8 @@
                                                     <th>Prec</th>
                                                     <th class="ocultar">tipoprod</th>
                                                     <th class="ocultar">acuerdotecnico_id</th>
+                                                    <th class="ocultar">peso</th>
+                                                    <th class="ocultar">espesor</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
