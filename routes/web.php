@@ -1638,3 +1638,41 @@ Route::get('atfirmadosubir/reporte', 'ATFirmadoSubirController@reporte')->name('
 Route::get('atfirmadosubir/exportPdf', 'ATFirmadoSubirController@exportPdf')->name('atfirmadosubir_exportPdf');
 Route::get('atfirmadosubir/{id}/editar', 'ATFirmadoSubirController@editar')->name('editar_atfirmadosubir');
 Route::put('atfirmadosubir/{id}', 'ATFirmadoSubirController@actualizar')->name('actualizar_atfirmadosubir');
+
+Route::get('migration', 'MigrationController@index')->name('migration');
+Route::get('migration', function() {
+    $output = '';
+    $action = request('action');
+    $steps = request('steps', 1);
+    $batch = request('batch');
+    
+    if ($action) {
+        try {
+            switch ($action) {
+                case 'migrate':
+                    Artisan::call('migrate', ['--force' => true]);
+                    break;
+                case 'rollback':
+                    $params = ['--force' => true];
+                    if ($steps) $params['--step'] = $steps;
+                    if ($batch) $params['--batch'] = $batch;
+                    Artisan::call('migrate:rollback', $params);
+                    break;
+                /* case 'reset':
+                    Artisan::call('migrate:reset', ['--force' => true]);
+                    break;
+                case 'refresh':
+                    Artisan::call('migrate:refresh', ['--force' => true]);
+                    break;
+                case 'fresh':
+                    Artisan::call('migrate:fresh', ['--force' => true]);
+                    break; */
+            }
+            $output = Artisan::output();
+        } catch (\Exception $e) {
+            $output = "Error: " . $e->getMessage();
+        }
+    }
+    
+    return view('migration.index', compact('output', 'action', 'steps', 'batch'));
+});
