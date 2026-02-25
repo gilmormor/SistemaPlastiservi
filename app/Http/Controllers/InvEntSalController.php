@@ -227,10 +227,11 @@ class InvEntSalController extends Controller
                             );
                         }
                     }
+                    DB::commit();
                     return redirect('inventsal')->with([
-                                                                        'mensaje'=>'Registro Actualizado con exito.',
-                                                                        'tipo_alert' => 'alert-success'
-                                                                    ]);
+                                                        'mensaje'=>'Registro Actualizado con exito.',
+                                                        'tipo_alert' => 'alert-success'
+                                                    ]);
                 } catch (\Exception $e) {
                     DB::rollBack();
                     return redirect()->back()->with('mensaje', 'Error: ' . $e->getMessage())->withInput();
