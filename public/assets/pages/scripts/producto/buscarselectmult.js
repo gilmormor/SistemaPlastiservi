@@ -46,7 +46,8 @@ $(document).ready(function () {
 let productosSeleccionados = [];
 function datosSelectMult(){
     var data1 = {
-        cliente_id  : $("#cliente_id").val(),
+        //cliente_id  : $("#cliente_id").val(),
+        cliente_id  : "", //$("#cliente_id").val(),
         sucursal_id : $("#sucursal_id").val(),
         _token      : $('input[name=_token]').val()
     };
