@@ -118,7 +118,7 @@
 								$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 							}
 							$aux_pesounit = 0;
-							$aux_producto_nombre = $notaventaDetalle->producto->atributosProducto($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id)['nombre'];
+							$aux_producto_nombre = $notaventaDetalle->producto->atribNomProd($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id);
 							if($notaventaDetalle->unidadmedida_id == 7){
 								$aux_pesounit = 1;
 							}else{

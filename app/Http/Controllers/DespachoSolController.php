@@ -164,7 +164,7 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
-        return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml','miVariableGlobal'));
+        return view('despachosol.listarnotaventa', compact('giros','areaproduccions','tipoentregas','fechaAct','tablashtml'));
     }
 
     /**
@@ -251,7 +251,7 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
-        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','array_bodegasmodulo','tablas'));
+        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','aux_sta','aux_statusPant','array_bodegasmodulo','tablas'));
     }
 
     /**
@@ -511,7 +511,7 @@ class DespachoSolController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
 
         //dd($clientedirecs);
-        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
+        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','aux_sta','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
   
     }
 
@@ -1790,8 +1790,7 @@ class DespachoSolController extends Controller
                                             }
                                             */
                                             $aux_producto_id = $despachosoldet->notaventadetalle->producto_id;
-                                            $atributoProd = Producto::atributosProducto($aux_producto_id);
-                                            $aux_producto_nombre = $atributoProd["nombre"];
+                                            $aux_producto_nombre = $despachosoldet->notaventadetalle->producto->glosa;
                                             $aux_cantNV = number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".");
                                             $aux_cantSD = number_format($despachosoldet->cantsoldesp, 0, ",", ".");
                                             $aux_unimed = $despachosoldet->notaventadetalle->unidadmedida->nombre;
@@ -2853,8 +2852,9 @@ function consulta($request,$aux_sql,$orden){
             $aux_ContProdStockParcial = 0;
             $aux_ContProd = 0;
             foreach ($detalleArray as $index => $detalle) {
-                $productoarray = Producto::atributosProducto($productoIds[$index]);
+                //$productoarray = Producto::atributosProducto($productoIds[$index]);
                 $producto = Producto::findOrFail($productoIds[$index]);
+                $productoarray["nombre"] = $producto->glosa;
                 //dd($producto->invbodegaproductos);
                 //Esta linea me estaba dando error porque a veces no venian los 8 elementos 
                 //list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);

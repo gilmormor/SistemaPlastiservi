@@ -64,5 +64,9 @@ class DteDet extends Model
         return $this->belongsTo(UnidadMedida::class);
     }
 
-    
+    public function doccompdets()
+    {
+        return $this->hasMany(DocCompDet::class, 'origendet_id', 'id')
+            ->where('origentipo', 'DTE');
+    }    
 }

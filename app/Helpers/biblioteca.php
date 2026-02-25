@@ -860,4 +860,36 @@ if (!function_exists('getRealIP')) {
         }
     }
 }
+
+function precioUnitSinCompEmbalaje($doccompdets, $preciounit) {
+    // Verificar si hay componentes
+    if (!isset($doccompdets) || empty($doccompdets) || count($doccompdets) == 0) {
+        return ''; // Si no hay componentes, retorna vacío
+    }
+    
+    // Construir el tooltip con los componentes
+    $tooltipComp = '';
+    $aux_totalpreciocomp = 0;
+    foreach ($doccompdets as $comp) {
+        // Asumiendo la estructura de tu JSON o array
+        $producto = json_decode($comp->producto) ?? $comp->producto;
+        $nombre = is_object($producto) ? $producto->nombre : $producto['nombre'];
+        $precioneto = $comp->precio * $comp->productocomp->cant;
+        $cantxcomp = $comp->cantxcomp;
+        
+        $tooltipComp .= $cantxcomp . ' ' . $nombre . ' $ ' . number_format($precioneto, 2, ',', '.') . '<br>';
+        $aux_totalpreciocomp += $precioneto;
+    }
+    
+    // Eliminar el último <br>
+    $tooltipComp = substr($tooltipComp, 0, -4);
+    
+    // Formatear la diferencia
+    $diferenciaFormateada = number_format($preciounit - $aux_totalpreciocomp, 3, ',', '.');
+    
+    // Construir y retornar el HTML completo
+    return '<a class="btn-accion-tabla btn-xs tooltipsC" title="' . 'PreUnit sin Comp:' . $diferenciaFormateada . '<br>' . $tooltipComp . '">
+        (' . $diferenciaFormateada . ')
+    </a>';
+}
 ?>

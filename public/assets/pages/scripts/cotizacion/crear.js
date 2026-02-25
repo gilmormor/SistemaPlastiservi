@@ -524,7 +524,7 @@ function insertarTabla(){
 				'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="'+ $("#descuentoM option:selected").attr('value') +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA($("#precionetoM").attr("valor"),3) + //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
+				MASKLA($("#precionetoM").attr("valor"),3) + precioUnitSinCompEmbalaje(aux_datosproducto) +  //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ $("#precionetoM").attr("valor") +'" style="display:none;"/>'+
@@ -1877,6 +1877,8 @@ function insertarItem(){
 	$.each(productosSeleccionados, function(index, producto) {
 		if (!array_producto_ids.includes(producto.producto_id)){
 			//console.log(producto);
+			//console.log(convertirCadenaAProductocomps(producto.productocomp_data));
+			aux_datosproducto = convertirCadenaAProductocomps(producto.productocomp_data);
 		
 			//aux_nfila = 1; 
 			aux_nfila = 0;
@@ -1899,10 +1901,10 @@ function insertarItem(){
 			aux_precioxkiloreal = producto.precio;
 			if(aux_tipoprecio == 1){
 				aux_precionetoM = aux_precio;
-				aux_precioxkilo = aux_precio / producto.peso;
-				aux_precioxkilo = Math.round(aux_precioxkilo);
+				aux_precioxkilo = aux_precio / producto.producto_peso;
+				aux_precioxkilo = Math.round(aux_precioxkilo * 100) / 100;
 			}else{
-				aux_precionetoM = aux_precio * producto.peso
+				aux_precionetoM = aux_precio * producto.producto_peso
 				aux_precionetoM = Math.round(aux_precionetoM);
 				aux_precioxkilo = aux_precio;
 			}
@@ -1914,6 +1916,7 @@ function insertarItem(){
 			aux_descuento = 0;
 			aux_descuento = 100 - aux_descuento;
 			aux_descuento = (aux_descuento / 100);
+			$("#precionetoM").attr("valor",aux_precionetoM);
 			
 			aux_total = (aux_cant * aux_precionetoM) * (aux_descuento);
 			aux_descuento = aux_descuento == 1 ? 0 : aux_descuento;
@@ -2035,10 +2038,10 @@ function insertarItem(){
 						'<input type="text" name="obs[]" id="obs'+ aux_nfila + '" class="form-control" value="'+ aux_obs +'" style="display:none;"/>'+
 					'</td>'+
 					'<td name="pesoTD'+ aux_nfila + '" id="pesoTD'+ aux_nfila + '" style="text-align:right;">'+ 
-						producto.peso +
+						producto.producto_peso +
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
-						'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ producto.peso +'" style="display:none;"/>'+
+						'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ producto.producto_peso +'" style="display:none;"/>'+
 					'</td>'+
 					'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '">'+ 
 						producto.tipounion +
@@ -2056,13 +2059,13 @@ function insertarItem(){
 						'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="1" style="display:none;"/>'+
 					'</td>'+
 					'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
-						MASKLA(aux_precionetoM,3) + //MASK(0, aux_precionetoM, '-##,###,##0.00',1)+
+						MASKLA(aux_precionetoM,3) + precioUnitSinCompEmbalaje(aux_datosproducto) + //MASK(0, aux_precionetoM, '-##,###,##0.00',1)+
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
 						'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ aux_precionetoM +'" style="display:none;"/>'+
 					'</td>'+
 					'<td name="precioxkiloTD'+ aux_nfila + '" id="precioxkiloTD'+ aux_nfila + '" style="text-align:right">'+ 
-						MASKLA(aux_precioxkilo,0) + //MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
+						MASKLA(aux_precioxkilo,2) + //MASK(0, aux_precioxkilo, '-##,###,##0.00',1)+
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
 						'<input type="text" name="precioxkilo[]" id="precioxkilo'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkilo +'" style="display:none;"/>'+
@@ -2071,10 +2074,10 @@ function insertarItem(){
 						'<input type="text" name="precioxkiloreal[]" id="precioxkiloreal'+ aux_nfila + '" class="form-control" value="'+ aux_precioxkiloreal +'" style="display:none;"/>'+
 					'</td>'+
 					'<td name="totalkilosTD'+ aux_nfila + '" id="totalkilosTD'+ aux_nfila + '" style="text-align:right">'+ 
-						MASKLA(producto.peso,4) + //MASK(0, producto.peso, '-##,###,##0.00',1)+
+						MASKLA(producto.producto_peso,4) + //MASK(0, producto.producto_peso, '-##,###,##0.00',1)+
 					'</td>'+
 					'<td style="text-align:right;display:none;">'+ 
-						'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ producto.peso +'" valor="'+ producto.peso +'" style="display:none;"/>'+
+						'<input type="text" name="totalkilos[]" id="totalkilos'+ aux_nfila + '" class="form-control" value="'+ producto.producto_peso +'" valor="'+ producto.producto_peso +'" style="display:none;"/>'+
 					'</td>'+
 					'<td name="subtotalCFTD'+ aux_nfila + '" id="subtotalCFTD'+ aux_nfila + '" class="subtotalCF" style="text-align:right">'+ 
 						MASKLA(aux_subtotal,0) + //MASK(0, aux_subtotal, '-#,###,###,##0.00',1)+

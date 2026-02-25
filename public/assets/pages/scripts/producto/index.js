@@ -13,10 +13,12 @@ $(document).ready(function () {
         'pageLength'  : 10,
         'columns'     : [
             {data: 'id'},
+            {data: 'sku'},
             {data: 'nombre_producto'},
             {data: 'categorianombre'},
             {data: 'gru_nombre'},
             {data: 'grupocatprom_nombre'},
+            {data: 'cla_nombre'},
             {data: 'diametro'},
             {data: 'espesor'},
             {data: 'long'},
@@ -32,14 +34,14 @@ $(document).ready(function () {
         },
         "createdRow": function ( row, data, index ) {
 
-            $('td', row).eq(8).attr('data-order',data.peso);
-            $('td', row).eq(8).attr('data-search',data.peso);
-            $('td', row).eq(8).html(MASKLA(data.peso,3));
+            $('td', row).eq(10).attr('data-order',data.peso);
+            $('td', row).eq(10).attr('data-search',data.peso);
+            $('td', row).eq(10).html(MASKLA(data.peso,3));
 
-            $('td', row).eq(10).attr('data-order',data.precioneto);
-            $('td', row).eq(10).attr('data-search',data.precioneto);
-            $('td', row).eq(10).attr('style','text-align:right');
-            $('td', row).eq(10).html(MASKLA(data.precioneto,2));
+            $('td', row).eq(12).attr('data-order',data.precioneto);
+            $('td', row).eq(12).attr('data-search',data.precioneto);
+            $('td', row).eq(12).attr('style','text-align:right');
+            $('td', row).eq(12).html(MASKLA(data.precioneto,2));
         }
       });
 

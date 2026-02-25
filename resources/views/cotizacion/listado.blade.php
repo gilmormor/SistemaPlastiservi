@@ -171,7 +171,7 @@
 							$aux_espesor = $AcuTec->at_espesor;
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 						}
-						$aux_producto_nombre = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id,$CotizacionDetalle->id)['nombre'];
+						$aux_producto_nombre = $CotizacionDetalle->producto->atribNomProd($CotizacionDetalle->producto_id,$CotizacionDetalle->id);
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>

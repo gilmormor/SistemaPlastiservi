@@ -224,7 +224,7 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_staAT = true;
                                     }
-                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->atributosProducto($detalle->notaventadetalle->producto_id)['nombre'];
+                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->glosa;
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">

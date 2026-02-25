@@ -171,8 +171,7 @@ class AcuerdoTecnicoController extends Controller
             //dd($datas);
             foreach ($datas as &$data) {
                 $producto = Producto::find($data->producto_id);
-                $producto_atributos = $producto->atributosProducto($data->producto_id);
-                $data->producto_nombre = $producto_atributos['nombre'];
+                $data->producto_nombre = $producto->glosa;
 
                 // 1. Obtener TODOS los registros del acuerdo técnico
                 $registros = AcuerdoTecnicoCValAtDet::where('acuerdotecnico_id', $data->id)->get();

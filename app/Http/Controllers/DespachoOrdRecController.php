@@ -423,7 +423,7 @@ class DespachoOrdRecController extends Controller
             $aux_statusPant = 0;
     
             //dd($clientedirecs);
-            return view('despachoordrec.crear', compact('data','detalles','fecha','empresa','aux_sta','aux_cont','aux_statusPant','vendedor_id','despachoordrecmotivos'));
+            return view('despachoordrec.crear', compact('data','detalles','fecha','empresa','aux_sta','aux_statusPant','vendedor_id','despachoordrecmotivos'));
         }else{
             return redirect('despachoordrec/consultadespordfact')->with([
                 'mensaje'=>'Orden de despacho Nro.' . $data->id . ' no puede ser rechazada, Nota de venta ' .$data->notaventa_id . '  esta cerrada.',

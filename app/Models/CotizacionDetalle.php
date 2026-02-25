@@ -67,5 +67,11 @@ class CotizacionDetalle extends Model
     {
         return $this->hasOne(AcuerdoTecnicoTemp::class,"at_cotizaciondetalle_id");
     }
+
+    public function doccompdets()
+    {
+        return $this->hasMany(DocCompDet::class, 'origendet_id', 'id')
+            ->where('origentipo', 'COT');
+    }
     
 }

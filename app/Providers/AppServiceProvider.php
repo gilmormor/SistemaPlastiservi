@@ -3,12 +3,18 @@
 namespace App\Providers;
 
 use App\Models\Admin\Menu;
+use App\Models\CotizacionDetalle;
 use App\Models\Dte;
+use App\Models\DteDet;
 use App\Models\DteFac;
+use App\Models\NotaVentaDetalle;
 use App\Observers\DteFacObserver;
 use App\Observers\DteObserver;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use App\Observers\CotizacionDetalleObserver;
+use App\Observers\NotaVentaDetalleObserver;
+use App\Observers\DteDetObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        CotizacionDetalle::observe(CotizacionDetalleObserver::class);
+        NotaVentaDetalle::observe(NotaVentaDetalleObserver::class);
+        DteDet::observe(DteDetObserver::class);
+
         //Dte::observe(DteObserver::class);
         //DteFac::observe(DteFacObserver::class);
         View::composer("theme.lte.aside", function ($view) {

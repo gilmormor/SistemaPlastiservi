@@ -183,7 +183,7 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_staAT = true;
                                     }
-                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->atributosProducto($detalle->notaventadetalle->producto_id)['nombre'];
+                                    $aux_producto_nombre = $detalle->notaventadetalle->producto->glosa;
                                     if($detalle->cantsoldesp > $sumacantorddesp){
                                         //if($detalle->id == 8846){
                                         $aux_totalrecABodSolDesp = 0;

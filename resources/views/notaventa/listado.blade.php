@@ -102,7 +102,7 @@
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 						}
-						$aux_producto_nombre = $notaventaDetalle->producto->atributosProducto($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id)['nombre'];
+						$aux_producto_nombre = $notaventaDetalle->producto->atribNomProd($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id);
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>

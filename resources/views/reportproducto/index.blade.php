@@ -183,9 +183,6 @@ Reporte Productos
                                 <i class='glyphicon glyphicon-print'></i> Reporte
                             </button>
                             <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
-                            @if (auth()->id() == 1)
-                                <button type="button" id="actnomprodat" name="actnomprodat" class="btn btn-success tooltipsC" title="Actualizar nombre producto con los dtos del acuerdo tecnico" onclick="actnomprod_at()">Act NomProd</button>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -200,6 +197,7 @@ Reporte Productos
                     <thead>
                         <tr>
                             <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
+                            <th title="Codigo interno Producto" style='text-align:center'>SKU</th>
                             <th>Producto</th>
                             <th>Categoria</th>
                             <th>Grupo Cat. Prom.</th>

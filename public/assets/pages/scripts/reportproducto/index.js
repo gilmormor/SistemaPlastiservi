@@ -25,6 +25,7 @@ $(document).ready(function () {
             "order": [[ 1, "asc" ]],
             'columns'     : [
                 {data: 'producto_id'},
+                {data: 'sku'},
                 {data: 'producto_nombre'},
                 {data: 'categoria_nombre'},
                 {data: 'grupocatprom_nombre'},
@@ -81,17 +82,17 @@ $(document).ready(function () {
                     $('td', row).eq(0).html(aux_text);
                     //$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
                 }
-                $('td', row).eq(5).attr('style','text-align:center');
                 $('td', row).eq(6).attr('style','text-align:center');
-                $('td', row).eq(7).attr('data-order',data.espesor);
-                $('td', row).eq(7).attr('data-search',data.espesor);
-                $('td', row).eq(7).html(MASKLA(data.espesor,3));
                 $('td', row).eq(7).attr('style','text-align:center');
-                $('td', row).eq(8).attr('data-order',data.peso);
-                $('td', row).eq(8).attr('data-search',data.peso);
-                $('td', row).eq(8).html(MASKLA(data.peso,3));
-                $('td', row).eq(8).attr('style','text-align:right');
-                $('td', row).eq(10).attr('style','text-align:right');
+                $('td', row).eq(8).attr('data-order',data.espesor);
+                $('td', row).eq(8).attr('data-search',data.espesor);
+                $('td', row).eq(8).html(MASKLA(data.espesor,3));
+                $('td', row).eq(8).attr('style','text-align:center');
+                $('td', row).eq(9).attr('data-order',data.peso);
+                $('td', row).eq(9).attr('data-search',data.peso);
+                $('td', row).eq(9).html(MASKLA(data.peso,3));
+                $('td', row).eq(9).attr('style','text-align:right');
+                $('td', row).eq(11).attr('style','text-align:right');
             }
         });
     }
@@ -298,34 +299,4 @@ function copiar_rut(id,rut){
 	$("#rut").val(rut);
 	//$("#rut").focus();
 	$("#rut").blur();
-}
-
-function actnomprod_at() { // FUNCION PARA ACTUALIZAR EL NOMBRE DEL PRODUCTO CON LOS DATOS DEL ACUERDO TECNICO
-    data = datosproducto();
-	var ruta = '/cotizacion/eliminarCotizacionDetalle/'+i;
-	swal({
-		title: '¿ Desea continuar ?',
-		text: "Esta acción no se puede deshacer!",
-		icon: 'warning',
-		buttons: {
-			cancel: "Cancelar",
-			confirm: "Aceptar"
-		},
-	}).then((value) => {
-		if (value) {
-            $.ajax({
-                url: 'reportproducto/actnomprodat/' + data.data2, // ajusta la URL de la solicitud al endpoint correcto
-                type: 'POST',
-                dataType: 'json',
-                success: function(data) {
-                    alertify.success("Nombres de productos actualizados correctamente");
-                    // Recargar la tabla para reflejar los cambios
-                    //$('#tabla-data-producto').DataTable().ajax.url( "reportproductopage/" + data.data2 ).load();
-                },
-                error: function(xhr, status, error) {
-                    console.log(error);
-                }
-            });
-        }
-	});
 }

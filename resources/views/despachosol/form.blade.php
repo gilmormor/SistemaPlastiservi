@@ -450,13 +450,11 @@
                                     $aux_espesor = $detalle->espesor;
                                     $aux_largo = $detalle->producto->long . "Mts";
                                     $aux_cla_sello_nombre = isset($detalle->producto->claseprod->cla_nombre) ? $detalle->producto->claseprod->cla_nombre : "";
-                                    //$aux_producto_nombre = $detalle->producto->nombre;
                                     $aux_categoria_nombre = $detalle->producto->categoriaprod->nombre;
                                     $aux_atribAcuTec = "";
                                     $aux_staAT = false;
                                     if ($detalle->producto->acuerdotecnico != null){
                                         $AcuTec = $detalle->producto->acuerdotecnico;
-                                        //$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $detalle->unidadmedida->nombre . ", " . $AcuTec->at_desc);
                                         $aux_ancho = $AcuTec->at_ancho . " " . ($AcuTec->at_ancho ? $AcuTec->anchounidadmedida->nombre : "");
                                         $aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
                                         $aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
@@ -464,7 +462,7 @@
                                         $aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                                         $aux_staAT = true;
                                     }
-                                    $aux_producto_nombre = $detalle->producto->atributosProducto($detalle->producto_id)['nombre'];
+                                    $aux_producto_nombre = $detalle->producto->glosa;
                                     if($aux_cant > $sumacantsoldesp){
                                         $aux_nfila++;
                                         $aux_saldo = $aux_cant - $sumacantsoldesp;

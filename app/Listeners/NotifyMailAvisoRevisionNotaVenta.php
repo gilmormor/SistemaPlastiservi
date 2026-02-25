@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Mail\MailAvisoRevisionNotaVenta;
 use App\Models\Admin\Menu;
+use App\Models\EmailxLote;
 use App\Models\Notificaciones;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -58,37 +59,57 @@ class NotifyMailAvisoRevisionNotaVenta
             }
         }
         */
-        foreach ($arrayUsuarios as $arrayUsuario) {
-            //dd($arrayUsuario);
-            $notificaciones = new Notificaciones();
-            $notificaciones->usuarioorigen_id = auth()->id();
-            $aux_email = $arrayUsuario["email"];
-            $notificaciones->usuariodestino_id = $arrayUsuario["usuario_id"];
-            $notificaciones->vendedor_id = $notaventa->vendedor_id;
-            $notificaciones->status = 1;
-            $notificaciones->nombretabla = 'notaventa';
-            $aux_mensaje = "Tienes una nueva Nota de Venta $notaventa->id para ser validada en tu bandeja.";
-            $aux_icono = "fa fa-fw fa-warning text-primary";
-            $aux_rutadest = "notaventaaprobar";
-            $notificaciones->nombrepantalla = $rutaPantalla; //'notaventa.indexguiafact';
-            $notificaciones->rutaorigen = $rutaOrigen; //'notaventa/indexfactura';
-            $notificaciones->rutadestino = $aux_rutadest;
-            $notificaciones->mensaje = $aux_mensaje;
-            $notificaciones->tabla_id = $notaventa->id;
-            $notificaciones->accion = $aux_mensaje;
-            $notificaciones->mensajetitle = $aux_mensaje;
-            $notificaciones->icono = $aux_icono;
-            $notificaciones->save();
-            //$usuario = Usuario::findOrFail(auth()->id());
-            $asunto = $notificaciones->mensaje;
-            $cuerpo = $notificaciones->mensaje . " esperando ser validado.";
-
-            $cuerpo = nl2br($aux_mensaje . "\n\nPara validar Nota de Venta puedes ingresar al siguiente enlace: (Previamente debes ingresar al sistema con usuario y clave)".
-            "\n<a href='" . urlRaiz() ."/notaventaaprobar/$notaventa->id/editar/'>" .
-                "Clic aqui." .
-            "</a>") ;
-            Mail::to($aux_email)->send(new MailAvisoRevisionNotaVenta($notificaciones,$asunto,$cuerpo,$notaventa));
+        $emailxlote = EmailxLote::where("id",5)->get();
+        if(count($emailxlote) > 0){
+            $emailxlote = EmailxLote::findOrFail(5);
+            foreach($emailxlote->personas as $persona){
+                foreach ($persona->usuario->sucursales as $sucursal) {
+                    if($notaventa->sucursal_id == $sucursal->id){
+                        $arrayUsuarios[] = [
+                            "usuario_id" => $persona->usuario_id,
+                            "nombre" => $persona->usuario->nombre,
+                            "email" => $persona->usuario->email
+                        ];
+                        break;
+                    }
+                }
+            }
         }
+        //dd($arrayUsuarios);
+        $emails = [];
+        foreach ($arrayUsuarios as $arrayUsuario) {
+            $emails[] = $arrayUsuario['email'];
+        }
+        //dd($arrayUsuario);
+        $notificaciones = new Notificaciones();
+        $notificaciones->usuarioorigen_id = auth()->id();
+        //$aux_email = $arrayUsuario["email"];
+        $notificaciones->usuariodestino_id = $notaventa->vendedor->persona->usuario_id;
+        $notificaciones->vendedor_id = $notaventa->vendedor_id;
+        $notificaciones->status = 1;
+        $notificaciones->nombretabla = 'notaventa';
+        $aux_mensaje = "⚠️ Acción necesaria: Tienes una nueva Nota de Venta $notaventa->id para ser validada en tu bandeja.";
+        $aux_icono = "fa fa-fw fa-warning text-primary";
+        $aux_rutadest = "notaventaaprobar";
+        $notificaciones->nombrepantalla = $rutaPantalla; //'notaventa.indexguiafact';
+        $notificaciones->rutaorigen = $rutaOrigen; //'notaventa/indexfactura';
+        $notificaciones->rutadestino = $aux_rutadest;
+        $notificaciones->mensaje = $aux_mensaje;
+        $notificaciones->tabla_id = $notaventa->id;
+        $notificaciones->accion = $aux_mensaje;
+        $notificaciones->mensajetitle = $aux_mensaje;
+        $notificaciones->icono = $aux_icono;
+        $notificaciones->save();
+        //$usuario = Usuario::findOrFail(auth()->id());
+        $asunto = $notificaciones->mensaje;
+        $cuerpo = $notificaciones->mensaje . " esperando ser validado.";
+
+        $cuerpo = nl2br($aux_mensaje . "\n\nPara validar Nota de Venta puedes ingresar al siguiente enlace: (Previamente debes ingresar al sistema con usuario y clave)".
+        "\n<a href='" . urlRaiz() ."/notaventaaprobar/$notaventa->id/editar/'>" .
+            "Clic aqui." .
+        "</a>");
+        //Mail::to($aux_email)->send(new MailAvisoRevisionNotaVenta($notificaciones,$asunto,$cuerpo,$notaventa));
+        Mail::to("no-reply@plastiservi.cl")->bcc($emails)->send(new MailAvisoRevisionNotaVenta($notificaciones,$asunto,$cuerpo,$notaventa));
 
     }
 }
