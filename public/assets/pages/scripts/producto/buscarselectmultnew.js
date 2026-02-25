@@ -44,7 +44,6 @@ $(document).ready(function () {
     
 });
 let tablaProductoInicializadaSM = false;
-let tablaProductosSM = null;
 let productosSeleccionados = [];
 function datosSelectMult(){
     var data1 = {
@@ -275,6 +274,7 @@ function configTablaProdSelectMult(){
             $(row).attr('at_unidadmedida_id', data.at_unidadmedida_id);
             $(row).attr('prod_unidadmedida_nombre', data.prod_unidadmedida_nombre);
             $(row).attr('at_unidadmedida_nombre', data.at_unidadmedida_nombre);
+            $(row).attr('productocomp_data', data.productocomp_data);
 
         },
         initComplete: function () {
