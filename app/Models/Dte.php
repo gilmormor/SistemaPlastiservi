@@ -3226,6 +3226,7 @@ class Dte extends Model
     
     
                 // Realiza las operaciones que desees con los valores obtenidos
+                $TipoDoc = substr($nroFAV,0,3);
                 $NroFAV = substr($nroFAV,4,7);
                 $dtefac = Dte::where("nrodocto",$NroFAV)
                                 ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
@@ -3260,6 +3261,7 @@ class Dte extends Model
                 if($fecvencProrr <= date('Y-m-d')){
                     $TDeudaFec += $Deuda;
                     $datosFacDeuda[] = [
+                        'TipoDoc' => $TipoDoc,
                         'NroFAV' => $NroFAV,
                         'fecfact' => $fecfact,
                         'fecvenc' => $fecvenc,
@@ -3270,6 +3272,7 @@ class Dte extends Model
                     $staVencida = true;
                 }
                 $datosTodasFacDeuda[] = [
+                    'TipoDoc' => $TipoDoc,
                     'NroFAV' => $NroFAV,
                     'fecfact' => $fecfact,
                     'fecvenc' => $fecvenc,
@@ -3280,6 +3283,7 @@ class Dte extends Model
                 $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
 
                 $matriz [] = [
+                    'TipoDoc' => $TipoDoc,
                     'NroFAV' => $NroFAV,
                     'Cliente' => $cliente1,
                     'FechaFAV' => $fechaFAV,
@@ -3396,6 +3400,7 @@ class Dte extends Model
                     if($fecvencProrr <= date('Y-m-d')){
                         $TDeudaFec += $Deuda;
                         $datosFacDeuda[] = [
+                            'TipoDoc' => $datacobranzadet->tipodoc,
                             'NroFAV' => $datacobranzadet->nrofav,
                             'fecfact' => $fecfact,
                             'fecvenc' => $fecvenc,
@@ -3406,6 +3411,7 @@ class Dte extends Model
                         $staVencida = true;
                     }
                     $datosTodasFacDeuda[] = [
+                        'TipoDoc' => $datacobranzadet->tipodoc,
                         'NroFAV' => $datacobranzadet->nrofav,
                         'fecfact' => $fecfact,
                         'fecvenc' => $fecvenc,
@@ -3416,6 +3422,7 @@ class Dte extends Model
                     $ArrayNroFac[] = "(" . $datacobranzadet->nrofav . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
     
                     $matriz [] = [
+                        'TipoDoc' => $datacobranzadet->tipodoc,
                         'NroFAV' => $datacobranzadet->nrofav,
                         'Cliente' => $cliente1,
                         'FechaFAV' => $fechaFAV,
@@ -3734,6 +3741,7 @@ class Dte extends Model
                     $datacobranzadet->datacobranza_id = $datacobranza->id;
                     $datacobranzadet->cliente_id = $datacobranza->cliente_id;
                     $datacobranzadet->dte_id = $dte->id;
+                    $datacobranzadet->tipodoc = "FAV";
                     $datacobranzadet->nrofav = $dte->nrodocto;
                     $datacobranzadet->fecfact = $dte->fchemis;
                     $datacobranzadet->fecvenc = $dte->dtefac->fchvenc;

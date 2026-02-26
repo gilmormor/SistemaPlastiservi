@@ -115,10 +115,11 @@ function configurarTabla(aux_tabla,datos){
         'data'        : datos,
         'columns'     : [
             {data: 'nrofav'}, // 0
-            {data: 'fecfact'}, // 1
-            {data: 'fecvenc'}, // 2
-            {data: 'mnttot'}, // 3
-            {data: 'deuda'}, // 4
+            {data: 'tipodoc'}, // 1
+            {data: 'fecfact'}, // 2
+            {data: 'fecvenc'}, // 3
+            {data: 'mnttot'}, // 4
+            {data: 'deuda'}, // 5
         ],
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -126,23 +127,23 @@ function configurarTabla(aux_tabla,datos){
         },
         "createdRow": function ( row, data, index ) {
             $('td', row).eq(0).attr('style','text-align:center;');
-            $('td', row).eq(1).attr('style','text-align:center');
-            $('td', row).eq(1).attr('data-order',data.fecfact);
-            aux_fecha = new Date(data.fecfact + " 00:00:00");
-            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
             $('td', row).eq(2).attr('style','text-align:center');
-            $('td', row).eq(2).attr('data-order',data.fecvenc);
-            aux_fecha = new Date(data.fecvenc + " 00:00:00");
+            $('td', row).eq(2).attr('data-order',data.fecfact);
+            aux_fecha = new Date(data.fecfact + " 00:00:00");
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
+            $('td', row).eq(3).attr('style','text-align:center');
+            $('td', row).eq(3).attr('data-order',data.fecvenc);
+            aux_fecha = new Date(data.fecvenc + " 00:00:00");
+            $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha));
 
-            $('td', row).eq(3).addClass('subtotalfac');
-            $('td', row).eq(3).attr('style','text-align:right');
-            $('td', row).eq(3).attr('data-order',data.mnttot);
-            $('td', row).eq(3).html(MASKLA(data.mnttot,0));
-            $('td', row).eq(4).addClass('subtotaldeuda');
+            $('td', row).eq(4).addClass('subtotalfac');
             $('td', row).eq(4).attr('style','text-align:right');
-            $('td', row).eq(4).attr('data-order',data.deuda);
-            $('td', row).eq(4).html(MASKLA(data.deuda,0));
+            $('td', row).eq(4).attr('data-order',data.mnttot);
+            $('td', row).eq(4).html(MASKLA(data.mnttot,0));
+            $('td', row).eq(5).addClass('subtotaldeuda');
+            $('td', row).eq(5).attr('style','text-align:right');
+            $('td', row).eq(5).attr('data-order',data.deuda);
+            $('td', row).eq(5).html(MASKLA(data.deuda,0));
 
             let id_str = data.nrofav.toString();
             id_str = aux_nombrepdf + id_str.padStart(8, "0");
@@ -310,6 +311,7 @@ function datosFac(GenExcel){
         emailxlote_id : 1,
         consultarnvpendfact : 1,
         staconsNVPendDesp : 1,
+        staConsStock : 0,
         _token     : $('input[name=_token]').val()
     };
     var data2 = "?&rut="+data1.rut +

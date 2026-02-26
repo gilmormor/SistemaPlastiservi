@@ -143,6 +143,7 @@ class DataCobranza extends Model
                     }
                     $datacobranzadet->datacobranza_id = $datacobranza->id;
                     $datacobranzadet->cliente_id = $cliente->id;
+                    $datacobranzadet->nrofav = $datosTodasFacDeudas["TipoDoc"];
                     $datacobranzadet->nrofav = $datosTodasFacDeudas["NroFAV"];
                     $datacobranzadet->fecfact = $datosTodasFacDeudas["fecfact"];
                     $datacobranzadet->fecvenc = $datosTodasFacDeudas["fecvenc"];

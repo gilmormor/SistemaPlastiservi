@@ -917,7 +917,8 @@ class NotaVenta extends Model
                     "sucursal_id" => $sucursal->id,
                     "filtro" => "0",
                     "filtroacutec" => "0",
-                    'sta_devarray' => 1
+                    'sta_devarray' => 1,
+                    'staConsStock' => isset($request->staConsStock) ? $request->staConsStock : 1,
                 ]);
                 //dd($request2);
                 /* foreach ($clientes as $cliente) {
