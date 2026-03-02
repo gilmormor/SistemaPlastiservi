@@ -3361,6 +3361,7 @@ class Dte extends Model
                     // Accede a los elementos hijos dentro de cada <Table>
                     $nroFAV = $datacobranzadet->nrofav;
                     $cliente1 = $aux_cliente;
+                    $tipoDoc = $datacobranzadet->tipodoc;
                     $fechaFAV = $datacobranzadet->fecfact;
                     $Deuda = $datacobranzadet->deuda;
                     //$vendedor = $xpath->evaluate('string(Vendedor)', $table);
@@ -3372,6 +3373,7 @@ class Dte extends Model
                                     ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
                                     ->get();
                     $mnttotal = 0;
+                    $fecvenc = date('Y-m-d');
                     if(count($dtefac) > 0){
                         $dte = Dte::findOrFail($dtefac[0]->id);
                         $numeroOC= isset($dte->dteoc) ? $dte->dteoc->dteoc : "";
@@ -3387,7 +3389,15 @@ class Dte extends Model
                     }else{
                         $auxcliente = Cliente::findOrFail($cliente->id);
                         $fecfact = substr($fechaFAV,0,10);
-                        $fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $cliente->plazopago_dias . " days"));
+                        if($tipoDoc == "FAV"){
+                            $fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $cliente->plazopago_dias . " days"));
+                        }else{
+                            if(isset($datacobranzadet->fecvenc)){
+                                $fecvenc = $datacobranzadet->fecvenc;
+                            }else{
+                                $fecvenc = $datacobranzadet->fecfact;
+                            }
+                        }                        
                         $mnttotal = $Deuda;
                         //$fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $auxcliente->plazopago->dias ? $auxcliente->plazopago->dias : "0" . " days"));
                     }
