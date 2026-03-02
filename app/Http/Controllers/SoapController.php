@@ -490,6 +490,7 @@ class SoapController extends Controller
 
         try {
             // Configurar la solicitud cURL
+            dd($soapRequest);
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $soapUrl);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
