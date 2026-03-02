@@ -3213,6 +3213,7 @@ class Dte extends Model
             $ArrayNroFacDeuda = [];
             $cont = 0;
             $datosTodasFacDeuda = [];
+            dd($tables);
             foreach ($tables as $table) {
                 $cont++;
                 // Accede a los elementos hijos dentro de cada <Table>
