@@ -860,4 +860,22 @@ if (!function_exists('getRealIP')) {
         }
     }
 }
+if (!function_exists('formatearRUTSinCerosIzq')) {
+    function formatearRUTSinCerosIzq($rut){
+        $rut = preg_replace('/[^0-9Kk]/', '', $rut); // Eliminar caracteres no numéricos ni K/k
+
+        if (strlen($rut) < 2) {
+            return $rut; // No se puede formatear si el RUT es demasiado corto
+        }
+    
+        $digitoVerificador = strtoupper(substr($rut, -1)); // Último dígito (puede ser K/k)
+        $restoRUT = substr($rut, 0, -1); // Resto del RUT
+        $restoRUT = ltrim($restoRUT, '0'); // Eliminar ceros a la izquierda
+    
+        $rutFormateado = $restoRUT . '-' . $digitoVerificador;
+    
+        return $rutFormateado;
+    }
+}
+
 ?>

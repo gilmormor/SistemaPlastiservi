@@ -3189,7 +3189,7 @@ class Dte extends Model
         $aux_cont = 0;
         $ArrayFact = "";
         foreach ($clientes as $cliente) {
-            $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUT($cliente->rut));
+            $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUTSinCerosIzq($cliente->rut));
             if(isset($ListaPendientes["error"])){
                 return $ListaPendientes;
             }
