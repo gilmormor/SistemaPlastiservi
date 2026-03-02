@@ -3230,9 +3230,9 @@ class Dte extends Model
                 //por ahora solo se consideran las FAV, pero se pueden agregar otros tipos de documentos
                 //en el caso de los cheques no viene la fecha de vencimiento, por lo que se podría considerar la fecha de emisión + el plazo de pago del cliente para calcular la fecha de vencimiento
                 //02/03/2026
-                if($TipoDoc != "FAV"){
+                /* if($TipoDoc != "FAV"){
                     continue;
-                }
+                } */
 
                 $NroFAV = substr($nroFAV,4,7);
                 $dtefac = Dte::where("nrodocto",$NroFAV)
@@ -3368,9 +3368,9 @@ class Dte extends Model
                     //por ahora solo se consideran las FAV, pero se pueden agregar otros tipos de documentos
                     //en el caso de los cheques no viene la fecha de vencimiento, por lo que se podría considerar la fecha de emisión + el plazo de pago del cliente para calcular la fecha de vencimiento
                     //02/03/2026
-                    if($datacobranzadet->tipodoc != "FAV"){
+                    /* if($datacobranzadet->tipodoc != "FAV"){
                         continue;
-                    }
+                    } */
                     // Accede a los elementos hijos dentro de cada <Table>
                     $nroFAV = $datacobranzadet->nrofav;
                     $cliente1 = $aux_cliente;
