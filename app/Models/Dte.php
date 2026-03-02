@@ -3227,6 +3227,13 @@ class Dte extends Model
     
                 // Realiza las operaciones que desees con los valores obtenidos
                 $TipoDoc = substr($nroFAV,0,3);
+                //por ahora solo se consideran las FAV, pero se pueden agregar otros tipos de documentos
+                //en el caso de los cheques no viene la fecha de vencimiento, por lo que se podría considerar la fecha de emisión + el plazo de pago del cliente para calcular la fecha de vencimiento
+                //02/03/2026
+                if($TipoDoc != "FAV"){
+                    continue;
+                }
+
                 $NroFAV = substr($nroFAV,4,7);
                 $dtefac = Dte::where("nrodocto",$NroFAV)
                                 ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
@@ -3358,6 +3365,12 @@ class Dte extends Model
             if(isset($cliente->datacobranza->datacobranzadets)){
                 foreach ($cliente->datacobranza->datacobranzadets as $datacobranzadet) {
                     $cont++;
+                    //por ahora solo se consideran las FAV, pero se pueden agregar otros tipos de documentos
+                    //en el caso de los cheques no viene la fecha de vencimiento, por lo que se podría considerar la fecha de emisión + el plazo de pago del cliente para calcular la fecha de vencimiento
+                    //02/03/2026
+                    if($datacobranzadet->tipodoc != "FAV"){
+                        continue;
+                    }
                     // Accede a los elementos hijos dentro de cada <Table>
                     $nroFAV = $datacobranzadet->nrofav;
                     $cliente1 = $aux_cliente;
