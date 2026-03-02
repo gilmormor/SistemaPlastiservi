@@ -889,7 +889,7 @@ function modificarTabla(i){
 	$("#descuentoTD"+i).html($("#descuentoM option:selected").html());
 	$("#descuento"+i).val($("#descuentoM option:selected").attr('porc'));
 	$("#descuentoval"+i).val($("#descuentoM option:selected").attr('value'));
-	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),3) + precioUnitSinCompEmbalaje(aux_datosproducto)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
+	$("#preciounitTD"+i).html(MASKLA($("#precionetoM").attr('valor'),3) + precioUnitSinCostoInsumos(aux_datosproducto)); //$("#preciounitTD"+i).html(MASK(0, $("#precionetoM").attr('valor'), '-##,###,##0.00',1));
 	$("#preciounit"+i).val($("#precionetoM").attr('valor'));
 	aux_precioxkilo = $("#precioM").attr("valor");
 	if($("#pesoM").val()==0)
@@ -4814,4 +4814,70 @@ function convertirCadenaAProductocomps(cadena) {
     return {
         productocomps: productocomp
     };
+}
+let aux_nomCamInsumoNew = "";
+function buscarInsumoGenNew(obj){
+    $(".input-sm").val('');
+    aux_id = $($(obj).attr("nomcampinsumo")).val();
+	aux_nomCamInsumoNew = $(obj).attr("nomcampinsumo");
+    if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
+        $("#divprodselec").hide();
+        $("#productos").html("");
+    }else{
+        arraynew = aux_id.split(',')
+        $("#productos").html("");
+        for(var i = 0; i < arraynew.length; i++){
+            $("#productos").append("<option value='" + arraynew[i] + "' selected>" + arraynew[i] + "</option>")
+        }
+        $("#divprodselec").show();
+    }
+	if (!tablaInsumoInicializada) {
+		configTablaInsumo(); // ← AQUÍ recién se inicializa
+		tablaInsumoInicializada = true;
+	}
+    $("#myModalBuscarInsumo").modal('show');
+
+}
+
+
+function precioUnitSinCostoInsumos(aux_datosproducto){
+	console.log(aux_datosproducto);
+	aux_totalprecioinsumo = 0;
+	let tooltipComp = "";
+
+	/* console.log("Componente ID:", comp.productocomp_id);
+	console.log("Cantidad:", comp.cant);
+	console.log("Precio Neto:", comp.precioneto); */
+	//console.log("Producto:", aux_datosproducto.productocomps);
+	aux_datosproducto.productoinsumos.forEach(insumo => {
+		aux_costounitario = insumo.costounitario/insumo.unidadesproducto;
+		tooltipComp += 
+			`${MASKLA(insumo.cant, 2)} ${insumo.nombre} $ ${MASKLA(aux_costounitario, 2)}<br>`;
+
+		aux_totalprecioinsumo += insumo.cant * aux_costounitario;
+	});
+	// Eliminar el último &#13;&#10; del final
+	tooltipComp = tooltipComp.replace(/<br>$/, '');
+	
+	htmlPrecio = "";
+	console.log(tooltipComp);
+	if(aux_totalprecioinsumo == 0){
+		aux_totalprecioinsumo = "";
+	}else{
+		/* aux_totalprecioinsumo = $("#precionetoM").attr("valor") - aux_totalprecioinsumo;
+		aux_totalprecioinsumo = (aux_totalprecioinsumo > 0 ? " (" + MASKLA(aux_totalprecioinsumo,3) + ")" : ""); */
+		let diferencia = $("#precionetoM").attr("valor") - aux_totalprecioinsumo;
+		// data-original-title="Acuerdo Técnico PDF"
+		//if (diferencia > 0) {
+			htmlPrecio += `<a class="btn-accion-tabla btn-xs tooltipsC" title="PreUnit - Costo: ${MASKLA(diferencia, 3)}<br>${tooltipComp}">
+								(${MASKLA(diferencia, 3)})
+							</a>`;
+			/* htmlPrecio += ' <span class="precio-comp-tooltip text-primary" ' +
+				'data-toggle="tooltip" ' +
+				'title="' + tooltipComp + '">' +
+				'(' + MASKLA(diferencia, 3) + ')' +
+				'</span>'; */
+		//}
+	}
+	return htmlPrecio;
 }

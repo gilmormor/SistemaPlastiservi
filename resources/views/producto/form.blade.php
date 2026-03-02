@@ -4,6 +4,7 @@
     $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Y") . date("m"));
 ?>
 @include('generales.buscarproductobd')
+@include('generales.buscarinsumobd')
 <input type="hidden" name="aux_sta" id="aux_sta" value="{{$aux_sta}}">
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 @if (isset($data))
@@ -514,5 +515,87 @@
             </tbody>
         </table>
         <button type="button" class="btn btn-success btn-sm" id="btn-agregar-detalle"><i class="fa fa-plus" title="Agregar Complemento"></i> Agregar</button>
+    </div>
+</div>
+
+
+<div class="col-md-8 col-md-offset-2">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Insumos</h3>
+        </div>
+        <table class="table table-striped table-bordered table-hover" id="tabla-detalles-insumos">
+            <thead>
+                <tr>
+                    <th style="width: 120px">Codigo</th>
+                    <th style="width: 100px">Cant</th>
+                    <th>Nombre</th>
+                    <th>Unidades</th>
+                    <th>Obs</th>
+                    <th style="width: 120px">Precio</th>
+                    <th style="width: 50px"></th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                @if(isset($data) && $data->productoinsumos)
+                    @foreach($data->productoinsumos as $det)
+                        <tr>
+                            <td>
+                                <input type="hidden" name="detalleinsumos[{{$loop->index}}][id]" value="{{ $det->id }}">
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        name="detalleinsumos[{{$loop->index}}][insumo_iddet]"
+                                        id="insumo_id{{$loop->index}}"
+                                        item="{{$loop->index}}"
+                                        class="form-control numerico"
+                                        required
+                                        onblur="onBlurInsumo_id(this)"
+                                        onkeyup="buscarInsumoKeyUp(this,event)"
+                                        value="{{ old('detalles.'.$loop->index.'.insumoiddet', $det->insumo_id) }}"
+                                        maxlength="4"
+                                        style="text-align:right;"
+                                        valor=""
+                                    >
+                                    <span class="input-group-btn">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-primary btn-buscar-insumo"
+                                            title="Buscar Insumo"
+                                            item="{{$loop->index}}"
+                                            data-toggle="modal"
+                                            data-target="#buscarInsumoBDModal"
+                                            onclick="buscarInsumoGenNew(this,event)"
+                                            nomCampProducto="insumo_id{{$loop->index}}"
+                                            >
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumocantdet]" id="insumocantdet{{$loop->index}}" class="form-control numerico" value="{{ old('detalles.'.$loop->index.'.cantdet', $det->cant) }}" required style="text-align:right">
+                            </td>
+                            <td>
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumonombredet]" id="insumonombredet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumonombredet', $det->insumo->nombre) }}" required readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumounidadesproductodet]" id="insumounidadesproductodet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumounidadesproductodet', $det->unidadesproducto) }}" required readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumoobsdet]" id="insumoobsdet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumoobsdet', $det->obs) }}" required>
+                            </td>
+                            <td>
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumocostounitariodet]" id="insumocostounitariodet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumocostounitariodet', number_format($det->insumo->costounitario, 2, ',', '.')) }}" required readonly style="text-align:right">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fa fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endif
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-success btn-sm" id="btn-agregar-detalle-insumo"><i class="fa fa-plus" title="Agregar Complemento"></i> Agregar</button>
     </div>
 </div>

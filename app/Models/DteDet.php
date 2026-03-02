@@ -69,4 +69,9 @@ class DteDet extends Model
         return $this->hasMany(DocCompDet::class, 'origendet_id', 'id')
             ->where('origentipo', 'DTE');
     }    
+    public function docinsumodets()
+    {
+        return $this->hasMany(DocInsumoDet::class, 'origendet_id', 'id')
+            ->where('origentipo', 'DTE');
+    }
 }

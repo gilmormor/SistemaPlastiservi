@@ -497,7 +497,7 @@ function insertarTabla(){
 				'<input type="text" name="descuentoval[]" id="descuentoval'+ aux_nfila + '" class="form-control" value="'+ $("#descuentoM option:selected").attr('value') +'" style="display:none;"/>'+
 			'</td>'+
 			'<td name="preciounitTD'+ aux_nfila + '" id="preciounitTD'+ aux_nfila + '" style="text-align:right">'+ 
-				MASKLA($("#precionetoM").attr("valor"),3) + precioUnitSinCompEmbalaje(aux_datosproducto) + //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
+				MASKLA($("#precionetoM").attr("valor"),3) + precioUnitSinCostoInsumos(aux_datosproducto) + //MASK(0, $("#precionetoM").attr("valor"), '-##,###,##0.00',1)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="preciounit[]" id="preciounit'+ aux_nfila + '" class="form-control" value="'+ $("#precionetoM").attr("valor") +'" style="display:none;"/>'+

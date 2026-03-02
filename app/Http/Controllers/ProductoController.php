@@ -318,6 +318,75 @@ class ProductoController extends Controller
                     $detalle->delete();
                 }
             }
+
+            // Procesar insumos
+            $detallesActuales = $Producto->productoinsumos()->pluck('id')->toArray();
+            $detallesIds = [];
+
+
+            if ($request->filled('detalleinsumos')) {
+
+
+                foreach ($request->detalleinsumos as $detalle) {
+
+
+                    if (!empty($detalle['id'])) {
+                        // Actualizar
+                        $detalleinsumoModel = $Producto->productoinsumos()->find($detalle['id']);
+
+
+                        if ($detalleinsumoModel) {
+                            $detalleinsumoModel->update([
+                            'insumo_id' => trim($detalle['insumo_iddet']),
+                            'cant' => trim($detalle['insumocantdet']),
+                            'unidadesproducto' => trim($detalle['insumounidadesproductodet']),
+                            'obs' => trim($detalle['insumoobsdet']),
+                            'usuario_id' => auth()->id()
+                            ]);
+
+
+                        $detallesIds[] = $detalleinsumoModel->id;
+                    }
+
+
+                    } else {
+                        // Crear
+                        $newDetalle = $Producto->productoinsumos()->create([
+                        'insumo_id' => trim($detalle['insumo_iddet']),
+                        'cant' => trim($detalle['insumocantdet']),
+                        'unidadesproducto' => trim($detalle['insumounidadesproductodet']),
+                        'obs' => trim($detalle['insumoobsdet']),
+                        'usuario_id' => auth()->id()
+                        ]);
+
+
+                    $detallesIds[] = $newDetalle->id;
+                    }
+                }
+
+
+                // Eliminar los que ya no vienen
+                $detallesAEliminar = array_diff($detallesActuales, $detallesIds);
+
+
+            } else {
+                // 🔥 NO vienen detalles → eliminar TODOS
+                $detallesAEliminar = $detallesActuales;
+            }
+
+            // Ejecutar eliminación
+            foreach ($detallesAEliminar as $detalleId) {
+                $detalle = $Producto->productoinsumos()->find($detalleId);
+
+
+                if ($detalle) {
+                    $detalle->update(['usuariodel_id' => auth()->id()]);
+                    $detalle->delete();
+                }
+            }
+
+
+
             DB::commit();
             return redirect('producto')->with('mensaje','Producto actualizado con exito');
         } catch (\Exception $e) {
@@ -507,6 +576,12 @@ class ProductoController extends Controller
                 $respuesta['productocomps'] = $producto->productocomps;
                 //dd($producto->productocomps);
                 //dd($respuesta);
+                foreach ($producto->productoinsumos as &$productoinsumo) {
+                    $productoinsumo->nombre = $productoinsumo->insumo->nombre;
+                    $productoinsumo->costounitario = $productoinsumo->insumo->costounitario;
+                }
+                $respuesta['productoinsumos'] = $producto->productoinsumos;
+
                 $respuesta['precioneto'] = $producto->precioneto;
 
                 $respuesta['bodegas'] = $producto->categoriaprod->invbodegas->where('tipo','=',2)->where('activo','=',1)->toArray();

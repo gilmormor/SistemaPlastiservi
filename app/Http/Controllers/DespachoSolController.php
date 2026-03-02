@@ -74,6 +74,13 @@ class DespachoSolController extends Controller
         //dd($request);
         //$datas = consultasoldesp($request);
         $datas = DespachoSol::consultasoldesp($request);
+        // Prefetch models for related details to avoid N+1 queries
+        $ids = array_map(function($d){ return $d->id; }, $datas);
+        $despachosolMap = DespachoSol::with(['despachosoldets.despachosoldet_invbodegaproductos'])
+            ->whereIn('id', $ids)
+            ->get()
+            ->keyBy('id');
+
         $aux_totalkilos = 0;
         $aux_totaldinero = 0;
         foreach ($datas as &$data) {
@@ -81,13 +88,8 @@ class DespachoSolController extends Controller
             $aux_totaldinero += ($data->subtotalsoldesp - $data->subtotaldesp);
             $nuevoOrdDesp = [];
             if($request->sololectura == "0"){
-                $sql = "SELECT COUNT(*) as cont
-                FROM despachoord
-                WHERE despachoord.despachosol_id=$data->id
-                AND despachoord.id 
-                NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
-    
-                $contorddesp = DB::select($sql);
+                // use precomputed count from the main query when available
+                $cont = isset($data->contorddesp) ? (int)$data->contorddesp : 0;
                 $nuevoOrdDesp1 = [
                     "a_href" => "/despachosol/cerrarsoldesp",
                     "a_class" => "btn-accion-tabla tooltipsC btncerrarsol",
@@ -97,10 +99,10 @@ class DespachoSolController extends Controller
                     "b_class" => "btn btn-danger btn-xs",
                     "i_class" => "fa fa-fw fa-archive"
                 ];
-                if($contorddesp[0]->cont == 0){
+                if($cont == 0){
                     /*****PARA DEVOLVER SOLDESP: EL DETALLE DEBE SER IGUAL A LA SUMA POR ITEM EN LA TABLA $despachosoldet_invbodegaproducto*/
                     $aux_bancDevSolDesp = true;
-                    $despachosol = DespachoSol::findOrFail($data->id);
+                    $despachosol = isset($despachosolMap[$data->id]) ? $despachosolMap[$data->id] : DespachoSol::findOrFail($data->id);
                     foreach ($despachosol->despachosoldets as $despachosoldet) {
                         $aux_cant = 0;
                         foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {

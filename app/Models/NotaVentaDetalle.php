@@ -103,4 +103,9 @@ class NotaVentaDetalle extends Model
         return $this->hasMany(DocCompDet::class, 'origendet_id', 'id')
             ->where('origentipo', 'NV');
     }
+    public function docinsumodets()
+    {
+        return $this->hasMany(DocInsumoDet::class, 'origendet_id', 'id')
+            ->where('origentipo', 'NV');
+    }
 }

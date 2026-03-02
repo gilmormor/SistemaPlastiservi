@@ -648,7 +648,7 @@
                                     </td>
                                     <td name="preciounitTD{{$aux_nfila}}" id="preciounitTD{{$aux_nfila}}" style="text-align:right"> 
                                         {{number_format($detalle->preciounit, 3, ',', '.')}}
-                                        {!! precioUnitSinCompEmbalaje($detalle->doccompdets, $detalle->preciounit) !!}
+                                        {!! precioUnitSinCostoInsumos($detalle->docinsumodets, $detalle->preciounit) !!}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="preciounit[]" id="preciounit{{$aux_nfila}}" class="form-control" value="{{$detalle->preciounit}}" style="display:none;"/>

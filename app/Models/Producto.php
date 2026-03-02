@@ -37,6 +37,8 @@ class Producto extends Model
         'stockmin',
         'stockmax',
         'acuerdotecnico_id',
+        'costototal',
+        'costobloqueado',
         'usuario_id',
         'usuariodel_id'
     ];
@@ -99,6 +101,11 @@ class Producto extends Model
     public function productocompcs()
     {
         return $this->hasMany(ProductoComp::class,"productocomp_id");
+    }
+
+    public function productoinsumos()
+    {
+        return $this->hasMany(ProductoInsumo::class,"producto_id");
     }
 
     public static function productosxUsuario($sucursal_id = false){

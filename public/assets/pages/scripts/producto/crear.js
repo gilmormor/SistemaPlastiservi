@@ -83,16 +83,31 @@ $(document).ready(function () {
 
     });
 
-    // Eliminar detalle
+    // Eliminar detalle con confirmación
     $(document).on('click', '.btn-eliminar-detalle', function() {
-        $(this).closest('tr').remove();
-        // Reindexar los nombres de los inputs
-        $('#tabla-detalles tbody tr').each(function(index) {
-            $(this).find('input').each(function() {
-                var name = $(this).attr('name');
-                name = name.replace(/\[\d+\]/, '[' + index + ']');
-                $(this).attr('name', name);
-            });
+        var fila = $(this).closest('tr');
+        swal({
+            title: '¿Está seguro?',
+            text: 'El detalle será eliminado y no podrá recuperarlo.',
+            icon: 'warning',
+            buttons: {
+                cancel: 'Cancelar',
+                confirm: { text: 'Aceptar', closeModal: false }
+            },
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                // remueve la fila y reindexa
+                fila.remove();
+                $('#tabla-detalles tbody tr').each(function(index) {
+                    $(this).find('input').each(function() {
+                        var name = $(this).attr('name');
+                        name = name.replace(/\[\d+\]/, '[' + index + ']');
+                        $(this).attr('name', name);
+                    });
+                });
+                swal('El detalle se ha eliminado.', { icon: 'success' });
+            }
         });
     });
 
@@ -294,3 +309,214 @@ function copiar_codprod(id,codintprod){
 	$("#" + aux_nomCamProductoNew).blur();
 	//$("#cantM").focus();
 }	$("#cantM").focus();
+
+
+function onBlurInsumo_id(insumo_id){
+    //console.log(insumo_id["id"]);
+	objvlrcodigo = $("#" + insumo_id["id"]);
+	llenarDatosinsumoL(objvlrcodigo);
+	//console.log(vlrcodigo["id"]);
+}
+
+
+//FUNCTION CON ASYNC, YA QUE ME INTERESA ESPERAR LA RESPUESTA DE LA BUSQUEDA
+async function llenarDatosinsumoL(insumo_id){
+	let item = insumo_id.attr("item");
+	if($("#insumo_id" + item).val() != $("#insumo_id" + item).attr("valor")){
+		arrayDP = await buscarDatosInsumo(insumo_id);
+        console.log(arrayDP);
+		$("#insumo_id" + item).val("");
+		if(arrayDP.cont > 0){
+			$("#insumo_id" + item).val(arrayDP.id);
+			$("#insumo_id" + item).attr("valor",arrayDP.id)
+			let aux_insumo_nombre = `${arrayDP.nombre}`;
+			$("#insumonombredet" + item).val(aux_insumo_nombre);
+			$("#insumonombredet" + item).attr("title",aux_insumo_nombre);
+			$("#insumocostounitariodet" + item).val(MASKLA(arrayDP.costounitario,2));
+		}
+	}
+}
+
+async function buscarDatosInsumo(insumo_id){
+	codigo = insumo_id.val();
+	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
+	{
+		aux_cliente_id = null;
+		if($("#cliente_id").val()){
+			aux_cliente_id = $("#cliente_id").val();
+		}
+		var data = {
+			id: codigo,
+			cliente_id : aux_cliente_id,
+			_token: $('input[name=_token]').val()
+		};
+		return resul = await $.ajax({
+			url: '/insumo/buscarUnInsumo',
+			type: 'POST',
+			data: data,
+			success: function (respuesta) {
+				//console.log('Respuesta PHP:', respuesta);
+				
+				// Validar que respuesta sea un objeto válido
+				if (!respuesta || typeof respuesta !== 'object') {
+					swal({
+						title: 'Error de validación',
+						text: "Respuesta inválida del servidor",
+						icon: 'error',
+						buttons: { confirm: "Aceptar" }
+					});
+					return respuesta;
+				}
+				
+				// Validar que cont esté definido
+				if (!('cont' in respuesta)) {
+					//console.error('Campo cont no encontrado en respuesta');
+					insumo_id.val("");
+					swal({
+						title: 'Error de respuesta',
+						text: "La respuesta del servidor no contiene los datos esperados",
+						icon: 'error',
+						buttons: { confirm: "Aceptar" }
+					}).then(() => insumo_id.focus());
+					return respuesta;
+				}
+				
+				if(respuesta['cont'] > 0){
+					// Insumo encontrado - validar estado
+					if(respuesta['estado'] == 0){
+						swal({
+							title: 'Insumo inactivo.',
+							text: "Insumo existe pero está Inactivo.",
+							icon: 'warning',
+							buttons: { confirm: "Aceptar" }
+						}).then((value) => {
+							if (value) {
+								$("#insumo_idM").focus();
+							}
+						});
+					} else {
+						// Insumo encontrado y activo
+						//console.log('Insumo válido:', respuesta);
+					}
+				}else{
+					// Insumo no encontrado
+					insumo_id.val("");
+					swal({
+						title: `Código insumo ${codigo} no existe.`,
+						text: "Presione F2 para buscar",
+						icon: 'error',
+						buttons: { confirm: "Aceptar" }
+					}).then((value) => {
+						if (value) {
+							insumo_id.focus();
+						}
+					});
+				}
+				return respuesta;
+			},
+			error: function (xhr, status, error) {
+				console.error('Error en AJAX:', status, error);
+				insumo_id.val("");
+				var mensaje = 'Error al buscar insumo';
+				
+				if (xhr.responseJSON && xhr.responseJSON.mensaje) {
+					mensaje = xhr.responseJSON.mensaje;
+				}
+				
+				swal({
+					title: 'Error en la búsqueda',
+					text: mensaje,
+					icon: 'error',
+					buttons: { confirm: "Aceptar" }
+				}).then(() => insumo_id.focus());
+			}
+		});
+		//console.log(resul);
+	}else{
+		return [];
+	}
+}
+
+function buscarInsumo(obj,event){
+	//console.log(obj)
+    //cargardatospantprod();
+    $("#itemAct").val($(obj).parent().parent().attr("item")); //Crear input Item actual
+    $("#myModalBuscarInsumo").modal('show');
+}
+
+function copiar_codinsumo(id,codintprod,index){
+    console.log("copiar_codinsumo", id, codintprod, index);
+	//$("#myModalBuscarInsumo").modal('hide');
+	//$("#myModal").modal('show');
+	$('#buscarInsumoBDModal')
+			.modal('hide')
+			.on('hidden.bs.modal', function (e) {
+				$('#myModal').modal('show');
+
+				$(this).off('hidden.bs.modal'); // Remove the 'on' event binding
+			});
+	$("#" + aux_nomCamInsumoNew).val(id);
+	$("#" + aux_nomCamInsumoNew).blur();
+	//$("#cantM").focus();
+}	$("#cantM").focus();
+
+$('#btn-agregar-detalle-insumo').click(function() {
+    var index = $('#tabla-detalles-insumos tbody tr').length;
+    var newRow = `<tr>
+        <td>
+            <input type="hidden" name="detalleinsumos[${index}][id]" value="">
+            <div class="input-group">
+                <input
+                    type="text"
+                    name="detalleinsumos[${index}][insumo_iddet]"
+                    id="insumo_id${index}"
+                    item="${index}"
+                    class="form-control numerico"
+                    required
+                    onblur="onBlurInsumo_id(this)"
+                    value=""
+                    maxlength="4"
+                    style="text-align:right;"
+                    valor=""
+                >
+                <span class="input-group-btn">
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-primary btn-buscar-insumo"
+                        title="Buscar Insumo"
+                        item="${index}"
+                        data-toggle="modal"
+                        data-target="#buscarInsumoBDModal"
+                        onclick="buscarInsumoGenNew(this,event)"
+                        nomcampinsumo="insumo_id${index}"
+                        >
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+            
+        </td>
+        <td>
+            <input type="text" name="detalleinsumos[${index}][insumocantdet]" id="insumocantdet${index}" class="form-control numerico" required style="text-align:right">
+        </td>
+        <td>
+            <input type="text" name="detalleinsumos[${index}][insumonombredet]" id="insumonombredet${index}" class="form-control" required readonly>
+        </td>
+        <td>
+            <input type="text" name="detalleinsumos[${index}][insumounidadesproductodet]" id="insumounidadesproductodet${index}" class="form-control" required>
+        </td>
+        <td>
+            <input type="text" name="detalleinsumos[${index}][insumoobsdet]" id="insumoobsdet${index}" class="form-control" required>
+        </td>
+        <td>
+            <input type="text" name="detalleinsumos[${index}][insumocostounitariodet]" id="insumocostounitariodet${index}" class="form-control" required readonly style="text-align:right">
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fa fa-trash"></i></button>
+        </td>
+    </tr>`;
+    
+    $('#tabla-detalles-insumos tbody').append(newRow);
+    $(".numerico").numeric();
+
+});

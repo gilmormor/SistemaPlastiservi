@@ -1,13 +1,10 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-    Producto
+    Insumo
 @endsection
 
 @section('scripts')
-    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/producto/crear.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/producto/buscarnew.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/insumo/buscarnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/insumo/crear.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -15,19 +12,19 @@
     <div class="col-lg-12">
         @include('includes.form-error')
         @include('includes.mensaje')
-        <div class="box box-primary">
+        <div class="box box-danger">
             <div class="box-header with-border">
-                <h3 class="box-title">Editar Producto Nro: {{$data->id}}</h3>
+                <h3 class="box-title">Editar Insumo</h3>
                 <div class="box-tools pull-right">
-                    <a href="{{route('producto')}}" class="btn btn-block btn-info btn-sm">
+                    <a href="{{route('insumo')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
             </div>
-            <form action="{{route('actualizar_producto', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
+            <form action="{{route('actualizar_insumo', ['id' => $data->id])}}" id="form-general" class="form-horizontal" method="POST" autocomplete="off">
                 @csrf @method("put")
                 <div class="box-body">
-                    @include('producto.form')
+                    @include('insumo.form')
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer text-center">
