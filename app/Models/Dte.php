@@ -3186,7 +3186,7 @@ class Dte extends Model
         //$clientes = cliente::get();
         //dd($clientes);
         $soap = new SoapController();
-        $aux_cont = 0;
+        //$aux_cont = 0;
         $ArrayFact = "";
         foreach ($clientes as $cliente) {
             $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUTSinCerosIzq($cliente->rut));
@@ -3211,58 +3211,47 @@ class Dte extends Model
             $datosFacDeuda = [];
             $ArrayNroFac = [];
             $ArrayNroFacDeuda = [];
-            $cont = 0;
+            //$cont = 0;
             $datosTodasFacDeuda = [];
             foreach ($tables as $table) {
-                $cont++;
+                //$cont++;
                 // Accede a los elementos hijos dentro de cada <Table>
                 $nroFAV = $xpath->evaluate('string(NroFAV)', $table);
                 $cliente1 = $xpath->evaluate('string(Cliente)', $table);
                 $fechaFAV = $xpath->evaluate('string(FechaFAV)', $table);
+                $fechaVenc = $xpath->evaluate('string(FechaVencimie)', $table);
                 $Deuda = $xpath->evaluate('string(Monto)', $table);
-                $pkFAVPendiente = $xpath->evaluate('string(PKFAVPENDIENTE)', $table);
+                //$pkFAVPendiente = $xpath->evaluate('string(PKFAVPENDIENTE)', $table);
                 $vendedor = $xpath->evaluate('string(Vendedor)', $table);
                 $numeroOC = $xpath->evaluate('string(NumeroOC)', $table);
-    
-    
+
                 // Realiza las operaciones que desees con los valores obtenidos
                 $TipoDoc = substr($nroFAV,0,3);
-                //por ahora solo se consideran las FAV, pero se pueden agregar otros tipos de documentos
-                //en el caso de los cheques no viene la fecha de vencimiento, por lo que se podría considerar la fecha de emisión + el plazo de pago del cliente para calcular la fecha de vencimiento
-                //02/03/2026
-                if($TipoDoc != "FAV"){
-                    continue;
-                }
-
                 $NroFAV = substr($nroFAV,4,7);
-                $dtefac = Dte::where("nrodocto",$NroFAV)
+                /* $dtefac = Dte::where("nrodocto",$NroFAV)
                                 ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
-                                ->get();
-                $mnttotal = 0;
-                if(count($dtefac) > 0){
+                                ->get(); */
+                $fecfact = substr($fechaFAV,0,10);
+                $fecvenc = substr($fechaVenc,0,10);
+                $mnttotal = $Deuda;
+                $TFac += $Deuda;
+                /* if(count($dtefac) > 0){
                     $dte = Dte::findOrFail($dtefac[0]->id);
                     $mnttotal = $dte->mnttotal;
                     $TFac += $dte->mnttotal;
                     $fecfact = $dte->fchemis;
                     if(isset($dte->dtefac->fchvenc)){
                         $fecvenc = $dte->dtefac->fchvenc;
-                    }else{
-                        //$fecvenc = $dte->fchemis;
-                        $fecvenc = date('Y-m-d', strtotime($dte->fchemis ."+ " . $cliente->plazopago_dias . " days"));
                     }
                 }else{
-                    $auxcliente = Cliente::findOrFail($cliente->id);
-                    $fecfact = substr($fechaFAV,0,10);
-                    $fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $cliente->plazopago_dias . " days"));
-                    $mnttotal = $Deuda;
-                    //$fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $auxcliente->plazopago->dias ? $auxcliente->plazopago->dias : "0" . " days"));
+                    $TFac += $Deuda;
                 }
-                $TDeuda += $Deuda;
+                $TDeuda += $Deuda; */
                 $empresa = Empresa::findOrFail(1);
                 $fecvencProrr = date('Y-m-d', strtotime($fecvenc ."+ " . $empresa->diasprorrogacob . " days"));
-                if($cont > 1){
+                /* if($cont > 1){
                     //dd($fecvencProrr);
-                }
+                } */
                 //dd($fechacobro);
                 $staVencida = false;
                 if($fecvencProrr <= date('Y-m-d')){
@@ -3324,7 +3313,7 @@ class Dte extends Model
                 "datosFacDeuda" => $datosFacDeuda,
                 "datosTodasFacDeuda" => $datosTodasFacDeuda
             ];   
-            $aux_cont++;
+            //$aux_cont++;
             /* if($aux_cont > 100){
                 break;
             } */
@@ -3365,12 +3354,6 @@ class Dte extends Model
             if(isset($cliente->datacobranza->datacobranzadets)){
                 foreach ($cliente->datacobranza->datacobranzadets as $datacobranzadet) {
                     $cont++;
-                    //por ahora solo se consideran las FAV, pero se pueden agregar otros tipos de documentos
-                    //en el caso de los cheques no viene la fecha de vencimiento, por lo que se podría considerar la fecha de emisión + el plazo de pago del cliente para calcular la fecha de vencimiento
-                    //02/03/2026
-                    if($datacobranzadet->tipodoc != "FAV"){
-                        continue;
-                    }
                     // Accede a los elementos hijos dentro de cada <Table>
                     $nroFAV = $datacobranzadet->nrofav;
                     $cliente1 = $aux_cliente;
