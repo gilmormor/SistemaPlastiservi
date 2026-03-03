@@ -3361,16 +3361,17 @@ class Dte extends Model
                     $fechaFAV = $datacobranzadet->fecfact;
                     $Deuda = $datacobranzadet->deuda;
                     //$vendedor = $xpath->evaluate('string(Vendedor)', $table);
-                    $numeroOC= "";
-        
-        
                     // Realiza las operaciones que desees con los valores obtenidos
-                    $dtefac = Dte::where("nrodocto",$datacobranzadet->nrofav)
+                    /* $dtefac = Dte::where("nrodocto",$datacobranzadet->nrofav)
                                     ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
-                                    ->get();
-                    $mnttotal = 0;
-                    $fecvenc = date('Y-m-d');
-                    if(count($dtefac) > 0){
+                                    ->get(); */
+                    //$mnttotal = 0;
+                    $numeroOC = "";
+                    $mnttotal = $Deuda;
+                    $fecfact = $datacobranzadet->fecfact;
+                    $fecvenc = $datacobranzadet->fecvenc;
+                    $TFac += $mnttotal;
+                    /* if(count($dtefac) > 0){
                         $dte = Dte::findOrFail($dtefac[0]->id);
                         $numeroOC= isset($dte->dteoc) ? $dte->dteoc->dteoc : "";
                         $mnttotal = $dte->mnttotal;
@@ -3396,7 +3397,7 @@ class Dte extends Model
                         }                        
                         $mnttotal = $Deuda;
                         //$fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $auxcliente->plazopago->dias ? $auxcliente->plazopago->dias : "0" . " days"));
-                    }
+                    } */
                     $TDeuda += $Deuda;
                     $empresa = Empresa::findOrFail(1);
                     $fecvencProrr = date('Y-m-d', strtotime($fecvenc ."+ " . $empresa->diasprorrogacob . " days"));
@@ -3413,7 +3414,7 @@ class Dte extends Model
                             'mnttot' => $mnttotal,
                             'Deuda' => $Deuda
                         ];
-                        $ArrayNroFacDeuda[] = "(" . $datacobranzadet->nrofav . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
+                        $ArrayNroFacDeuda[] = "(" . $datacobranzadet->tipodoc . " " . $datacobranzadet->nrofav . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
                         $staVencida = true;
                     }
                     $datosTodasFacDeuda[] = [

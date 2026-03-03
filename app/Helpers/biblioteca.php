@@ -508,8 +508,8 @@ if (!function_exists('datacobranza')) {
             . $aux_mensajesobrecupo;
         }else{
             if($dataCobranza["TDeudaFec"] > 0){
-                $staBloqueo ["titulo"] = "Facturas Vencidas.";
-                $staBloqueo ["bloqueo"]=  "Facturas Vencidas:\n" . $dataCobranza["NroFacDeu"] . ".";
+                $staBloqueo ["titulo"] = "Documento Vencido.";
+                $staBloqueo ["bloqueo"]=  "Documento Vencido:\n" . $dataCobranza["NroFacDeu"] . ".";
             }
         }
     }
