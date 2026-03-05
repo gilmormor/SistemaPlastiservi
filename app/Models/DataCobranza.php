@@ -200,7 +200,7 @@ class DataCobranza extends Model
 
 
         $sql = "SELECT dte.sucursal_id,cliente.rut,cliente.razonsocial,cliente.limitecredito,
-        datacobranza.cliente_id,nrofav,fecfact,fecvenc,mnttot,deuda
+        datacobranza.cliente_id,nrofav,fecfact,fecvenc,mnttot,deuda,datacobranzadet.tipodoc
         FROM datacobranzadet INNER JOIN datacobranza
         ON datacobranzadet.datacobranza_id = datacobranza.id AND ISNULL(datacobranza.deleted_at)
         INNER JOIN cliente

@@ -58,7 +58,8 @@ class NotifyMailFactxVencer
                         <tr>
                             <th width='20px' style='text-align: center;'>RUT</th>
                             <th width='150px' style='text-align: left;'>Razon Social</th>
-                            <th width='20px' style='text-align: center;'>N° Fact</th>
+                            <th width='150px' style='text-align: left;'>TipoDoc</th>
+                            <th width='20px' style='text-align: center;'>N° Doc</th>
                             <!--<th width='20px' style='text-align: center;'>FechFac</th>-->
                             <th width='20px' style='text-align: center;'>FechVenc</th>
                             <!--<th width='20px' style='text-align: right;' title='Monto Factura'>Monto</th>-->
@@ -77,6 +78,7 @@ class NotifyMailFactxVencer
                         "<tr class='headt' style='height:150%;'>
                             <td style='text-align: center;'>$factura->rut</td>
                             <td style='text-align: left;'>$factura->razonsocial</td>
+                            <td style='text-align: center;'>$factura->tipodoc</td>
                             <td style='text-align: center;'>$factura->nrofav</td>
                             <!--<td style='text-align: center;'>$aux_fechafact</td>-->
                             <td style='text-align: center;'>$aux_fechavenc</td>
