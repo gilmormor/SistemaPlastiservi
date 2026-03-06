@@ -147,7 +147,7 @@ function consultarpage(data){
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : "/reportinvmov/reporte/" + data.data2,
-        'order': [[ 1, "asc" ]],
+        'order': [[ 0, "asc" ]],
         'columns'     : [
             {data: 'id'},
             {data: 'usuario'},
