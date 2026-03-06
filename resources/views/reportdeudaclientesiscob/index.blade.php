@@ -184,11 +184,12 @@ Deuda Clientes Sis Cob
                 <table class="table table-striped table-bordered table-hover" id="tabla-data-consulta" data-page-length="25">
                     <thead>
                         <tr>
-                            <th style="text-align:center;">Nro Fact</th>
-                            <th style="text-align:center;">Fecha Fact</th>
-                            <th style="text-align:center;">Fecha Venc</th>
-                            <th style="text-align:right;">Monto Fact</th>
-                            <th style="text-align:right;">Deuda</th>
+                            <th style="text-align:center;" title="Nro Documento">Nro Fact</th>
+                            <th style="text-align:center;" class="width20 tooltipsC"  title="Tipo Documento">TipoDoc</th>
+                            <th style="text-align:center;" title="Fecha Documento">Fecha Doc</th>
+                            <th style="text-align:center;" title="Fecha Vencimiento">Fecha Venc</th>
+                            <th style="text-align:right;" title="Monto Documento">Monto Doc</th>
+                            <th style="text-align:right;" title="Deuda">Deuda</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -197,12 +198,12 @@ Deuda Clientes Sis Cob
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan='3' style='text-align:right'>Total Pagina</th>
+                            <th colspan='4' style='text-align:right'>Total Pagina</th>
                             <th id='subtotalfac' name='subtotalfac' style='text-align:right'>0</th>
                             <th id='subtotaldeuda' name='subtotaldeuda' style='text-align:right'>0</th>
                         </tr>
                         <tr>
-                            <th colspan='3' style='text-align:right'>Total</th>
+                            <th colspan='4' style='text-align:right'>Total</th>
                             <th id='totalfac' name='totalfac' style='text-align:right'>0</th>
                             <th id='totaldeuda' name='totaldeuda' style='text-align:right'>0</th>
                         </tr>

@@ -115,10 +115,11 @@ function configurarTabla(aux_tabla,datos){
         'data'        : datos,
         'columns'     : [
             {data: 'nrofav'}, // 0
-            {data: 'fecfact'}, // 1
-            {data: 'fecvenc'}, // 2
-            {data: 'mnttot'}, // 3
-            {data: 'deuda'}, // 4
+            {data: 'tipodoc'}, // 1
+            {data: 'fecfact'}, // 2
+            {data: 'fecvenc'}, // 3
+            {data: 'mnttot'}, // 4
+            {data: 'deuda'}, // 5
         ],
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -127,22 +128,34 @@ function configurarTabla(aux_tabla,datos){
         "createdRow": function ( row, data, index ) {
             $('td', row).eq(0).attr('style','text-align:center;');
             $('td', row).eq(1).attr('style','text-align:center');
-            $('td', row).eq(1).attr('data-order',data.fecfact);
-            aux_fecha = new Date(data.fecfact + " 00:00:00");
-            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha));
+            switch (data.tipodoc) {
+                case "FAV":
+                    $('td', row).eq(1).attr('title','Factura');
+                    break;
+                case "CHF":
+                    $('td', row).eq(1).attr('title','Cheque');
+                    break;            
+                default:
+                    break;
+            }
+            
             $('td', row).eq(2).attr('style','text-align:center');
-            $('td', row).eq(2).attr('data-order',data.fecvenc);
-            aux_fecha = new Date(data.fecvenc + " 00:00:00");
+            $('td', row).eq(2).attr('data-order',data.fecfact);
+            aux_fecha = new Date(data.fecfact + " 00:00:00");
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha));
+            $('td', row).eq(3).attr('style','text-align:center');
+            $('td', row).eq(3).attr('data-order',data.fecvenc);
+            aux_fecha = new Date(data.fecvenc + " 00:00:00");
+            $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha));
 
-            $('td', row).eq(3).addClass('subtotalfac');
-            $('td', row).eq(3).attr('style','text-align:right');
-            $('td', row).eq(3).attr('data-order',data.mnttot);
-            $('td', row).eq(3).html(MASKLA(data.mnttot,0));
-            $('td', row).eq(4).addClass('subtotaldeuda');
+            $('td', row).eq(4).addClass('subtotalfac');
             $('td', row).eq(4).attr('style','text-align:right');
-            $('td', row).eq(4).attr('data-order',data.deuda);
-            $('td', row).eq(4).html(MASKLA(data.deuda,0));
+            $('td', row).eq(4).attr('data-order',data.mnttot);
+            $('td', row).eq(4).html(MASKLA(data.mnttot,0));
+            $('td', row).eq(5).addClass('subtotaldeuda');
+            $('td', row).eq(5).attr('style','text-align:right');
+            $('td', row).eq(5).attr('data-order',data.deuda);
+            $('td', row).eq(5).html(MASKLA(data.deuda,0));
 
             let id_str = data.nrofav.toString();
             id_str = aux_nombrepdf + id_str.padStart(8, "0");
@@ -160,19 +173,29 @@ function configurarTabla(aux_tabla,datos){
 
             aux_text = "";
             if(data.nrofav != null){
-                aux_text = 
-                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.dte_id}',0)">
-                    ${data.nrofav}
-                </a>
-                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.dte_id}',1)">
-                    <i class="fa fa-fw fa-file-pdf-o"></i>
-                </a>
-                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="XMLDownLoad('${data.dte_id}')">
-                    <i class="fa fa-fw fa-cloud-download"></i>
-                </a>
-                <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_titlehand}">
-                    <i class="fa fa-fw ${aux_icohand} ${aux_colorvenc}"></i>
-                </a>`;
+                if(data.tipodoc == "FAV"){
+                    aux_text = 
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Factura" onclick="genpdfFACDin('${data.dte_id}',0)">
+                        ${data.nrofav}
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cedible" onclick="genpdfFACDin('${data.dte_id}',1)">
+                        <i class="fa fa-fw fa-file-pdf-o"></i>
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Descargar XML Factura" onclick="XMLDownLoad('${data.dte_id}')">
+                        <i class="fa fa-fw fa-cloud-download"></i>
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_titlehand}">
+                        <i class="fa fa-fw ${aux_icohand} ${aux_colorvenc}"></i>
+                    </a>`;
+                }else{
+                    aux_text = 
+                    `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Cheque">
+                        ${data.nrofav}
+                    </a>
+                    <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="${aux_titlehand}">
+                        <i class="fa fa-fw ${aux_icohand} ${aux_colorvenc}"></i>
+                    </a>`;
+                }
             }
             $('td', row).eq(0).attr("class","action-buttons");
             $('td', row).eq(0).html(aux_text);
@@ -310,6 +333,7 @@ function datosFac(GenExcel){
         emailxlote_id : 1,
         consultarnvpendfact : 1,
         staconsNVPendDesp : 1,
+        staConsStock : 0,
         _token     : $('input[name=_token]').val()
     };
     var data2 = "?&rut="+data1.rut +
@@ -645,7 +669,7 @@ function pdfjs(datos) {
 function headRows() {
     return [
       //{ id: "NV", cliente_rut: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
-      { nrofac: "N° Factura", FechaFac: "FechaFac", fechaVenc: "Fecha Venc", MontoFact: "Monto Factura", deuda: "Deuda"},
+      { nrofac: "N° Doc", FechaFac: "FechaFac", fechaVenc: "Fecha Venc", MontoFact: "Monto Factura", deuda: "Deuda"},
     ]
 }
 
@@ -653,7 +677,7 @@ function bodyRows(data) {
     const body = [];
     const today = new Date(); // Fecha actual para comparación
     data.forEach(row => {
-        const rowArray = [row.nrofav,fechaddmmaaaa(new Date(row.fecfact + " 00:00:00")),fechaddmmaaaa(new Date(row.fecvenc + " 00:00:00")),MASKLA(row.mnttot,0),MASKLA(row.deuda,0)];
+        const rowArray = [row.tipodoc + " " + row.nrofav,fechaddmmaaaa(new Date(row.fecfact + " 00:00:00")),fechaddmmaaaa(new Date(row.fecvenc + " 00:00:00")),MASKLA(row.mnttot,0),MASKLA(row.deuda,0)];
         // Aplica el fondo gris si la deuda es mayor a 0
         //const rowStyle = row.Deuda > 0 ? {fillColor: [240, 240, 240]} : {};
         //body.push({row: rowArray});
@@ -662,7 +686,7 @@ function bodyRows(data) {
         const vencimiento = new Date(row.fecvenc);
         const isVencida = vencimiento < today;
         
-        body.push([row.nrofav,fechaddmmaaaa(new Date(row.fecfact + " 00:00:00")),fechaddmmaaaa(new Date(row.fecvenc + " 00:00:00")),MASKLA(row.mnttot,0),MASKLA(row.deuda,0)]);
+        body.push([row.tipodoc + " " + row.nrofav,fechaddmmaaaa(new Date(row.fecfact + " 00:00:00")),fechaddmmaaaa(new Date(row.fecvenc + " 00:00:00")),MASKLA(row.mnttot,0),MASKLA(row.deuda,0)]);
         // Aplica el fondo rojo claro si la factura está vencida
         //const rowStyle = isVencida ? {fillColor: [255, 204, 204], textColor: [255, 0, 0]} : {};
 
@@ -751,10 +775,10 @@ function exportarExcel(datos) {
             count++;    
             datosExcel.push(filaExcel);
             var filaExcel = [
-                "N° Factura: ",
+                "N° Doc: ",
                 "Fecha Fac",
                 "Fecha Venc",
-                "Monto Factura",
+                "Monto",
                 "Deuda"
 
             ];
@@ -766,7 +790,7 @@ function exportarExcel(datos) {
                 let valorNumericoDeuda = parseFloat(deuda.deuda);
                 valorNumericoDeuda = isNaN(valorNumericoDeuda) ? 0 : valorNumericoDeuda;
                 var filaExcel = [
-                    deuda.nrofav,
+                    deuda.tipodoc + " " + deuda.nrofav,
                     fechaddmmaaaa(new Date(deuda.fecfact + " 00:00:00")),
                     fechaddmmaaaa(new Date(deuda.fecvenc + " 00:00:00")),
                     deuda.mnttot,

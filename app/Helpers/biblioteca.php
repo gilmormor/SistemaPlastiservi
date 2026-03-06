@@ -508,8 +508,8 @@ if (!function_exists('datacobranza')) {
             . $aux_mensajesobrecupo;
         }else{
             if($dataCobranza["TDeudaFec"] > 0){
-                $staBloqueo ["titulo"] = "Facturas Vencidas.";
-                $staBloqueo ["bloqueo"]=  "Facturas Vencidas:\n" . $dataCobranza["NroFacDeu"] . ".";
+                $staBloqueo ["titulo"] = "Documento Vencido.";
+                $staBloqueo ["bloqueo"]=  "Documento Vencido:\n" . $dataCobranza["NroFacDeu"] . ".";
             }
         }
     }
@@ -924,4 +924,22 @@ function precioUnitSinCostoInsumos($docinsumodets, $preciounit) {
         (' . $diferenciaFormateada . ')
     </a>';
 }
+if (!function_exists('formatearRUTSinCerosIzq')) {
+    function formatearRUTSinCerosIzq($rut){
+        $rut = preg_replace('/[^0-9Kk]/', '', $rut); // Eliminar caracteres no numéricos ni K/k
+
+        if (strlen($rut) < 2) {
+            return $rut; // No se puede formatear si el RUT es demasiado corto
+        }
+    
+        $digitoVerificador = strtoupper(substr($rut, -1)); // Último dígito (puede ser K/k)
+        $restoRUT = substr($rut, 0, -1); // Resto del RUT
+        $restoRUT = ltrim($restoRUT, '0'); // Eliminar ceros a la izquierda
+    
+        $rutFormateado = $restoRUT . '-' . $digitoVerificador;
+    
+        return $rutFormateado;
+    }
+}
+
 ?>

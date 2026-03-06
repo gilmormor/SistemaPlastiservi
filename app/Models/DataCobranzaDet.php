@@ -11,6 +11,7 @@ class DataCobranzaDet extends Model
         'datacobranza_id',
         'cliente_id',
         'dte_id',
+        'tipodoc',
         'nrofav',
         'fecfact',
         'fecvenc',

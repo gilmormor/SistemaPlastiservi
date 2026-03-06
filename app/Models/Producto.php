@@ -1422,29 +1422,33 @@ class Producto extends Model
         //can('reporte-guia_despacho');
         //dd('entro');
         //$datas = GuiaDesp::reporteguiadesp($request);
-        $aux_AgruOrd = "group by notaventadetalle.producto_id
-                        order by notaventadetalle.producto_id";
-        $datas = consultapendxprod($request,2,1,$aux_AgruOrd);
-        if($request->producto_id == null){
-            $arreglo_producto_id = array_map(function ($elemento) {
-                return $elemento->producto_id;
-            }, $datas);
+        //Estatus para validar si no se debe consultar el stock o no, si el estatus esta marcado como 1 o no esta seteado se consulta el stock, si esta seteado como 0 no se consulta el stock
+        if(!isset($request->staConsStock) or (isset($request->staConsStock) and $request->staConsStock == 1)){
+            $aux_AgruOrd = "group by notaventadetalle.producto_id
+                            order by notaventadetalle.producto_id";
+            $datas = consultapendxprod($request,2,1,$aux_AgruOrd);
+            if($request->producto_id == null){
+                $arreglo_producto_id = array_map(function ($elemento) {
+                    return $elemento->producto_id;
+                }, $datas);
+                
+                //dd($arreglo_resultante);
+                //$request->producto_id = (implode ( ',' , $arreglo_producto_id));
+                $request->merge(['producto_id' => implode ( ',' , $arreglo_producto_id)]);
+            }
+            //dd($request->producto_id);
+            $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Ym"));
+            $request->merge(['mesanno' => $aux_mesanno]);
+            $request->merge(['tipobodega' => "1,2"]);
             
-            //dd($arreglo_resultante);
-            //$request->producto_id = (implode ( ',' , $arreglo_producto_id));
-            $request->merge(['producto_id' => implode ( ',' , $arreglo_producto_id)]);
+            //dd($request);
+            $datas = InvMov::stocksql($request,"producto.id");
+            $arreglo_ProdStock = [];
+            foreach ($datas as $elemento) {
+                $arreglo_ProdStock[$elemento->producto_id] = $elemento;
+            }
         }
-        //dd($request->producto_id);
-        $aux_mesanno = CategoriaGrupoValMes::mesanno(date("Ym"));
-        $request->merge(['mesanno' => $aux_mesanno]);
-        $request->merge(['tipobodega' => "1,2"]);
-        
-        //dd($request);
-        $datas = InvMov::stocksql($request,"producto.id");
-        $arreglo_ProdStock = [];
-        foreach ($datas as $elemento) {
-            $arreglo_ProdStock[$elemento->producto_id] = $elemento;
-        }
+
         //dd($arreglo_ProdStock);
         /*
         $producto_id_array = [];
@@ -1510,78 +1514,81 @@ class Producto extends Model
         $total_totalplatamas_iva = 0;
 
         foreach ($datas as &$data){
-            $id = $data->producto_id;
-            $atributoProd = Producto::atributosProducto($id);
-            $data->nombre = $atributoProd["nombre"];
-            $data->diametro = $atributoProd["at_ancho"];
-            $data->long = $atributoProd["at_largo"];
-            $data->at_espesor = $atributoProd["at_espesor"];
-            $data->cla_nombre = $atributoProd["cla_nombre"];
-            $data->tipounion = $atributoProd["tipounion"];
-            $data->at_materiaprima = $atributoProd["at_materiaprima"];
-            $data->stockbpt = 0;
-            $data->picking = 0;
-            $aux_picking = 0;
-            if(isset($arreglo_ProdStock[$id])){
-                $data->stockbpt = $arreglo_ProdStock[$id]->stockBodProdTerm;
-                //$data->picking = $arreglo_ProdStock[$id]->stockPiking;
-                if($arreglo_ProdStock[$id]->stockPiking > 0){
-                    $notaventadetalle = NotaVentaDetalle::findOrFail($data->id);
-                    $detalles = $notaventadetalle->despachosoldets()->get();
-                    $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
-                    foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
-                        $aux_picking += $arrayBodegasPicking["stock"];
+            if(!isset($request->staConsStock) or (isset($request->staConsStock) and $request->staConsStock == 1)){
+                $id = $data->producto_id;
+                $atributoProd = Producto::atributosProducto($id);
+                $data->nombre = $atributoProd["nombre"];
+                $data->diametro = $atributoProd["at_ancho"];
+                $data->long = $atributoProd["at_largo"];
+                $data->at_espesor = $atributoProd["at_espesor"];
+                $data->cla_nombre = $atributoProd["cla_nombre"];
+                $data->tipounion = $atributoProd["tipounion"];
+                $data->at_materiaprima = $atributoProd["at_materiaprima"];
+                $data->stockbpt = 0;
+                $data->picking = 0;
+                $aux_picking = 0;
+                if(isset($arreglo_ProdStock[$id])){
+                    $data->stockbpt = $arreglo_ProdStock[$id]->stockBodProdTerm;
+                    //$data->picking = $arreglo_ProdStock[$id]->stockPiking;
+                    if($arreglo_ProdStock[$id]->stockPiking > 0){
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($data->id);
+                        $detalles = $notaventadetalle->despachosoldets()->get();
+                        $arrayBodegasPickings = InvBodega::llenarArrayBodegasPickingSolDesp($detalles);
+                        foreach ($arrayBodegasPickings as $arrayBodegasPicking) {
+                            $aux_picking += $arrayBodegasPicking["stock"];
+                        }
+                        $data->picking = $aux_picking;
                     }
-                    $data->picking = $aux_picking;
+                }else{
+                    //$data->stockbpt = 0;
+                    //$data->picking = 0;
                 }
-            }else{
-                //$data->stockbpt = 0;
-                //$data->picking = 0;
-            }
 
 
-            //SUMA TOTAL DE SOLICITADO
-            /*************************/
-            /* $sql = "SELECT cantsoldesp
-            FROM vista_sumsoldespdet
-            WHERE notaventadetalle_id=$data->id";
-            $datasuma = DB::select($sql);
-            if(empty($datasuma)){
-                $sumacantsoldesp= 0;
-            }else{
-                $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-            } */
-            /*************************/
-            //SUMA TOTAL DESPACHADO
-            /*************************/
-            /* $sql = "SELECT cantdesp
-                FROM vista_sumorddespxnvdetid
+                //SUMA TOTAL DE SOLICITADO
+                /*************************/
+                /* $sql = "SELECT cantsoldesp
+                FROM vista_sumsoldespdet
                 WHERE notaventadetalle_id=$data->id";
-            $datasumadesp = DB::select($sql);
-            if(empty($datasumadesp)){
-                $sumacantdesp= 0;
-            }else{
-                $sumacantdesp= $datasumadesp[0]->cantdesp;
-            } */
-            if(empty($data->oc_file)){
-                $aux_enlaceoc = $data->oc_id;
-            }else{
-                $aux_enlaceoc = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
-            }
+                $datasuma = DB::select($sql);
+                if(empty($datasuma)){
+                    $sumacantsoldesp= 0;
+                }else{
+                    $sumacantsoldesp= $datasuma[0]->cantsoldesp;
+                } */
+                /*************************/
+                //SUMA TOTAL DESPACHADO
+                /*************************/
+                /* $sql = "SELECT cantdesp
+                    FROM vista_sumorddespxnvdetid
+                    WHERE notaventadetalle_id=$data->id";
+                $datasumadesp = DB::select($sql);
+                if(empty($datasumadesp)){
+                    $sumacantdesp= 0;
+                }else{
+                    $sumacantdesp= $datasumadesp[0]->cantdesp;
+                } */
+                if(empty($data->oc_file)){
+                    $aux_enlaceoc = $data->oc_id;
+                }else{
+                    $aux_enlaceoc = "<a class='btn-accion-tabla btn-sm tooltipsC' title='Orden de Compra' onclick='verpdf2(\"$data->oc_file\",2)'>$data->oc_id</a>";
+                }
 
-            //$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
-            //$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
-            $aux_cantsaldo = $data->cant-$data->cantdesp;
-            $fila_cantdesp = number_format($data->cantdesp, 0, ",", ".");
-            if($data->cantdesp>0){
-                $fila_cantdesp = "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->notaventa_id,$data->producto_id)' title='Ver detalle despacho' data-toggle='tooltip'>"
-                                . number_format($data->cantdesp, 0, ",", ".") .
-                                "</a>";
+                //$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
+                //$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
+                $fila_cantdesp = number_format($data->cantdesp, 0, ",", ".");
+                if($data->cantdesp>0){
+                    $fila_cantdesp = "<a class='btn-accion-tabla btn-sm tooltipsC' onclick='listarorddespxNV($data->notaventa_id,$data->producto_id)' title='Ver detalle despacho' data-toggle='tooltip'>"
+                                    . number_format($data->cantdesp, 0, ",", ".") .
+                                    "</a>";
+                }
+                $comuna = Comuna::findOrFail($data->comunaentrega_id);
+                $producto = Producto::findOrFail($data->producto_id);
+                //$notaventa = NotaVenta::findOrFail($data->notaventa_id);
+                //$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
             }
-            $comuna = Comuna::findOrFail($data->comunaentrega_id);
-            $producto = Producto::findOrFail($data->producto_id);
-            //$notaventa = NotaVenta::findOrFail($data->notaventa_id);
-            //$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
+            $aux_cantsaldo = $data->cant-$data->cantdesp;
+
             $aux_subtotalplata = ($aux_cantsaldo) * $data->preciounit;
 
 

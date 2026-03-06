@@ -3186,10 +3186,10 @@ class Dte extends Model
         //$clientes = cliente::get();
         //dd($clientes);
         $soap = new SoapController();
-        $aux_cont = 0;
+        //$aux_cont = 0;
         $ArrayFact = "";
         foreach ($clientes as $cliente) {
-            $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUT($cliente->rut));
+            $ListaPendientes = $soap->Comando02ListaPendientes(formatearRUTSinCerosIzq($cliente->rut));
             if(isset($ListaPendientes["error"])){
                 return $ListaPendientes;
             }
@@ -3211,55 +3211,53 @@ class Dte extends Model
             $datosFacDeuda = [];
             $ArrayNroFac = [];
             $ArrayNroFacDeuda = [];
-            $cont = 0;
+            //$cont = 0;
             $datosTodasFacDeuda = [];
             foreach ($tables as $table) {
-                $cont++;
+                //$cont++;
                 // Accede a los elementos hijos dentro de cada <Table>
                 $nroFAV = $xpath->evaluate('string(NroFAV)', $table);
                 $cliente1 = $xpath->evaluate('string(Cliente)', $table);
                 $fechaFAV = $xpath->evaluate('string(FechaFAV)', $table);
+                $fechaVenc = $xpath->evaluate('string(FechaVencimie)', $table);
                 $Deuda = $xpath->evaluate('string(Monto)', $table);
-                $pkFAVPendiente = $xpath->evaluate('string(PKFAVPENDIENTE)', $table);
+                //$pkFAVPendiente = $xpath->evaluate('string(PKFAVPENDIENTE)', $table);
                 $vendedor = $xpath->evaluate('string(Vendedor)', $table);
                 $numeroOC = $xpath->evaluate('string(NumeroOC)', $table);
-    
-    
+
                 // Realiza las operaciones que desees con los valores obtenidos
+                $TipoDoc = substr($nroFAV,0,3);
                 $NroFAV = substr($nroFAV,4,7);
-                $dtefac = Dte::where("nrodocto",$NroFAV)
+                /* $dtefac = Dte::where("nrodocto",$NroFAV)
                                 ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
-                                ->get();
-                $mnttotal = 0;
-                if(count($dtefac) > 0){
+                                ->get(); */
+                $fecfact = substr($fechaFAV,0,10);
+                $fecvenc = substr($fechaVenc,0,10);
+                $mnttotal = $Deuda;
+                $TFac += $Deuda;
+                /* if(count($dtefac) > 0){
                     $dte = Dte::findOrFail($dtefac[0]->id);
                     $mnttotal = $dte->mnttotal;
                     $TFac += $dte->mnttotal;
                     $fecfact = $dte->fchemis;
                     if(isset($dte->dtefac->fchvenc)){
                         $fecvenc = $dte->dtefac->fchvenc;
-                    }else{
-                        //$fecvenc = $dte->fchemis;
-                        $fecvenc = date('Y-m-d', strtotime($dte->fchemis ."+ " . $cliente->plazopago_dias . " days"));
                     }
                 }else{
-                    $auxcliente = Cliente::findOrFail($cliente->id);
-                    $fecfact = substr($fechaFAV,0,10);
-                    $fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $cliente->plazopago_dias . " days"));
-                    $mnttotal = $Deuda;
-                    //$fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $auxcliente->plazopago->dias ? $auxcliente->plazopago->dias : "0" . " days"));
+                    $TFac += $Deuda;
                 }
-                $TDeuda += $Deuda;
+                $TDeuda += $Deuda; */
                 $empresa = Empresa::findOrFail(1);
                 $fecvencProrr = date('Y-m-d', strtotime($fecvenc ."+ " . $empresa->diasprorrogacob . " days"));
-                if($cont > 1){
+                /* if($cont > 1){
                     //dd($fecvencProrr);
-                }
+                } */
                 //dd($fechacobro);
                 $staVencida = false;
                 if($fecvencProrr <= date('Y-m-d')){
                     $TDeudaFec += $Deuda;
                     $datosFacDeuda[] = [
+                        'TipoDoc' => $TipoDoc,
                         'NroFAV' => $NroFAV,
                         'fecfact' => $fecfact,
                         'fecvenc' => $fecvenc,
@@ -3270,6 +3268,7 @@ class Dte extends Model
                     $staVencida = true;
                 }
                 $datosTodasFacDeuda[] = [
+                    'TipoDoc' => $TipoDoc,
                     'NroFAV' => $NroFAV,
                     'fecfact' => $fecfact,
                     'fecvenc' => $fecvenc,
@@ -3280,6 +3279,7 @@ class Dte extends Model
                 $ArrayNroFac[] = "(" . $NroFAV . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
 
                 $matriz [] = [
+                    'TipoDoc' => $TipoDoc,
                     'NroFAV' => $NroFAV,
                     'Cliente' => $cliente1,
                     'FechaFAV' => $fechaFAV,
@@ -3313,7 +3313,7 @@ class Dte extends Model
                 "datosFacDeuda" => $datosFacDeuda,
                 "datosTodasFacDeuda" => $datosTodasFacDeuda
             ];   
-            $aux_cont++;
+            //$aux_cont++;
             /* if($aux_cont > 100){
                 break;
             } */
@@ -3357,18 +3357,21 @@ class Dte extends Model
                     // Accede a los elementos hijos dentro de cada <Table>
                     $nroFAV = $datacobranzadet->nrofav;
                     $cliente1 = $aux_cliente;
+                    $tipoDoc = $datacobranzadet->tipodoc;
                     $fechaFAV = $datacobranzadet->fecfact;
                     $Deuda = $datacobranzadet->deuda;
                     //$vendedor = $xpath->evaluate('string(Vendedor)', $table);
-                    $numeroOC= "";
-        
-        
                     // Realiza las operaciones que desees con los valores obtenidos
-                    $dtefac = Dte::where("nrodocto",$datacobranzadet->nrofav)
+                    /* $dtefac = Dte::where("nrodocto",$datacobranzadet->nrofav)
                                     ->whereIn("foliocontrol_id",[1,7]) //AQUI SE VA A PRESENTAR EL PROBLEMA CUANDO COINCIDAN LOS NUMEROS ENTRE FACT Y FACT EXENTA
-                                    ->get();
-                    $mnttotal = 0;
-                    if(count($dtefac) > 0){
+                                    ->get(); */
+                    //$mnttotal = 0;
+                    $numeroOC = "";
+                    $mnttotal = $Deuda;
+                    $fecfact = $datacobranzadet->fecfact;
+                    $fecvenc = $datacobranzadet->fecvenc;
+                    $TFac += $mnttotal;
+                    /* if(count($dtefac) > 0){
                         $dte = Dte::findOrFail($dtefac[0]->id);
                         $numeroOC= isset($dte->dteoc) ? $dte->dteoc->dteoc : "";
                         $mnttotal = $dte->mnttotal;
@@ -3383,10 +3386,18 @@ class Dte extends Model
                     }else{
                         $auxcliente = Cliente::findOrFail($cliente->id);
                         $fecfact = substr($fechaFAV,0,10);
-                        $fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $cliente->plazopago_dias . " days"));
+                        if($tipoDoc == "FAV"){
+                            $fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $cliente->plazopago_dias . " days"));
+                        }else{
+                            if(isset($datacobranzadet->fecvenc)){
+                                $fecvenc = $datacobranzadet->fecvenc;
+                            }else{
+                                $fecvenc = $datacobranzadet->fecfact;
+                            }
+                        }                        
                         $mnttotal = $Deuda;
                         //$fecvenc = date('Y-m-d', strtotime($fecfact ."+ " . $auxcliente->plazopago->dias ? $auxcliente->plazopago->dias : "0" . " days"));
-                    }
+                    } */
                     $TDeuda += $Deuda;
                     $empresa = Empresa::findOrFail(1);
                     $fecvencProrr = date('Y-m-d', strtotime($fecvenc ."+ " . $empresa->diasprorrogacob . " days"));
@@ -3396,16 +3407,18 @@ class Dte extends Model
                     if($fecvencProrr <= date('Y-m-d')){
                         $TDeudaFec += $Deuda;
                         $datosFacDeuda[] = [
+                            'TipoDoc' => $datacobranzadet->tipodoc,
                             'NroFAV' => $datacobranzadet->nrofav,
                             'fecfact' => $fecfact,
                             'fecvenc' => $fecvenc,
                             'mnttot' => $mnttotal,
                             'Deuda' => $Deuda
                         ];
-                        $ArrayNroFacDeuda[] = "(" . $datacobranzadet->nrofav . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
+                        $ArrayNroFacDeuda[] = "(" . $datacobranzadet->tipodoc . " " . $datacobranzadet->nrofav . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
                         $staVencida = true;
                     }
                     $datosTodasFacDeuda[] = [
+                        'TipoDoc' => $datacobranzadet->tipodoc,
                         'NroFAV' => $datacobranzadet->nrofav,
                         'fecfact' => $fecfact,
                         'fecvenc' => $fecvenc,
@@ -3416,6 +3429,7 @@ class Dte extends Model
                     $ArrayNroFac[] = "(" . $datacobranzadet->nrofav . "  " . date('d/m/Y', strtotime($fecvenc)) . ")";
     
                     $matriz [] = [
+                        'TipoDoc' => $datacobranzadet->tipodoc,
                         'NroFAV' => $datacobranzadet->nrofav,
                         'Cliente' => $cliente1,
                         'FechaFAV' => $fechaFAV,
@@ -3734,6 +3748,7 @@ class Dte extends Model
                     $datacobranzadet->datacobranza_id = $datacobranza->id;
                     $datacobranzadet->cliente_id = $datacobranza->cliente_id;
                     $datacobranzadet->dte_id = $dte->id;
+                    $datacobranzadet->tipodoc = "FAV";
                     $datacobranzadet->nrofav = $dte->nrodocto;
                     $datacobranzadet->fecfact = $dte->fchemis;
                     $datacobranzadet->fecvenc = $dte->dtefac->fchvenc;
