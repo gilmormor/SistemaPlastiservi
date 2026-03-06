@@ -33,7 +33,7 @@ Movimiento de Inventario
                     @csrf
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
-                            <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Mes">
+                            <div class="col-xs-12 col-md-6 col-sm-6" title="Mes">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label for="annomes">Fecha:</label>
                                 </div>
@@ -41,7 +41,7 @@ Movimiento de Inventario
                                     <input type="text" name="annomes" id="annomes" class="form-control date-pickermes" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                            <div class="col-xs-12 col-md-6 col-sm-6" title="Sucursal">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label for="sucursal_id" >Sucursal</label>
                                 </div>
@@ -69,7 +69,7 @@ Movimiento de Inventario
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-12 col-sm-12">
-                            <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Inicial Orden Despacho">
+                            <div class="col-xs-12 col-md-6 col-sm-6" title="Fecha Inicial Orden Despacho">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label for="fecha">Fecha Ini:</label>
                                 </div>
@@ -77,7 +77,7 @@ Movimiento de Inventario
                                     <input type="text" bsDaterangepicker class="form-control datepicker" name="fechad" id="fechad" placeholder="DD/MM/AAAA" required readonly="">
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Fecha Final Orden Despacho">
+                            <div class="col-xs-12 col-md-6 col-sm-6" title="Fecha Final Orden Despacho">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label for="dep_fecha">Fecha Fin:</label>
                                 </div>
@@ -88,7 +88,7 @@ Movimiento de Inventario
                         </div>
 
                         <div class="col-xs-12 col-md-12 col-sm-12">
-                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
+                            <div class="col-xs-12 col-sm-6" title="Area de Producción">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label >Area Prod:</label>
                                 </div>
@@ -104,7 +104,7 @@ Movimiento de Inventario
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                            <div class="col-xs-12 col-sm-6" title="Código Producto">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label for="producto_idPxP" class="control-label">Producto</label>
                                 </div>
@@ -119,7 +119,7 @@ Movimiento de Inventario
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-12 col-sm-12">
-                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Bodega">
+                            <div class="col-xs-12 col-sm-6" title="Bodega">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label>Bodega:</label>
                                 </div>
@@ -133,7 +133,7 @@ Movimiento de Inventario
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Buscar por descripcion">
+                            <div class="col-xs-12 col-sm-6" title="Buscar por descripcion">
                                 <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                     <label for="buscarxdesc" class="control-label">Descripción</label>
                                 </div>
