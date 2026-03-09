@@ -323,7 +323,7 @@ async function llenarDatosinsumoL(insumo_id){
 	let item = insumo_id.attr("item");
 	if($("#insumo_id" + item).val() != $("#insumo_id" + item).attr("valor")){
 		arrayDP = await buscarDatosInsumo(insumo_id);
-        console.log(arrayDP);
+        //console.log(arrayDP);
 		$("#insumo_id" + item).val("");
 		if(arrayDP.cont > 0){
 			$("#insumo_id" + item).val(arrayDP.id);
