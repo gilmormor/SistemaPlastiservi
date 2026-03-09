@@ -38,7 +38,7 @@ class PoblarGlosaProducto extends Command
      */
     public function handle()
     {
-        Producto::chunk(100, function ($productos) {
+        /* Producto::chunk(100, function ($productos) {
             foreach ($productos as $producto) {
 
                 if (empty($producto->glosa)) {
@@ -54,6 +54,34 @@ class PoblarGlosaProducto extends Command
                 }
             }
         });
+
+        $this->info('Campo glosa poblado correctamente.'); */
+        Producto::select('id','glosa','nombre','tipoprod')
+            ->whereNull('glosa')
+            ->chunkById(500, function ($productos) {
+
+                foreach ($productos as $producto) {
+
+                    $atributos = $producto->atributosProducto($producto->id);
+
+                    $glosa = $atributos['nombre'] ?? $producto->nombre;
+
+                    $data = [
+                        'glosa' => $glosa
+                    ];
+
+                    if ($producto->tipoprod == 1) {
+                        $data['glosaaut'] = 0;
+                    }
+
+                    Producto::where('id', $producto->id)->update($data);
+
+                }
+
+                // liberar memoria del chunk
+                unset($productos);
+
+            });
 
         $this->info('Campo glosa poblado correctamente.');
     }

@@ -121,7 +121,7 @@ Migration
                         </div>
 
 
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
 
                             <div class="panel panel-warning">
                                 <div class="panel-heading">
@@ -164,7 +164,7 @@ Migration
 
                             </div>
 
-                        </div>
+                        </div> --}}
 
                     </div>
 
