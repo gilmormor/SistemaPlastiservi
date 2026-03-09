@@ -150,11 +150,11 @@ class DespachoSol extends Model
         IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
-        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
-            (SELECT COUNT(*) FROM despachoord
-                WHERE despachoord.despachosol_id = despachosol.id
-                AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
-            ) AS contorddesp
+        IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+        (SELECT COUNT(*) FROM despachoord
+            WHERE despachoord.despachosol_id = despachosol.id
+            AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+        ) AS contorddesp
         FROM despachosol INNER JOIN notaventa
         ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
         INNER JOIN cliente
