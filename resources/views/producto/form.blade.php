@@ -551,7 +551,6 @@
                                         class="form-control numericoblanco"
                                         required
                                         onblur="onBlurInsumo_id(this)"
-                                        onkeyup=""
                                         value="{{ old('detalles.'.$loop->index.'.insumoiddet', $det->insumo_id) }}"
                                         maxlength="4"
                                         style="text-align:right;"

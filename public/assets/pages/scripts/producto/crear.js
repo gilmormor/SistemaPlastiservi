@@ -38,7 +38,6 @@ $(document).ready(function () {
                         class="form-control numerico"
                         required
                         onblur="onBlurProducto_id(this)"
-                        onkeyup="buscarProdKeyUp(this,event)"
                         value=""
                         maxlength="4"
                         style="text-align:right;"
