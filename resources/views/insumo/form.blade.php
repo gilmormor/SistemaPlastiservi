@@ -18,7 +18,7 @@
     </div>
 </div>
 <div class="form-group">
-    <label for="tipocosto_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad de Medida Diametro">Unidad de Medida Diametro</label>
+    <label for="tipocosto_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Tipo de Costo">Tipo de Costo</label>
     <div class="col-lg-4">
         <select name="tipocosto_id" id="tipocosto_id" class="form-control select2 tipocosto_id" required>
             <option value="">Seleccione...</option>
@@ -35,7 +35,7 @@
 </div>
 
 <div class="form-group">
-    <label for="unidadmedida_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad de Medida Diametro">Unidad de Medida Diametro</label>
+    <label for="unidadmedida_id" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Unidad de Medida">Unidad de Medida</label>
     <div class="col-lg-4">
         <select name="unidadmedida_id" id="unidadmedida_id" class="form-control select2 unidadmedida_id" required>
             <option value="">Seleccione...</option>
