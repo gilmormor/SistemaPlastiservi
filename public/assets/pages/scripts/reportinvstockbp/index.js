@@ -129,7 +129,7 @@ function totalizar(){
         url: '/reportinvstockbp/totalizarindex/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            console.log(datos);
+            //console.log(datos);
             $("#totalstockBodProdTerm").html(MASKLA(datos.totales.stockBodProdTerm,0));
             $("#totalstockpicking").html(MASKLA(datos.totales.stockPiking,0));
             $("#totalstock").html(MASKLA(datos.totales.stock,0));
@@ -313,7 +313,7 @@ function exportarExcel() {
             return 0;
         }
 
-        console.log(data);
+        //console.log(data);
         //return 0;
         // Crear una matriz para los datos de Excel
         var datosExcel = [];

@@ -1,7 +1,7 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
     //configTablaProd();
-    console.log("ready buscarnew.js");
+    //console.log("ready buscarnew.js");
 });
 let tablaInsumoInicializada = false;
 let tablaInsumos = null;

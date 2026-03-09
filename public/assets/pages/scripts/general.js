@@ -4841,7 +4841,7 @@ function buscarInsumoGenNew(obj){
 
 
 function precioUnitSinCostoInsumos(aux_datosproducto){
-	console.log(aux_datosproducto);
+	//console.log(aux_datosproducto);
 	aux_totalprecioinsumo = 0;
 	let tooltipComp = "";
 
@@ -4860,7 +4860,7 @@ function precioUnitSinCostoInsumos(aux_datosproducto){
 	tooltipComp = tooltipComp.replace(/<br>$/, '');
 	
 	htmlPrecio = "";
-	console.log(tooltipComp);
+	//console.log(tooltipComp);
 	if(aux_totalprecioinsumo == 0){
 		aux_totalprecioinsumo = "";
 	}else{

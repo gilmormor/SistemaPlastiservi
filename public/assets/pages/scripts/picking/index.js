@@ -313,7 +313,7 @@ $("#btnconsultar").click(function () {
     $("#tabla-data-picking").empty(); // Limpia la tabla para evitar errores de redibujado */
     //$('#tabla-data-picking').html("");
 
-    console.log("Ejecutando consulta AJAX...");
+    //console.log("Ejecutando consulta AJAX...");
     var data = datospicking();
     var newUrl = "/pickingpage/" + data.data2;
     

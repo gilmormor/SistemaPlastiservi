@@ -247,7 +247,7 @@ function exportarExcel() {
             return 0;
         }
 
-        console.log(data);
+        //console.log(data);
         //return 0;
         // Crear una matriz para los datos de Excel
         var datosExcel = [];

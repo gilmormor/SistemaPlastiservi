@@ -8,7 +8,7 @@ class NotaVentaDetalleObserver
 {
     public function created($detalle)
     {
-        //DocCompDetService::syncFromDetalle($detalle, 'NV');
+        DocCompDetService::syncFromDetalle($detalle, 'NV');
         DocInsumoDetService::syncFromDetalle($detalle, 'NV');
     }
 
@@ -18,14 +18,14 @@ class NotaVentaDetalleObserver
             $detalle->wasChanged('producto_id') ||
             $detalle->wasChanged('cant')
         ) {
-            //DocCompDetService::syncFromDetalle($detalle, 'NV');
+            DocCompDetService::syncFromDetalle($detalle, 'NV');
             DocInsumoDetService::syncFromDetalle($detalle, 'NV');
         }
     }
 
     public function deleted($detalle)
     {
-        //DocCompDetService::deleteFromDetalle($detalle, 'NV');
+        DocCompDetService::deleteFromDetalle($detalle, 'NV');
         DocInsumoDetService::deleteFromDetalle($detalle, 'NV');
     }
 }

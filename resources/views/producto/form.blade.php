@@ -548,14 +548,14 @@
                                         name="detalleinsumos[{{$loop->index}}][insumo_iddet]"
                                         id="insumo_id{{$loop->index}}"
                                         item="{{$loop->index}}"
-                                        class="form-control numerico"
+                                        class="form-control numericoblanco"
                                         required
                                         onblur="onBlurInsumo_id(this)"
-                                        onkeyup="buscarInsumoKeyUp(this,event)"
+                                        onkeyup=""
                                         value="{{ old('detalles.'.$loop->index.'.insumoiddet', $det->insumo_id) }}"
                                         maxlength="4"
                                         style="text-align:right;"
-                                        valor=""
+                                        valor="{{ old('detalles.'.$loop->index.'.insumoiddet', $det->insumo_id) }}"
                                     >
                                     <span class="input-group-btn">
                                         <button
@@ -574,19 +574,19 @@
                                 </div>
                             </td>
                             <td>
-                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumocantdet]" id="insumocantdet{{$loop->index}}" class="form-control numerico" value="{{ old('detalles.'.$loop->index.'.cantdet', $det->cant) }}" required style="text-align:right">
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumocantdet]" id="insumocantdet{{$loop->index}}" class="form-control numerico" value="{{ old('detalles.'.$loop->index.'.cantdet', $det->cant) }}" required style="text-align:right" valor="{{ old('detalles.'.$loop->index.'.cantdet', $det->cant)}}">
                             </td>
                             <td>
                                 <input type="text" name="detalleinsumos[{{$loop->index}}][insumonombredet]" id="insumonombredet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumonombredet', $det->insumo->nombre) }}" required readonly>
                             </td>
                             <td>
-                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumounidadesproductodet]" id="insumounidadesproductodet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumounidadesproductodet', $det->unidadesproducto) }}" required readonly>
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumounidadesproductodet]" id="insumounidadesproductodet{{$loop->index}}" class="form-control numerico" value="{{ old('detalles.'.$loop->index.'.insumounidadesproductodet', $det->unidadesproducto)}}" required style="text-align:right" valor="{{ old('detalles.'.$loop->index.'.insumounidadesproductodet', $det->unidadesproducto)}}">
                             </td>
                             <td>
                                 <input type="text" name="detalleinsumos[{{$loop->index}}][insumoobsdet]" id="insumoobsdet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumoobsdet', $det->obs) }}" required>
                             </td>
                             <td>
-                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumocostounitariodet]" id="insumocostounitariodet{{$loop->index}}" class="form-control" value="{{ old('detalles.'.$loop->index.'.insumocostounitariodet', number_format($det->insumo->costounitario, 2, ',', '.')) }}" required readonly style="text-align:right">
+                                <input type="text" name="detalleinsumos[{{$loop->index}}][insumocostounitariodet]" id="insumocostounitariodet{{$loop->index}}" class="form-control numerico" value="{{ old('detalles.'.$loop->index.'.insumocostounitariodet', number_format($det->insumo->costounitario, 2, ',', '.')) }}" required readonly style="text-align:right">
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm btn-eliminar-detalle"><i class="fa fa-trash"></i></button>

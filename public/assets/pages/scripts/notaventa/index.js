@@ -424,7 +424,7 @@ $("#cotizacion_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
-				console.log(respuesta.cotizaciones);
+				//console.log(respuesta.cotizaciones);
 				//console.log(respuesta.cotizaciones)
 				//console.log(respuesta.cotizaciones["length"]);
 				if(respuesta.cotizaciones["length"]>0){

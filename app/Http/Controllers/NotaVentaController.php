@@ -913,8 +913,8 @@ class NotaVentaController extends Controller
                         //dd($idDireccion);
                     }else{
                         //dd($idDireccion);
-                        DB::table('notaventadetalle')->updateOrInsert(
-                            ['id' => $request->NVdet_id[$i], 'notaventa_id' => $id],
+                        $notaventadetalle = NotaVentaDetalle::findOrFail($request->NVdet_id[$i]);
+                        $notaventadetalle->update(
                             [
                                 'producto_id' => $request->producto_id[$i],
                                 'cotizaciondetalle_id' => $request->cotizaciondetalle_id[$i],
@@ -941,6 +941,34 @@ class NotaVentaController extends Controller
                                 'obs' => $request->obs[$i],
                             ]
                         );
+                        /* DB::table('notaventadetalle')->updateOrInsert(
+                            ['id' => $request->NVdet_id[$i], 'notaventa_id' => $id],
+                            [
+                                'producto_id' => $request->producto_id[$i],
+                                'cotizaciondetalle_id' => $request->cotizaciondetalle_id[$i],
+                                'cant' => $request->cant[$i],
+                                'cantgrupo' => $request->cant[$i],
+                                'cantxgrupo' => 1,
+                                'unidadmedida_id' => $request->unidadmedida_id[$i],
+                                'descuento' => $request->descuento[$i],
+                                'preciounit' => $request->preciounit[$i],
+                                'peso' => $request->peso[$i],
+                                'precioxkilo' => $request->precioxkilo[$i],
+                                'precioxkiloreal' => $request->precioxkiloreal[$i],
+                                'totalkilos' => $request->totalkilos[$i],
+                                'subtotal' => $request->subtotal[$i],
+                                'producto_nombre' => $producto->nombre,
+                                'espesor' => $request->espesor[$i],
+                                'ancho' => $request->ancho[$i],
+                                'largo' => $request->long[$i],
+                                'diametro' => $producto->diametro,
+                                'categoriaprod_id' => $producto->categoriaprod_id,
+                                'claseprod_id' => $producto->claseprod_id,
+                                'grupoprod_id' => $producto->grupoprod_id,
+                                'color_id' => $producto->color_id,
+                                'obs' => $request->obs[$i],
+                            ]
+                        ); */
                     }
                 }
             }

@@ -408,6 +408,8 @@ async function buscarDatosInsumo(insumo_id){
 						buttons: { confirm: "Aceptar" }
 					}).then((value) => {
 						if (value) {
+                            insumo_id.val("");
+                            insumo_id.attr("valor", "");
 							insumo_id.focus();
 						}
 					});
@@ -445,7 +447,7 @@ function buscarInsumo(obj,event){
 }
 
 function copiar_codinsumo(id,codintprod,index){
-    console.log("copiar_codinsumo", id, codintprod, index);
+    //console.log("copiar_codinsumo", id, codintprod, index);
 	//$("#myModalBuscarInsumo").modal('hide');
 	//$("#myModal").modal('show');
 	$('#buscarInsumoBDModal')
@@ -471,7 +473,7 @@ $('#btn-agregar-detalle-insumo').click(function() {
                     name="detalleinsumos[${index}][insumo_iddet]"
                     id="insumo_id${index}"
                     item="${index}"
-                    class="form-control numerico"
+                    class="form-control numericoblanco"
                     required
                     onblur="onBlurInsumo_id(this)"
                     value=""
@@ -503,7 +505,7 @@ $('#btn-agregar-detalle-insumo').click(function() {
             <input type="text" name="detalleinsumos[${index}][insumonombredet]" id="insumonombredet${index}" class="form-control" required readonly>
         </td>
         <td>
-            <input type="text" name="detalleinsumos[${index}][insumounidadesproductodet]" id="insumounidadesproductodet${index}" class="form-control" required>
+            <input type="text" name="detalleinsumos[${index}][insumounidadesproductodet]" id="insumounidadesproductodet${index}" class="form-control numerico" required style="text-align:right">
         </td>
         <td>
             <input type="text" name="detalleinsumos[${index}][insumoobsdet]" id="insumoobsdet${index}" class="form-control" required>
