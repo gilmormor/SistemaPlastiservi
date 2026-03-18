@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaProduccion;
+use App\Models\CategoriaProd;
 use App\Models\CentroEconomico;
 use App\Models\Dte;
 use App\Models\Empresa;
@@ -35,6 +36,7 @@ class ReportDTEEstadisticaVentasController extends Controller
         })->toArray();
         $tablas['sucFisXUsu'] = sucFisXUsu($users->persona);
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        $tablas['categoriaprod'] = CategoriaProd::categoriasxUsuario();
         return view('reportdteestadisticaventa.index', compact('tablas'));
     }
 
@@ -45,6 +47,7 @@ class ReportDTEEstadisticaVentasController extends Controller
         }
         $request->merge(['groupby' => " group by dtedet.id "]);
         $request->merge(['fechahoy' => date("d/m/Y")]);
+        $request->merge(['statuscosto' => 1]);
         $datas = Dte::reportcomisionxvend($request);
         if($request->genexcel == 1){
             $respuesta = [];

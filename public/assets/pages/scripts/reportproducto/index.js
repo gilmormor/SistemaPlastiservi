@@ -70,7 +70,12 @@ $(document).ready(function () {
                                 <i class="fa fa-fw fa-files-o"></i>
                             </a>`;
                     }
-
+                    if(data.estado == null || data.estado == 0){
+                        aux_text += 
+                            `<a class="btn-accion-tabla btn-sm" title="Producto inactivo">
+                                <i class="glyphicon glyphicon-remove text-danger"></i>
+                            </a>`;
+                    }
                     if(data.at_impresofoto != "" && data.at_impresofoto != null){
                         aux_text += 
                             //`<a class="btn-accion-tabla btn-sm" title="Ver Imagen" onclick='verpdf2("at/${data.at_impresofoto}",2,"","ver-arte-acuerdo-tecnico")'>
@@ -146,6 +151,7 @@ function datosproducto(){
         at_impreso        : $("#at_impreso").val(),
         grupocatprom_id   : $("#grupocatprom_id").val(),
         materiaprima_id   : $("#materiaprima_id").val(),
+        estado            : $("#estado").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -158,8 +164,8 @@ function datosproducto(){
     "&rut="+data1.rut +
     "&grupocatprom_id="+data1.grupocatprom_id +
     "&materiaprima_id="+data1.materiaprima_id +
-    "&at_impreso="+data1.at_impreso
-
+    "&at_impreso="+data1.at_impreso +
+    "&estado="+data1.estado
 
     var data = {
         data1 : data1,
@@ -169,6 +175,10 @@ function datosproducto(){
 }
 
 $("#btnbuscarproducto").click(function(event){
+    if (!tablaProductoInicializada) {
+        configTablaProd(); // ← AQUÍ recién se inicializa
+        tablaProductoInicializada = true;
+    }
     $(this).val("");
     $(".input-sm").val('');
     data = datosproducto();
@@ -241,6 +251,7 @@ function exportarExcel() {
         var encabezadosExcel = encabezados.map(function(encabezado) {
             return encabezado.textContent.trim(); // ← obtiene solo el texto, sin HTML
         });
+        encabezadosExcel.push("Estado");
         datosExcel.push(encabezadosExcel);
         
         // Agregar los datos de la tabla al arreglo
@@ -262,6 +273,7 @@ function exportarExcel() {
 
           var filaExcel = [
             registro.producto_id,
+            registro.sku,
             aux_producto_nombre,
             registro.categoria_nombre,
             registro.grupocatprom_nombre,
@@ -271,7 +283,8 @@ function exportarExcel() {
             registro.espesor,
             registro.peso,
             registro.tipounion,
-            registro.precioneto
+            registro.precioneto,
+            (registro.estado == null || registro.estado == 0) ? "Inactivo" : "Activo"
           ];
           datosExcel.push(filaExcel);
         });
@@ -292,6 +305,11 @@ function exportarExcel() {
 
   $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
+        if (!tablaClienteInicializada) {
+            configTablaCliente(); // ← AQUÍ recién se inicializa
+            tablaClienteInicializada = true;
+        }
+
     $("#myModalBusqueda").modal('show');
 });
 function copiar_rut(id,rut){

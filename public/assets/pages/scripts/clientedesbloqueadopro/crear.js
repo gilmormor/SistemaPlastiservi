@@ -24,6 +24,10 @@ $(document).ready(function () {
 		}
     });
     $("#btnbuscarcliente").click(function(event){
+        if (!tablaClienteInicializada) {
+            configTablaCliente(); // ← AQUÍ recién se inicializa
+            tablaClienteInicializada = true;
+        }
         $(this).val("");
         $(".input-sm").val('');
         $("#myModalBusqueda").modal('show');

@@ -64,17 +64,17 @@
 				<thead>
 					<tr>
 						<th width="30px">Cant.</th>
-						<th class="textcenter">UN</th>
+						<th width="30px" class="textcenter">UN</th>
 						<th class="textleft" width="190px">Descripción</th>
 						{{-- <th class="textleft">Clase<br>Sello</th>
 						<th class="textcenter">Diam<br>Ancho</th>
 						<th class="textcenter">Largo</th>
 						<th class="textcenter">TU<br>Esp</th> --}}
-						<th class="textright">Peso</th>
-						<th class="textright">$ x Kg</th>
-						<th class="textright">Total Kg</th>
-						<th class="textright" width="90px">Precio Unit {{$datosArray["modena_desc"]}}</th>
-						<th class="textright" width="90px">Total Neto {{$datosArray["modena_desc"]}}</th>
+						<th width="30px" class="textright">Peso</th>
+						<th width="30px" class="textright">$ x Kg</th>
+						<th width="30px" class="textright">Total Kg</th>
+						<th width="30px" class="textright" width="90px">Precio Unit {{$datosArray["modena_desc"]}}</th>
+						<th width="40px" class="textright" width="90px">Total Neto {{$datosArray["modena_desc"]}}</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
@@ -98,7 +98,7 @@
 								$aux_promPonderadoPrecioxkilo += ($notaventaDetalle->precioxkilo * (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
 							}
 							//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
-							$aux_ancho = $notaventaDetalle->producto->diametro;
+							/* $aux_ancho = $notaventaDetalle->producto->diametro;
 							$aux_largo = $notaventaDetalle->producto->long . "Mts";
 							$aux_espesor = $notaventaDetalle->producto->tipounion;
 							$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
@@ -115,7 +115,7 @@
 								$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 								$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 								$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-							}
+							} */
 							$aux_pesounit = 0;
 							$aux_producto_nombre = $notaventaDetalle->producto->atribNomProd($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id);
 							if($notaventaDetalle->unidadmedida_id == 7){

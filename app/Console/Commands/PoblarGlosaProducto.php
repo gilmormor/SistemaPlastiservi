@@ -65,9 +65,14 @@ class PoblarGlosaProducto extends Command
                     $atributos = $producto->atributosProducto($producto->id);
 
                     $glosa = $atributos['nombre'] ?? $producto->nombre;
+                    $aux_color_id = $atributos['color_id'] ?? $producto->color_id;
+                    $aux_claseprod_id = $atributos['claseprod_id'] ?? $producto->claseprod_id;
 
                     $data = [
-                        'glosa' => $glosa
+                        'glosa' => $glosa,
+                        'color_id' => $aux_color_id,
+                        'claseprod_id' => $aux_claseprod_id,
+                        'costobloqueado' => 1
                     ];
 
                     if ($producto->tipoprod == 1) {

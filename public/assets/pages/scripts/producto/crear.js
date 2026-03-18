@@ -24,6 +24,14 @@ $(document).ready(function () {
         validarGlosa();
     });
 
+    // Ejecutar al cargar la página
+    validarCosto();
+    // Ejecutar al cambiar el select
+    $('#costobloqueado').on('change', function () {
+        validarCosto();
+    });
+
+
     $('#btn-agregar-detalle').click(function() {
         var index = $('#tabla-detalles tbody tr').length;
         var newRow = `<tr>
@@ -120,6 +128,16 @@ function validarGlosa() {
         $('#glosa').prop('readonly', true);
     } else {
         $('#glosa').prop('readonly', false);
+    }
+}
+
+function validarCosto() {
+    var costobloqueado = $('#costobloqueado').val();
+
+    if (costobloqueado === '1') {
+        $('#costototal').prop('readonly', true);
+    } else {
+        $('#costototal').prop('readonly', false);
     }
 }
 

@@ -56,9 +56,9 @@ class ReportInvStockBPPendxProdController extends Controller
         foreach ($pendientexprods as &$pendientexprod) {
             $arrego_producto_id[] = $pendientexprod->producto_id;
             $pendientexprod->largo = $pendientexprod->long;
-            $producto = Producto::findOrFail($pendientexprod->producto_id);
-            $pendientexprod->producto_nombre = $pendientexprod->nombre;
-            $pendientexprod->categoria_nombre = $producto->categoriaprod->nombre;
+            //$producto = Producto::findOrFail($pendientexprod->producto_id);
+            //$pendientexprod->producto_nombre = $pendientexprod->nombre;
+            //$pendientexprod->categoria_nombre = $producto->categoriaprod->nombre;
             $pendientexprod->stock = 0;
             $pendientexprod->stockBodProdTerm = 0;
             $pendientexprod->stockPiking = 0;
@@ -131,9 +131,9 @@ class ReportInvStockBPPendxProdController extends Controller
         foreach ($pendientexprods as &$pendientexprod) {
             $arrego_producto_id[] = $pendientexprod->producto_id;
             $pendientexprod->largo = $pendientexprod->long;
-            $producto = Producto::findOrFail($pendientexprod->producto_id);
-            $pendientexprod->producto_nombre = $pendientexprod->nombre;
-            $pendientexprod->categoria_nombre = $producto->categoriaprod->nombre;
+            //$producto = Producto::findOrFail($pendientexprod->producto_id);
+            //$pendientexprod->producto_nombre = $pendientexprod->nombre;
+            //$pendientexprod->categoria_nombre = $producto->categoriaprod->nombre;
             $pendientexprod->stock = 0;
             $pendientexprod->stockBodProdTerm = 0;
             $pendientexprod->stockPiking = 0;

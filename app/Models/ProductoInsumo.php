@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
+use App\Services\ProductoCostoService;
 
 class ProductoInsumo extends Model
 {
@@ -32,5 +33,28 @@ class ProductoInsumo extends Model
     public function usuario()
     {
         return $this->belongsTo(Usuario::class);
+    }
+
+    protected static function boot()
+    {
+
+        parent::boot();
+
+        static::saved(function($model){
+
+            ProductoCostoService::recalcular(
+                $model->producto_id
+            );
+
+        });
+
+        static::deleted(function($model){
+
+            ProductoCostoService::recalcular(
+                $model->producto_id
+            );
+
+        });
+
     }
 }

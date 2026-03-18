@@ -17,8 +17,8 @@ class CreateTableDocinsumodet extends Migration
             $table->bigIncrements('id');
             $table->string('origentipo', 4)->comment('Tipo de documento de origen');
             $table->unsignedBigInteger('origendet_id');
-            $table->unsignedBigInteger('productoinsumo_id');
-            $table->foreign('productoinsumo_id','fk_docinsumodet_productoinsumo')->references('id')->on('productoinsumo')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('insumo_id');
+            $table->foreign('insumo_id','fk_docinsumodet_insumo')->references('id')->on('insumo')->onDelete('restrict')->onUpdate('restrict');
             $table->float('cant',12,4)->comment('Cantidad total insumos');
             $table->float('costounitario',10,2)->comment('Costo unitario del insumo');
             $table->unsignedBigInteger('usuario_id')->comment('Id Usuario');

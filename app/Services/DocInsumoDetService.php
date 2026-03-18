@@ -27,7 +27,7 @@ class DocInsumoDetService
                     'origentipo' => $tipo,
                     'origendet_id' => $detalle->id,
 
-                    'productoinsumo_id' => $productoinsumo->id,
+                    'insumo_id' => $productoinsumo->insumo_id,
 
                     'cant' => $cantidadDetalle,
                     //'cant' => $productoinsumo->cant,

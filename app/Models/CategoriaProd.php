@@ -71,18 +71,21 @@ class CategoriaProd extends Model
 
  
     public static function categoriasxUsuario($sucursal_id = false){
-        $categoriaprods = CategoriaProd::join('categoriaprodsuc', function ($join)  use ($sucursal_id) {
-            $user = Usuario::findOrFail(auth()->id());
-            $arraySucFisxUsu = sucFisXUsu($user->persona);
-            //dd($arraySucFisxUsu);
-            if($sucursal_id){
-                $sucurArray = $user->sucursales->where('id','=',$sucursal_id)->pluck('id')->toArray();
-            }else{
-                $sucurArray = $user->sucursales->pluck('id')->toArray();
-            }
-            $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
-            ->whereIn('categoriaprodsuc.sucursal_id', $arraySucFisxUsu);
-                    })
+        $categoriaprods = CategoriaProd::with(['claseprods' => function($query) {
+            $query->select('id', 'cla_nombre', 'cla_descripcion', 'cla_longitud', 'categoriaprod_id');
+            }])
+            ->join('categoriaprodsuc', function ($join)  use ($sucursal_id) {
+                $user = Usuario::findOrFail(auth()->id());
+                $arraySucFisxUsu = sucFisXUsu($user->persona);
+                //dd($arraySucFisxUsu);
+                if($sucursal_id){
+                    $sucurArray = $user->sucursales->where('id','=',$sucursal_id)->pluck('id')->toArray();
+                }else{
+                    $sucurArray = $user->sucursales->pluck('id')->toArray();
+                }
+                $join->on('categoriaprod.id', '=', 'categoriaprodsuc.categoriaprod_id')
+                ->whereIn('categoriaprodsuc.sucursal_id', $arraySucFisxUsu);
+            })
             ->select([
                 'categoriaprod.id',
                 'categoriaprod.nombre',
@@ -94,7 +97,21 @@ class CategoriaProd extends Model
                 'categoriaprod.unidadmedidafact_id'
             ])
             ->groupBy('categoriaprod.id')
-            ->get();
+            ->get()
+            ->map(function($categoria) {
+                // Preparar las clases como array de objetos con id y nombre
+                $clases = $categoria->claseprods->map(function($clase) {
+                    return [
+                        'id' => $clase->id,
+                        'nombre' => $clase->cla_nombre
+                    ];
+                });
+                
+                // Agregar la propiedad claseprods_json al objeto
+                $categoria->claseprods_json = json_encode($clases);
+                
+                return $categoria;
+            });
         return $categoriaprods;
     }
 

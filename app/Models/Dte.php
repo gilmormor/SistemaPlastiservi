@@ -2828,6 +2828,47 @@ class Dte extends Model
         }else{
             $aux_centroeconomico_idCond = "dte.centroeconomico_id = $request->centroeconomico_id";
         }
+        if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
+            $aux_condcategoriaprod_id = " true";
+        }else{
+            //$aux_condcategoriaprod_id = "categoriaprod.id='$request->categoriaprod_id'";
+            if(is_array($request->categoriaprod_id)){
+                $aux_categoriaprodid = implode ( ',' , $request->categoriaprod_id);
+            }else{
+                $aux_categoriaprodid = $request->categoriaprod_id;
+            }
+            $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
+        }
+        if(!isset($request->claseprod_id) or empty($request->claseprod_id)){
+            $aux_condclaseprod_id = " true";
+        }else{
+            //$aux_condclaseprod_id = "claseprod.id='$request->claseprod_id'";
+            if(is_array($request->claseprod_id)){
+                $aux_claseprodid = implode ( ',' , $request->claseprod_id);
+            }else{
+                $aux_claseprodid = $request->claseprod_id;
+            }
+            $aux_condclaseprod_id = " producto.claseprod_id IN ($aux_claseprodid)";
+        }
+
+        if(!isset($request->statuscosto) or empty($request->statuscosto) or ($request->statuscosto == "")){
+            $aux_campocosto = "";
+            $aux_campocostodte = "";
+        }else{
+            $aux_campocosto = ",producto.costototal ";
+            $aux_campocostodte = ", 
+                                        (SELECT 
+                                            COALESCE(
+                                                (SELECT 
+                                                    SUM(costounitario)
+                                                FROM docinsumodet
+                                                WHERE origendet_id = dtedet.id 
+                                                    AND origentipo = 'DTE' 
+                                                    AND deleted_at IS NULL
+                                                ), 0
+                                            )) AS costodtedet ";
+        }
+
         $sql = "SELECT dte.id,dte.fchemis,dte.fechahora,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,dte.vendedor_id,
         dte.centroeconomico_id,centroeconomico.nombre as centroeconomico_nombre,
@@ -2897,7 +2938,10 @@ class Dte extends Model
             WHEN 4 THEN 'Diferencia mercaderia'
             ELSE ''
         END AS codref_nombre,
-        dte.obs as dte_obs
+        dte.obs as dte_obs,
+        color.nombre as color_nombre
+        $aux_campocosto
+        $aux_campocostodte
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)
         INNER JOIN dtedet
@@ -2920,7 +2964,7 @@ class Dte extends Model
         ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
         LEFT JOIN dtefac
         ON dtefac.dte_id = dte.id
-        LEFT JOIN producto
+        INNER JOIN producto
         ON dtedet.producto_id = producto.id
         LEFT JOIN categoriaprod
         ON categoriaprod.id = producto.categoriaprod_id
@@ -2954,6 +2998,8 @@ class Dte extends Model
         ON dtencnd.dte_id = dte.id
         LEFT JOIN centroeconomico
         ON centroeconomico.id = dte.centroeconomico_id
+        LEFT JOIN color
+        ON color.id = producto.color_id
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond
@@ -2970,12 +3016,15 @@ class Dte extends Model
         AND $aux_condareaproduccion_id
         AND $aux_centroeconomico_idCond
         AND NOT ISNULL(dte.nrodocto)
+        AND $aux_condclaseprod_id
+        AND $aux_condcategoriaprod_id
         AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
         $aux_groupby
         $aux_orderby;";
 
         //dd($sql);
         $arrays = DB::select($sql);
+        //dd($arrays);
         return $arrays;
     }
 
@@ -3739,10 +3788,10 @@ class Dte extends Model
                     $datacobranza->tdeudafec = 0;
                     $datacobranza->nrofacdeu = ""; 
                 }
-                $datacobranza->tfac += $dte->mnttotal;
-                $datacobranza->tdeuda += $dte->mnttotal;
-                $datacobranza->tdeudafec += $dte->mnttotal;
-                $datacobranza->nrofacdeu .= $dte->nrodocto; 
+                $datacobranza->tfac = $datacobranza->tfac + $dte->mnttotal;
+                $datacobranza->tdeuda = $datacobranza->tdeuda + $dte->mnttotal;
+                //$datacobranza->tdeudafec = $datacobranza->tdeudafec + $dte->mnttotal;
+                //$datacobranza->nrofacdeu = $datacobranza->nrofacdeu . ", FAV " . $dte->nrodocto . " " . date('d/m/Y', strtotime($dte->dtefac->fchvenc)); 
                 if($datacobranza->save()){
                     $datacobranzadet = new DataCobranzaDet();
                     $datacobranzadet->datacobranza_id = $datacobranza->id;

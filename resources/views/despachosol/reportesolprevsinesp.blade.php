@@ -69,10 +69,10 @@
 					<th>Saldo</th>
 					<th class="textcenter">Unidad</th>
 					<th class="textleft">Descripción</th>
-					<th class="textleft">Clase<br>Sello</th>
+					{{-- <th class="textleft">Clase<br>Sello</th>
 					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU<br>Esp</th>
+					<th class="textcenter">TU<br>Esp</th> --}}
 					<th class="textright">Peso</th>
 					<th class="textright">$ x Kg</th>
 					<th class="textright">Total Kg</th>
@@ -128,7 +128,7 @@
 						}
 						/*************************/
 
-						$aux_ancho = $notaventaDetalle->producto->diametro;
+						/* $aux_ancho = $notaventaDetalle->producto->diametro;
 						$aux_largo = $notaventaDetalle->producto->long . "Mts";
 						$aux_espesor = $notaventaDetalle->producto->tipounion;
 						$aux_cla_sello_nombre = $notaventaDetalle->producto->claseprod->cla_nombre;
@@ -145,7 +145,7 @@
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-						}
+						} */
 						$aux_producto_nombre = $notaventaDetalle->producto->glosa;
 
 						if($notaventaDetalle->cant > $sumacantsoldesp){
@@ -170,10 +170,10 @@
 						</td>	
 						<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
-						<td class="textleft">{{$aux_cla_sello_nombre}}</td>
+						{{-- <td class="textleft">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
-						<td class="textcenter">{{$aux_espesor}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td> --}}
 						<td class="textcenter">{{number_format($notaventaDetalle->producto->peso, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($notaventaDetalle->precioxkilo, 2, ",", ".")}}</td>
 						<td class="textright">{{number_format($aux_totalkgItem, 2, ",", ".")}}</td>
@@ -187,7 +187,7 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="7" class="textright"><span><strong>Totales</strong></span></td>
 					<td colspan="2" class="textright"><span><strong>{{number_format($aux_promPonderadoPrecioxkilo, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos1, 2, ",", ".")}}</strong></span></td>
 
@@ -195,11 +195,11 @@
 					<td class="textright"><span><strong>{{number_format($totalSubtotalItem, 0, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="15" class="textright"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
+					<td colspan="11" class="textright"><span><strong>IVA {{$notaventa->piva}}%</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round($totalSubtotalItem * $notaventa->piva/100), 0, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="15" class="textright"><span><strong>TOTAL</strong></span></td>
+					<td colspan="11" class="textright"><span><strong>TOTAL</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round($totalSubtotalItem * (1 + ($notaventa->piva/100))), 0, ",", ".")}}</strong></span></td>
 				</tr>
 			</tfoot>

@@ -597,4 +597,34 @@
         </table>
         <button type="button" class="btn btn-success btn-sm" id="btn-agregar-detalle-insumo"><i class="fa fa-plus" title="Agregar Complemento"></i> Agregar</button>
     </div>
+
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="costototal" class="col-lg-3 control-label requerido" data-toggle='tooltip' title="Costo">Costo</label>
+        <div class="col-lg-9">
+            <input type="text" name="costototal" id="costototal" class="form-control numerico" 
+                @if(isset($data) && $data->costobloqueado == 1)
+                    readonly
+                @endif
+                value="{{old('costototal', $data->costototal ?? '')}}" required
+            />
+        </div>
+    </div>
+    <div class="form-group col-xs-12 col-sm-6">
+        <label for="costobloqueado" class="col-lg-3 control-label requerido" title="Si=Costo se calcula automatico">Costo automatico?</label>
+        <div class="col-lg-9">
+            <select name="costobloqueado" id="costobloqueado" class="form-control select2 costobloqueado" required>
+                <option value="">Seleccione...</option>
+                <option value="1"
+                    @if (isset($data) and ($data->costobloqueado=="1"))
+                        {{'selected'}}
+                    @endif
+                >Si</option>
+                <option value="0"
+                    @if (isset($data) and ($data->costobloqueado=="0"))
+                        {{'selected'}}
+                    @endif    
+                >No</option>
+            </select>
+        </div>    
+    </div>
 </div>

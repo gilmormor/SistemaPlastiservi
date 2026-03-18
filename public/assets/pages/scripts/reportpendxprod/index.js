@@ -297,6 +297,7 @@ function datosPentxProd(aux_filtro = 0){
         sucursal_id       : aux_sucursal_id,
         filtro            : 0,
         filtroacutec      : $("#filtroacutec").val(),
+        claseprod_id         : $("#claseprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -321,7 +322,8 @@ function datosPentxProd(aux_filtro = 0){
     "&sucursal_id="+data1.sucursal_id +
     "&filtro="+data1.filtro +
     "&filtroacutec="+data1.filtroacutec +
-    "&_token="+data1._token
+    "&_token="+data1._token +
+    "&claseprod_id="+data1.claseprod_id;
 
     var data = {
         data1 : data1,

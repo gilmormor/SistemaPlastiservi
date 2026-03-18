@@ -366,7 +366,7 @@
                                     $detalle->nmbitem = str_replace('"',"'",$detalle->nmbitem) ;
                                     $aux_nombreprod = $detalle->nmbitem;
                                 }else{
-                                    $aux_nombreprod = $NVDet->producto->nombre;
+                                    /* $aux_nombreprod = $NVDet->producto->nombre;
                                     if(isset($producto->acuerdotecnico)){
                                         $at_ancho = $producto->acuerdotecnico->at_ancho;
                                         $at_largo = $producto->acuerdotecnico->at_largo;
@@ -400,10 +400,10 @@
                                             $aux_tipounion = $producto->tipounion;
                                         }
                                         $aux_nombreprod = $aux_nombreprod . $aux_diametro . $aux_long . " " . $aux_cla_nombre. " " . $aux_tipounion;
-                                    }
+                                    } */
                                 }
                                 //esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
-                                $aux_nombreprod = str_replace('"',"'",$aux_nombreprod);
+                                $aux_nombreprod = str_replace('"',"'",$producto->glosa);
                                 //dd($detalle->dteguiadespdet);
                             ?>
                             <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="proditems">

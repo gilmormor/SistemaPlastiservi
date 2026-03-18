@@ -104,9 +104,19 @@ class InsumoController extends Controller
      */
     public function actualizar(ValidarInsumo $request, $id)
     {
+        $insumoOriginal = Insumo::findOrFail($id);
         DB::beginTransaction();
         try {
             Insumo::findOrFail($id)->update($request->all());
+           // Recargar el modelo actualizado con relaciones
+            $insumoActualizado = Insumo::findOrFail($id);
+
+            // Guardar log comparando original con actualizado
+            $aux_resp = guardarLogCambioModelo(
+                $insumoActualizado,
+                [],
+                $insumoOriginal // <- se lo pasamos como estado original
+            );
             DB::commit();
             return redirect('insumo')->with('mensaje','Insumo actualizado con éxito');
         } catch (\Exception $e) {

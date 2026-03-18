@@ -498,7 +498,8 @@ class NotaVentaController extends Controller
         $tablas['limitecredito'] = $data->cliente->limitecredito;
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->where("mostrarnv", 1)->get();
         session(['editaracutec' => '0']);
-
+        $data->contactotelf = $data->cliente->contactotelef;
+        $data->contactoemail = $data->cliente->contactoemail;
         //dd($aux_aproNV);
         return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','tablas','vendedor_id'));
 
@@ -586,7 +587,7 @@ class NotaVentaController extends Controller
                         $notaventadetalle = new NotaVentaDetalle();
                         $notaventadetalle->notaventa_id = $notaventaid;
                         $notaventadetalle->producto_id = $request->producto_id[$i];
-                        $notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
+                        //$notaventadetalle->cotizaciondetalle_id = $request->cotizaciondetalle_id[$i];                    
                         $notaventadetalle->cant = $request->cant[$i];
                         $notaventadetalle->cantgrupo = $request->cant[$i];
                         $notaventadetalle->cantxgrupo = 1;
@@ -1416,11 +1417,12 @@ class NotaVentaController extends Controller
                 if(env('APP_DEBUG')){
                     return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 }
-                if($aux_staacutec){
+                /* if($aux_staacutec){
                     $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 }else{
                     $pdf = PDF::loadView('notaventa.listadosinesp', compact('notaventa','notaventaDetalles','empresa','datosArray'));
-                }
+                } */
+                $pdf = PDF::loadView('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 //return $pdf->download('cotizacion.pdf');
                 return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
         
@@ -1429,12 +1431,12 @@ class NotaVentaController extends Controller
                     if(env('APP_DEBUG')){
                         return view('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                     }
-                    if($aux_staacutec){
+                    /* if($aux_staacutec){
                         $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                     }else{
                         $pdf = PDF::loadView('notaventa.listado1sinesp', compact('notaventa','notaventaDetalles','empresa','datosArray'));
-                    }
-            
+                    } */
+                    $pdf = PDF::loadView('notaventa.listado1', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                     //return $pdf->download('cotizacion.pdf');
                     return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
         

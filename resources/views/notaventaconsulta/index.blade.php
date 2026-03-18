@@ -228,7 +228,9 @@ Consulta Nota Venta
                                     <div class="col-xs-12 col-md-8 col-sm-8">
                                         <select name='categoriaprod_id' id='categoriaprod_id' class='selectpicker form-control categoriaprod_id'  data-live-search='true' multiple data-actions-box='true'>"
                                             @foreach($tablashtml['categoriaprod'] as $categoriaprod)
-                                                <option value="{{$categoriaprod->id}}">
+                                                <option 
+                                                    claseprods="{{ $categoriaprod->claseprods_json }}"
+                                                    value="{{$categoriaprod->id}}">
                                                     {{$categoriaprod->nombre}}
                                                 </option>";
                                             @endforeach
@@ -245,6 +247,15 @@ Consulta Nota Venta
                                         <select name='consdesp' id='consdesp' class='selectpicker form-control categoriaprod_id'>"
                                             <option value="1">Si</option>
                                             <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-6" title="Clase/SubCategoria">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="claseprod_id" class="control-label">Clase:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name='claseprod_id' id='claseprod_id' class='selectpicker form-control claseprod_id'  data-live-search='true' multiple data-actions-box='true'>"
                                         </select>
                                     </div>
                                 </div>

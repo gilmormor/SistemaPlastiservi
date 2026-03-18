@@ -69,16 +69,16 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th width="30px">Cod</th>
-					<th width="30px">Cant.</th>
-					<th width="30px">Sol</th>
-					<th width="20px" class="textcenter">UN</th>
+					<th width="15px">Cod</th>
+					{{-- <th width="15px">Cant.</th> --}}
+					<th width="15px">Cant</th>
+					<th width="15px" class="textcenter">UN</th>
 					<th width="120px" class="textleft">Descripción</th>
-					<th width="40px" class="textcenter">Sello</th>
+					{{-- <th width="40px" class="textcenter">Sello</th>
 					<th width="20px" class="textcenter">Ancho</th>
 					<th width="20px" class="textcenter">Largo</th>
-					<th width="20px" class="textcenter">Esp</th>
-					<th class="textright" width="50px">Precio Unit {{$datosArray["modena_desc"]}}</th>
+					<th width="20px" class="textcenter">Esp</th> --}}
+					<th class="textright" width="40px">Precio Unit {{$datosArray["modena_desc"]}}</th>
 					<th class="textright" width="60px">Total Neto {{$datosArray["modena_desc"]}}</th>
 				</tr>
 			</thead>
@@ -103,7 +103,7 @@
 						$subtotal = $despachosoldet->cantsoldesp * $despachosoldet->notaventadetalle->preciounit;
 						$neto += $subtotal;
 
-						$aux_ancho = $despachosoldet->notaventadetalle->producto->diametro;
+						/* $aux_ancho = $despachosoldet->notaventadetalle->producto->diametro;
 						$aux_largo = $despachosoldet->notaventadetalle->producto->long . "Mts";
 						$aux_espesor = $despachosoldet->notaventadetalle->producto->tipounion;
 						$aux_cla_sello_nombre = $despachosoldet->notaventadetalle->producto->claseprod->cla_nombre;
@@ -118,12 +118,12 @@
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
 							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
                             $aux_staAT = true;
-						}
+						} */
 						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->glosa;
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->producto_id}}</td>
-						<td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td>
+						{{-- <td class="textcenter">{{number_format($despachosoldet->notaventadetalle->cant, 0, ",", ".")}}</td> --}}
 						<td class="textcenter">{{number_format($despachosoldet->cantsoldesp, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}
@@ -131,10 +131,10 @@
 								<br><span class="small-text">{{$aux_atribAcuTec}}</span>
 							@endif --}}
 						</td>
-						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
+						{{-- <td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
-						<td class="textcenter">{{$aux_espesor}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td> --}}
 						<td class="textright">{{number_format($despachosoldet->notaventadetalle->preciounit, $datosArray["monedaLocal"] ? 2 : 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($subtotal, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</td>
 					</tr>
@@ -142,15 +142,15 @@
 			</tbody>
 			<tfoot>
 				<tr class="headt">
-					<td colspan="10" class="textright" width="90%"><span><strong>NETO</strong></span></td>
+					<td colspan="5" class="textright" width="90%"><span><strong>NETO</strong></span></td>
 					<td class="textright" width="10%"><span><strong>{{number_format($neto, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr class="headt">
-					<td colspan="10" class="textright" width="90%"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
+					<td colspan="5" class="textright" width="90%"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
 					<td class="textright" width="10%"><span><strong>{{number_format(($neto * $despachosol->notaventa->piva)/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr class="headt">
-					<td colspan="10" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
+					<td colspan="5" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
 					<td class="textright" width="10%"><span><strong>{{number_format(($neto * ($despachosol->notaventa->piva+100))/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 				</tr>
 				</tfoot>

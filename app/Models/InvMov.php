@@ -227,6 +227,18 @@ class InvMov extends Model
             $aux_MostrarStockCero_Cond = "";
         }
         $aux_areaproduccion_idSucursalCond = " categoriaprod.areaproduccion_id in (SELECT areaproduccion_id from areaproduccionsuc where sucursal_id in ($sucurArray)) ";
+
+        if(!isset($request->claseprod_id) or empty($request->claseprod_id)){
+            $aux_condclaseprod_id = " true";
+        }else{
+            if(is_array($request->claseprod_id)){
+                $aux_claseprodid = implode ( ',' , $request->claseprod_id);
+            }else{
+                $aux_claseprodid = $request->claseprod_id;
+            }
+            $aux_condclaseprod_id = " producto.claseprod_id IN ($aux_claseprodid)";
+        }
+
         $sql = "SELECT invbodegaproducto.producto_id, CONCAT(producto.nombre,'',IF(!isnull(at_unidadmedida.nombre),CONCAT(': ',at_unidadmedida.nombre),'')) as producto_nombre, 
         REPLACE(REPLACE(if(isnull(acuerdotecnico.id),producto.diametro,at_ancho), '\"', ''), '\'', '') as diametro,
         if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
@@ -267,6 +279,7 @@ class InvMov extends Model
         and $aux_categoriaprod_idCond
         and $aux_areaproduccion_idCond
         and $aux_areaproduccion_idSucursalCond
+        and $aux_condclaseprod_id
         group by $agrupar 
         $aux_MostrarStockCero_Cond 
         order by invbodegaproducto.producto_id asc, invbodega.orden ASC;";

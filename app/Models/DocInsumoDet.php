@@ -12,16 +12,16 @@ class DocInsumoDet extends Model
     protected $fillable = [
         'origentipo',
         'origendet_id',
-        'productoinsumo_id',
+        'insumo_id',
         'cant',
         'costounitario',
         'usuario_id',
         'usuariodel_id'
     ];
 
-    //RELACION INVERSA productoComp
-    public function productoinsumo()
+    //RELACION INVERSA insumo
+    public function insumo()
     {
-        return $this->belongsTo(ProductoInsumo::class, 'productoinsumo_id');
+        return $this->belongsTo(Insumo::class, 'insumo_id');
     }
 }

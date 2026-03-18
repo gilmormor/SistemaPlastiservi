@@ -136,6 +136,7 @@ function datosNVCons(){
         sucursal_id       : $("#sucursal_id").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
         consdesp          : $("#consdesp").val(),
+        claseprod_id         : $("#claseprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -153,7 +154,8 @@ function datosNVCons(){
     "&comuna_id="+data1.comuna_id +
     "&sucursal_id="+data1.sucursal_id +
     "&categoriaprod_id="+data1.categoriaprod_id +
-    "&consdesp="+data1.consdesp
+    "&consdesp="+data1.consdesp +
+    "&claseprod_id="+data1.claseprod_id;
     
     var data = {
     data1 : data1,

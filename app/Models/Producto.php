@@ -896,7 +896,7 @@ class Producto extends Model
         }else{
             $aux_orderby = $request->orderby;
         }
-
+        $aux_condclaseprod_id = " true";
         if($aux_sql==1){
             $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -962,16 +962,28 @@ class Producto extends Model
         }
     
         if($aux_sql==2){
+            if(!isset($request->claseprod_id) or empty($request->claseprod_id)){
+                $aux_condclaseprod_id = " true";
+            }else{
+                if(is_array($request->claseprod_id)){
+                    $aux_claseprodid = implode ( ',' , $request->claseprod_id);
+                }else{
+                    $aux_claseprodid = $request->claseprod_id;
+                }
+                $aux_condclaseprod_id = " producto.claseprod_id IN ($aux_claseprodid)";
+            }
+            //dd($aux_condclaseprod_id);
             $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,
             sum(notaventadetalle.cant) as cant,sum(if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)) AS cantdesp,
-            producto.nombre,cliente.razonsocial,notaventadetalle.id,
+            producto.glosa as producto_nombre,cliente.razonsocial,notaventadetalle.id,
             notaventadetalle.notaventa_id,oc_file,
             REPLACE(REPLACE(producto.diametro, '\"', ''), '\'', '') as diametro,
             notaventa.oc_id,
             claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
             notaventadetalle.totalkilos,
             subtotal,notaventa.comunaentrega_id,notaventa.plazoentrega,
-            notaventadetalle.precioxkilo
+            notaventadetalle.precioxkilo,
+            categoriaprod.nombre as categoria_nombre
             FROM notaventadetalle INNER JOIN notaventa
             ON notaventadetalle.notaventa_id=notaventa.id
             INNER JOIN producto
@@ -1003,10 +1015,12 @@ class Producto extends Model
             AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
             AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
             and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            and $aux_condclaseprod_id
             $aux_groupby
             $aux_orderby;";
             
         }
+        //dd($sql);
         $datas = DB::select($sql);
         return $datas;
         
@@ -1120,6 +1134,14 @@ class Producto extends Model
         if(isset($request->sta_filtrar_at) and $request->sta_filtrar_at){
             $aux_unionTablaAcuerdoTecnico = "INNER JOIN acuerdotecnico ";
         }
+        $aux_at_impresostaeliCond = " true ";
+        if(isset($request->at_impresostaeli) and $request->at_impresostaeli == "1"){
+            $aux_at_impresostaeliCond = " acuerdotecnico.id in (Select acuerdotecnico_id from atfirmeli) ";
+        }
+        $aux_estadoCond = " true ";
+        if(isset($request->estado) and $request->estado != "undefined" and $request->estado != ""){
+            $aux_estadoCond = " producto.estado = " . $request->estado;
+        }
         //dd(isset($request->sucursal_id));
         if(isset($request->sucursal_id)){
             $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.glosa as producto_nombre,producto.sku,
@@ -1130,7 +1152,8 @@ class Producto extends Model
                 producto.precioneto,acuerdotecnico.id as acuerdotecnico_id,acuerdotecnico.at_impresofoto,
                 grupocatpromcategoriaprod.grupocatprom_id,grupocatprom.nombre AS grupocatprom_nombre,
                 acuerdotecnico.at_firmado,producto.categoriaprod_id,
-                categoriaprod.nombre as categoriaprod_nombre
+                categoriaprod.nombre as categoriaprod_nombre,
+                producto.estado
                 FROM producto INNER JOIN claseprod
                 ON producto.claseprod_id=claseprod.id AND isnull(producto.deleted_at) AND isnull(claseprod.deleted_at)
                 INNER JOIN categoriaprod
@@ -1156,6 +1179,7 @@ class Producto extends Model
                 AND $aux_materiaprima_idCond
                 and $aux_at_firmadostaCond
                 and $aux_at_impresostaeliCond
+                and $aux_estadoCond
                 ORDER BY producto.id;";
         }else{
             $sql = "SELECT producto.id as producto_id,$aux_campoClienteID producto.glosa as producto_nombre,producto.sku,
@@ -1357,6 +1381,8 @@ class Producto extends Model
             $at_materiaprima = $acuerdotecnico->materiaprima->nombre;
             $aux_unidmed = $acuerdotecnico->unidadmedida->nombre;
             $unidadmedida_id = $acuerdotecnico->unidadmedida->id;
+            $aux_color_id =  $AcuTec->at_color_id;
+            $aux_claseprod_id =  $AcuTec->at_claseprod_id;
         }else{
             //CUANDO LA CLASE TRAE N/A=NO APLICA CAMBIO ESTO POR EMPTY ""
             if(isset($producto->claseprod)){
@@ -1383,6 +1409,8 @@ class Producto extends Model
             $at_materiaprima = "";
             $aux_unidmed = $producto->categoriaprod->unidadmedida->nombre;
             $unidadmedida_id = $producto->categoriaprod->unidadmedida->id;
+            $aux_color_id =  $producto->color_id;
+            $aux_claseprod_id =  $producto->claseprod_id;
         }
         /* if($producto->glosaaut == 0 and $producto->tipoprod == 0){
             $aux_nombreprod = $producto->glosa;
@@ -1400,8 +1428,9 @@ class Producto extends Model
             "at_color" => $aux_color,
             "at_unidmed" => $aux_unidmed,
             "unidadmedida_id" => $unidadmedida_id,
-            "at_peso" => $at_peso
-            
+            "at_peso" => $at_peso,
+            "color_id" => $aux_color_id,
+            "claseprod_id" => $aux_claseprod_id
         ];
         return $atributoProducto;
     }
@@ -1859,6 +1888,24 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         $aux_condacutec = "notaventadetalle.producto_id IN (SELECT producto_id FROM acuerdotecnico WHERE producto_id = notaventadetalle.producto_id AND at_impreso = 1 and ISNULL(deleted_at))";
     }
 
+    if(!isset($request->claseprod_id) or empty($request->claseprod_id)){
+        $aux_condclaseprod_id = " true";
+    }else{
+        //$aux_condclaseprod_id = "claseprod.id='$request->claseprod_id'";
+        if(is_array($request->claseprod_id)){
+            $aux_claseprodid = implode ( ',' , $request->claseprod_id);
+        }else{
+            $aux_claseprodid = $request->claseprod_id;
+        }
+        $aux_condclaseprod_id = " EXISTS (
+                SELECT 1
+                FROM notaventadetalle nd2
+                INNER JOIN producto p2 ON p2.id = nd2.producto_id
+                WHERE nd2.notaventa_id = notaventa.id
+                AND p2.claseprod_id IN ($aux_claseprodid)
+            )";
+    }
+
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
         $sql = "SELECT notaventadetalle.id,notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,
@@ -1925,6 +1972,7 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
         and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        and $aux_condclaseprod_id
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
@@ -1932,6 +1980,18 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
     }
 
     if($aux_sql==2){
+        if(!isset($request->claseprod_id) or empty($request->claseprod_id)){
+            $aux_condclaseprod_id = " true";
+        }else{
+            //$aux_condclaseprod_id = "claseprod.id='$request->claseprod_id'";
+            if(is_array($request->claseprod_id)){
+                $aux_claseprodid = implode ( ',' , $request->claseprod_id);
+            }else{
+                $aux_claseprodid = $request->claseprod_id;
+            }
+            $aux_condclaseprod_id = " producto.claseprod_id IN ($aux_claseprodid)";
+        }
+
         $aux_campos = "";
         if($aux_AgruOrd == ""){
             $aux_campos = ",notaventa.fechahora,notaventa.cliente_id,notaventa.piva,
@@ -1998,6 +2058,7 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
         AND notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        and $aux_condclaseprod_id
         AND $aux_condacutec
         $aux_AgruOrd;";
     }

@@ -413,7 +413,24 @@ class NotaVenta extends Model
             }
             $aux_condcategoriaprod_id = " producto.categoriaprod_id in ($aux_categoriaprodid) ";
         }
-        
+        if(!isset($request->claseprod_id) or empty($request->claseprod_id)){
+            $aux_condclaseprod_id = " true";
+        }else{
+            //$aux_condclaseprod_id = "claseprod.id='$request->claseprod_id'";
+            if(is_array($request->claseprod_id)){
+                $aux_claseprodid = implode ( ',' , $request->claseprod_id);
+            }else{
+                $aux_claseprodid = $request->claseprod_id;
+            }
+            $aux_condclaseprod_id = " EXISTS (
+				    SELECT 1
+				    FROM notaventadetalle nd2
+				    INNER JOIN producto p2 ON p2.id = nd2.producto_id
+				    WHERE nd2.notaventa_id = notaventa.id
+				    AND p2.claseprod_id IN ($aux_claseprodid)
+				)";
+        }
+        //dd($aux_condclaseprod_id);
         if($aux_consulta == 1){
             $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -446,6 +463,8 @@ class NotaVenta extends Model
             ON comuna.id=notaventa.comunaentrega_id
             LEFT JOIN vista_datacobranza
             ON vista_datacobranza.cliente_id = notaventa.cliente_id
+            LEFT JOIN claseprod
+            ON claseprod.categoriaprod_id=categoriaprod.id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -461,6 +480,7 @@ class NotaVenta extends Model
             and $aux_sucursal_idCond
             and $aux_condcategoriaprod_id
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
+            and $aux_condclaseprod_id
             $cond_group
             $cond_order;";
             //dd($sql);
@@ -480,6 +500,8 @@ class NotaVenta extends Model
             ON areaproduccion.id=categoriaprod.areaproduccion_id
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
+            LEFT JOIN claseprod
+            ON claseprod.categoriaprod_id=categoriaprod.id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -493,6 +515,7 @@ class NotaVenta extends Model
             and $aux_condcomuna_id
             and $aux_sucursal_idCond
             and $aux_condcategoriaprod_id
+            and $aux_condclaseprod_id
             and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
             GROUP BY areaproduccion_id,areaproduccion.nombre;";
         }

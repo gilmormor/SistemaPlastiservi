@@ -8,8 +8,11 @@ Reporte Productos
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportproducto/index.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
-    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script> 
+    {{-- <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script>  --}}
+    <script src="{{autoVer("assets/pages/scripts/producto/buscarnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscarnew.js")}}" type="text/javascript"></script> 
+
 @endsection
 <?php
     $selecmultprod = true;
@@ -173,7 +176,20 @@ Reporte Productos
                                     </div>                                    
                                 @endif
                             </div>
-
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-sm-6" title="Estado producto">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Estado</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="estado" id="estado" class="selectpicker form-control" data-show-icon="true">
+                                            <option value="" data-icon="glyphicon glyphicon-th-list">Todos...</option>
+                                            <option value="1" data-icon="glyphicon glyphicon-ok text-success">Activo</option>
+                                            <option value="0" data-icon="glyphicon glyphicon-remove text-danger">Inactivo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-3 col-sm-12">

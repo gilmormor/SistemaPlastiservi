@@ -292,7 +292,7 @@
                             <th style="display:none;">Espesor</th>
                             <th>Peso</th>
                             <th style="display:none;">Peso</th>
-                            <th>TU</th>
+                            <th style="display:none;">TU</th>
                             <th style="display:none;">TUnion</th>
                             <th>Desc</th>
                             <th style="display:none;">DescPorc</th>
@@ -504,7 +504,7 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$CotizacionDetalle->peso}}" style="display:none;"/>
                                     </td>
-                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}"> 
+                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}" style="display:none;"> 
                                         {{$CotizacionDetalle->producto->tipounion}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -582,15 +582,15 @@
                                 <?php $i++;?>
                             @endforeach
                             <tr id="trneto" name="trneto">
-                                <td colspan="11" style="text-align:right"><b>Neto</b></td>
+                                <td colspan="10" style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
-                                <td colspan="11" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
+                                <td colspan="10" style="text-align:right"><b>IVA {{$tablas['empresa']->iva}}%</b></td>
                                 <td id="tdiva" name="tdiva" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="trtotal" name="trtotal">
-                                <td colspan="11" style="text-align:right"><b>Total</b></td>
+                                <td colspan="10" style="text-align:right"><b>Total</b></td>
                                 <td id="tdtotal" name="tdtotal" style="text-align:right">0,00</td>
                             </tr>
                         @endif

@@ -57,21 +57,21 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
-					<th width="30px">Cod</th>
-					<th width="30px">Cant.</th>
-					<th width="30px">OrdDesp</th>
-					<th width="30px">Saldo</th>
-					<th class="textcenter">Unidad</th>
-					<th class="textleft">Descripción</th>
-					<th class="textleft">Clase<br>Sello</th>
+					<th width="20px">Cod</th>
+					<th width="20px">Cant.</th>
+					<th width="10px">OrdDesp</th>
+					<th width="20px">Saldo</th>
+					<th width="20px" class="textcenter">UM</th>
+					<th width="130px" class="textleft">Descripción</th>
+					{{-- <th class="textleft">Clase<br>Sello</th>
 					<th class="textleft">Diam<br>Ancho</th>
 					<th class="textright">Largo</th>
-					<th class="textcenter">TU<br>Esp</th>
-					<th class="textright">Peso</th>
+					<th class="textcenter">TU<br>Esp</th> --}}
+					<th width="30px" class="textright">Peso</th>
 					<!--<th class="textright">$ x Kg</th>-->
-					<th class="textright">Total Kg</th>
-					<th class="textright" width="90px">Precio Unit</th>
-					<th class="textright" width="90px">Total Neto</th>
+					<th width="30px" class="textright">Total Kg</th>
+					<th width="30px" class="textright" width="90px">Precio Unit</th>
+					<th width="30px" class="textright" width="90px">Total Neto</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -100,7 +100,7 @@
 						}else{
 							$sumacantorddesp= $datasuma[0]->cantdesp;
 						}
-						$aux_ancho = $despachosoldet->notaventadetalle->producto->diametro;
+						/* $aux_ancho = $despachosoldet->notaventadetalle->producto->diametro;
 						$aux_largo = $despachosoldet->notaventadetalle->producto->long . "Mts";
 						$aux_espesor = $despachosoldet->notaventadetalle->producto->tipounion;
 						$aux_cla_sello_nombre = $despachosoldet->notaventadetalle->producto->claseprod->cla_nombre;
@@ -111,7 +111,7 @@
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = number_format($AcuTec->at_espesor, 3, ',', '.');
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-						}
+						} */
 						$aux_producto_nombre = $despachosoldet->notaventadetalle->producto->glosa;
 						if($despachosoldet->cantsoldesp > $sumacantorddesp){
 							$aux_nfila++;
@@ -132,10 +132,10 @@
 						<td class="textcenter">{{number_format($aux_saldo, 0, ",", ".")}}</td>
 						<td class="textcenter">{{$despachosoldet->notaventadetalle->unidadmedida->nombre}}</td>
 						<td class="textleft">{{$aux_producto_nombre}}</td>
-						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
+						{{-- <td class="textcenter">{{$aux_cla_sello_nombre}}</td>
 						<td class="textcenter">{{$aux_ancho}}</td>
 						<td class="textcenter">{{$aux_largo}}</td>
-						<td class="textcenter">{{$aux_espesor}}</td>
+						<td class="textcenter">{{$aux_espesor}}</td> --}}
 						<td class="textright">{{number_format($despachosoldet->notaventadetalle->producto->peso, 2, ",", ".")}}</td>
 						<!--<td class="textright">{{number_format($despachosoldet->notaventadetalle->precioxkilo, 2, ",", ".")}}</td>-->
 						<td class="textright">{{number_format($totalkilos, 2, ",", ".")}}</td>
@@ -149,17 +149,17 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="11" class="textright"><span><strong>Totales</strong></span></td>
+					<td colspan="7" class="textright"><span><strong>Totales</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($aux_sumtotalkilos, 2, ",", ".")}}</strong></span></td>
 					<td class="textright"><span><strong>NETO</strong></span></td>
 					<td class="textright"><span><strong>{{number_format($neto, 2, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="13" class="textright"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
+					<td colspan="9" class="textright"><span><strong>IVA {{$despachosol->notaventa->piva}}%</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round(($neto * $despachosol->notaventa->piva)/100), 2, ",", ".")}}</strong></span></td>
 				</tr>
 				<tr>
-					<td colspan="13" class="textright"><span><strong>TOTAL</strong></span></td>
+					<td colspan="9" class="textright"><span><strong>TOTAL</strong></span></td>
 					<td class="textright"><span><strong>{{number_format(round($neto * ($despachosol->notaventa->piva+100)/100), 2, ",", ".")}}</strong></span></td>
 				</tr>
 			</tfoot>

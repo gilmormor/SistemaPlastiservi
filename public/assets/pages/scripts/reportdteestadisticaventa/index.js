@@ -187,6 +187,8 @@ function datosFac(orderby = "",aux_genexcel){
         fechahoy          : "",
         genexcel          : aux_genexcel,
         areaproduccion_id : $("#areaproduccion_id").val(),
+        categoriaprod_id  : $("#categoriaprod_id").val(),
+        claseprod_id      : $("#claseprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -202,7 +204,9 @@ function datosFac(orderby = "",aux_genexcel){
     "&orderby="+data1.orderby +
     "&genexcel="+data1.genexcel +
     "&areaproduccion_id="+data1.areaproduccion_id +
-    "&_token="+data1._token
+    "&categoriaprod_id="+data1.categoriaprod_id +
+    "&claseprod_id="+data1.claseprod_id +
+    "&_token="+data1._token;
 
     var data = {
         data1 : data1,
@@ -594,7 +598,7 @@ function exportarExcelLosPinos() {
         aux_totalitemkg = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen","CodRef","Obs","NV","Tipo entrega"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen","CodRef","Obs","NV","Tipo entrega","Clase/SubCategoria","Color","Costo Actual","Costo DTE"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalitemkg += registro.itemkg;
@@ -665,7 +669,11 @@ function exportarExcelLosPinos() {
                 registro.codref_nombre,
                 registro.dte_obs,
                 registro.notaventa_id,
-                registro.tipoentrega_nombre
+                registro.tipoentrega_nombre,
+                registro.cla_nombre,
+                registro.color_nombre,
+                registro.costototal,
+                registro.costodtedet
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -720,10 +728,15 @@ function createExcelLosPinos(datosExcel) {
     ajustarcolumnaexcel(worksheet,"AM");
     ajustarcolumnaexcel(worksheet,"AN");
     ajustarcolumnaexcel(worksheet,"AO");
+    ajustarcolumnaexcel(worksheet,"AP");
+    ajustarcolumnaexcel(worksheet,"AQ");
+    ajustarcolumnaexcel(worksheet,"AR");
+    ajustarcolumnaexcel(worksheet,"AS");
+    ajustarcolumnaexcel(worksheet,"AT");
     
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 43; i++) {
+    for (let i = 1; i <= 46; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -748,7 +761,7 @@ function createExcelLosPinos(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 43; i++) {
+    for (let i = 1; i <= 46; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -905,7 +918,22 @@ function createExcelLosPinos(datosExcel) {
         cell.numFmt = "0%";
         }
     });
-    
+
+    // Recorrer la columna AS y dar formato con punto para separar los miles
+    const columnAS = worksheet.getColumn(46);
+    columnAS.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+    // Recorrer la columna AS y dar formato con punto para separar los miles
+    const columnAT = worksheet.getColumn(47);
+    columnAT.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
 
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {

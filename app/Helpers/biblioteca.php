@@ -904,7 +904,7 @@ function precioUnitSinCostoInsumos($docinsumodets, $preciounit) {
     $aux_totalcostoinsumo = 0;
     foreach ($docinsumodets as $docinsumodet) {
         // Asumiendo la estructura de tu JSON o array
-        $insumo = json_decode($docinsumodet->productoinsumo->insumo) ?? $docinsumodet->productoinsumo->producto;
+        $insumo = json_decode($docinsumodet->insumo) ?? $docinsumodet->producto;
         $nombre = is_object($insumo) ? $insumo->nombre : $insumo['nombre'];
         $costounitario = $docinsumodet->costounitario; //$docinsumodet->costounitario * $docinsumodet->productoinsumo->cant;
         $cantxinsumo = $docinsumodet->cant; //$docinsumodet->cantxinsumo;
@@ -920,7 +920,7 @@ function precioUnitSinCostoInsumos($docinsumodets, $preciounit) {
     $diferenciaFormateada = number_format($preciounit - $aux_totalcostoinsumo, 3, ',', '.');
     
     // Construir y retornar el HTML completo
-    return '<a class="btn-accion-tabla btn-xs tooltipsC" title="' . 'PreUnit - Costo:' . $diferenciaFormateada . '<br>' . $tooltipComp . '">
+    return '<a class="btn-accion-tabla btn-xs tooltipsC" title="' . 'PreUnit - Insumos:' . $diferenciaFormateada . '<br>' . $tooltipComp . '">
         (' . $diferenciaFormateada . ')
     </a>';
 }

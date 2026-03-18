@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\Seguridad\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Services\ProductoCostoService;
+use Illuminate\Support\Facades\DB;
 
 class Insumo extends Model
 {
@@ -40,5 +42,30 @@ class Insumo extends Model
     public function tipocosto()
     {
         return $this->belongsTo(TipoCosto::class);
+    }
+
+    protected static function boot()
+    {
+
+        parent::boot();
+
+        static::saved(function($insumo){
+
+            $productos = DB::table('productoinsumo')
+
+            ->where('insumo_id',$insumo->id)
+
+            ->pluck('producto_id');
+
+            foreach($productos as $producto_id){
+
+                ProductoCostoService::recalcular(
+                    $producto_id
+                );
+
+            }
+
+        });
+
     }
 }

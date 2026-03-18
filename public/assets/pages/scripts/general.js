@@ -3207,7 +3207,8 @@ async function llenarDatosProd(vlrcodigo){
 				aux_nombreprod = arrayDatosProducto["nombre"] + aux_diametro + aux_long + aux_cla_nombre + aux_tipounion;
 
 			}
-			$("#nmbitem" + item).val(aux_nombreprod);
+			//$("#nmbitem" + item).val(aux_nombreprod);
+			$("#nmbitem" + item).val(arrayDatosProducto["nombre"]);
 			/*
 			if(arrayDatosProducto["acuerdotecnico"]){
 				$at_ancho = arrayDatosProducto["acuerdotecnico"].at_ancho;
@@ -4869,7 +4870,7 @@ function precioUnitSinCostoInsumos(aux_datosproducto){
 		let diferencia = $("#precionetoM").attr("valor") - aux_totalprecioinsumo;
 		// data-original-title="Acuerdo Técnico PDF"
 		//if (diferencia > 0) {
-			htmlPrecio += `<a class="btn-accion-tabla btn-xs tooltipsC" title="PreUnit - Costo: ${MASKLA(diferencia, 3)}<br>${tooltipComp}">
+			htmlPrecio += `<a class="btn-accion-tabla btn-xs tooltipsC" title="PreUnit - Insumos: ${MASKLA(diferencia, 3)}<br>${tooltipComp}">
 								(${MASKLA(diferencia, 3)})
 							</a>`;
 			/* htmlPrecio += ' <span class="precio-comp-tooltip text-primary" ' +
@@ -4881,3 +4882,40 @@ function precioUnitSinCostoInsumos(aux_datosproducto){
 	}
 	return htmlPrecio;
 }
+
+
+$(document).on('changed.bs.select', '#categoriaprod_id', function () {
+
+    let clases = {};
+
+    $('#categoriaprod_id option:selected').each(function () {
+
+        let json = $(this).attr('claseprods');
+
+        if (json) {
+
+            let arr = JSON.parse(json);
+
+            $.each(arr, function (i, item) {
+                clases[item.id] = item.nombre;
+            });
+
+        }
+
+    });
+
+    let $claseprod_id = $('#claseprod_id');
+
+    $claseprod_id.empty();
+
+    $.each(clases, function (id, nombre) {
+
+        $claseprod_id.append(
+            '<option value="'+id+'">'+nombre+'</option>'
+        );
+
+    });
+
+    $claseprod_id.selectpicker('refresh');
+
+});

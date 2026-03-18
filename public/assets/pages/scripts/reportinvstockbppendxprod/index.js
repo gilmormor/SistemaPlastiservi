@@ -148,6 +148,7 @@ function datosstockpicking(){
         aprobstatus       : $("#aprobstatus").val(),
         aprobstatusdesc   : $("#aprobstatus option:selected").html(),
         //orden             : ordentablaGen($('#tabla-data-reporte-stockpicking').DataTable()),
+        claseprod_id      : $("#claseprod_id").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -158,7 +159,8 @@ function datosstockpicking(){
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&tipobodega="+data1.tipobodega +
     "&aprobstatus="+data1.aprobstatus +
-    "&aprobstatusdesc="+data1.aprobstatusdesc
+    "&aprobstatusdesc="+data1.aprobstatusdesc +
+    "&claseprod_id="+data1.claseprod_id;
     //"&orden=" + ordentablaGen($('#tabla-data-reporte-stockpicking').DataTable())
 
 
