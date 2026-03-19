@@ -16,13 +16,13 @@ class CotizacionDetalle extends Model
         'cantgrupo',
         'cantxgrupo',
         'unidadmedida_id',
+        'descuento',
         'preciounit',
         'peso',
-        'precioneto',
-        'iva',
-        'total',
-        'usuariodel_id',
+        'precioxkilo',
         'precioxkiloreal',
+        'totalkilos',
+        'subtotal',
         'producto_nombre',
         'ancho',
         'largo',
@@ -33,7 +33,8 @@ class CotizacionDetalle extends Model
         'grupoprod_id',
         'color_id',
         'obs',
-        'acuerdotecnicotemp_id'
+        'acuerdotecnicotemp_id',
+        'usuariodel_id'
     ];
     //RELACION DE UNO A MUCHOS NotaVentaDetalle
     public function notaventadetalles()

@@ -14,7 +14,9 @@ class InvBodegaProducto extends Model
         'producto_id',
         'invbodega_id',
         'stock',
-        'stockkg'
+        'stockkg',
+        'stockprueba',
+        'stockkgprueba'
     ];
 
     //RELACION INVERSA Producto

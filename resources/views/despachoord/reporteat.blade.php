@@ -73,7 +73,7 @@
 					{{-- <th width="30px">Cant.</th> --}}
 					<th width="30px">Cant Despachar</th>
 					<th width="20px" class="textcenter">UN</th>
-					<th width="120px" class="textleft">Descripción</th>
+					<th width="200px" class="textleft">Descripción</th>
 					{{-- <th width="40px" class="textcenter">Sello</th>
 					<th width="20px" class="textcenter">Ancho</th>
 					<th width="20px" class="textcenter">Largo</th>
