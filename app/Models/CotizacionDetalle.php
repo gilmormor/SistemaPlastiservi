@@ -21,6 +21,7 @@ class CotizacionDetalle extends Model
         'precioneto',
         'iva',
         'total',
+        'subtotal',
         'usuariodel_id',
         'precioxkiloreal',
         'producto_nombre',
