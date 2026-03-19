@@ -165,11 +165,11 @@ Stock Inventario
                             <th>Peso<br>Esp</th>
                             <th class="tooltipsC" title="Tipo de Union">TU</th>
                             <th>Bodega</th>
-                            <th style='text-align:center'>Ini</th>
-                            <th style='text-align:center'>Ent</th>
-                            <th style='text-align:center'>Sal</th>
-                            <th style='text-align:center'>Stock</th>
-                            <th style='text-align:right'>Stock Kg</th>
+                            <th style='text-align:center' title="Stock inicio de mes">Ini</th>
+                            <th style='text-align:center' title="Suma total entradas del mes">Ent</th>
+                            <th style='text-align:center' title="Suma total salidas del mes">Sal</th>
+                            <th style='text-align:center' title="Stock bodega">Stock</th>
+                            <th style='text-align:right' title="Stock Kg bodega">Stock Kg</th>
                         </tr>
                     </thead>
                     <tfoot>
