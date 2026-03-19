@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         //InvMovDet::observe(InvMovDetObserver::class);
 
         //Dte::observe(DteObserver::class);
-        DteFac::observe(DteFacObserver::class);
+        //DteFac::observe(DteFacObserver::class);
         View::composer("theme.lte.aside", function ($view) {
             $menus = Menu::getMenu(true);
             $view->with('menusComposer', $menus);
