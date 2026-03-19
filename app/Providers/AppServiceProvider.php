@@ -9,7 +9,6 @@ use App\Models\DteDet;
 use App\Models\DteFac;
 use App\Models\InvMovDet;
 use App\Models\NotaVentaDetalle;
-use App\Observers\DteFacObserver;
 use App\Observers\DteObserver;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -42,10 +41,8 @@ class AppServiceProvider extends ServiceProvider
         DteDet::observe(DteDetObserver::class);
 
         // Registra el nuevo observer para invmovdet
-        //InvMovDet::observe(InvMovDetObserver::class);
+        InvMovDet::observe(InvMovDetObserver::class);
 
-        //Dte::observe(DteObserver::class);
-        //DteFac::observe(DteFacObserver::class);
         View::composer("theme.lte.aside", function ($view) {
             $menus = Menu::getMenu(true);
             $view->with('menusComposer', $menus);
