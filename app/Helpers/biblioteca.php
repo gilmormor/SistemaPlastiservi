@@ -906,21 +906,22 @@ function precioUnitSinCostoInsumos($docinsumodets, $preciounit) {
         // Asumiendo la estructura de tu JSON o array
         $insumo = json_decode($docinsumodet->insumo) ?? $docinsumodet->producto;
         $nombre = is_object($insumo) ? $insumo->nombre : $insumo['nombre'];
-        $costounitario = $docinsumodet->costounitario; //$docinsumodet->costounitario * $docinsumodet->productoinsumo->cant;
+        $costototal = $docinsumodet->costototal; //$docinsumodet->costototal * $docinsumodet->productoinsumo->cant;
         $cantxinsumo = $docinsumodet->cant; //$docinsumodet->cantxinsumo;
         
-        $tooltipComp .= $cantxinsumo . ' ' . $nombre . ' $ ' . number_format($costounitario, 2, ',', '.') . '<br>';
-        $aux_totalcostoinsumo += $costounitario;
+        $tooltipComp .= $cantxinsumo . ' ' . $nombre . ' $ ' . number_format($costototal, 2, ',', '.') . '<br>';
+        $aux_totalcostoinsumo += $costototal;
     }
     
     // Eliminar el último <br>
     $tooltipComp = substr($tooltipComp, 0, -4);
     
     // Formatear la diferencia
+    $aux_preciounitform = number_format($preciounit, 3, ',', '.');
     $diferenciaFormateada = number_format($preciounit - $aux_totalcostoinsumo, 3, ',', '.');
     
     // Construir y retornar el HTML completo
-    return '<a class="btn-accion-tabla btn-xs tooltipsC" title="' . 'PreUnit - Insumos:' . $diferenciaFormateada . '<br>' . $tooltipComp . '">
+    return '<a class="btn-accion-tabla btn-xs tooltipsC" title="PreUnit: ' . $aux_preciounitform . '<br>' . $tooltipComp . '<br>PreUnit - Insumos:' . $diferenciaFormateada . '">
         (' . $diferenciaFormateada . ')
     </a>';
 }

@@ -598,7 +598,7 @@ function exportarExcelLosPinos() {
         aux_totalitemkg = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen","CodRef","Obs","NV","Tipo entrega","Clase/SubCategoria","Color","Costo Actual","Costo DTE"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Doc Origen","NDoc Origen","Fecha Origen","CodRef","Obs","NV","Tipo entrega","Clase/SubCategoria","Color","Costo NV","Costo DTE","Costo Actual"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalitemkg += registro.itemkg;
@@ -672,8 +672,9 @@ function exportarExcelLosPinos() {
                 registro.tipoentrega_nombre,
                 registro.cla_nombre,
                 registro.color_nombre,
-                registro.costototal,
-                registro.costodtedet
+                registro.costodtedetnv,
+                registro.costodtedet,
+                registro.costototal
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -733,10 +734,11 @@ function createExcelLosPinos(datosExcel) {
     ajustarcolumnaexcel(worksheet,"AR");
     ajustarcolumnaexcel(worksheet,"AS");
     ajustarcolumnaexcel(worksheet,"AT");
+    ajustarcolumnaexcel(worksheet,"AU");
     
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 46; i++) {
+    for (let i = 1; i <= 47; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -761,7 +763,7 @@ function createExcelLosPinos(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 46; i++) {
+    for (let i = 1; i <= 47; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -920,15 +922,23 @@ function createExcelLosPinos(datosExcel) {
     });
 
     // Recorrer la columna AS y dar formato con punto para separar los miles
-    const columnAS = worksheet.getColumn(46);
+    const columnAS = worksheet.getColumn(45);
     columnAS.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
         }
     });
+
     // Recorrer la columna AS y dar formato con punto para separar los miles
-    const columnAT = worksheet.getColumn(47);
+    const columnAT = worksheet.getColumn(46);
     columnAT.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+    // Recorrer la columna AS y dar formato con punto para separar los miles
+    const columnAU = worksheet.getColumn(47);
+    columnAU.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
         }

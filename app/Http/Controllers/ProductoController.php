@@ -145,7 +145,7 @@ class ProductoController extends Controller
             $producto->save();
 
             // Procesar componentes
-            if ($request->has('detalles')) {
+            /* if ($request->has('detalles')) {
                 foreach ($request->detalles as $detalle) {
                     // Crear nuevo detalle
                     $producto->productocomps()->create([
@@ -156,7 +156,7 @@ class ProductoController extends Controller
                         'usuario_id' => auth()->id()
                     ]);
                 }
-            }            
+            }  */           
             DB::commit();
             return redirect('producto/crear')->with('mensaje','Producto creado con exito');
         } catch (\Exception $e) {
@@ -256,7 +256,7 @@ class ProductoController extends Controller
                 $Producto->acuerdotecnico->save();
             }
             // Procesar componentes
-            $detallesActuales = $Producto->productocomps()->pluck('id')->toArray();
+            /* $detallesActuales = $Producto->productocomps()->pluck('id')->toArray();
             $detallesIds = [];
 
 
@@ -317,7 +317,7 @@ class ProductoController extends Controller
                     $detalle->update(['usuariodel_id' => auth()->id()]);
                     $detalle->delete();
                 }
-            }
+            } */
 
             // Procesar insumos
             $detallesActuales = $Producto->productoinsumos()->pluck('id')->toArray();
@@ -455,11 +455,11 @@ class ProductoController extends Controller
 
     public function buscarUnProductoComp(Request $request){
         $respuesta = $this->buscarUnProducto($request);
-        foreach ($respuesta['productocomps'] as &$productocomp) {
+        /* foreach ($respuesta['productocomps'] as &$productocomp) {
             $requestComp = $request;
             $requestComp->id = $productocomp->productocomp_id;
             $productocomp["producto"] = $this->buscarUnProducto($requestComp);
-        }
+        } */
         return $respuesta;
     }
 
@@ -566,16 +566,13 @@ class ProductoController extends Controller
                 }
                 //dd($respuesta);
                 $producto = Producto::findOrFail($productoId);
-                //dd($producto->productocomps); // Cargar los componentes relacionados
                 $respuesta['nombre'] = $producto->glosa;
                 $respuesta['sku'] = $producto->sku;
                 $respuesta['precioneto'] = $producto->precioneto;
-                foreach ($producto->productocomps as &$productocomp) {
+                /* foreach ($producto->productocomps as &$productocomp) {
                     $productocomp->precioneto = $productocomp->productocomp->precioneto;
                 }
-                $respuesta['productocomps'] = $producto->productocomps;
-                //dd($producto->productocomps);
-                //dd($respuesta);
+                $respuesta['productocomps'] = $producto->productocomps; */
                 foreach ($producto->productoinsumos as &$productoinsumo) {
                     $productoinsumo->nombre = $productoinsumo->insumo->nombre;
                     $productoinsumo->costounitario = $productoinsumo->insumo->costounitario;

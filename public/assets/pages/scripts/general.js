@@ -4843,7 +4843,7 @@ function buscarInsumoGenNew(obj){
 
 function precioUnitSinCostoInsumos(aux_datosproducto){
 	//console.log(aux_datosproducto);
-	aux_totalprecioinsumo = 0;
+	aux_totalcostoinsumo = 0;
 	let tooltipComp = "";
 
 	/* console.log("Componente ID:", comp.productocomp_id);
@@ -4851,26 +4851,29 @@ function precioUnitSinCostoInsumos(aux_datosproducto){
 	console.log("Precio Neto:", comp.precioneto); */
 	//console.log("Producto:", aux_datosproducto.productocomps);
 	aux_datosproducto.productoinsumos.forEach(insumo => {
-		aux_costounitario = insumo.costounitario/insumo.unidadesproducto;
+		aux_costototal = (insumo.costounitario/insumo.unidadesproducto) * insumo.cant;
 		tooltipComp += 
-			`${MASKLA(insumo.cant, 2)} ${insumo.nombre} $ ${MASKLA(aux_costounitario, 2)}<br>`;
+			`${MASKLA(insumo.cant, 2)} ${insumo.nombre} $ ${MASKLA(aux_costototal, 2)}<br>`;
 
-		aux_totalprecioinsumo += insumo.cant * aux_costounitario;
+		aux_totalcostoinsumo += aux_costototal;
 	});
 	// Eliminar el último &#13;&#10; del final
-	tooltipComp = tooltipComp.replace(/<br>$/, '');
+	//tooltipComp = tooltipComp.replace(/<br>$/, '');
 	
 	htmlPrecio = "";
 	//console.log(tooltipComp);
-	if(aux_totalprecioinsumo == 0){
-		aux_totalprecioinsumo = "";
+	if(aux_totalcostoinsumo == 0){
+		aux_totalcostoinsumo = "";
 	}else{
-		/* aux_totalprecioinsumo = $("#precionetoM").attr("valor") - aux_totalprecioinsumo;
-		aux_totalprecioinsumo = (aux_totalprecioinsumo > 0 ? " (" + MASKLA(aux_totalprecioinsumo,3) + ")" : ""); */
-		let diferencia = $("#precionetoM").attr("valor") - aux_totalprecioinsumo;
+		/* aux_totalcostoinsumo = $("#precionetoM").attr("valor") - aux_totalcostoinsumo;
+		aux_totalcostoinsumo = (aux_totalcostoinsumo > 0 ? " (" + MASKLA(aux_totalcostoinsumo,3) + ")" : ""); */
+		let aux_precionetoM = $("#precionetoM").attr("valor");
+		let diferencia = $("#precionetoM").attr("valor") - aux_totalcostoinsumo;
 		// data-original-title="Acuerdo Técnico PDF"
 		//if (diferencia > 0) {
-			htmlPrecio += `<a class="btn-accion-tabla btn-xs tooltipsC" title="PreUnit - Insumos: ${MASKLA(diferencia, 3)}<br>${tooltipComp}">
+			aux_title = `PreUnit: ${aux_precionetoM}<br>${tooltipComp}PreUnit - Insumos: ${MASKLA(diferencia, 3)}`;
+			aux_title = aux_title.replace(/<br>$/, '');
+			htmlPrecio += `<a class="btn-accion-tabla btn-xs tooltipsC" title="${aux_title}">
 								(${MASKLA(diferencia, 3)})
 							</a>`;
 			/* htmlPrecio += ' <span class="precio-comp-tooltip text-primary" ' +

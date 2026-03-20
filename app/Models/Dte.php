@@ -2853,14 +2853,27 @@ class Dte extends Model
 
         if(!isset($request->statuscosto) or empty($request->statuscosto) or ($request->statuscosto == "")){
             $aux_campocosto = "";
+            $aux_campocostonv = "";
             $aux_campocostodte = "";
         }else{
             $aux_campocosto = ",producto.costototal ";
+            $aux_campocostonv = ", 
+                                        (SELECT 
+                                            COALESCE(
+                                                (SELECT 
+                                                    SUM(costototal)
+                                                FROM docinsumodet
+                                                WHERE origendet_id = notaventa.id 
+                                                    AND origentipo = 'NV' 
+                                                    AND deleted_at IS NULL
+                                                ), 0
+                                            )) AS costodtedetnv ";
+
             $aux_campocostodte = ", 
                                         (SELECT 
                                             COALESCE(
                                                 (SELECT 
-                                                    SUM(costounitario)
+                                                    SUM(costototal)
                                                 FROM docinsumodet
                                                 WHERE origendet_id = dtedet.id 
                                                     AND origentipo = 'DTE' 
@@ -2941,6 +2954,7 @@ class Dte extends Model
         dte.obs as dte_obs,
         color.nombre as color_nombre
         $aux_campocosto
+        $aux_campocostonv
         $aux_campocostodte
         FROM dte LEFT JOIN dtedte
         ON dte.id = dtedte.dte_id AND ISNULL(dte.deleted_at) and isnull(dtedte.deleted_at)

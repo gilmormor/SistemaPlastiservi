@@ -14,7 +14,10 @@ class DocInsumoDet extends Model
         'origendet_id',
         'insumo_id',
         'cant',
+        'canttotal',
+        'unidadesproducto',
         'costounitario',
+        'costototal',
         'usuario_id',
         'usuariodel_id'
     ];

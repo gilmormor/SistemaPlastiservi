@@ -29,9 +29,12 @@ class DocInsumoDetService
 
                     'insumo_id' => $productoinsumo->insumo_id,
 
-                    'cant' => $cantidadDetalle,
+                    'cant' => $productoinsumo->cant,
+                    'canttotal' => $cantidadDetalle * $productoinsumo->cant,
+                    'unidadesproducto' => $productoinsumo->unidadesproducto,
                     //'cant' => $productoinsumo->cant,
-                    'costounitario' => $productoinsumo->insumo->costounitario/$productoinsumo->unidadesproducto,
+                    'costounitario' => ($productoinsumo->insumo->costounitario/$productoinsumo->unidadesproducto),
+                    'costototal' => ($productoinsumo->insumo->costounitario/$productoinsumo->unidadesproducto) * $productoinsumo->cant,
 
                     'usuario_id' => auth()->id()
                 ]);

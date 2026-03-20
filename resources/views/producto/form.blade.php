@@ -353,7 +353,7 @@
     </div>
 
 </div>
-
+<!--
 <div class="col-md-8 col-md-offset-2">
     <div class="box box-primary">
         <div class="box-header with-border">
@@ -403,6 +403,7 @@
         </table>
     </div>
 </div>
+-->
 {{-- <hr>
 <div class="form-group">
     <label class="col-lg-3 control-label">Componentes</label>
@@ -441,7 +442,7 @@
         <button type="button" class="btn btn-success btn-sm" id="btn-agregar-detalle"><i class="fa fa-plus"></i> Agregar detalle</button>
     </div>
 </div> --}}
-<div class="col-md-8 col-md-offset-2">
+{{-- <div class="col-md-8 col-md-offset-2">
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3 class="box-title">Componentes</h3>
@@ -516,7 +517,7 @@
         </table>
         <button type="button" class="btn btn-success btn-sm" id="btn-agregar-detalle"><i class="fa fa-plus" title="Agregar Complemento"></i> Agregar</button>
     </div>
-</div>
+</div> --}}
 
 
 <div class="col-md-8 col-md-offset-2">
