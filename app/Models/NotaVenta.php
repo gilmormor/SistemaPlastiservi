@@ -463,8 +463,6 @@ class NotaVenta extends Model
             ON comuna.id=notaventa.comunaentrega_id
             LEFT JOIN vista_datacobranza
             ON vista_datacobranza.cliente_id = notaventa.cliente_id
-            LEFT JOIN claseprod
-            ON claseprod.categoriaprod_id=categoriaprod.id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
@@ -483,7 +481,6 @@ class NotaVenta extends Model
             and $aux_condclaseprod_id
             $cond_group
             $cond_order;";
-            //dd($sql);
         }
                 //and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
         if($aux_consulta == 2){
@@ -500,8 +497,6 @@ class NotaVenta extends Model
             ON areaproduccion.id=categoriaprod.areaproduccion_id
             INNER JOIN cliente
             ON cliente.id=notaventa.cliente_id
-            LEFT JOIN claseprod
-            ON claseprod.categoriaprod_id=categoriaprod.id
             WHERE $vendedorcond
             and $aux_condFecha
             and $aux_condrut
