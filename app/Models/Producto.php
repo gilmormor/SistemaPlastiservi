@@ -123,7 +123,7 @@ class Producto extends Model
         ->join('claseprod', 'producto.claseprod_id', '=', 'claseprod.id')
         ->select([
                 'producto.id',
-                'producto.nombre',
+                'producto.glosa as nombre',
                 'claseprod.cla_nombre',
                 'producto.codintprod',
                 'producto.diamextmm',
@@ -385,7 +385,7 @@ class Producto extends Model
         }
         $sucurcadena = implode(",", $sucurArray);
 
-        $sql = "SELECT producto.id,producto.nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
+        $sql = "SELECT producto.id,producto.glosa as nombre,claseprod.cla_nombre,producto.codintprod,producto.diamextmm,producto.diamextpg,
                 producto.diametro,producto.espesor,producto.long,producto.peso,producto.tipounion,producto.precioneto,categoriaprod.precio,
                 categoriaprodsuc.sucursal_id,categoriaprod.unidadmedida_id,producto.tipoprod,acuerdotecnico.id as acuerdotecnico_id
                 from producto inner join categoriaprod
@@ -633,7 +633,7 @@ class Producto extends Model
         if($aux_sql==2){
             $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,
             sum(notaventadetalle.cant) as cant,sum(if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)) AS cantdesp,
-            producto.nombre,cliente.razonsocial,notaventadetalle.id,
+            producto.glosa as nombre,cliente.razonsocial,notaventadetalle.id,
             notaventadetalle.notaventa_id,oc_file,
             if(isnull(acuerdotecnico.id),producto.diametro,at_ancho) as diametro,
             if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
@@ -1996,7 +1996,7 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         if($aux_AgruOrd == ""){
             $aux_campos = ",notaventa.fechahora,notaventa.cliente_id,notaventa.piva,
             notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
-            producto.nombre,cliente.razonsocial,notaventadetalle.id,
+            producto.glosa as nombre,cliente.razonsocial,notaventadetalle.id,
             notaventadetalle.notaventa_id,oc_file,
             producto.diametro,notaventa.oc_id,
             claseprod.cla_nombre,producto.long,

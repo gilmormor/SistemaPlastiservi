@@ -608,7 +608,7 @@ function consulta($request,$aux_sql,$orden){
     }
     if($aux_sql==2){
         //if(categoriaprod.unidadmedida_id=3,producto.diamextpg,producto.diamextmm) AS diametro,
-        $sql = "SELECT notaventadetalle.producto_id,producto.nombre,
+        $sql = "SELECT notaventadetalle.producto_id,producto.glosa as nombre,
         producto.diametro,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         cant,cantsoldesp,
@@ -647,7 +647,7 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
         and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
         GROUP BY notaventadetalle.producto_id
-        ORDER BY producto.nombre,producto.peso;";
+        ORDER BY producto.glosa,producto.peso;";
     }
     
 

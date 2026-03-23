@@ -2030,7 +2030,7 @@ function consulta($request){
     $respuesta['totales'] = $datas;
     //dd($respuesta['totales']);
 
-    $sql = "SELECT producto.id as producto_id,CONCAT(categoriaprod.nombre,'/',producto.nombre) as nombre,claseprod.cla_nombre,
+    $sql = "SELECT producto.id as producto_id,CONCAT(categoriaprod.nombre,'/',producto.glosa) as nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,
@@ -2489,7 +2489,7 @@ function consultaODcerrada($request){
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
     $datas = DB::select($sql);
     $respuesta['totales'] = $datas;
-    $sql = "SELECT producto.id as producto_id,CONCAT(categoriaprod.nombre,'/',producto.nombre) as nombre,claseprod.cla_nombre,
+    $sql = "SELECT producto.id as producto_id,CONCAT(categoriaprod.nombre,'/',producto.glosa) as nombre,claseprod.cla_nombre,
     producto.long,producto.diametro,
     producto.tipounion,notaventadetalle.peso,color.nombre as color,
     categoriagrupovalmes.metacomerkg,categoriagrupovalmes.costo,

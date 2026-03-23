@@ -719,7 +719,7 @@ function consulta($request,$aux_sql,$orden){
     if($aux_sql==2){
         $sql = "SELECT notaventa.fechahora,notaventadetalle.producto_id,notaventa.cliente_id,
         notaventadetalle.cant,if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp) AS cantdesp,
-        producto.nombre,cliente.razonsocial,notaventadetalle.id,
+        producto.glosa as nombre,cliente.razonsocial,notaventadetalle.id,
         notaventadetalle.notaventa_id,oc_file,
         producto.diametro,notaventa.oc_id,
         claseprod.cla_nombre,producto.long,

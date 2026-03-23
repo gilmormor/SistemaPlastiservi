@@ -126,7 +126,7 @@ function consultainvmov($request){
             invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,
             invmov.idmovmod,invmovmodulo.nombre as invmovmodulo_nombre,
             CONCAT (invbodega.nombre, ' / ' , sucursal.abrev) as invbodega_nombre,sucursal.nombre as sucursal_nombre,
-            producto.nombre as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant,
+            producto.glosa as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant,
             invmovdet.cantkg,
             invmov.invmovmodulo_id,acuerdotecnico.id as acuerdotecnico_id
             FROM invmov INNER JOIN invmovdet

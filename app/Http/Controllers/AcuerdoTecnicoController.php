@@ -138,7 +138,7 @@ class AcuerdoTecnicoController extends Controller
             }
 
             $json = json_decode($request->objtxt);
-            $sql = "SELECT acuerdotecnico.*, producto.nombre as producto_nombre
+            $sql = "SELECT acuerdotecnico.*, producto.glosa as producto_nombre
             FROM acuerdotecnico INNER JOIN producto
             on acuerdotecnico.producto_id = producto.id
             WHERE at_claseprod_id = $request->at_claseprod_id
@@ -170,8 +170,8 @@ class AcuerdoTecnicoController extends Controller
             $dataresultado = [];
             //dd($datas);
             foreach ($datas as &$data) {
-                $producto = Producto::find($data->producto_id);
-                $data->producto_nombre = $producto->glosa;
+                //$producto = Producto::find($data->producto_id);
+                //$data->producto_nombre = $producto->glosa;
 
                 // 1. Obtener TODOS los registros del acuerdo técnico
                 $registros = AcuerdoTecnicoCValAtDet::where('acuerdotecnico_id', $data->id)->get();

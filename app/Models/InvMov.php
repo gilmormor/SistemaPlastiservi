@@ -134,7 +134,7 @@ class InvMov extends Model
             ->havingRaw("SUM(cant) > 0")
             ->select([
                 'invbodegaproducto.producto_id',
-                'producto.nombre as producto_nombre',
+                'producto.glosa as producto_nombre',
                 DB::raw("if(isnull(acuerdotecnico.id), producto.diametro, at_ancho) as diametro"),
                 DB::raw("if(isnull(acuerdotecnico.id), producto.long, at_largo) as largo"),
                 DB::raw("if(isnull(acuerdotecnico.id), producto.peso, at_espesor) as peso"),
@@ -239,7 +239,7 @@ class InvMov extends Model
             $aux_condclaseprod_id = " producto.claseprod_id IN ($aux_claseprodid)";
         }
 
-        $sql = "SELECT invbodegaproducto.producto_id, CONCAT(producto.nombre,'',IF(!isnull(at_unidadmedida.nombre),CONCAT(': ',at_unidadmedida.nombre),'')) as producto_nombre, 
+        $sql = "SELECT invbodegaproducto.producto_id, producto.glosa as producto_nombre, 
         REPLACE(REPLACE(if(isnull(acuerdotecnico.id),producto.diametro,at_ancho), '\"', ''), '\'', '') as diametro,
         if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
         if(isnull(acuerdotecnico.id),producto.peso,at_espesor) as peso,

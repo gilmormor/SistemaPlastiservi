@@ -274,7 +274,7 @@ function consulta($request,$aux_cons,$auxproducto_id){
 
 
     if($aux_cons == 1){
-        $sql = "SELECT producto_id,producto.nombre,
+        $sql = "SELECT producto_id,producto.glosa as nombre,
         producto.diametro,
         claseprod.cla_nombre,producto.long,producto.peso,producto.tipounion,
         sum(cantsoldesp) AS cantsoldesp,
