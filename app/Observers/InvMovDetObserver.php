@@ -19,8 +19,8 @@ class InvMovDetObserver
             DB::table('invbodegaproducto')
                 ->where('id', $invmovdet->invbodegaproducto_id)
                 ->update([
-                    'stockprueba' => DB::raw('stockprueba + ' . (float) $invmovdet->cant),
-                    'stockkgprueba' => DB::raw('stockkgprueba + ' . (float) $invmovdet->cantkg),
+                    'stock' => DB::raw('stock + ' . (float) $invmovdet->cant),
+                    'stockkg' => DB::raw('stockkg + ' . (float) $invmovdet->cantkg),
                 ]);
         });
     }
@@ -44,16 +44,16 @@ class InvMovDetObserver
                     DB::table('invbodegaproducto')
                         ->where('id', $original['invbodegaproducto_id'])
                         ->update([
-                            'stockprueba' => DB::raw('stockprueba - ' . (float) $original['cant']),
-                            'stockkgprueba' => DB::raw('stockkgprueba - ' . (float) $original['cantkg']),
+                            'stock' => DB::raw('stock - ' . (float) $original['cant']),
+                            'stockkg' => DB::raw('stockkg - ' . (float) $original['cantkg']),
                         ]);
                     
                     // Sumar al nuevo producto
                     DB::table('invbodegaproducto')
                         ->where('id', $invmovdet->invbodegaproducto_id)
                         ->update([
-                            'stockprueba' => DB::raw('stockprueba + ' . (float) $invmovdet->cant),
-                            'stockkgprueba' => DB::raw('stockkgprueba + ' . (float) $invmovdet->cantkg),
+                            'stock' => DB::raw('stock + ' . (float) $invmovdet->cant),
+                            'stockkg' => DB::raw('stockkg + ' . (float) $invmovdet->cantkg),
                         ]);
                 } else {
                     // Solo cambiaron las cantidades
@@ -64,8 +64,8 @@ class InvMovDetObserver
                         DB::table('invbodegaproducto')
                             ->where('id', $invmovdet->invbodegaproducto_id)
                             ->update([
-                                'stockprueba' => DB::raw('stockprueba + ' . (float) $diferenciaCant),
-                                'stockkgprueba' => DB::raw('stockkgprueba + ' . (float) $diferenciaCantKg),
+                                'stock' => DB::raw('stock + ' . (float) $diferenciaCant),
+                                'stockkg' => DB::raw('stockkg + ' . (float) $diferenciaCantKg),
                             ]);
                     }
                 }
@@ -85,8 +85,8 @@ class InvMovDetObserver
             DB::table('invbodegaproducto')
                 ->where('id', $invmovdet->invbodegaproducto_id)
                 ->update([
-                    'stockprueba' => DB::raw('stockprueba - ' . (float) $invmovdet->cant),
-                    'stockkgprueba' => DB::raw('stockkgprueba - ' . (float) $invmovdet->cantkg),
+                    'stock' => DB::raw('stock - ' . (float) $invmovdet->cant),
+                    'stockkg' => DB::raw('stockkg - ' . (float) $invmovdet->cantkg),
                 ]);
         });
     }
