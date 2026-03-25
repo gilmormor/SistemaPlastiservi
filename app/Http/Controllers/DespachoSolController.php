@@ -89,7 +89,12 @@ class DespachoSolController extends Controller
             $nuevoOrdDesp = [];
             if($request->sololectura == "0"){
                 // use precomputed count from the main query when available
-                $cont = isset($data->contorddesp) ? (int)$data->contorddesp : 0;
+                $cont = DespachoSol::findOrFail($data->id)
+                            ->despachoords()
+                            ->whereNull('deleted_at')
+                            ->whereDoesntHave('despachoordanul')
+                            ->count();
+                //$cont = isset($data->contorddesp) ? (int)$data->contorddesp : 0;
                 $nuevoOrdDesp1 = [
                     "a_href" => "/despachosol/cerrarsoldesp",
                     "a_class" => "btn-accion-tabla tooltipsC btncerrarsol",
