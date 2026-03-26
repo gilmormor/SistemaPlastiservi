@@ -1661,3 +1661,9 @@ Route::put('insumo/{id}', 'InsumoController@actualizar')->name('actualizar_insum
 Route::delete('insumo/{id}', 'InsumoController@eliminar')->name('eliminar_insumo');
 Route::post('insumo/buscarUnInsumo', 'InsumoController@buscarUnInsumo')->name('buscarUnInsumo');
 Route::get('insumobuscarpage', 'InsumoController@insumobuscarpage')->name('insumobuscarpage');
+
+/*RUTAS DTE ND NC EDITAR*/
+Route::get('dtendnceditar', 'DteNdNcEditarController@index')->name('dtendnceditar');
+Route::get('dtendnceditar/dtendnceditarpage', 'DteNdNcEditarController@dtendnceditarpage')->name('dtendnceditarpage');
+Route::get('dtendnceditar/{id}/editar', 'DteNdNcEditarController@editar')->name('editar_dtendnceditar');
+Route::put('dtendnceditar/{id}', 'DteNdNcEditarController@actualizar')->name('actualizar_dtendnceditar');

@@ -2258,6 +2258,7 @@ class Dte extends Model
         $sql = "SELECT dte.id,dte.fechahora,dte.nrodocto,cliente.rut,cliente.razonsocial,comuna.nombre as nombre_comuna,
         clientebloqueado.descripcion as clientebloqueado_descripcion,
         dteorigen.id as dteorigen_id,dteorigen.nrodocto as dteorigen_nrodocto,foliocontrol.doc,foliocontrol.nombrepdf,
+        foliocontroldte.desc as foliocontroldte_desc,foliocontroldte.doc as foliocontroldte_doc,
         dte.updated_at, dteorigen.updated_at as dteorigen_updated_at,dte.mnttotal,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         dtencnd.codref
@@ -2267,6 +2268,8 @@ class Dte extends Model
         ON dtedte.dter_id = dteorigen.id and isnull(dteorigen.deleted_at)
         LEFT JOIN foliocontrol
         ON foliocontrol.id = dteorigen.foliocontrol_id
+        LEFT JOIN foliocontrol as foliocontroldte
+        ON foliocontroldte.id = dte.foliocontrol_id
         INNER JOIN cliente
         ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
         INNER JOIN comuna
@@ -2277,7 +2280,7 @@ class Dte extends Model
         ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
         INNER JOIN dtencnd
         ON dtencnd.dte_id = dte.id
-        WHERE dte.foliocontrol_id = $request->foliocontrol_id
+        WHERE dte.foliocontrol_id IN ($request->foliocontrol_id)
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond
         AND $aux_conddte_id
@@ -2288,7 +2291,7 @@ class Dte extends Model
         AND $aux_condsucurArray
         AND $aux_condnrodoctofac
         AND $aux_condcodref
-        GROUP BY dte.id
+        GROUP BY dte.id,dte.foliocontrol_id
         ORDER BY dte.id asc;";
         //dd($sql);
 
