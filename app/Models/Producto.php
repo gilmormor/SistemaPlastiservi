@@ -300,14 +300,14 @@ class Producto extends Model
                             'glosa', prod_comp.glosa,
                             'cant', productocomp.cant,
                             'precio', prod_comp.precioneto,
-                            'tipoprod', prod_comp.tipoprod 
+                            'tipoprod', prod_comp.tipoprod
                         )
                     ) AS productocomp_data */
                 (SELECT GROUP_CONCAT(
-                        CONCAT_WS(';', 
-                            pc.productocomp_id, 
-                            p.glosa, 
-                            pc.cant, 
+                        CONCAT_WS(';',
+                            pc.productocomp_id,
+                            p.glosa,
+                            pc.cant,
                             p.precioneto,
                             p.tipoprod
                         )
@@ -315,9 +315,24 @@ class Producto extends Model
                     )
                     FROM productocomp pc
                     LEFT JOIN producto p ON pc.productocomp_id = p.id AND p.deleted_at IS NULL
-                    WHERE pc.producto_id = producto.id 
+                    WHERE pc.producto_id = producto.id
                     AND pc.deleted_at IS NULL
-                ) AS productocomp_data
+                ) AS productocomp_data,
+                (SELECT GROUP_CONCAT(
+                        CONCAT_WS(';',
+                            pi.insumo_id,
+                            i.nombre,
+                            pi.cant,
+                            i.costounitario,
+                            pi.unidadesproducto
+                        )
+                        SEPARATOR '|'
+                    )
+                    FROM productoinsumo pi
+                    LEFT JOIN insumo i ON pi.insumo_id = i.id AND i.deleted_at IS NULL
+                    WHERE pi.producto_id = producto.id
+                    AND pi.activo = 1
+                ) AS productoinsumos_data
                 from producto inner join categoriaprod
                 on producto.categoriaprod_id = categoriaprod.id and isnull(producto.deleted_at) and isnull(categoriaprod.deleted_at)
                 INNER JOIN claseprod

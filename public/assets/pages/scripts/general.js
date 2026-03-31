@@ -4213,6 +4213,7 @@ function llenarlistaprodSelecMult(i,producto_id,checkbox){
 				prod_unidadmedida_nombre : $("#producto_idbm" + producto_id).attr("prod_unidadmedida_nombre"),
 				at_unidadmedida_nombre : $("#producto_idbm" + producto_id).attr("at_unidadmedida_nombre"),
 				productocomp_data : $("#producto_idbm" + producto_id).attr("productocomp_data") ?? null,
+				productoinsumos_data : $("#producto_idbm" + producto_id).attr("productoinsumos_data") ?? null,
 				// Otros datos pueden ser añadidos aquí
             });
 		}
@@ -4783,6 +4784,23 @@ function precioUnitSinCompEmbalaje(aux_datosproducto){
 	return htmlPrecio;
 }
 
+function convertirCadenaAProductoInsumos(cadena) {
+    if (!cadena) {
+        return [];
+    }
+    const items = cadena.split('|').filter(item => item.trim() !== '');
+    return items.map(item => {
+        const campos = item.split(';');
+        return {
+            insumo_id      : campos[0],
+            nombre         : campos[1] || '',
+            cant           : parseFloat(campos[2]) || 0,
+            costounitario  : parseFloat(campos[3]) || 0,
+            unidadesproducto: parseFloat(campos[4]) || 0,
+        };
+    });
+}
+
 function convertirCadenaAProductocomps(cadena) {
     // Si la cadena está vacía o es null, retornar objeto con productocomps vacío
     if (!cadena) {
@@ -4850,7 +4868,7 @@ function precioUnitSinCostoInsumos(aux_datosproducto){
 	console.log("Cantidad:", comp.cant);
 	console.log("Precio Neto:", comp.precioneto); */
 	//console.log("Producto:", aux_datosproducto.productocomps);
-	aux_datosproducto.productoinsumos.forEach(insumo => {
+	(aux_datosproducto.productoinsumos || []).forEach(insumo => {
 		aux_costototal = (insumo.costounitario/insumo.unidadesproducto) * insumo.cant;
 		tooltipComp += 
 			`${MASKLA(insumo.cant, 2)} ${insumo.nombre} $ ${MASKLA(aux_costototal, 2)}<br>`;

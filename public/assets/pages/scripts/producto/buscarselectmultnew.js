@@ -275,6 +275,7 @@ function configTablaProdSelectMult(){
             $(row).attr('prod_unidadmedida_nombre', data.prod_unidadmedida_nombre);
             $(row).attr('at_unidadmedida_nombre', data.at_unidadmedida_nombre);
             $(row).attr('productocomp_data', data.productocomp_data);
+            $(row).attr('productoinsumos_data', data.productoinsumos_data);
 
         },
         initComplete: function () {

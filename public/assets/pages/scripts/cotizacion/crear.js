@@ -1879,6 +1879,7 @@ function insertarItem(){
 			//console.log(producto);
 			//console.log(convertirCadenaAProductocomps(producto.productocomp_data));
 			aux_datosproducto = convertirCadenaAProductocomps(producto.productocomp_data);
+			aux_datosproducto.productoinsumos = convertirCadenaAProductoInsumos(producto.productoinsumos_data);
 		
 			//aux_nfila = 1; 
 			aux_nfila = 0;
