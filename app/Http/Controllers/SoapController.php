@@ -560,6 +560,7 @@ class SoapController extends Controller
             if ($status_code === 200) {
                 // Si el status es 200, la solicitud se completó exitosamente
                 // Procesar la respuesta del servidor aquí
+                dd($response->Consulta_TXTDTEResult);
                 return $response->Consulta_TXTDTEResult;
             } else {
                 // Si el status no es 200, hubo un error en la solicitud
