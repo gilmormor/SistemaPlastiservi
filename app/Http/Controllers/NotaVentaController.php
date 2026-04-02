@@ -1278,6 +1278,7 @@ class NotaVentaController extends Controller
                             $array_producto["tipoprod"] = 0;
                             $array_producto["usuario_id"] = auth()->id();
                             $array_producto["sku"] = "xyz9999";
+                            $array_producto["glosaaut"] = 1;                            
                             $productonew = Producto::create($array_producto);
                             //dd($notaventa->vendedor_id);
                             //CREAR RELACION CON VENDEDOR ASOCIADO AL PRODUCTO PARA LUEGO FILTRAR LOS PRODUCTOS POR VENDEDOR
