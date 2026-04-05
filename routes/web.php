@@ -27,6 +27,10 @@ Route::post('ajax-sesion', 'AjaxController@setSession')->name('ajax')->middlewar
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/', 'InicioController@index')->name('inicio');
+
+    /* ASISTENTE IA */
+    Route::get('asistente-ia', 'AsistenteIaController@index')->name('asistenteia.index');
+    Route::post('asistente-ia/consultar', 'AsistenteIaController@consultar')->name('asistenteia.consultar');
 });
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'superadmin']], function () {
     Route::get('', 'AdminController@index');
