@@ -255,8 +255,13 @@ function datosinvstock(){
 $("#btnbuscarproducto").click(function(event){
     $(this).val("");
     $(".input-sm").val('');
-    data = datosinvstock();
-    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load();
+    if (!tablaProductoInicializada) {
+        configTablaProd(); // ← AQUÍ recién se inicializa
+        tablaProductoInicializada = true;
+    }
+
+    /* data = datosinvstock();
+    $('#tabla-data-productos').DataTable().ajax.url( "producto/productobuscarpage/" + data.data2 + "&producto_id=" ).load(); */
     aux_id = $("#producto_idPxP").val();
     if( aux_id == null || aux_id.length == 0 || /^\s+$/.test(aux_id) ){
         $("#divprodselec").hide();
