@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Events\ErrorCrearDTE;
 use App\Events\XMLCargaDocManager;
 use App\Http\Controllers\SoapController;
+use App\Models\DteTrans;
 use App\Models\Seguridad\Usuario;
 use DOMDocument;
 use DOMXPath;
@@ -20,6 +21,7 @@ use Illuminate\Support\SimpleXMLElement;
 use Mockery\Undefined;
 use SimpleXMLElement as GlobalSimpleXMLElement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class Dte extends Model
 {
@@ -189,6 +191,12 @@ class Dte extends Model
     public function dteguiadespnv()
     {
         return $this->hasOne(DteGuiaDespNV::class);
+    }
+
+    //RELACION de uno a uno dtetrans (Res. Ex. SII N°154)
+    public function dtetrans()
+    {
+        return $this->hasOne(DteTrans::class, 'dte_id');
     }
 
     //RELACION DE UNO A MUCHOS despachosoldte
@@ -1776,17 +1784,26 @@ class Dte extends Model
             if($Estado_DTE->EstadoDTE == 0 and $Estado_DTE->Estatus == 3){ // EN ESTE CASO EL DOCUMENTO NO EXISTE EN LA PLATAFORMA BES, ESO QUIERE DECIR QUE FUE ELIMINADO PREVIAMENTE
                 $aux_folio = $dte->nrodocto;
             }else{ //PERO SI NO HA SIDO ELIMINADO EN PLATAFORMA BES NO DEJA VOLVER A GENERAR EL DTE
-                $dte->stasubsii = 1;
+                return [
+                    'id' => 0,
+                    'stasubsii' => 0,
+                    'titulo' => 'No fue procesado el folio ' . $dte->nrodocto,
+                    'mensaje'=>'Error: #' . $Estado_DTE->Estatus . " " . $Estado_DTE->MsgEstatus,
+                    'tipo_alert' => 'error',
+                    'stasubcob' => $dte->stasubcob,
+                    'updated_at' => $dte->updated_at
+                ];
+                /* $dte->stasubsii = 1;
                 $dte->save();
                 return [
                     'id' => 0,
                     'stasubsii' => 1,
                     'titulo' => "DTE $dte->nrodocto Generado en SII.",
-                    'mensaje' => "Estatus: " . $Estado_DTE->DescEstado,
+                    'mensaje' => "Estatus: " . $Estado_DTE->DescEstado . " Error: " . $Estado_DTE->MsgEstatus,
                     'tipo_alert' => 'error',
                     'stasubcob' => $dte->stasubcob,
                     'updated_at' => $dte->updated_at
-                ];
+                ]; */
             }
         }else{
             //SI EL $dte->nrodocto VIENE VACIO O = A NULL, ESO QUIERE DECIR QUE SE VA A GENERAR LA PRIMERA VEZ EL DTE
@@ -1799,6 +1816,16 @@ class Dte extends Model
                         if($Estado_DTE->Estatus == 3){
                             $bandNoExisteFolio = false;
                             $aux_folio = $Solicitar_Folio->Folio;
+                        }else{ //PERO SI NO HA SIDO ELIMINADO EN PLATAFORMA BES NO DEJA VOLVER A GENERAR EL DTE
+                            return [
+                                'id' => 0,
+                                'stasubsii' => 0,
+                                'titulo' => 'No fue procesado el folio ' . $Solicitar_Folio->Folio,
+                                'mensaje'=>'Error: #' . $Estado_DTE->Estatus . " " . $Estado_DTE->MsgEstatus,
+                                'tipo_alert' => 'error',
+                                'stasubcob' => $dte->stasubcob,
+                                'updated_at' => $dte->updated_at
+                                ];
                         }
                     }else{
                         //dd($Solicitar_Folio);
@@ -1813,7 +1840,7 @@ class Dte extends Model
                     return [
                         'id' => 0,
                         'titulo' =>'Error:', 
-                        'mensaje'=>'Error: TipoDTE ' . $foliocontrol->tipodocto . ", " . $Solicitar_Folio,
+                        'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus,
                         'tipo_alert' => 'error'                
                     ];
                 }
@@ -1930,17 +1957,28 @@ class Dte extends Model
         //SI DOCUMENTO YA FUE ASIGNADO, QUIERE DECIR QUE SE PUEDE VOLVER A GENERAR
         //PERO SI NO HA SIDO ELIMINADO EN LA PLATAFORMA DE BES NO DEJA VOLVER A SUBIRLO
         $Solicitar_Folio = $soap->Solicitar_Folio($empresa->rut,$foliocontrol->tipodocto);
+        //Log::info('Dte linea 1959 Solicitar_Folio respuesta', ['respuesta' => $Solicitar_Folio]);
         if(isset($Solicitar_Folio->Estatus)){
             if($Solicitar_Folio->Estatus == 0){
+                $aux_folio = $Solicitar_Folio->Folio;
                 $Estado_DTE = $soap->Estado_DTE($empresa->rut,$foliocontrol->tipodocto,$Solicitar_Folio->Folio);
+                //Log::info('Dte linea 1963 Estado_DTE respuesta', ['respuesta' => $Estado_DTE]);
                 if($Estado_DTE->Estatus == 3){
                     $aux_folio = $Solicitar_Folio->Folio;
                     return [
                         'id' => 1,
                         'aux_folio'=> $aux_folio
-                    ];    
+                    ];
+                }else{
+                    Log::info('Error: #' . $Estado_DTE->Estatus . " " . $Estado_DTE->MsgEstatus . " Ocurrio un error Estado_DTE->Estatus devolvio $Estado_DTE->Estatus, se esperaba 3 que significa que el folio no existe en la plataforma de BES, por lo tanto no se puede usar ese folio para generar el DTE.", ['respuesta' => $Estado_DTE]);
+                    return [
+                        'id' => 0,
+                        'mensaje'=>'Error: #' . $Estado_DTE->Estatus . " " . $Estado_DTE->MsgEstatus . " Ocurrio un error Estado_DTE->Estatus devolvio $Estado_DTE->Estatus, se esperaba 3 que significa que el folio no existe en la plataforma de BES, por lo tanto no se puede usar ese folio para generar el DTE.",
+                        'tipo_alert' => 'alert-error'
+                    ];
                 }
             }else{
+                Log::info('Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus . " Folio no fue Generado.", ['respuesta' => $Solicitar_Folio]);
                 return [
                     'id' => 0,
                     'mensaje'=>'Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus . " Folio no fue Generado.",
@@ -1948,6 +1986,7 @@ class Dte extends Model
                 ];
             }
         }else{
+            Log::info("Error: # Folio no fue Generado.", ['respuesta' => $Solicitar_Folio]);
             return [
                 'id' => 0,
                 'mensaje'=>'Error: TipoDTE ' . $foliocontrol->tipodocto . ", " . $Solicitar_Folio . " Folio no fue Generado",
@@ -3067,7 +3106,7 @@ class Dte extends Model
         }
     }
 
-    public static function subirSisCobranza($dte){
+    public static function subirSisCobranza($dte,$mensajeVolverSubirSisCob = 0){
         $tipodocto = $dte->foliocontrol->tipodocto;
         if($tipodocto == 33 or $tipodocto == 34 or $tipodocto == 61 or $tipodocto == 56){
             $empresa = Empresa::findOrFail(1);
@@ -3103,12 +3142,16 @@ class Dte extends Model
                 }
                 //dd($cargadocumentoscobranza);
             }else{
-                return [
-                    "titulo" => "Mensaje",
-					"mensaje" => "La empresa no permite subir Facturas",
-					"tipo_alert" => "error",
+                $dte->stasubcob = 2; //2 = No se subió por configuración de empresa
+                $dte->save();
+                if($mensajeVolverSubirSisCob == 1){
+                    return [
+                        "titulo" => "Mensaje",
+                        "mensaje" => "La empresa no permite subir Facturas",
+                        "tipo_alert" => "error",
 
-                ];
+                    ];
+                }
             }
         }
     }
@@ -4179,8 +4222,31 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<DirRecep>$DirRecep</DirRecep>" .
             "<CmnaRecep>$CmnaRecep</CmnaRecep>" .
             "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
-            "</Receptor>" .
-            "<Totales>" .
+            "</Receptor>";
+            if(isset($dte->dtetrans)){
+                $dtetrans = $dte->dtetrans;
+                $aux_ruttrans = formatearRUT($dtetrans->ruttrans);
+                $aux_rutchofer = formatearRUT($dtetrans->rutchofer);
+                $aux_fechaSalida = date('Y-m-d', strtotime($dtetrans->fchsalida));
+                $aux_HoraSalida = date('H:i:s', strtotime($dtetrans->fchsalida));
+                $aux_fchllegada = date('Y-m-d', strtotime($dtetrans->fchllegada));
+                $contenido .= "<Transporte>" .
+                    "<Patente>$dtetrans->patente</Patente>" .
+                    ($dtetrans->patentecarro ? "<PatenteCarro>$dtetrans->patentecarro</PatenteCarro>" : "") .
+                    ($dtetrans->ruttrans ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
+                    "<Chofer>" .
+                        "<RUTChofer>$aux_rutchofer</RUTChofer>" .
+                        "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" .
+                    "</Chofer>" .
+                    "<DirDest>$dtetrans->dirdest</DirDest>" .
+                    "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
+                    "<FchSalida>$aux_fechaSalida</FchSalida>" .
+                    "<HraSalida>$aux_HoraSalida</HraSalida>" .
+                    "<FchLlegada>$aux_fchllegada</FchLlegada>" .
+                "</Transporte>";
+            }
+
+            $contenido .= "<Totales>" .
             "<MntNeto>$dte->mntneto</MntNeto>" .
             "<TasaIVA>$dte->tasaiva</TasaIVA>" .
             "<IVA>$dte->iva</IVA>" .
@@ -4320,8 +4386,31 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<DirRecep>$DirRecep</DirRecep>" .
             "<CmnaRecep>$CmnaRecep</CmnaRecep>" .
             "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
-            "</Receptor>" .
-            "<Totales>";
+            "</Receptor>";
+            if(isset($dte->dtetrans)){
+                $dtetrans = $dte->dtetrans;
+                $aux_ruttrans = formatearRUT($dtetrans->ruttrans);
+                $aux_rutchofer = formatearRUT($dtetrans->rutchofer);
+                $aux_fechaSalida = date('Y-m-d', strtotime($dtetrans->fchsalida));
+                $aux_HoraSalida = date('H:i:s', strtotime($dtetrans->fchsalida));
+                $aux_fchllegada = date('Y-m-d', strtotime($dtetrans->fchllegada));
+                $contenido .= "<Transporte>" .
+                    "<Patente>$dtetrans->patente</Patente>" .
+                    ($dtetrans->patentecarro ? "<PatenteCarro>$dtetrans->patentecarro</PatenteCarro>" : "") .
+                    ($dtetrans->ruttrans ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
+                    "<Chofer>" .
+                        "<RUTChofer>$aux_rutchofer</RUTChofer>" .
+                        "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" .
+                    "</Chofer>" .
+                    "<DirDest>$dtetrans->dirdest</DirDest>" .
+                    "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
+                    "<FchSalida>$aux_fechaSalida</FchSalida>" .
+                    "<HraSalida>$aux_HoraSalida</HraSalida>" .
+                    "<FchLlegada>$aux_fchllegada</FchLlegada>" .
+                "</Transporte>";
+            }
+
+            $contenido .= "<Totales>";
             if($TipoDTE == 33){
                 $contenido .= "<MntNeto>$dte->mntneto</MntNeto>" .
                 "<TasaIVA>$dte->tasaiva</TasaIVA>" .

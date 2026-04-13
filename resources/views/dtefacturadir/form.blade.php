@@ -177,7 +177,7 @@
                         >Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3" style="display:none;">
+            {{-- <div class="form-group col-xs-12 col-sm-3" style="display:none;">
                 <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                 <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($data) ? $data->indtraslado : ($data->indtraslado ?? ''))}}" required>
                     <option 
@@ -197,7 +197,7 @@
                         @endif
                         >Otros traslados no venta</option>
                 </select>
-            </div>
+            </div> --}}
             <div class="form-group col-xs-12 col-sm-5">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control validar-texto-xml" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
@@ -229,6 +229,7 @@
         </div>
     </div>
 </div>
+@include('generales.datostrans')
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>
     <input type="hidden" name="itemcompletos" id="itemcompletos" value="" class="form-control" style="text-align:right;" readonly required>

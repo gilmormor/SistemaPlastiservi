@@ -50,9 +50,12 @@ var Biblioteca = function(){
                     }
                 },
                 invalidHandler: function(event, validator) {
-
+                    // Cuando hay errores de validación, el botón se mantiene activo
+                    $("#btnguardargen").prop("disabled", false);
                 },
                 submitHandler: function(form){
+                    // Solo cuando TODAS las validaciones (incluyendo las de transporte) pasan
+                    // se deshabilita el botón y se envía el formulario
                     $("#btnguardargen").prop("disabled", true);
                     return true;
                 }

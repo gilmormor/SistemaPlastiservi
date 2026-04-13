@@ -16,6 +16,7 @@
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/dteguiadespdir/crear.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/datostrans/crear.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/cliente/buscarnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
 @endsection

@@ -22,8 +22,10 @@ use App\Models\NotaVenta;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\TipoEntrega;
+use App\Models\TipoTraslado;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
+use App\Services\DteTransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -86,6 +88,10 @@ class DteGuiaDespNVController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        $tablas['tipotraslado'] = TipoTraslado::orderBy('id')
+                                ->where('activo', '=', 1)
+                                ->get();
+
         //dd($tablas);
         return view('dteguiadespnv.crear',compact('data','detalles','tablas','array_bodegasmodulo','empresa'));
 
@@ -317,50 +323,62 @@ class DteGuiaDespNVController extends Controller
 
         //$respuesta = Dte::generardteprueba($dte);
         $respuesta = Dte::dteSolicitarFolio($dte);
-        /*
-        $respuesta = response()->json([
-            'id' => 1
-        ]);
-        */
+        /* $respuesta = [
+                    'id' => 1,
+                    'aux_folio' => 10000,
+        ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
-            $dte->fchemisgen = date("Y-m-d H:i:s");
-            $dte->nrodocto = $respuesta["aux_folio"];
-            $dte->stasubcob = 1;
-            $dteNew = Dte::create($dte->toArray());
-            if(!is_null($notaventa->oc_id)){
-                $dteoc->dte_id = $dteNew->id;
-                $dteoc->save();
-            }else{
-                if(isset($dteoc)){
-                    if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                        $dteoc->dte_id = $dteNew->id;
-                        $dteoc->oc_file = $foto;
-                        $dteoc->save();
+            DB::beginTransaction();
+            try {
+                $dte->fchemisgen = date("Y-m-d H:i:s");
+                $dte->nrodocto = $respuesta["aux_folio"];
+                $dte->stasubcob = 1;
+                $dteNew = Dte::create($dte->toArray());
+                if(!is_null($notaventa->oc_id)){
+                    $dteoc->dte_id = $dteNew->id;
+                    $dteoc->save();
+                }else{
+                    if(isset($dteoc)){
+                        if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                            $dteoc->dte_id = $dteNew->id;
+                            $dteoc->oc_file = $foto;
+                            $dteoc->save();
+                        }    
                     }    
+                }
+                foreach ($dte->dtedets as $dtedet) {
+                    $dtedet->dte_id = $dteNew->id;
+                    $aux_dtedet = $dtedet->toArray();
+                    $dtedetNew = DteDet::create($aux_dtedet);
+                }
+
+                $dteguiadesp->dte_id = $dteNew->id;
+                $dteguiadesp->save();
+
+                if(!is_null($request->notaventa_id)){
+                    $dteguiadespnv->dte_id = $dteNew->id;
+                    $dteguiadespnv->save();
                 }    
+
+                $foliocontrol->bloqueo = 0;
+                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+                $foliocontrol->save();
+                $notaventa->updated_at = date("Y-m-d H:i:s");//ACTUALIZO LA FECHA DE MODIFICACION PARA VALIDAR EN OTRAS PANTALLAS, CON ESTE CAMPO VALIDO SI EL REGISTRO FUE MODIFICADO POR OTRO USUARIO
+                $notaventa->save();
+                $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+
+                $dteTransService = new DteTransService();
+                $dteTransService->crearDesdeRequest($request, $dteNew->id);
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return redirect()->back()->with([
+                    'mensaje' => 'Error: ' . $e->getMessage(),
+                    'tipo_alert' => 'alert-error'    
+                ])->withInput();
             }
-            foreach ($dte->dtedets as $dtedet) {
-                $dtedet->dte_id = $dteNew->id;
-                $aux_dtedet = $dtedet->toArray();
-                $dtedetNew = DteDet::create($aux_dtedet);
-            }
-
-            $dteguiadesp->dte_id = $dteNew->id;
-            $dteguiadesp->save();
-
-            if(!is_null($request->notaventa_id)){
-                $dteguiadespnv->dte_id = $dteNew->id;
-                $dteguiadespnv->save();
-            }    
-
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-            $foliocontrol->save();
-            $notaventa->updated_at = date("Y-m-d H:i:s");//ACTUALIZO LA FECHA DE MODIFICACION PARA VALIDAR EN OTRAS PANTALLAS, CON ESTE CAMPO VALIDO SI EL REGISTRO FUE MODIFICADO POR OTRO USUARIO
-            $notaventa->save();
-            $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
             /* if($respuesta["id"] == 1){
@@ -377,12 +395,6 @@ class DteGuiaDespNVController extends Controller
                     'tipo_alert' => 'alert-success'
                 ]);    
             }
-/*
-            return redirect('dteguiadespnv')->with([
-                'mensaje'=>'Factura creada con exito.',
-                'tipo_alert' => 'alert-success'
-            ]);
-*/
         }else{
             $foliocontrol->bloqueo = 0;
             $foliocontrol->save();
@@ -392,6 +404,162 @@ class DteGuiaDespNVController extends Controller
             ]);
         }
     }
+
+    public function diagnosticar(Request $request)
+    {
+        can('guardar-dte-guia-desp-nv');
+
+        $pasos = [];
+        DB::beginTransaction();
+        try {
+            // Paso 1: Items
+            $cont_producto = count($request->producto_id ?? []);
+            $pasos[] = ['paso' => 'Items en documento', 'ok' => $cont_producto > 0, 'detalle' => "Total items: $cont_producto"];
+            if ($cont_producto <= 0) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => 'Sin items.', 'pasos' => $pasos]);
+            }
+
+            // Paso 2: Foliocontrol
+            $foliocontrol = Foliocontrol::findOrFail(2);
+            $overMax = $cont_producto > $foliocontrol->maxitemxdoc;
+            $pasos[] = ['paso' => 'Foliocontrol', 'ok' => !$overMax, 'detalle' => "foliocontrol_id=2, maxitemxdoc={$foliocontrol->maxitemxdoc}, items=$cont_producto"];
+            if ($overMax) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => '', 'pasos' => $pasos]);
+            }
+
+            // Paso 3: Tipo documento
+            $tipoOk = ($request->foliocontrol_id == 2);
+            $pasos[] = ['paso' => 'Tipo documento', 'ok' => $tipoOk, 'detalle' => "foliocontrol_id enviado: {$request->foliocontrol_id} — debe ser 2 (Guía de Despacho)"];
+            if (!$tipoOk) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => '', 'pasos' => $pasos]);
+            }
+
+            // Paso 4: Cliente
+            $cliente = Cliente::findOrFail($request->cliente_id);
+            $pasos[] = ['paso' => 'Cliente', 'ok' => true, 'detalle' => "ID={$cliente->id}, {$cliente->razonsocial}"];
+
+            // Paso 5: NotaVenta
+            $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+            $pasos[] = ['paso' => 'NotaVenta', 'ok' => true, 'detalle' => "ID={$notaventa->id}"];
+
+            // Paso 6: CentroEconómico
+            $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+            $pasos[] = ['paso' => 'Centro Económico', 'ok' => true, 'detalle' => "ID={$centroeconomico->id}"];
+
+            // Paso 7: Totales
+            $Tmntneto = 0;
+            $Tkgtotal = 0;
+            for ($i = 0; $i < $cont_producto; $i++) {
+                if (!is_null($request->producto_id[$i]) && !is_null($request->qtyitem[$i]) && $request->qtyitem[$i] > 0) {
+                    $Tmntneto += $request->montoitem[$i];
+                    $Tkgtotal += is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                }
+            }
+            $empresa = Empresa::findOrFail(1);
+            $Tiva     = round(($empresa->iva / 100) * $Tmntneto);
+            $Tmnttotal = round((($empresa->iva / 100) + 1) * $Tmntneto);
+            $pasos[] = ['paso' => 'Totales', 'ok' => $Tmntneto > 0, 'detalle' => "Neto=$Tmntneto, IVA=$Tiva, Total=$Tmnttotal"];
+            if ($Tmntneto <= 0) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => '', 'pasos' => $pasos]);
+            }
+
+            // Paso 8: Mock folio
+            $pasos[] = ['paso' => 'Solicitar folio (simulado)', 'ok' => true, 'detalle' => 'Folio ficticio 9999 — no consume folios reales'];
+
+            // Paso 9: Crear DTE
+            $hoy = date("Y-m-d H:i:s");
+            $dteNew = Dte::create([
+                'foliocontrol_id'    => 2,
+                'nrodocto'           => 9999,
+                'fchemis'            => date('Y-m-d'),
+                'fchemisgen'         => $hoy,
+                'fechahora'          => $hoy,
+                'sucursal_id'        => $centroeconomico->sucursal_id,
+                'cliente_id'         => $cliente->id,
+                'comuna_id'          => $cliente->comunap_id,
+                'ciudad_id'          => $cliente->ciudad_id,
+                'vendedor_id'        => $request->vendedor_id,
+                'obs'                => $request->obs,
+                'tipodespacho'       => $request->tipodespacho,
+                'indtraslado'        => $request->indtraslado,
+                'mntneto'            => $Tmntneto,
+                'tasaiva'            => $empresa->iva,
+                'iva'                => $Tiva,
+                'mnttotal'           => $Tmnttotal,
+                'kgtotal'            => $Tkgtotal,
+                'centroeconomico_id' => $request->centroeconomico_id,
+                'usuario_id'         => $request->usuario_id,
+                'stasubcob'          => 1,
+            ]);
+            $pasos[] = ['paso' => 'Crear DTE', 'ok' => true, 'detalle' => "DTE ID={$dteNew->id} (ficticio, rollback al final)"];
+
+            // Paso 10: DteDet
+            for ($i = 0; $i < $cont_producto; $i++) {
+                if (!is_null($request->producto_id[$i]) && !is_null($request->qtyitem[$i]) && $request->qtyitem[$i] > 0) {
+                    $unidadmedida = UnidadMedida::findOrFail($request->unidadmedida_id[$i]);
+                    DteDet::create([
+                        'dte_id'           => $dteNew->id,
+                        'producto_id'      => $request->producto_id[$i],
+                        'nrolindet'        => ($i + 1),
+                        'vlrcodigo'        => $request->producto_id[$i],
+                        'nmbitem'          => $request->nmbitem[$i],
+                        'qtyitem'          => $request->qtyitem[$i],
+                        'unmditem'         => substr($unidadmedida->nombre, 0, 4),
+                        'unidadmedida_id'  => $request->unidadmedida_id[$i],
+                        'prcitem'          => $request->prcitem[$i],
+                        'montoitem'        => round($request->qtyitem[$i] * $request->prcitem[$i], 0),
+                        'itemkg'           => is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0,
+                    ]);
+                }
+            }
+            $pasos[] = ['paso' => 'Crear DteDet', 'ok' => true, 'detalle' => "$cont_producto item(s) procesados"];
+
+            // Paso 11: DteGuiaDesp
+            $dteguiadesp = DteGuiaDesp::create([
+                'dte_id'           => $dteNew->id,
+                'tipoentrega_id'   => $request->tipoentrega_id,
+                'comunaentrega_id' => $request->comunaentrega_id,
+                'lugarentrega'     => $request->lugarentrega,
+                'ot'               => $request->ot,
+            ]);
+            $pasos[] = ['paso' => 'Crear DteGuiaDesp', 'ok' => true, 'detalle' => "ID={$dteguiadesp->id}"];
+
+            // Paso 12: DteGuiaDespNV
+            $dteguiadespnv = DteGuiaDespNV::create([
+                'dte_id'       => $dteNew->id,
+                'notaventa_id' => $request->notaventa_id,
+            ]);
+            $pasos[] = ['paso' => 'Crear DteGuiaDespNV', 'ok' => true, 'detalle' => "ID={$dteguiadespnv->id}"];
+
+            // Paso 13: DteTransService
+            $dteTransService = new DteTransService();
+            $dteTransService->crearDesdeRequest($request, $dteNew->id);
+            $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Datos de transporte procesados OK'];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $pasos[] = ['paso' => 'Excepción', 'ok' => false, 'detalle' => $e->getMessage()];
+            return response()->json([
+                'ok'        => false,
+                'resultado' => 'Error en diagnóstico',
+                'nota'      => 'Se hizo rollback. No se guardó nada.',
+                'pasos'     => $pasos,
+            ]);
+        }
+
+        DB::rollBack();
+        return response()->json([
+            'ok'        => true,
+            'resultado' => 'Diagnóstico exitoso',
+            'nota'      => 'Todos los pasos OK. Rollback aplicado — no se guardó nada ni se consumieron folios reales.',
+            'pasos'     => $pasos,
+        ]);
+    }
+
     /**
      * Display the specified resource.
      *

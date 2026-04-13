@@ -943,4 +943,15 @@ if (!function_exists('formatearRUTSinCerosIzq')) {
     }
 }
 
+if (!function_exists('limpiarRut')) {
+    function limpiarRut($rut) {
+        // Verificar si es null, vacío o solo espacios
+        if (is_null($rut) || trim($rut) === '') {
+            return '';
+        }
+        
+        // Eliminar puntos y guiones
+        return str_replace(['.', '-'], '', $rut);
+    }
+}
 ?>

@@ -219,22 +219,32 @@ class DteNCFacturaController extends Controller
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
-            $dte->fchemisgen = date("Y-m-d H:i:s");
-            $dte->nrodocto = $respuesta["aux_folio"];
-            $dteNew = Dte::create($dte->toArray());
-            foreach ($dte->dtedets as $dtedet) {
-                //dd($dtedet->toArray());
-                $dtedet->dte_id = $dteNew->id;
-                DteDet::create($dtedet->toArray());
-            }
-            $dtedte->dte_id = $dteNew->id;
-            $dtedte->save();
-            $dtencnd->dte_id = $dteNew->id;
-            $dtencnd->save();
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-            $foliocontrol->save();
+            DB::beginTransaction();
+            try {
+                $dte->fchemisgen = date("Y-m-d H:i:s");
+                $dte->nrodocto = $respuesta["aux_folio"];
+                $dteNew = Dte::create($dte->toArray());
+                foreach ($dte->dtedets as $dtedet) {
+                    //dd($dtedet->toArray());
+                    $dtedet->dte_id = $dteNew->id;
+                    DteDet::create($dtedet->toArray());
+                }
+                $dtedte->dte_id = $dteNew->id;
+                $dtedte->save();
+                $dtencnd->dte_id = $dteNew->id;
+                $dtencnd->save();
+                $foliocontrol->bloqueo = 0;
+                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+                $foliocontrol->save();
 
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return redirect()->back()->with([
+                    'mensaje' => 'Error: ' . $e->getMessage(),
+                    'tipo_alert' => 'alert-error'    
+                ])->withInput();
+            }
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
             /* if($respuesta["id"] == 1){
@@ -245,7 +255,7 @@ class DteNCFacturaController extends Controller
             return redirect('dtencfactura')->with([
                 'mensaje'=>'Nota de Credito creada con exito.',
                 'tipo_alert' => 'alert-success'
-            ]);    
+            ]);
         }else{
             /* $foliocontrol->bloqueo = 0;
             $foliocontrol->save(); */

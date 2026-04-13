@@ -1,0 +1,10 @@
+{
+    "files.exclude": {
+        "**/.claude/worktrees": true,
+        "**/.claude/worktrees/**": true
+    },
+    "search.exclude": {
+        "**/.claude/worktrees": true,
+        "**/.claude/worktrees/**": true
+    }
+}

@@ -16,8 +16,10 @@ use App\Models\Foliocontrol;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\TipoEntrega;
+use App\Models\TipoTraslado;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
+use App\Services\DteTransService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -63,6 +65,9 @@ class DteGuiaDespDirController extends Controller
                         ->whereIn('sucursal.id', $sucurArray)
                         ->get();
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        $tablas['tipotraslado'] = TipoTraslado::orderBy('id')
+                                ->where('activo', '=', 1)
+                                ->get();
         //dd($tablas);
         return view('dteguiadespdir.crear',compact('tablas'));
 
@@ -262,31 +267,45 @@ class DteGuiaDespDirController extends Controller
             ]; */
             $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
             if($respuesta["id"] == 1){
-                $dte->fchemisgen = date("Y-m-d H:i:s");
-                $dte->nrodocto = $respuesta["aux_folio"];
-                $dte->stasubcob = 1;
-                $dteNew = Dte::create($dte->toArray());
-                if(isset($dteoc)){
-                    if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                        $dteoc->dte_id = $dteNew->id;
-                        $dteoc->oc_file = $foto;
-                        $dteoc->save();
-                    }    
-                }
-                foreach ($dte->dtedets as $dtedet) {
-                    $dtedet->dte_id = $dteNew->id;
-                    $aux_dtedet = $dtedet->toArray();
-                    $dtedetNew = DteDet::create($aux_dtedet);
-                }
-    
-                $dteguiadesp->dte_id = $dteNew->id;
-                $dteguiadesp->save();
-    
-                $foliocontrol->bloqueo = 0;
-                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-                $foliocontrol->save();
-                $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+                DB::beginTransaction();
+                try {
 
+                    $dte->fchemisgen = date("Y-m-d H:i:s");
+                    $dte->nrodocto = $respuesta["aux_folio"];
+                    $dte->stasubcob = 1;
+                    $dteNew = Dte::create($dte->toArray());
+                    if(isset($dteoc)){
+                        if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                            $dteoc->dte_id = $dteNew->id;
+                            $dteoc->oc_file = $foto;
+                            $dteoc->save();
+                        }    
+                    }
+                    foreach ($dte->dtedets as $dtedet) {
+                        $dtedet->dte_id = $dteNew->id;
+                        $aux_dtedet = $dtedet->toArray();
+                        $dtedetNew = DteDet::create($aux_dtedet);
+                    }
+        
+                    $dteguiadesp->dte_id = $dteNew->id;
+                    $dteguiadesp->save();
+        
+                    $foliocontrol->bloqueo = 0;
+                    $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+                    $foliocontrol->save();
+                    $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+
+                    $dteTransService = new DteTransService();
+                    $dteTransService->crearDesdeRequest($request, $dteNew->id);
+
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    return redirect()->back()->with([
+                        'mensaje' => 'Error: ' . $e->getMessage(),
+                        'tipo_alert' => 'alert-error'    
+                    ])->withInput();
+                }
                 $dte = Dte::findOrFail($dteNew->id);
                 $respuesta = Dte::subirDteSii($dte);
                 /* if($respuesta["id"] == 1){
@@ -303,12 +322,6 @@ class DteGuiaDespDirController extends Controller
                         'tipo_alert' => 'alert-success'
                     ]);    
                 }
-    /*
-                return redirect('dteguiadespdir')->with([
-                    'mensaje'=>'Factura creada con exito.',
-                    'tipo_alert' => 'alert-success'
-                ]);
-    */
             }else{
                 /* $foliocontrol->bloqueo = 0;
                 $foliocontrol->save(); */

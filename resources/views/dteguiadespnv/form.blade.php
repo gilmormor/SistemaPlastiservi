@@ -146,7 +146,7 @@
                         >Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3">
+            {{-- <div class="form-group col-xs-12 col-sm-3">
                 <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                 <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($dteguiadesp) ? $dteguiadesp->indtraslado : ($data->indtraslado ?? ''))}}" required>
                     <option 
@@ -166,7 +166,7 @@
                         @endif
                         >Otros traslados no venta</option>
                 </select>
-            </div>
+            </div> --}}
             <!--
             <div class="form-group col-xs-12 col-sm-3">
                 <label for="btnfotooc" class="control-label">Cargar OrdenCompra</label>
@@ -201,7 +201,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3">
+            {{-- <div class="form-group col-xs-12 col-sm-3">
                 <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
                 <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->lugarentrega : ($data->lugarentrega ?? ''))}}" required placeholder="Lugar de Entrega"/>
             </div>
@@ -215,7 +215,7 @@
                             >{{$comuna->nombre}}</option>
                     @endforeach
                 </select>
-            </div>
+            </div> --}}
             <div class="form-group col-xs-12 col-sm-3">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control validar-texto-xml" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
@@ -251,6 +251,7 @@
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->neto ?? '')}}" class="form-control" style="text-align:right;" readonly required>
 </div>
+@include('generales.datostrans')
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
         <h3 class="box-title">Detalle</h3>
