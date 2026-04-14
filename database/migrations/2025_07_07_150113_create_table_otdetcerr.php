@@ -37,6 +37,6 @@ class CreateTableOtdetcerr extends Migration
      */
     public function down()
     {
-        Schema::drotdetIfExists('otdetcerr');
+        Schema::dropIfExists('otdetcerr');
     }
 }

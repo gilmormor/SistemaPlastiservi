@@ -25,7 +25,7 @@ class CreateTableOtdet extends Migration
             $table->foreign('unidadmedida_id','fk_otdet_unidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->double('espesorprod',4,3)->comment('Espesor para producción');
             $table->float('kg',18,2)->comment('Total Kg')->nullable();
-            $table->float('kgprod',18,2)->comment('Total Kg para produccion')->nullable();
+            $table->float('kgprod',18,2)->comment('Total Kg a produccion')->nullable();
             $table->float('preciounit',18,2)->comment('Precio Unitario sin IVA');
             $table->float('precioxkilo',10,2)->comment('Precio por Kilo');
             $table->float('precioxkiloreal',10,2)->comment('Precio por Kilo real. Precio fijado en categoria.');

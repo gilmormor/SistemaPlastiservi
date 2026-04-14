@@ -8,6 +8,11 @@ Area Produccion por Sucursal - Asignar Etapas de produccion por Area Produccion 
 ?>
 
 @section("scripts")
+    <script>
+        //const UNIDADMEDIDAS = "{{ $tablas['unidadmedidas'] }}";
+        const UNIDADMEDIDAS = @json($tablas['unidadmedidas']);
+    </script>
+
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     {{-- <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script> --}}
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
@@ -21,7 +26,7 @@ Area Produccion por Sucursal - Asignar Etapas de produccion por Area Produccion 
         @include('includes.mensaje')
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Fases por Area Produccion</h3>
+                <h3 class="box-title">Etapas de Produccion por Area Produccion</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>

@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\AcuerdoTecnico;
-use App\Models\AcuerdotecnicoAPEtapaprod;
+use App\Models\AcuerdotecnicoAPSucEtapaprod;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -18,12 +18,11 @@ class EtapaProdSeeder extends Seeder
         $usuario_id = 1; // Ajusta si corresponde a otro usuario
 
         $etapas = [
-            ['nombre' => 'Programación', 'desc' => 'Planificación de la producción', 'orden' => 1],
-            ['nombre' => 'Mezclas', 'desc' => 'Selección y preparación de materias primas', 'orden' => 2],
-            ['nombre' => 'Mezclado', 'desc' => 'Proceso de mezclado de materiales', 'orden' => 3],
-            ['nombre' => 'Extrusión', 'desc' => 'Extrusión de materiales plásticos', 'orden' => 4],
-            ['nombre' => 'Impresión', 'desc' => 'Impresión sobre film o material', 'orden' => 5],
-            ['nombre' => 'Sellado', 'desc' => 'Sellado final del producto', 'orden' => 6],
+            ['nombre' => 'Mezclas', 'desc' => 'Selección y preparación de materias primas', 'orden' => 1],
+            ['nombre' => 'Mezclado', 'desc' => 'Proceso de mezclado de materiales', 'orden' => 2],
+            ['nombre' => 'Extrusión', 'desc' => 'Extrusión de materiales plásticos', 'orden' => 3],
+            ['nombre' => 'Impresión', 'desc' => 'Impresión sobre film o material', 'orden' => 4],
+            ['nombre' => 'Sellado', 'desc' => 'Sellado final del producto', 'orden' => 5],
         ];
 
         foreach ($etapas as $etapa) {
@@ -38,8 +37,8 @@ class EtapaProdSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ]);
 
-                DB::table('areaproduccionetapaprod')->insert([
-                    'areaproduccion_id' => 5,
+                DB::table('areaproduccionsucetapaprod')->insert([
+                    'areaproduccionsuc_id' => 4,
                     'etapaprod_id' => $etapa_id,
                     'orden' => $etapa['orden'],
                     'created_at' => Carbon::now(),
@@ -48,41 +47,35 @@ class EtapaProdSeeder extends Seeder
             }
         }
         /** ------------------------------------------------------------------
-        * 2) LLENAR acuerdotecnicoapetapaprod POR ACUERDO TÉCNICO
+        * 2) LLENAR acuerdotecnicoapsucetapaprod POR ACUERDO TÉCNICO
         * -----------------------------------------------------------------*/
         $acuerdotecnicos = AcuerdoTecnico::orderBy('id')->get();
         foreach ($acuerdotecnicos as $acuerdotecnico) {
             $aux_obsestusion = null;
-            AcuerdotecnicoAPEtapaprod::create(
+            AcuerdotecnicoAPSucEtapaprod::create(
                 [
                     "acuerdotecnico_id" => $acuerdotecnico->id,
-                    "apetapaprod_id" => 1, // Asignar la etapa de produccion por defecto Programacion
+                    "apsucetapaprod_id" => 1, // Asignar la etapa de produccion Mezclas
                 ]
             );
-            AcuerdotecnicoAPEtapaprod::create(
+            AcuerdotecnicoAPSucEtapaprod::create(
                 [
                     "acuerdotecnico_id" => $acuerdotecnico->id,
-                    "apetapaprod_id" => 2, // Asignar la etapa de produccion Mezclas
+                    "apsucetapaprod_id" => 2, // Asignar la etapa de produccion Mezclado
                 ]
             );
-            AcuerdotecnicoAPEtapaprod::create(
+            AcuerdotecnicoAPSucEtapaprod::create(
                 [
                     "acuerdotecnico_id" => $acuerdotecnico->id,
-                    "apetapaprod_id" => 3, // Asignar la etapa de produccion Mezclado
-                ]
-            );
-            AcuerdotecnicoAPEtapaprod::create(
-                [
-                    "acuerdotecnico_id" => $acuerdotecnico->id,
-                    "apetapaprod_id" => 4, // Asignar la etapa de produccion Extrusion
+                    "apsucetapaprod_id" => 3, // Asignar la etapa de produccion Extrusion
                     "obs" => $acuerdotecnico->at_materiaprimaobs
                 ]
             );
             if($acuerdotecnico->at_impreso == 1){
-                AcuerdotecnicoAPEtapaprod::create(
+                AcuerdotecnicoAPSucEtapaprod::create(
                     [
                         "acuerdotecnico_id" => $acuerdotecnico->id,
-                        "apetapaprod_id" => 5, // Asignar la etapa de produccion Impresion
+                        "apsucetapaprod_id" => 4, // Asignar la etapa de produccion Impresion
                         "obs" => $acuerdotecnico->at_impresoobs
                     ]
                 );
@@ -90,10 +83,10 @@ class EtapaProdSeeder extends Seeder
             $aux_clanom = $acuerdotecnico->claseprod->cla_nombre;
             $at_tiposelloobs = $acuerdotecnico->claseprod->at_tiposelloobs;
             if(($aux_clanom != "Sin Sello" and $aux_clanom != "Sin Manga") or ($at_tiposelloobs != null and $at_tiposelloobs != "")){
-                AcuerdotecnicoAPEtapaprod::create(
+                AcuerdotecnicoAPSucEtapaprod::create(
                     [
                         "acuerdotecnico_id" => $acuerdotecnico->id,
-                        "apetapaprod_id" => 6, // Asignar la etapa de produccion Impresion
+                        "apsucetapaprod_id" => 5, // Asignar la etapa de produccion Impresion
                         "obs" => $acuerdotecnico->at_tiposelloobs
                     ]
                 );

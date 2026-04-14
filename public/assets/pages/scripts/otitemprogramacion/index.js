@@ -22,10 +22,10 @@ $(document).on('input', '.edit-obs', function() {
     $('#producto_id' + fila).attr(prop, texto);
     
     // Debug: Ver en consola qué se está actualizando
-    console.log(
+    /* console.log(
         'Se actualizó producto_id' + fila, 
         'con el texto:', texto
-    );
+    ); */
 });
 
 function claseformatonumerico(clase,numdecimales){
@@ -495,10 +495,11 @@ function configurarTabla(nombreTabla,url,serverSide) {
             $('td', row).eq(0).attr("id","aux_detalle" + data.id);
             $('td', row).eq(0).attr("name","aux_detalle" + data.id);
             $('td', row).eq(0).attr("etapaprod",data.detetapaprod_array);
+            //console.log(data.detetapaprod_array);
             //"<a href='#' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + data.oc_id + "</a>";
 
             aux_text = 
-                `<a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OT: ${data.ot_id}" onclick='genpdf(${data.ot_id},"","ver-pdf-guia-despacho","/ot/exportPdf/${data.ot_id}")'>
+                `<a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OT: ${data.ot_id}" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")'>
                     ${data.ot_id}-${data.id}
                 </a>`;
             $('td', row).eq(1).html(aux_text);
@@ -689,6 +690,7 @@ $("#tabla-data-factura").on('click', 'td.dt-control', function (e) {
 function format(d) {
     // Descomponer el campo nvdetalle
     //console.log(d.nvdetalle);
+    //console.log(d);
     let tablaHtml = `
     <div style="display: flex; align-items: flex-start;"> <!-- Contenedor Flex (flecha al principio) -->
         <div style="margin-left: 20px;">&#8627;</div> <!-- Flecha desplazada un poco a la derecha -->
@@ -704,8 +706,8 @@ function format(d) {
                 <tbody>`;
                 if (d.detetapaprod_array && d.detetapaprod_array.trim() !== "") {
                     d.detetapaprod_array.split(";").forEach(registro => {
-                        const [etapaprod_id, etapaprod_nombre] = registro.split("|");
-                        let aux_idep = `${d.id}-${etapaprod_id}`;
+                        const [apsucetapaprod_id, etapaprod_id, etapaprod_nombre] = registro.split("|");
+                        let aux_idep = `${d.id}-${apsucetapaprod_id}`;
                         let aux_contmaq = 0;
                         // Generar el select con las extrusoras en la columna 14 (otdet_obs)
                         var aux_text = `<select class="form-control requerido${d.id}" onchange="recibirChange(this)" data-nombre="${etapaprod_nombre} ${etapaprod_id}" name="maquina_id${aux_idep}" id="maquina_id${aux_idep}" data-width="100%" data-size="5">`;
@@ -723,7 +725,7 @@ function format(d) {
                         }
                         tablaHtml += `
                             <tr>
-                                <td id="epid${aux_idep}" name="epid${aux_idep}">${etapaprod_id}</td>
+                                <td id="epid${aux_idep}" name="epid${aux_idep}" apsucetapaprod_id="${apsucetapaprod_id}">${apsucetapaprod_id}</td>
                                 <td id="epnombre${aux_idep}" name="epnombre${aux_idep}">${etapaprod_nombre}</td>
                                 <td>${aux_text}</td>
                                 <td><textarea id="epobs${aux_idep}" name="epobs${aux_idep}" class="form-control edit-obs" style="width: 250px;" placeholder="Observación" maxlength="100" fila="${d.id}" nameobsg="aux_obsext">${aux_obsext}</textarea></td>
@@ -737,14 +739,20 @@ function format(d) {
                             <td colspan="4" class="text-center text-muted">Sin etapas de producción</td>
                         </tr>`;
                 }
-
+    aux_updated_at = $("#fila" + d.id).attr('updated_at');
+    aux_botoneditarep = ``;
+    if($("#aux_et").val() == 1){
+        aux_botoneditarep = `
+                <button type="button" class="btn btn-sm btn-primary mt-2" 
+                    onclick="editaretapasprod(${d.acuerdotecnico_id})" title="Editar etapas de producción">
+                    + Editar etapas
+                </button>
+            `;
+    }
     tablaHtml += `
                 </tbody>
             </table>
-                <button type="button" class="btn btn-sm btn-primary mt-2" 
-                    onclick="agregarFila(${d.id})" title="Agregar etapa de producción">
-                    + Agregar etapa
-                </button>
+                ${aux_botoneditarep}
         </div>
     </div>`;
     activarLimpiezaCampoRequerido(d.id);
@@ -1007,6 +1015,7 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
             EtapasProduccion : aux_apetapaprod,
             _token: $('input[name=_token]').val()
         };
+        //return recogerEtapas(data);
         ruta = '/otitemprogramacion/aprobar';
         mensaje = 'Aprobar';
         staobs = 0;
@@ -1227,7 +1236,8 @@ function recogerEtapas(idFila) {
         const $tr = $(this);
 
         // 1) Código y nombre están en las dos primeras celdas
-        const apetapaprod_id     = $.trim($tr.find("td:eq(0)").text());   // «1», «2», «3»…
+        const apsucetapaprod_id     = $.trim($tr.find("td:eq(0)").text());   // «1», «2», «3»…
+        //const apsucetapaprod_id     = $.trim($tr.find("td:eq(0)").attr("apsucetapaprod_id"));   // «1», «2», «3»…
         const nombre  = $.trim($tr.find("td:eq(1)").text());   // «Programacion», «Mezclas»…
 
         // 2) Si hay <select>, tomamos su valor; si no existe vale 0
@@ -1236,7 +1246,26 @@ function recogerEtapas(idFila) {
 
         // 3) Observación (puede venir vacía)
         const observacion = $.trim($tr.find("textarea").val() || "");
-        return { apetapaprod_id, nombre, maquina_id, observacion };
+        return { apsucetapaprod_id, nombre, maquina_id, observacion };
     }).get();   // -> array de objetos plano
     return etapas;
+}
+
+function editaretapasprod(id){
+    /* var data = {
+        acuerdotecnico_id : id,
+        updated_at : updated_at,
+        ruta       : aux_ruta,
+        _token: $('input[name=_token]').val()
+    }; */
+    var loc = window.location;
+    //alert(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+"/editar");
+    /* console.log(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+updated_at+"/editar");
+    return false; */
+    window.open(loc.protocol + "//" + loc.hostname + "/acuerdotecnicoetapaprod/" + id + "/editar",'_blank');
+    /* window.location = loc.protocol+"//"+loc.hostname+"/acuerdotecnicoetapaprod/"+id+"/editar";
+
+    window.open(aux_data.ruta, '_blank');
+    ruta = '/picking/validareditarpicking';
+    ajaxRequest(data,ruta,"validareditarpicking"); */
 }

@@ -32,6 +32,7 @@ Programación de Producción
                 <div class="row">
                     <input type="hidden" name="selecmultprod" id="selecmultprod" value="{{old('selecmultprod', $selecmultprod ?? '')}}">
                     <input type="hidden" name="maquinas" id="maquinas" value="{{old('maquinas', $tablas['maquinas'] ?? '')}}">
+                    <input type="hidden" name="aux_et" id="aux_et" value="{{$tablas['editarEtapasProd'] ?? '0'}}">
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-6 col-sm-6" title="Fecha Inicial">

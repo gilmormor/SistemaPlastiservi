@@ -19,6 +19,8 @@ class CreateTableAreaproduccionsucetapaprod extends Migration
             $table->foreign('areaproduccionsuc_id','fk_areaproduccionsucetapaprod_areaproduccion')->references('id')->on('areaproduccion')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedBigInteger('etapaprod_id');
             $table->foreign('etapaprod_id','fk_areaproduccionsucetapaprod_etapaprod')->references('id')->on('etapaprod')->onDelete('restrict')->onUpdate('restrict');
+            $table->unsignedBigInteger('unidadmedida_id')->comment("Unidad de Medida como sale a la siguiente etapa de produccion.")->nullable();
+            $table->foreign('unidadmedida_id','fk_areaproduccionsucetapaprod_unidadmedida')->references('id')->on('unidadmedida')->onDelete('restrict')->onUpdate('restrict');
             $table->unsignedInteger('orden')->comment('Orden en que se ejecuta la etapa de produccion. 2 o mas Etapas se pueden ejecutar al mismo tiempo. es decir que van a llevar el mismo orden por ejemplo Impresion = 2, Sellado = 3.')->default(0);
             $table->engine = 'InnoDB';
             $table->timestamps();

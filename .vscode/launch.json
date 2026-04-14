@@ -15,4 +15,10 @@
         }
     ]
     */
+    "browserSync.proxy": "http://plastiservi.test",
+    "browserSync.files": [
+        "public/**/*.js",
+        "public/**/*.css",
+        "resources/views/**/*.blade.php"
+    ]
 }

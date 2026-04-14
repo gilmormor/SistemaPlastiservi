@@ -10,6 +10,7 @@ class AreaProduccionSucEtapaProd extends Model
     protected $fillable = [
         'areaproduccionsuc_id',
         'etapaprod_id',
+        'unidadmedida_id',
         'orden'
     ];
 
@@ -23,6 +24,11 @@ class AreaProduccionSucEtapaProd extends Model
     public function etapaprod()
     {
         return $this->belongsTo(EtapaProd::class,'etapaprod_id');
+    }
+    //RELACION INVERSA PARA BUSCAR EL PADRE
+    public function unidadmedida()
+    {
+        return $this->belongsTo(UnidadMedida::class,'unidadmedida_id');
     }
 
 }

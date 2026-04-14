@@ -4,7 +4,10 @@ $(document).ready(function () {
     nombreTabla = "#tabla-data-OrdenEtapaProd";
     $(nombreTabla).append(encabezadoTablabuscar());
     configurarTablabuscar(nombreTabla,"areaproduccionsucetapaprod/sucetapaprodpage/?areaproduccion_id=0",false)
-
+    //console.log("UNIDADMEDIDAS: " + UNIDADMEDIDAS);
+    //console.log(JSON.stringify(UNIDADMEDIDAS, null, 2));
+    /* unidadesMedida = JSON.parse(UNIDADMEDIDAS);
+    console.log(unidadesMedida); */
 });
 
 function encabezadoTablabuscar(){
@@ -14,6 +17,7 @@ function encabezadoTablabuscar(){
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Orden</th>
+                    <th title='Unidad Medida'>UnidMed</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -51,6 +55,7 @@ function configurarTablabuscar(nombreTabla,url,serverSide) {
             {data: 'id'},
             {data: 'etapaprod_nombre'},
             {data: 'orden'},
+            {data: 'unidadmedida_id'},
             {data: 'updatednum_at'}
         ],
 		"language": {
@@ -64,12 +69,25 @@ function configurarTablabuscar(nombreTabla,url,serverSide) {
                 `<input type="text" name="orden[]" id="orden${data.id}" class="form-control numerico" value="${data.orden}" valor="${data.orden}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="3" valororiginal="${data.orden}"/>`;
             $('td', row).eq(2).html(aux_text);
 
+            // Campo unidadmedida_id (select Bootstrap 3)
+            let select = `<select class="form-control input-sm" 
+                            name="unidadmedida_id[]" id="unidadmedida_id${data.id}" 
+                            style="width:150px;">
+                            <option value="">Seleccione...</option>`;
+
+            UNIDADMEDIDAS.forEach(function(um) {
+                const selected = (um.id == data.unidadmedida_id) ? 'selected' : '';
+                select += `<option value="${um.id}" ${selected}>${um.nombre}</option>`;
+            });
+            select += `</select>`;
+
+            $('td', row).eq(3).html(select);
+            
             aux_text = 
                 `<a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar" onclick="saveordenetapaprod(${data.id},${data.updatednum_at})" updated_at="${data.updated_at}">
                     <i class="fa fa-fw fa-save text-red"></i>
                 </a>`;
-            $('td', row).eq(3).html(aux_text);
-
+            $('td', row).eq(4).html(aux_text);
         }
     });
     // Aplicar el plugin numeric a los inputs dinámicos después de cada redibujado de la tabla
@@ -152,7 +170,8 @@ function saveordenetapaprod(id,updatednum_at){
     }).then((value) => {
         if (value) {
             var data = {
-                areaproduccionetapaprod_id : id,
+                areaproduccionsucetapaprod_id : id,
+                unidadmedida_id : $("#unidadmedida_id" + id).val(),
                 orden : $("#orden" + id).val(),
                 updatednum_at  : updatednum_at,
                 _token : $('input[name=_token]').val()

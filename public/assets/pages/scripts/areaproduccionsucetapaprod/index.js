@@ -165,7 +165,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
             $(row).attr('name','fila' + data.id);
 
             aux_text = 
-                `<a id="bntorden${data.id}" name="bntorden${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="ordenetapaprod(${data.id})" title="Editar Orden Etapas de Produccion">
+                `<a id="bntorden${data.id}" name="bntorden${data.id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="ordensucetapaprod(${data.id})" title="Editar Orden Etapas de Produccion">
                     <span class="glyphicon glyphicon-sort-by-attributes" style="bottom: 0px;top: 2px;"></span>
                 </a>
                 <a href='areaproduccionsucetapaprod' class='btn-accion-tabla btnEditar' title='Editar este registro'>
@@ -221,12 +221,12 @@ function format(d) {
     
 } */
 
-function ordenetapaprod(id){
+function ordensucetapaprod(id){
     $(this).val("");
     $(".input-sm").val('');
     //data = datosproducto();
     nombreTabla = '#tabla-data-OrdenEtapaProd';
 
-    $(nombreTabla).DataTable().ajax.url( "areaproduccionsucetapaprod/sucetapaprodpage/?areaproduccion_id=" + id ).load();
+    $(nombreTabla).DataTable().ajax.url( "areaproduccionsucetapaprod/sucetapaprodpage/?areaproduccionsuc_id=" + id ).load();
     $('#myModalOrdenEtapaProd').modal('show');
 }

@@ -12,8 +12,6 @@ use App\Models\OpDetMaquina;
 use App\Models\Ot;
 use App\Models\OtDet;
 use App\Models\OtDetCerr;
-use App\Models\Produccion;
-use App\Models\ProduccionDet;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
@@ -57,6 +55,7 @@ class OtItemProgramacionController extends Controller
             ->toJson();
         //dd($tablas['maquinas']);
         $selecmultprod = 1;
+        $tablas['editarEtapasProd'] = can('editar-etapa-de-produccion',false);
         return view('otitemprogramacion.index',compact('tablas','selecmultprod'));
     }
 
@@ -94,6 +93,7 @@ class OtItemProgramacionController extends Controller
     public function aprobar(OpStoreRequest $request, OpDetService $service)
     {
         if ($request->ajax()) {
+            //dd($request->EtapasProduccion[0]);
             //dd($request);
             //dd($request->otdet_id);
             $otdet = OtDet::findOrFail($request->otdet_id);
@@ -200,11 +200,11 @@ class OtItemProgramacionController extends Controller
                     'tipo_alert' => 'error'
                 ]);
             } */
-
+            //dd($request->EtapasProduccion);
             DB::beginTransaction();
 
             try {
-                $otdet->kgprog = $otdet->kgprog + $request->kgprod;
+                //$otdet->kgprog = $otdet->kgprog + $request->kgprod;
                 $otdet->updated_at = date("Y-m-d H:i:s");
                 $otdet->save();
 
@@ -219,68 +219,36 @@ class OtItemProgramacionController extends Controller
 
                 $op = new Op();
                 $op->otdet_id = $request->otdet_id;
-                $op->cantprod = $otdet->cantprod;
+                $op->cantprod = round(($request->kgprod * $otdet->cant) / $otdet->kg, 2);
                 $op->kgprod = $request->kgprod;
                 $op->prioridad = $request->prioridad;
                 $op->obs = $request->obs ?? null;
                 $op->usuario_id = auth()->id();
                 $op->save();
                 $i = 0;
+
                 foreach ($request->EtapasProduccion as $EtapasProduccion) {
-                    $aux_saldokg = 0;
+                    /* $aux_saldokg = 0;
                     if($i == 0){
                         //Si es el proceso inicial se cierra de forma automatica y se asigna el saldo de kg = al kgprod
                         $aux_saldokg = $request->kgprod;
-                    }
-
+                    } */
+                    $aux_saldokg = $request->kgprod;
                     $opdet = $op->opdets()->create([
-                        'apetapaprod_id' => $EtapasProduccion["apetapaprod_id"],
+                        'apsucetapaprod_id' => $EtapasProduccion["apsucetapaprod_id"],
                         'obs' => $EtapasProduccion["observacion"] ?? null,
                         'kg' => $request->kgprod ?? null,
-                        'cant' => $otdet->cantprod ?? null,
-                        'saldokg' => $aux_saldokg,
+                        'cant' => $op->cantprod ?? null,
+                        'saldokg' => 0, //Se inicializa en 0 y se actualiza luego
                     ]);
                     if($i == 0){
-                        $produccion = new Produccion();
-                        $produccion->opdet_id = $opdet->id;
-                        $produccion->cantprod = $otdet->cantprod;
-                        $produccion->kgprod = $otdet->kgprod;
-                        $produccion->obs = "Item creado automatico por ser el 1er etapa produccion de la OP";
-                        $produccion->aprobstatus = 1;
-                        $produccion->aprobusu_id = auth()->id();
-                        $produccion->aprobfechahora = date("Y-m-d H:i:s");
-                        $produccion->aprobobs = "Aprobado de forma automatica";
-                        $produccion->usuario_id = auth()->id();
-                        $produccion->save();
-
-                        $producciondet = new ProduccionDet();
-                        $producciondet->produccion_id = $produccion->id;
-                        $producciondet->opdet_id = $opdet->id;
-                        $producciondet->cant = $otdet->cantprod;
-                        $producciondet->kg = $otdet->kgprod;                        
-                        $producciondet->save();
-                        $producciondet = new ProduccionDet();
-                        $producciondet->produccion_id = $produccion->id;
-                        $producciondet->opdet_id = $opdet->id;
-                        $producciondet->cant = $otdet->cantprod * -1;
-                        $producciondet->kg = $otdet->kgprod * -1;
-                        $producciondet->save();
-                        $producciondet = new ProduccionDet();
-
-                        /* $producciondet->opdet_id = $opdet->areaproduccionetapaprod->areaproduccion->;
-                        $producciondet->cant = $otdet->cantprod;
-                        $producciondet->kg = $otdet->kgprod;
-                        $producciondet->save(); */
-
-
-
-                        $opdetcerr = new OpDetCerr();
-                        $opdetcerr->opdet_id = $opdet->id;
-                        $opdetcerr->obs = "Etapa 1 cerrada de forma automatica para iniciar el ciclo de produccion. en este caso es programacion, pero se puede llamar xyz";
-                        $opdetcerr->usuario_id = auth()->id();
-                        $opdetcerr->save();
+                        /* $opdet->cantrec = $otdet->cantprod;
+                        $opdet->kgrec = $otdet->kgprod; */
+                        $opdet->cantrec = $op->cantprod;
+                        $opdet->kgrec = $aux_saldokg;
+                        $opdet->saldokg = $aux_saldokg;
+                        $opdet->save();
                     }
-
                     if($EtapasProduccion["maquina_id"] > 0){
                         $opdetmaquina = new OpDetMaquina();
                         $opdetmaquina->opdet_id = $opdet->id;
@@ -290,6 +258,7 @@ class OtItemProgramacionController extends Controller
                             'maquina_id' => $apetapaprod["maquina_id"],
                         ]); */
                     }
+                    $i++;
                 }
                 
 

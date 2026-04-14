@@ -25,7 +25,7 @@ Notas de Venta
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
                 </div>
                 <div class="box-tools pull-right">
-                    <a href="{{route('ot')}}" class="btn btn-block btn-info btn-sm">
+                    <a href="{{route('otnv')}}" class="btn btn-block btn-info btn-sm">
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>

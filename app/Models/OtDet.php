@@ -24,6 +24,7 @@ class OtDet extends Model
         'subtotal',
         'requiere_fabricacion',
         'obs',
+        'cantprog',
         'kgprog',
         'usuariodel_id'
     ];
@@ -33,6 +34,12 @@ class OtDet extends Model
     {
         return $this->belongsTo(Ot::class)->whereDoesntHave('otanul');
     }
+    //RELACION INVERSA areaproduccionsucetapaprod
+    public function areaproduccionsucetapaprod()
+    {
+        return $this->belongsTo(AreaProduccionSucEtapaProd::class);
+    }
+
     //Relacion inversa a Producto
     public function producto()
     {
