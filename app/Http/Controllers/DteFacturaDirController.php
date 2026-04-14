@@ -22,6 +22,7 @@ use App\Models\Sucursal;
 use App\Models\TipoTraslado;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
+use App\Services\DocInsumoDetService;
 use App\Services\DteTransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -276,6 +277,9 @@ class DteFacturaDirController extends Controller
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dispatcher = DteDet::getEventDispatcher();
+            DteDet::unsetEventDispatcher();
+            $dtedetCreados = [];
             DB::beginTransaction();
             try {
 
@@ -297,6 +301,7 @@ class DteFacturaDirController extends Controller
                     unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
                     unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
                     $dtedetNew = DteDet::create($aux_dtedet);
+                    $dtedetCreados[] = $dtedetNew;
                     $dtedet_id = $dtedetNew->id;
                     $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
                     $dtedet_despachoorddet->dtedet_id = $dtedet_id;
@@ -312,11 +317,11 @@ class DteFacturaDirController extends Controller
                     $dtedteNew = new DteDte();
                     $dtedteNew->dte_id = $dteNew->id;
                     $dtedteNew->dter_id = $dtedte->dter_id;
-                    $dtedteNew->dtefac_id = $dteNew->id; 
+                    $dtedteNew->dtefac_id = $dteNew->id;
                     $dtedteNew->save();
-                    //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
+                    //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS
                     if($dtedte->dter->foliocontrol_id == 2){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2
-                        //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
+                        //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA
                         DespachoOrd::guardarfactdesp($dtedteNew);
                     }
                 }
@@ -325,13 +330,8 @@ class DteFacturaDirController extends Controller
                     $dteguiausadaNew = new DteGuiaUsada();
                     $dteguiausadaNew->dte_id = $dteguiausada->dte_id;
                     $dteguiausadaNew->usuario_id = auth()->id();
-                    $dteguiausadaNew->save();    
+                    $dteguiausadaNew->save();
                 }
-
-                $foliocontrol->bloqueo = 0;
-                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-                $foliocontrol->save();
-                $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
 
                 $dteTransService = new DteTransService();
                 $dteTransService->crearDesdeRequest($request, $dteNew->id);
@@ -340,6 +340,7 @@ class DteFacturaDirController extends Controller
 
             } catch (\Throwable $e) {
                 DB::rollBack();
+                DteDet::setEventDispatcher($dispatcher);
                 Log::error('DteFacturaDir guardar error: ' . $e->getMessage(), [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
@@ -349,6 +350,14 @@ class DteFacturaDirController extends Controller
                     'tipo_alert' => 'alert-error'
                 ])->withInput();
             }
+            DteDet::setEventDispatcher($dispatcher);
+            foreach ($dtedetCreados as $det) {
+                DocInsumoDetService::syncFromDetalle($det, 'DTE');
+            }
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+            $foliocontrol->save();
+            $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             // Llamadas a servicios externos FUERA de la transacción
             // El DTE ya está guardado en BD; si falla la subida al SII queda pendiente
             $dte = Dte::findOrFail($dteNew->id);

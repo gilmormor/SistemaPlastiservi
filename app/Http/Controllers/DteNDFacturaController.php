@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\GuardarDteND;
+use App\Services\DocInsumoDetService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\ValidarDTEND;
 use App\Models\CentroEconomico;
 use App\Models\ClienteDesBloqueado;
@@ -209,6 +211,9 @@ class DteNDFacturaController extends Controller
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dispatcher = DteDet::getEventDispatcher();
+            DteDet::unsetEventDispatcher();
+            $dtedetCreados = [];
             DB::beginTransaction();
             try {
                 $dte->fchemisgen = date("Y-m-d H:i:s");
@@ -217,23 +222,33 @@ class DteNDFacturaController extends Controller
                 foreach ($dte->dtedets as $dtedet) {
                     //dd($dtedet->toArray());
                     $dtedet->dte_id = $dteNew->id;
-                    DteDet::create($dtedet->toArray());
+                    $dtedetNew = DteDet::create($dtedet->toArray());
+                    $dtedetCreados[] = $dtedetNew;
                 }
                 $dtedte->dte_id = $dteNew->id;
                 $dtedte->save();
                 $dtencnd->dte_id = $dteNew->id;
                 $dtencnd->save();
-                $foliocontrol->bloqueo = 0;
-                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-                $foliocontrol->save();
                 DB::commit();
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 DB::rollBack();
+                DteDet::setEventDispatcher($dispatcher);
+                Log::error('DteNDFactura guardar error: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
                 return redirect()->back()->with([
                     'mensaje' => 'Error: ' . $e->getMessage(),
-                    'tipo_alert' => 'alert-error'    
+                    'tipo_alert' => 'alert-error'
                 ])->withInput();
             }
+            DteDet::setEventDispatcher($dispatcher);
+            foreach ($dtedetCreados as $det) {
+                DocInsumoDetService::syncFromDetalle($det, 'DTE');
+            }
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+            $foliocontrol->save();
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
             /* if($respuesta["id"] == 1){

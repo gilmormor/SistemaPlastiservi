@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DocInsumoDetService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\ValidarDTE;
 use App\Http\Requests\ValidarDTEFac;
@@ -357,6 +358,9 @@ class DteFacturaController extends Controller
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dispatcher = DteDet::getEventDispatcher();
+            DteDet::unsetEventDispatcher();
+            $dtedetCreados = [];
             DB::beginTransaction();
             try {
                 $dte->fchemisgen = date("Y-m-d H:i:s");
@@ -366,22 +370,23 @@ class DteFacturaController extends Controller
                     $dtedet->dte_id = $dteNew->id;
                     if($dtedet->despachoorddet_id){
                         $despachoorddet_id = $dtedet->despachoorddet_id;
-                        $notaventadetalle_id = $dtedet->notaventadetalle_id;    
+                        $notaventadetalle_id = $dtedet->notaventadetalle_id;
                     }
                     $aux_dtedet = $dtedet->toArray();
                     if($dtedet->despachoorddet_id){
                         unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet
-                        unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet    
+                        unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet
                     }
-        
+
                     $dtedetNew = DteDet::create($aux_dtedet);
+                    $dtedetCreados[] = $dtedetNew;
                     $dtedet_id = $dtedetNew->id;
                     if($dtedet->despachoorddet_id){
                         $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
                         $dtedet_despachoorddet->dtedet_id = $dtedet_id;
                         $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
                         $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
-                        $dtedet_despachoorddet->save();    
+                        $dtedet_despachoorddet->save();
                     }
                 }
 
@@ -408,9 +413,6 @@ class DteFacturaController extends Controller
                     $dteguiausadaNew->save();    
                 }
 
-                $foliocontrol->bloqueo = 0;
-                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-                $foliocontrol->save();
                 if(isset($request->ocnv_id) and $request->notaventa_id){
                     //En comentario para evitar que cambie la OC de la NV 22/04/2025
                     //Esto ha traido problemas ya que cuando en facturacion cambian el numero de OC de la NV, se cambia la OC de NV Original y eso acarrea dudas en la Nota de Venta
@@ -453,6 +455,7 @@ class DteFacturaController extends Controller
                 DB::commit();
             } catch (\Throwable $e) {
                 DB::rollBack();
+                DteDet::setEventDispatcher($dispatcher);
                 Log::error('DteFactura guardar error: ' . $e->getMessage(), [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
@@ -463,6 +466,13 @@ class DteFacturaController extends Controller
                     'tipo_alert' => 'alert-error'
                 ])->withInput();
             }
+            DteDet::setEventDispatcher($dispatcher);
+            foreach ($dtedetCreados as $det) {
+                DocInsumoDetService::syncFromDetalle($det, 'DTE');
+            }
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+            $foliocontrol->save();
 
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             $dte = Dte::findOrFail($dteNew->id);

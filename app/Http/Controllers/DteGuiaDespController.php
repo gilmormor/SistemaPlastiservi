@@ -37,6 +37,7 @@ use App\Models\Seguridad\Usuario;
 use App\Models\TipoEntrega;
 use App\Models\TipoTraslado;
 use App\Models\Vendedor;
+use App\Services\DocInsumoDetService;
 use App\Services\DteTransService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -1642,6 +1643,9 @@ function guardarDTE(Request $request,$aux_indtraslado,$cont_producto){
     ]; */
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta["id"] == 1){
+        $dispatcher = DteDet::getEventDispatcher();
+        DteDet::unsetEventDispatcher();
+        $dtedetCreados = [];
         DB::beginTransaction();
         try {
 
@@ -1658,6 +1662,7 @@ function guardarDTE(Request $request,$aux_indtraslado,$cont_producto){
                 unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
 
                 $dtedetNew = DteDet::create($aux_dtedet);
+                $dtedetCreados[] = $dtedetNew;
                 $dtedet_id = $dtedetNew->id;
                 $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
                 $dtedet_despachoorddet->dtedet_id = $dtedet_id;
@@ -1693,12 +1698,10 @@ function guardarDTE(Request $request,$aux_indtraslado,$cont_producto){
             $dteTransService = new DteTransService();
             $dteTransService->crearDesdeRequest($request, $dteNew->id);
 
-            $foliocontrol->bloqueo = 0;
-            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-            $foliocontrol->save();
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            DteDet::setEventDispatcher($dispatcher);
             Log::error('Error al guardar DTE Guia Despacho', ['error' => $e->getMessage()]);
             // Detectar deadlock MySQL (SQLSTATE 40001 / error 1213)
             $mensaje = $e->getMessage();
@@ -1710,6 +1713,13 @@ function guardarDTE(Request $request,$aux_indtraslado,$cont_producto){
                 'mensaje' => $mensaje,
             ];
         }
+        DteDet::setEventDispatcher($dispatcher);
+        foreach ($dtedetCreados as $det) {
+            DocInsumoDetService::syncFromDetalle($det, 'DTE');
+        }
+        $foliocontrol->bloqueo = 0;
+        $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+        $foliocontrol->save();
         Event(new GuardarGuiaDespacho($despachoord,$dteNew));
         $dte = Dte::findOrFail($dteNew->id);
         $respuesta = Dte::subirDteSii($dte);

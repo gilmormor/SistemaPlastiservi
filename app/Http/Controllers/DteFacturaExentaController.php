@@ -21,6 +21,7 @@ use App\Models\Sucursal;
 use App\Models\TipoTraslado;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
+use App\Services\DocInsumoDetService;
 use App\Services\DteTransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -271,6 +272,9 @@ class DteFacturaExentaController extends Controller
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
+            $dispatcher = DteDet::getEventDispatcher();
+            DteDet::unsetEventDispatcher();
+            $dtedetCreados = [];
             DB::beginTransaction();
             try {
                 $dte->fchemisgen = date("Y-m-d H:i:s");
@@ -291,6 +295,7 @@ class DteFacturaExentaController extends Controller
                     unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
                     unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
                     $dtedetNew = DteDet::create($aux_dtedet);
+                    $dtedetCreados[] = $dtedetNew;
                     $dtedet_id = $dtedetNew->id;
                     $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
                     $dtedet_despachoorddet->dtedet_id = $dtedet_id;
@@ -322,17 +327,13 @@ class DteFacturaExentaController extends Controller
                     $dteguiausadaNew->save();
                 }
 
-                $foliocontrol->bloqueo = 0;
-                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-                $foliocontrol->save();
-                $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
-
                 $dteTransService = new DteTransService();
                 $dteTransService->crearDesdeRequest($request, $dteNew->id);
 
                 DB::commit();
             } catch (\Throwable $e) {
                 DB::rollBack();
+                DteDet::setEventDispatcher($dispatcher);
                 Log::error('DteFacturaExenta guardar error: ' . $e->getMessage(), [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
@@ -342,6 +343,14 @@ class DteFacturaExentaController extends Controller
                     'tipo_alert' => 'alert-error'
                 ])->withInput();
             }
+            DteDet::setEventDispatcher($dispatcher);
+            foreach ($dtedetCreados as $det) {
+                DocInsumoDetService::syncFromDetalle($det, 'DTE');
+            }
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+            $foliocontrol->save();
+            $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             // Llamadas a servicios externos FUERA de la transacción
             // El DTE ya está guardado en BD; si falla la subida al SII queda pendiente
             $dte = Dte::findOrFail($dteNew->id);

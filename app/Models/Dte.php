@@ -1961,7 +1961,11 @@ class Dte extends Model
         if(isset($Solicitar_Folio->Estatus)){
             if($Solicitar_Folio->Estatus == 0){
                 $aux_folio = $Solicitar_Folio->Folio;
-                $Estado_DTE = $soap->Estado_DTE($empresa->rut,$foliocontrol->tipodocto,$Solicitar_Folio->Folio);
+                return [
+                    'id' => 1,
+                    'aux_folio'=> $aux_folio
+                ];
+                /* $Estado_DTE = $soap->Estado_DTE($empresa->rut,$foliocontrol->tipodocto,$Solicitar_Folio->Folio);
                 //Log::info('Dte linea 1963 Estado_DTE respuesta', ['respuesta' => $Estado_DTE]);
                 if($Estado_DTE->Estatus == 3){
                     $aux_folio = $Solicitar_Folio->Folio;
@@ -1976,7 +1980,7 @@ class Dte extends Model
                         'mensaje'=>'Error: #' . $Estado_DTE->Estatus . " " . $Estado_DTE->MsgEstatus . " Ocurrio un error Estado_DTE->Estatus devolvio $Estado_DTE->Estatus, se esperaba 3 que significa que el folio no existe en la plataforma de BES, por lo tanto no se puede usar ese folio para generar el DTE.",
                         'tipo_alert' => 'alert-error'
                     ];
-                }
+                } */
             }else{
                 Log::info('Error: #' . $Solicitar_Folio->Estatus . " " . $Solicitar_Folio->MsgEstatus . " Folio no fue Generado.", ['respuesta' => $Solicitar_Folio]);
                 return [

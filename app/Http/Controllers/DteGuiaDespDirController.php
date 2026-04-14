@@ -19,8 +19,10 @@ use App\Models\TipoEntrega;
 use App\Models\TipoTraslado;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
+use App\Services\DocInsumoDetService;
 use App\Services\DteTransService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -267,6 +269,9 @@ class DteGuiaDespDirController extends Controller
             ]; */
             $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
             if($respuesta["id"] == 1){
+                $dispatcher = DteDet::getEventDispatcher();
+                DteDet::unsetEventDispatcher();
+                $dtedetCreados = [];
                 DB::beginTransaction();
                 try {
 
@@ -279,33 +284,39 @@ class DteGuiaDespDirController extends Controller
                             $dteoc->dte_id = $dteNew->id;
                             $dteoc->oc_file = $foto;
                             $dteoc->save();
-                        }    
+                        }
                     }
                     foreach ($dte->dtedets as $dtedet) {
                         $dtedet->dte_id = $dteNew->id;
                         $aux_dtedet = $dtedet->toArray();
                         $dtedetNew = DteDet::create($aux_dtedet);
+                        $dtedetCreados[] = $dtedetNew;
                     }
-        
+
                     $dteguiadesp->dte_id = $dteNew->id;
                     $dteguiadesp->save();
-        
-                    $foliocontrol->bloqueo = 0;
-                    $foliocontrol->ultfoliouti = $dteNew->nrodocto;
-                    $foliocontrol->save();
-                    $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
 
                     $dteTransService = new DteTransService();
                     $dteTransService->crearDesdeRequest($request, $dteNew->id);
 
                     DB::commit();
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     DB::rollBack();
+                    DteDet::setEventDispatcher($dispatcher);
+                    Log::error('Error al guardar DTE Guia Despacho Dir', ['error' => $e->getMessage()]);
                     return redirect()->back()->with([
                         'mensaje' => 'Error: ' . $e->getMessage(),
-                        'tipo_alert' => 'alert-error'    
+                        'tipo_alert' => 'alert-error'
                     ])->withInput();
                 }
+                DteDet::setEventDispatcher($dispatcher);
+                foreach ($dtedetCreados as $det) {
+                    DocInsumoDetService::syncFromDetalle($det, 'DTE');
+                }
+                $foliocontrol->bloqueo = 0;
+                $foliocontrol->ultfoliouti = $dteNew->nrodocto;
+                $foliocontrol->save();
+                $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
                 $dte = Dte::findOrFail($dteNew->id);
                 $respuesta = Dte::subirDteSii($dte);
                 /* if($respuesta["id"] == 1){
