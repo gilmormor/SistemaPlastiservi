@@ -340,6 +340,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 $asunto = 'No Conformidad: Validar Acción Inmediata';
                 $cuerpo = 'Hola! Has recibido una nueva Validar Acción Inmediata FechaHora: ';
                 foreach ($datas as $data1) {
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
     
@@ -380,6 +382,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
 
             if ($noconformidad->save()) {
                 foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
                 return response()->json(['mensaje' => 'ok']);
@@ -527,6 +531,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 }
 
                 foreach ($datas as $data1) {
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
                 return response()->json(['mensaje' => 'ok']);
@@ -554,6 +560,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
                 $asunto = 'No Conformidad: Incumplimiento Validado';
                 $cuerpo = 'Hola! Se Valido Incumplimiento No Conformidad FechaHora: ';
                 foreach ($datas as $data1) {
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($data1->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
                 return response()->json(['mensaje' => 'ok']);
@@ -622,6 +630,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
 
             if ($noconformidad->save()) {
                 foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
                 if($request->aprobpaso2 == 0){
@@ -689,6 +699,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
 
             if ($noconformidad->save()) {
                 foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
                 if($request->acepresmedtom == 0){
@@ -713,6 +725,8 @@ OR (!ISNULL(accioninmediata) and accioninmediata!=''))
             $cuerpo = 'Hola! Cierre de la eficacia de la accion correctiva: ';
             if ($noconformidad->save()) {
                 foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($usuario->persona->email)->send(new MailValidarAccionInmediata($noconformidad,$asunto,$cuerpo));
                 }
                 return response()->json(['mensaje' => 'ok']);

@@ -32,6 +32,8 @@ class NotifyMailXMLCargaDocManager
         $foliocontrol = Foliocontrol::findOrFail($event->dte->foliocontrol_id);
         $asunto = "XML Cargar Documento Manager. " . $foliocontrol->doc . " Nro: " . $event->dte->nrodocto;
 
+        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
         Mail::to($aux_email)->send(new MailXMLCargaDocManager($asunto,$event));
 
     }

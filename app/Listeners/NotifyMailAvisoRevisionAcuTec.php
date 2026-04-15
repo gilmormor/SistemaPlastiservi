@@ -66,6 +66,8 @@ class NotifyMailAvisoRevisionAcuTec
                 $cuerpo = $notificaciones->mensaje . " esperando ser validado.";
                 $aux_email = $persona->email;
 
+                // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                 Mail::to($aux_email)->send(new MailAvisoRevisionAcuTec($notificaciones,$asunto,$cuerpo,$cotizacion));
             }
         }

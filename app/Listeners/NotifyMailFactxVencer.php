@@ -95,6 +95,8 @@ class NotifyMailFactxVencer
         }
         $cuerpo = $aux_cuerpo;
 
+        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
         Mail::to($aux_email)->send(new MailFactxVencer($asunto,$cuerpo));
 
     }

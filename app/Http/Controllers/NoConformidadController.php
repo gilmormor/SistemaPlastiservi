@@ -73,6 +73,8 @@ class NoConformidadController extends Controller
         $noconformidad->jefaturasucursalarearesponsables()->sync($request->jefatura_sucursal_areaR_id);
         $noconformidad->certificados()->sync($request->certificado_id);
         foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+            // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+            // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
             Mail::to($usuario->persona->email)->send(new MailNoConformidad($noconformidad));
         }
 
@@ -132,6 +134,8 @@ class NoConformidadController extends Controller
         //dd($usuario);
         //dd($noconformidad);
         foreach($noconformidad->jefaturasucursalarearesponsables as $usuario){
+            // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+            // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
             Mail::to($usuario->persona->email)->send(new MailNoConformidad($noconformidad));
         }
 

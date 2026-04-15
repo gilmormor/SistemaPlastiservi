@@ -36,6 +36,8 @@ class CrearNotificacion
         $notificacion = Notificaciones::create($event->notificacion);
         $detalle = $event->notificacion['detalle'];
 
+        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
         Mail::to($notificacion->usuariodestino->email)->send(new MailNotificacion($notificacion,$detalle));
 
     }

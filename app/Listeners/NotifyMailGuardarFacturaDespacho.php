@@ -7,6 +7,7 @@ use App\Mail\MailFacturaDespacho;
 use App\Models\Notificaciones;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class NotifyMailGuardarFacturaDespacho
@@ -55,7 +56,13 @@ class NotifyMailGuardarFacturaDespacho
         $asunto = $notificaciones->mensaje;
         $cuerpo = $notificaciones->mensaje;
 
-        Mail::to($aux_email)->send(new MailFacturaDespacho($notificaciones,$asunto,$cuerpo,$despachoord));
+        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
+        try {
+            Mail::to($aux_email)->send(new MailFacturaDespacho($notificaciones,$asunto,$cuerpo,$despachoord));
+        } catch (\Exception $e) {
+            Log::warning('NotifyMailGuardarFacturaDespacho: error al enviar a "' . $aux_email . '" — ' . $e->getMessage());
+        }
 
     }
 }

@@ -109,6 +109,8 @@ class NotifyMailAvisoRevisionNotaVenta
             "Clic aqui." .
         "</a>");
         //Mail::to($aux_email)->send(new MailAvisoRevisionNotaVenta($notificaciones,$asunto,$cuerpo,$notaventa));
+        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
         Mail::to("no-reply@plastiservi.cl")->bcc($emails)->send(new MailAvisoRevisionNotaVenta($notificaciones,$asunto,$cuerpo,$notaventa));
 
     }

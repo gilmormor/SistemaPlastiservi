@@ -131,10 +131,12 @@ class ClienteBloqueadoController extends Controller
                 $notificaciones->save();
     
                 $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
+                // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                 Mail::to($aux_email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
             }
 
-            
+
 
         }
 
@@ -231,6 +233,8 @@ class ClienteBloqueadoController extends Controller
             $notificaciones->save();
 
             $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
+            // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+            // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
             Mail::to($aux_email)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
         }
         return redirect('clientebloqueado')->with('mensaje','Actualizado con exito');
@@ -275,6 +279,8 @@ class ClienteBloqueadoController extends Controller
                         $notificaciones->save();
 
                         $nombrevendedor = $vendedor->persona->nombre . ' ' . $vendedor->persona->apellido;
+                        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                         Mail::to($aux_mail)->send(new MailClienteBloqueado($clientebloqueado,$asunto,$cuerpo,$nombrevendedor));
                     }
                     return response()->json(['mensaje' => 'ok']);

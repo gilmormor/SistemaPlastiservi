@@ -40,6 +40,8 @@ class NotifyMailErrorCrearDTE
         }
         $asunto = "Error $aux_origen " . $foliocontrol->doc . " Nro: " . $event->dte->nrodocto;
 
+        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
         Mail::to($aux_email)->send(new MailErrorCrearDTE($asunto,$event));
     }
 }

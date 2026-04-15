@@ -111,6 +111,8 @@ class EnviarCorreosAprobarRechazoNotaVenta implements ShouldQueue
                 ($notaventa->aprobobs ? "\n\n<b>Observación:</b> " . $notaventa->aprobobs : "")
             );
 
+            // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+            // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
             Mail::to($arrayUsuario["email"])
                 ->send(new MailAprobarRechazoNotaVenta(
                     $notificaciones,

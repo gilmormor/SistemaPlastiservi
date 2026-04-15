@@ -34,10 +34,12 @@ use App\Listeners\NotifyMailGuardarDteND;
 use App\Listeners\NotifyMailGuardarFacturaDespacho;
 use App\Listeners\NotifyMailGuardarGuiaDespacho;
 use App\Listeners\NotifyMailXMLCargaDocManager;
+use App\Listeners\ValidarEmailAntesDeSendListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Mail\Events\MessageSending;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -52,6 +54,9 @@ class EventServiceProvider extends ServiceProvider
         ],
     */
     protected $listen = [
+        MessageSending::class => [
+            ValidarEmailAntesDeSendListener::class,
+        ],
         InicioSesionUsuario::class => [
             BitInicioSesionUsuario::class,
         ],

@@ -221,6 +221,8 @@ class NotifyMailAprobarRechazoNotaVenta
 
         //$cuerpo = nl2br($aux_mensaje . $aux_mensaje2 . ($notaventa->aprobobs ? "\n\n<b>Observación:</b> " . $notaventa->aprobobs : "")) ;
         //dd($cuerpo);
+        // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+        // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
         Mail::to("no-reply@plastiservi.cl")->bcc($emails)->send(new MailAprobarRechazoNotaVenta($notificaciones,$asunto,$cuerpo,$notaventa));
     }
 }

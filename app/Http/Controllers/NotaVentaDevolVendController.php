@@ -169,6 +169,8 @@ class NotaVentaDevolVendController extends Controller
                     $asunto = 'Nota de Venta Devuelta';
                     $cuerpo = "Nota de Venta Devuelta: Nro. $request->id";
     
+                    // ValidarEmailAntesDeSendListener valida formato y DNS antes del envío.
+                    // Si el correo es inválido, el envío se cancelará y se notificará a los administradores.
                     Mail::to($aux_email)->send(new MailNotaVentaDevuelta($notificaciones,$asunto,$cuerpo));
                     return response()->json(['mensaje' => 'ok']);
                 } else {

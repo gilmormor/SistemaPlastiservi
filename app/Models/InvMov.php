@@ -199,7 +199,16 @@ class InvMov extends Model
         if(!isset($request->producto_id) or empty($request->producto_id)){
             $aux_producto_idCodn = "true";
         }else{
-            $aux_producto_idCodn = " invmovdet.producto_id in ($request->producto_id) ";
+            $ids_validos = array_filter(
+                explode(',', $request->producto_id),
+                function($v){ return is_numeric(trim($v)); }
+            );
+            if(empty($ids_validos)){
+                $aux_producto_idCodn = "true";
+            }else{
+                $safe_ids = implode(',', array_map('intval', $ids_validos));
+                $aux_producto_idCodn = " invmovdet.producto_id in ($safe_ids) ";
+            }
         }
 
         if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
