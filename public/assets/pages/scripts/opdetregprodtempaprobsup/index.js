@@ -158,6 +158,10 @@ $("#btnrechazarM").click(function(event){
 	}
 });
 
+// Datos de la última petición de aprobación (para reenviar con bodega seleccionada)
+var _lastAprobData = null;
+var _lastAprobUrl  = null;
+
 function ajaxRequest(data,url,funcion) {
 	$.ajax({
 		url: url,
@@ -165,22 +169,59 @@ function ajaxRequest(data,url,funcion) {
 		data: data,
 		success: function (respuesta) {
 			if(funcion=='aprobarproducc'){
+				if(respuesta.resp == 2){
+					// Servidor pide seleccionar bodega de producción
+					_lastAprobData = data;
+					_lastAprobUrl  = url;
+					mostrarModalBodega(respuesta.bodegas);
+					return;
+				}
+
 				$("#aprobobs").val("");
 				$("#myModalaprobcot").modal('hide');
 				Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipmen);
 				if(respuesta.resp == 1){
 					$("#fila" + data.id).remove();
-				}
 
-				// *** REDIRECCIONA A UNA RUTA*** 
-				/*
-				var loc = window.location;
-				window.location = loc.protocol+"//"+loc.hostname+"/notaventaaprobar";
-				*/
-				// ****************************** 
+					// Ofrecer impresión de etiqueta
+					if(respuesta.opdetregprod_id){
+						var tipoEtiqueta = respuesta.es_ultima_etapa ? 'etiqueta-bodega' : 'etiqueta-etapa';
+						var urlEtiqueta  = '/opdetregprodtempaprobsup/' + tipoEtiqueta + '/' + respuesta.opdetregprod_id;
+						swal({
+							title: 'Registro aprobado',
+							text: '¿Desea imprimir la etiqueta?',
+							icon: 'success',
+							buttons: { cancel: 'No imprimir', confirm: 'Imprimir etiqueta' }
+						}).then(function(value){
+							if(value){ window.open(urlEtiqueta, '_blank'); }
+						});
+					}
+				}
 			}
 		},
 		error: function () {
+			Biblioteca.notificaciones('Error de conexión.', 'Plastiservi', 'error');
+		}
+	});
+}
+
+function mostrarModalBodega(bodegas) {
+	// Construir opciones del select
+	var options = bodegas.map(function(b){
+		return '<option value="' + b.id + '">' + b.nombre + '</option>';
+	}).join('');
+	swal({
+		title: 'Seleccionar bodega de producción',
+		content: {
+			element: 'select',
+			attributes: { id: 'swal-select-bodega', className: 'form-control', innerHTML: options }
+		},
+		buttons: { cancel: 'Cancelar', confirm: 'Confirmar' }
+	}).then(function(value){
+		if(value){
+			var bodegaId = document.getElementById('swal-select-bodega').value;
+			_lastAprobData['invbodega_id'] = bodegaId;
+			ajaxRequest(_lastAprobData, _lastAprobUrl, 'aprobarproducc');
 		}
 	});
 }

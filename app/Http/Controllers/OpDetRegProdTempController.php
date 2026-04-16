@@ -523,7 +523,8 @@ function consultaopdet($request){
             IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
             IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
             clientedesbloqueado.obs as clientedesbloqueado_obs,
-            opdet.updated_at,UNIX_TIMESTAMP(opdet.updated_at) as updatednum_at
+            opdet.updated_at,UNIX_TIMESTAMP(opdet.updated_at) as updatednum_at,
+            ultimo_prod.latest_opdetregprod_id
             from opdet INNER JOIN op
             ON opdet.op_id=op.id
             INNER JOIN otdet
@@ -553,7 +554,14 @@ function consultaopdet($request){
             ON modulo.id = clientedesbloqueadomodulo.modulo_id
             LEFT JOIN clientedesbloqueadopro
             ON clientedesbloqueadopro.cliente_id = ot.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
-            
+
+            LEFT JOIN (
+                SELECT opdet_id, MAX(id) AS latest_opdetregprod_id
+                FROM opdetregprod
+                WHERE isnull(deleted_at) AND aprobstatus = 2
+                GROUP BY opdet_id
+            ) AS ultimo_prod ON ultimo_prod.opdet_id = opdet.id
+
             LEFT JOIN clientedesbloqueado as clientedesbloqueado_orddesp
             ON clientedesbloqueado_orddesp.cliente_id = ot.cliente_id and clientedesbloqueado_orddesp.notaventa_id = otnotaventa.notaventa_id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
             LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp

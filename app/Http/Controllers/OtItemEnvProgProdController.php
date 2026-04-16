@@ -35,11 +35,10 @@ class OtItemEnvProgProdController extends Controller
         $request->request->set('aux_estado', 3);
         $request->request->set('noanul', 1);
         $request->request->set('modulo_id', 34);
-        //$request->merge(['sta_envprog' => 1]);
-        $request->request->set('sta_envprog', 0);
+        // Mostrar ítems no enviados (0) y con envío parcial (1)
+        $request->request->set('sta_envprog', '0,1');
         $request->request->set('sta_fabricacion', 1);
-        
-        //dd($request);
+
         $datas = Ot::reportOtItem($request);
         return datatables($datas)->toJson();
     }    
@@ -85,28 +84,48 @@ class OtItemEnvProgProdController extends Controller
             $request1->request->set('deldesbloqueo', 1);
             $clibloq = clienteBloqueado($ot->cliente_id,0,$request1);
 
-            //dd($request);
+            // Validar que no se envíe más del saldo pendiente
+            $cantPendiente = $otdet->cant - ($otdet->cantenvprog ?? 0);
+            if ($request->cantprod > $cantPendiente + 0.001) {
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => "La cantidad a enviar ({$request->cantprod}) supera el saldo pendiente (" . number_format($cantPendiente, 2) . ").",
+                    'tipo_alert' => 'error'
+                ]);
+            }
 
-            $otdet->sta_envprog = 1;
-            $otdet->espesorprod = $request->espesorprod;
-            $otdet->kgprod = $request->kgprod;
-            $otdet->cantprod = $request->cantprod;
+            // Acumular en los campos de envío a programación (NO tocar cantprod/kgprod que son de producción real)
+            $otdet->cantenvprog = ($otdet->cantenvprog ?? 0) + $request->cantprod;
+            $otdet->kgenvprog   = ($otdet->kgenvprog   ?? 0) + $request->kgprod;
+            $otdet->espesorprod   = $request->espesorprod;
             $otdet->envprogusu_id = auth()->id();
-            $otdet->envprogfecha = date("Y-m-d H:i:s");
-            /* $otdet->updated_at = date("Y-m-d H:i:s"); */
+            $otdet->envprogfecha  = date("Y-m-d H:i:s");
+
+            // Estado: 1=parcial, 2=todo enviado
+            if ($otdet->cantenvprog >= $otdet->cant) {
+                $otdet->sta_envprog = 2;
+            } else {
+                $otdet->sta_envprog = 1;
+            }
+
             $ot->updated_at = date("Y-m-d H:i:s");
             if($ot->save() and $otdet->save()){
                 return response()->json([
-                                            'mensaje' => 'Registro guardo con exito.',
-                                            'status' => '0',
-                                            'id' => $otdet->id,
-                                            'nfila' => $otdet->id,
-                                            'dte_id' => $otdet->id,
-                                        ]);
+                    'mensaje'     => 'Registro guardado con exito.',
+                    'status'      => '0',
+                    'id'          => $otdet->id,
+                    'nfila'       => $otdet->id,
+                    'dte_id'      => $otdet->id,
+                    'sta_envprog' => $otdet->sta_envprog,
+                    'cantenvprog' => $otdet->cantenvprog,
+                    'kgenvprog'   => $otdet->kgenvprog,
+                    'cant'        => $otdet->cant,
+                    'kg'          => $otdet->kg,
+                ]);
             } else {
                 return response()->json([
                     'id' => 0,
-                    'mensaje' => "Ocurrio un error al intenta guardar.",
+                    'mensaje' => "Ocurrio un error al intentar guardar.",
                     'tipo_alert' => 'error'
                 ]);
             }

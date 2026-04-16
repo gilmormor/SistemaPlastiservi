@@ -2,7 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoriaGrupoValMes;
 use App\Models\EtapaProd;
+use App\Models\InvBodega;
+use App\Models\Maquina;
+use App\Models\InvBodegaProducto;
+use App\Models\InvControl;
+use App\Models\InvMov;
+use App\Models\InvMovDet;
+use App\Models\InvMovDetOpDetRegProd;
 use App\Models\OpDet;
 use App\Models\OpDetRegProd;
 use App\Models\OpDetRegProdTemp;
@@ -217,61 +225,142 @@ class OpDetRegProdTempAprobSupController extends Controller
                         $opdetregprodtemp->aprobobs .= " / Usuario: " . auth()->id() . " " . $usuario->nombre . " " . date("d-m-Y H:i:s");
                     }
                 }
+                $esUltimaEtapa = false;
                 if($opdetregprodtemp->aprobstatus == 2){
-                    // Obtenemos la siguiente etapa de producción (la de mayor orden inmediato)
+                    // 1️⃣ Copiar todos los atributos del temp al registro definitivo
+                    $data = $opdetregprodtemp->toArray();
+                    unset($data['id'], $data['created_at'], $data['updated_at'], $data['deleted_at']);
+                    $data['opdetregprodtemp_id'] = $opdetregprodtemp->id;
+                    $data['usuario_id'] = auth()->id();
+
+                    // 2️⃣ Crear el registro definitivo en opdetregprod (necesario antes del else
+                    //    para poder usar $produccion->id en la trazabilidad de inventario)
+                    $produccion = OpDetRegProd::create($data);
+
+                    // 3️⃣ Obtener la siguiente etapa de producción (la de mayor orden inmediato)
                     $siguienteEtapa = collect($op->opdets)
                         ->where('orden', '>', $aux_etapaprod_orden)
                         ->sortBy('orden')
                         ->first();
 
                     if ($siguienteEtapa) {
-                        // Aquí ya tienes la siguiente etapa
-                        // Ejemplo: $siguienteEtapa->id o $siguienteEtapa->orden
-                        // Le asigno los kg y cant producidos a la siguiente etapa
-                        $opdet = OpDet::findOrFail($siguienteEtapa->id);
-                        //dd($opdet);
-                        if($opdet->kgrec == 0){
-                            $opdet->saldokg = $opdetregprodtemp->kg;
+                        // Hay siguiente etapa: transferir kg/cant a la siguiente etapa
+                        $opdetSig = OpDet::findOrFail($siguienteEtapa->id);
+                        if($opdetSig->kgrec == 0){
+                            $opdetSig->saldokg = $opdetregprodtemp->kg;
                         }else{
-                            $opdet->saldokg += $opdetregprodtemp->kg;
+                            $opdetSig->saldokg += $opdetregprodtemp->kg;
                         }
-                        $opdet->cantrec += $opdetregprodtemp->cant;
-                        $opdet->kgrec += $opdetregprodtemp->kg; 
-                        $opdet->save();
-                        //dd($siguienteEtapa);+
+                        $opdetSig->cantrec += $opdetregprodtemp->cant;
+                        $opdetSig->kgrec   += $opdetregprodtemp->kg;
+                        $opdetSig->save();
+
                     } else {
-                        dd($op->otdet->otdetnvdet);
-                        dd("Fin de la producción");
-                        // No hay una siguiente etapa (es la última)
-                        //dd('No hay siguiente etapa');
-                        //Aqui deberia abrir la ventana de produccion finalizada y abrir una pantalla de inventario para asignar el producto final a un bodega y actualizar inventarios. 
-                        //Tambien debe generarse automaticamente un movimiento de inventario de entrada.
-                        //Tambien se debe activar el item en notaventadetalle para que pueda ser preparado por el modulo de solicitud de despacho e iniciar el proceso de despacho.
+                        // 4️⃣ Última etapa: ingresar producto a bodega de Producción (tipo=5)
+                        $esUltimaEtapa = true;
+
+                        // Verificar período de inventario no cerrado
+                        $annomes = CategoriaGrupoValMes::annomes(date('Ym'));
+                        $periodoVigente = InvControl::where('annomes', $annomes)
+                            ->where('sucursal_id', $opdetregprodtemp->sucursal_id)
+                            ->where('status', 1)
+                            ->count();
+                        if ($periodoVigente > 0) {
+                            throw new \Exception('El período ' . $annomes . ' está cerrado. No se puede ingresar a bodega de producción.');
+                        }
+
+                        // Buscar bodegas tipo=5 de la sucursal
+                        $bodegasProduccion = InvBodega::where('tipo', 5)
+                            ->where('sucursal_id', $opdetregprodtemp->sucursal_id)
+                            ->whereNull('deleted_at')
+                            ->get();
+
+                        if ($bodegasProduccion->isEmpty()) {
+                            throw new \Exception('No existe bodega de producción (tipo=5) configurada para esta sucursal.');
+                        }
+
+                        // Si hay más de 1 bodega y el usuario aún no eligió, solicitar selección
+                        if ($bodegasProduccion->count() > 1 && !$request->invbodega_id) {
+                            DB::rollBack();
+                            return response()->json([
+                                'resp'    => 2,
+                                'tipmen'  => 'info',
+                                'mensaje' => 'Seleccione la bodega de producción destino.',
+                                'bodegas' => $bodegasProduccion->map(function($b){
+                                    return ['id' => $b->id, 'nombre' => $b->nombre];
+                                }),
+                            ]);
+                        }
+
+                        $invbodega_id = $request->invbodega_id
+                            ? (int)$request->invbodega_id
+                            : $bodegasProduccion->first()->id;
+
+                        // Crear el movimiento de inventario de entrada
+                        $invmov = InvMov::create([
+                            'fechahora'       => date('Y-m-d H:i:s'),
+                            'annomes'         => $annomes,
+                            'desc'            => 'Ingreso producción — última etapa',
+                            'obs'             => 'OP: ' . $opdetregprodtemp->opdet->op_id,
+                            'invmovmodulo_id' => 9,               // Producción
+                            'idmovmod'        => $produccion->id, // Trazabilidad → opdetregprod
+                            'invmovtipo_id'   => 1,               // Entrada
+                            'sucursal_id'     => $opdetregprodtemp->sucursal_id,
+                            'usuario_id'      => auth()->id(),
+                        ]);
+
+                        // Buscar o crear el registro InvBodegaProducto
+                        $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                            [
+                                'producto_id'  => $opdetregprodtemp->producto_id,
+                                'invbodega_id' => $invbodega_id,
+                            ],
+                            [
+                                'producto_id'  => $opdetregprodtemp->producto_id,
+                                'invbodega_id' => $invbodega_id,
+                            ]
+                        );
+
+                        // Crear el detalle del movimiento
+                        $producto = Producto::findOrFail($opdetregprodtemp->producto_id);
+                        $invmovdet = InvMovDet::create([
+                            'invmov_id'            => $invmov->id,
+                            'invbodegaproducto_id' => $invbodegaproducto->id,
+                            'producto_id'          => $opdetregprodtemp->producto_id,
+                            'invbodega_id'         => $invbodega_id,
+                            'sucursal_id'          => $opdetregprodtemp->sucursal_id,
+                            'unidadmedida_id'      => $producto->categoriaprod->unidadmedida_id,
+                            'invmovtipo_id'        => 1,
+                            'cant'                 => $opdetregprodtemp->cant,
+                            'cantgrupo'            => $opdetregprodtemp->cant,
+                            'cantxgrupo'           => 1,
+                            'peso'                 => $producto->peso,
+                            'cantkg'               => $opdetregprodtemp->kg,
+                        ]);
+
+                        // Registrar trazabilidad: invmovdet ↔ opdetregprod
+                        InvMovDetOpDetRegProd::create([
+                            'invmovdet_id'    => $invmovdet->id,
+                            'opdetregprod_id' => $produccion->id,
+                        ]);
                     }
-
-                    // 2️⃣ Copiar todos los atributos
-                    $data = $opdetregprodtemp->toArray();
-
-                    // 3️⃣ Eliminar campos que no deben copiarse (como el id o timestamps si no los necesitas)
-                    unset($data['id'], $data['created_at'], $data['updated_at'], $data['deleted_at']);
-
-                    // 4️⃣ Asignar los valores personalizados
-                    $data['opdetregprodtemp_id'] = $opdetregprodtemp->id;
-                    $data['usuario_id'] = auth()->id();
-
-                    // 5️⃣ Crear el nuevo registro en la tabla produccion
-
-                    $produccion = OpDetRegProd::create($data);                    
                 }
                 $opdet->save();
                 $opdetregprodtemp->save();
 
                 DB::commit();
-                return response()->json([
-                    'resp' => 1,
-                    'tipmen' => 'success',
-                    'mensaje' => 'Actualizado con exito.'
-                ]);
+
+                $respData = [
+                    'resp'    => 1,
+                    'tipmen'  => 'success',
+                    'mensaje' => 'Actualizado con exito.',
+                ];
+                // Si se aprobó (no rechazado), incluir id de producción para etiquetas
+                if ($opdetregprodtemp->aprobstatus == 2 && isset($produccion)) {
+                    $respData['opdetregprod_id'] = $produccion->id;
+                    $respData['es_ultima_etapa'] = $esUltimaEtapa ? 1 : 0;
+                }
+                return response()->json($respData);
 
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -284,5 +373,81 @@ class OpDetRegProdTempAprobSupController extends Controller
             }
         }
     }
-    
+
+    /**
+     * Etiqueta de bodega (última etapa) — con QR apuntando a opdetregprod_id.
+     * Sirve tanto para impresión inmediata como para reimpresión posterior.
+     */
+    public function etiquetaBodega($opdetregprod_id)
+    {
+        can('listar-registro-produccion-aprobar-supervidor');
+        $produccion = OpDetRegProd::findOrFail($opdetregprod_id);
+        $opdet = $produccion->opdet;
+        $op    = $opdet->op;
+        $otdet = $op->otdet;
+        $ot    = $otdet->ot;
+
+        // Nombre del producto usando la función global del proyecto
+        $productoData = Producto::atributosProducto($produccion->producto_id);
+        $productoNombre = $productoData['nombre'] ?? '—';
+        $productoCodigo = $produccion->producto_id;
+
+        // Nota de Venta (si el OT tiene relación con NV)
+        $notaventa_id = null;
+        if ($otdet->otdetnvdet && $otdet->otdetnvdet->notaventadetalle) {
+            $notaventa_id = $otdet->otdetnvdet->notaventadetalle->notaventa_id;
+        }
+
+        return view('opdetregprodtempaprobsup.etiqueta-bodega', compact(
+            'produccion', 'opdet', 'op', 'otdet', 'ot',
+            'productoNombre', 'productoCodigo', 'notaventa_id'
+        ));
+    }
+
+    /**
+     * Etiqueta de etapa intermedia — muestra datos de la etapa actual y la próxima.
+     * Sirve tanto para impresión inmediata como para reimpresión posterior.
+     */
+    public function etiquetaEtapa($opdetregprod_id)
+    {
+        can('listar-registro-produccion-aprobar-supervidor');
+        $produccion = OpDetRegProd::findOrFail($opdetregprod_id);
+        $opdet = $produccion->opdet;
+        $op    = $opdet->op;
+        $otdet = $op->otdet;
+        $ot    = $otdet->ot;
+
+        // Nombre del operario
+        $operario = \App\Models\Operario::find($produccion->operario_id);
+        $operarioNombre = $operario ? $operario->nombre : '—';
+
+        // Máquina asociada al opdet (si existe)
+        $maquinaNombre = '—';
+        if ($opdet->opdetmaquina && $opdet->opdetmaquina->maquina) {
+            $maquinaNombre = $opdet->opdetmaquina->maquina->nombre;
+        }
+
+        // Próxima etapa de producción
+        $etapaActualOrden = $opdet->areaproduccionsucetapaprod->orden;
+        foreach ($op->opdets as &$od) {
+            $od->orden = $od->areaproduccionsucetapaprod->orden;
+        }
+        $siguienteOpdet = collect($op->opdets)
+            ->where('orden', '>', $etapaActualOrden)
+            ->sortBy('orden')
+            ->first();
+        $proximaEtapaNombre = $siguienteOpdet
+            ? $siguienteOpdet->areaproduccionsucetapaprod->etapaprod->nombre
+            : 'Última etapa (Bodega)';
+
+        // Nombre del producto
+        $productoData   = Producto::atributosProducto($produccion->producto_id);
+        $productoNombre = $productoData['nombre'] ?? '—';
+
+        return view('opdetregprodtempaprobsup.etiqueta-etapa', compact(
+            'produccion', 'opdet', 'op', 'otdet', 'ot',
+            'productoNombre', 'operarioNombre', 'maquinaNombre', 'proximaEtapaNombre'
+        ));
+    }
+
 }

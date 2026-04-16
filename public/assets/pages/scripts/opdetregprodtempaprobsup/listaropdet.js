@@ -110,12 +110,22 @@ $(document).ready(function () {
             $('td', row).eq(11).html(MASKLA(data.kgprod,2));
 
             //href="${nuevaaux_rutadespsol}"
-            aux_text = 
+            aux_text =
             `<a class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="Procesar Registro Produccion" href="/opdetregprodtempaprobsup/crearini/${data.id}/${data.updatednum_at}">
                 <button type="button" class="btn btn-default btn-xs">
                     <i class="fa fa-fw fa-gear text-primary"></i>
                 </button>
             </a>`;
+            // Botón de reimpresión de etiqueta (si hay un registro aprobado previo)
+            if(data.latest_opdetregprod_id){
+                aux_text +=
+                `<a class="btn-accion-tabla tooltipsC" title="Reimprimir última etiqueta (ID prod: ${data.latest_opdetregprod_id})"
+                   onclick="reimprimirEtiqueta(${data.latest_opdetregprod_id})">
+                    <button type="button" class="btn btn-info btn-xs">
+                        <i class="fa fa-fw fa-print"></i>
+                    </button>
+                </a>`;
+            }
             $('td', row).eq(12).html(aux_text);
 
 
@@ -439,6 +449,30 @@ function ajaxRequest(data,url,funcion) {
 		error: function () {
 		}
 	});
+}
+
+/**
+ * Abre la etiqueta correspondiente al último registro de producción aprobado.
+ * El servidor determina si es etiqueta de bodega (última etapa) o de etapa intermedia.
+ */
+function reimprimirEtiqueta(opdetregprod_id) {
+    // Preguntar qué tipo de etiqueta reimprimir
+    swal({
+        title: 'Reimprimir etiqueta',
+        text: 'Seleccione el tipo de etiqueta a imprimir.',
+        icon: 'info',
+        buttons: {
+            cancel: 'Cancelar',
+            etapa: { text: 'Etapa intermedia', value: 'etapa' },
+            bodega: { text: 'Bodega (última)', value: 'bodega' }
+        }
+    }).then(function(tipo){
+        if(tipo === 'etapa'){
+            window.open('/opdetregprodtempaprobsup/etiqueta-etapa/' + opdetregprod_id, '_blank');
+        } else if(tipo === 'bodega'){
+            window.open('/opdetregprodtempaprobsup/etiqueta-bodega/' + opdetregprod_id, '_blank');
+        }
+    });
 }
 
 function datoslnv(){

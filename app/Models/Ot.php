@@ -559,7 +559,10 @@ class Ot extends Model
             $aux_sta_envprogCond = "true";
             $aux_filtrootcProgramar = "true";
         }else{
-            $aux_sta_envprogCond = "otdet.sta_envprog = $request->sta_envprog";
+            // Soporta valor simple ("0") o lista separada por comas ("0,1")
+            $sta_values = array_map('intval', explode(',', (string)$request->sta_envprog));
+            $sta_in = implode(',', $sta_values);
+            $aux_sta_envprogCond = "otdet.sta_envprog IN ($sta_in)";
             /* $aux_filtrootcProgramar = "otdet.id not in (
                                                             SELECT otdet_id FROM op WHERE isnull(op.deleted_at) 
                                                             AND op.id not in 
@@ -607,8 +610,8 @@ class Ot extends Model
         IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
-        otdet.producto_id, otdet.cant, otdet.cantprod, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod,
-        otdet.obs as otdet_obs,otdet.kgprog, 
+        otdet.producto_id, otdet.cant, otdet.cantprod, otdet.cantenvprog, otdet.kgenvprog, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod,
+        otdet.obs as otdet_obs,otdet.kgprog,
         if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id) as acuerdotecnico_id,
         acuerdotecnico.at_desc,acuerdotecnico.at_espesor,otdet.espesorprod,
         unidadmedida.nombre as unidadmedida_nombre,

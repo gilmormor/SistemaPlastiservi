@@ -381,7 +381,7 @@ function encabezadoTabla(){
                     <th title='Espesor Produccion' style="width: 50px;text-align:right;">Esp Prod</th>
                     <th title='Kilos' style="width: 50px;text-align:right;">Kg</th>
                     <th title='Cantidad' style="width: 50px;text-align:right;">Cant</th>
-                    <th title='Cantidad Produccion' style="width: 50px;text-align:right;">CantProd</th>
+                    <th title='Cantidad a enviar a programacion (saldo pendiente)' style="width: 50px;text-align:right;">Cant Enviar</th>
                     <th title='Observacion'>Obs</th>
                     <th class="ocultar">Obs Bloqueo</th>
                     <th class="ocultar">oc_folder</th>
@@ -525,16 +525,22 @@ function configurarTabla(nombreTabla,url,serverSide) {
                 `<input type="text" name="espesorprod[]" id="espesorprod${data.id}" class="form-control numerico3d" value="${MASKLA(data.espesorprod,3)}" valor="${data.espesorprod}" item="${data.id}" style="width: 70px;text-align:right;" maxlength="6" data-producto-id="${data.producto_id}" onblur="calcularPeso(this)" valororiginal="${data.espesorprod}" kgoriginal="${data.kgprod}"/>`;
             $('td', row).eq(11).html(aux_text);
 
-            aux_text = 
-                `<input type="text" name="kgprod[]" id="kgprod${data.id}" class="form-control numerico" value="${MASKLA(data.kgprod,2)}" valor="${data.kgprod}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15" valororiginal="${data.kgprod}"/>`;
-            $('td', row).eq(12).html(aux_text);    
+            // Saldo pendiente de kg a enviar a programación
+            let kgPendiente = data.kg - (parseFloat(data.kgenvprog) || 0);
+            if (kgPendiente < 0) kgPendiente = 0;
+            aux_text =
+                `<input type="text" name="kgprod[]" id="kgprod${data.id}" class="form-control numerico" value="${MASKLA(kgPendiente,2)}" valor="${kgPendiente}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15" valororiginal="${kgPendiente}"/>`;
+            $('td', row).eq(12).html(aux_text);
 
             aux_text = MASKLA(data.cant,0);
             $('td', row).eq(13).attr('style','text-align:right');
             $('td', row).eq(13).html(aux_text);
 
-            aux_text = 
-                `<input type="text" name="cantprod[]" id="cantprod${data.id}" class="form-control numerico" value="${MASKLA(data.cantprod,2)}" valor="${data.cantprod}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15" onblur="calcularPeso(this)" valororiginal="${data.cantprod}"/>`;
+            // Saldo pendiente de unidades a enviar a programación
+            let cantPendiente = data.cant - (parseFloat(data.cantenvprog) || 0);
+            if (cantPendiente < 0) cantPendiente = 0;
+            aux_text =
+                `<input type="text" name="cantprod[]" id="cantprod${data.id}" class="form-control numerico" value="${MASKLA(cantPendiente,2)}" valor="${cantPendiente}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15" onblur="calcularPeso(this)" valororiginal="${cantPendiente}" data-cant="${data.cant}" data-cantenvprog="${parseFloat(data.cantenvprog)||0}"/>`;
             $('td', row).eq(14).html(aux_text);    
 
             $('td', row).eq(19).addClass('updated_at');
@@ -679,6 +685,18 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
         return 0;
     }
 
+    // Validar que no exceda el saldo pendiente
+    let cantMaxEnviar = parseFloat($("#cantprod" + id).data("cant")) - parseFloat($("#cantprod" + id).data("cantenvprog") || 0);
+    if (parseFloat(data.cantprod) > cantMaxEnviar + 0.001) {
+        swal({
+            title: `Cantidad excede saldo!`,
+            text: `Solo puede enviar hasta ${MASKLA(cantMaxEnviar, 2)} unidades (saldo pendiente).`,
+            buttons: { cancel: "Cancelar" },
+            icon: 'warning',
+        });
+        return 0;
+    }
+
     // Crear una caja de texto para la observación y un contenedor para el mensaje de error
     swal({
         title: `¿${mensaje}?`,
@@ -721,11 +739,10 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
                     // Limpiar el mensaje de error y enviar la solicitud AJAX
                     document.getElementById('error-message').textContent = "";
                     data.obs = observacion; // Añadir la observación a los datos
-                    //console.log(data);
-                    ajaxRequestGeneral(data, ruta, 'procesarDTE');
+                    enviarAProgamacion(data, ruta);
                 }
             }else{
-                ajaxRequestGeneral(data, ruta, 'procesarDTE');
+                enviarAProgamacion(data, ruta);
             }
         }
     });
@@ -735,6 +752,57 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
 	}
 
 
+}
+
+/**
+ * Envía el ítem a programación con manejo de envío parcial vs completo.
+ * - sta_envprog=2 (todo enviado): elimina la fila de la tabla.
+ * - sta_envprog=1 (parcial): actualiza los inputs con el saldo pendiente.
+ */
+function enviarAProgamacion(data, ruta) {
+    $.ajax({
+        url: ruta,
+        type: 'POST',
+        data: data,
+        success: function(respuesta) {
+            if (respuesta.id != 0) {
+                if (respuesta.sta_envprog == 2) {
+                    // Todo enviado: eliminar la fila
+                    let element = $("#" + data.nombreobjeto);
+                    let table = element.closest('table').DataTable();
+                    let row = table.row("#fila" + respuesta.dte_id);
+                    if (row && row.child && row.child.isShown()) { row.child.hide(); }
+                    $("#fila" + respuesta.dte_id).remove();
+                    Biblioteca.notificaciones('Todo enviado a programación con éxito.', 'Plastiservi', 'success');
+                } else {
+                    // Envío parcial: actualizar saldo pendiente en la fila
+                    let cantNuevoPend = parseFloat(respuesta.cant)      - parseFloat(respuesta.cantenvprog);
+                    let kgNuevoPend   = parseFloat(respuesta.kg)        - parseFloat(respuesta.kgenvprog);
+                    if (cantNuevoPend < 0) cantNuevoPend = 0;
+                    if (kgNuevoPend   < 0) kgNuevoPend   = 0;
+                    let fid = respuesta.dte_id;
+                    $("#cantprod" + fid).val(MASKLA(cantNuevoPend, 2));
+                    $("#cantprod" + fid).attr("valor", cantNuevoPend);
+                    $("#cantprod" + fid).data("cantenvprog", respuesta.cantenvprog);
+                    $("#kgprod"   + fid).val(MASKLA(kgNuevoPend, 2));
+                    $("#kgprod"   + fid).attr("valor", kgNuevoPend);
+                    Biblioteca.notificaciones(
+                        'Envío parcial guardado. Saldo pendiente: ' + MASKLA(cantNuevoPend, 0) + ' unidades.',
+                        'Plastiservi', 'success'
+                    );
+                }
+            } else {
+                swal({
+                    text: respuesta.mensaje,
+                    icon: respuesta.tipo_alert || 'error',
+                    buttons: { confirm: "Aceptar" }
+                });
+            }
+        },
+        error: function() {
+            Biblioteca.notificaciones('Error de conexión al intentar guardar.', 'Plastiservi', 'error');
+        }
+    });
 }
 
 function calcularPeso(input){

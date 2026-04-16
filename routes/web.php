@@ -1769,3 +1769,5 @@ Route::delete('opdetregprodtempaprobsup/{id}', 'OpDetRegProdTempAprobSupControll
 Route::get('opdetregprodtempaprobsup/listaropdet', 'OpDetRegProdTempAprobSupController@listaropdet')->name('opdetregprodtempaprobsup_listaropdet');
 Route::get('opdetregprodtempaprobsup/listaropdetpage', 'OpDetRegProdTempAprobSupController@listaropdetpage')->name('opdetregprodtempaprobsup_listaropdetpage');
 Route::post('opdetregprodtempaprobsup/aprob/{id}', 'OpDetRegProdTempAprobSupController@aprob')->name('opdetregprodtempaprobsup_aprob');
+Route::get('opdetregprodtempaprobsup/etiqueta-bodega/{opdetregprod_id}', 'OpDetRegProdTempAprobSupController@etiquetaBodega')->name('opdetregprodtempaprobsup_etiqueta_bodega');
+Route::get('opdetregprodtempaprobsup/etiqueta-etapa/{opdetregprod_id}', 'OpDetRegProdTempAprobSupController@etiquetaEtapa')->name('opdetregprodtempaprobsup_etiqueta_etapa');
