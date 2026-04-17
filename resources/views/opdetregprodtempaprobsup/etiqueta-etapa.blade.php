@@ -134,7 +134,8 @@
         </div>
     </div>
     <div class="etiqueta-footer">
-        Plastiservi &mdash; Sistema ERP
+        {{-- Plastiservi &mdash; Sistema ERP --}}
+        Plastiservi
     </div>
 </div>
 

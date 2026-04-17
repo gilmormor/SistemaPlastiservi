@@ -38,14 +38,11 @@ $(document).ready(function () {
             $(row).attr('updated_at', data.updatednum_at);
 
             aux_text = 
-                `<a class="btn-accion-tabla btn-sm" title="Ver OT: ${data.ot_id}" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")'>
+                `<a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OT: ${data.ot_id}" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")'>
                     ${data.ot_id}
-                </a>-
-				<a class="btn-accion-tabla btn-sm" title="OP: ${data.op_id}">
-                    ${data.op_id}
-                </a>-
-				<a class="btn-accion-tabla btn-sm" title="OPDet: ${data.opdet_id}">
-                    ${data.opdet_id}
+                </a>
+                <a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OP: ${data.op_id}" onclick='genpdf(${data.op_id},"","ver-pdf-op","/op/exportPdf/${data.op_id}")'>
+                    ${data.op_id}-${data.opdet_id}
                 </a>`;
             $('td', row).eq(1).html(aux_text);
 

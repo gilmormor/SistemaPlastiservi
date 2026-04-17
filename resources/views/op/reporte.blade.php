@@ -19,7 +19,7 @@
 			</td>
 			<td class="info_factura">
 				<div>
-					<span class="h3">Op / {{$op->otdet->ot->sucursal->nombre}}</span>
+					<span class="h3">OP / {{$op->otdet->ot->sucursal->nombre}}</span>
 					<p>Nro: <strong> {{ str_pad($op->id, 10, "0", STR_PAD_LEFT) }}</strong>
 						@if ($op->opanul)
 							<small class="btn btn-danger btn-xs">Anulado</small>

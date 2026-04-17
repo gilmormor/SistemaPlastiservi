@@ -393,6 +393,7 @@ function encabezadoTabla(){
                     <th title='Cantidad' style="width: 50px;text-align:right;">Cant</th>
                     <th title='Kg Produccion' style="width: 50px;text-align:right;">KgProd</th>
                     <th title='Total Kg Programados' style="width: 50px;text-align:right;">KgProg</th>
+                    <th title='Kg enviados a programación (disponible para programar)' style="width: 60px;text-align:right;">KgEnvProg</th>
                     <th title='Kilos' style="width: 50px;text-align:right;">Kg</th>
                     <th title='Observacion General'>ObsGen</th>
                     <th title='Observacion'>Obs</th>
@@ -460,18 +461,19 @@ function configurarTabla(nombreTabla,url,serverSide) {
             {data: 'unidadmedida_nombre'}, // 9
             {data: 'at_espesor'}, // 10
             {data: 'espesorprod',className:"ocultar"}, // 11
-            {data: 'cantprod'}, // 12
+            {data: 'cant'}, // 12
             {data: 'kgprod'}, // 13
             {data: 'kgprog'}, // 14
-            {data: 'kgprod'}, // 15
-            {data: 'otdet_obs'}, // 16
+            {data: 'kgenvprog'}, // 15 — kg enviados a programación
+            {data: 'kgprod'}, // 16
             {data: 'otdet_obs'}, // 17
             {data: 'otdet_obs'}, // 18
             {data: 'otdet_obs'}, // 19
-            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //20
-            {data: 'oc_file',className:"ocultar"}, //21
+            {data: 'otdet_obs'}, // 20
+            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //21
             {data: 'oc_file',className:"ocultar"}, //22
-            {data: 'updated_at',className:"ocultar"}, //23
+            {data: 'oc_file',className:"ocultar"}, //23
+            {data: 'updated_at',className:"ocultar"}, //24
 /*             {defaultContent : 
                 "<a href='/ot/enviaraprobarinventsal' class='btn-accion-tabla btn-sm btnaprobar' title='Aprobar'>" +
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+
@@ -578,7 +580,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
             $('td', row).eq(11).html(aux_text);
 
 
-            aux_text = MASKLA(data.cantprod,0);
+            aux_text = MASKLA(data.cant,0);
             $('td', row).eq(12).attr('style','text-align:right');
             $('td', row).eq(12).attr('title','Cantidad Produccion');
             $('td', row).eq(12).html(aux_text);
@@ -599,14 +601,23 @@ function configurarTabla(nombreTabla,url,serverSide) {
             $('td', row).eq(14).attr('valor',data.kgprog);
             $('td', row).eq(14).html(aux_text);
 
-            aux_kgprod = data.kgprod - data.kgprog;
-            aux_kgprod = (aux_kgprod < 0) ? 0 : aux_kgprod; // Asegura que no sea negativo
-            aux_text = 
-                `<input type="text" name="kgprod[]" id="kgprod${data.id}" class="form-control numerico requerido${data.id}" value="${MASKLA(aux_kgprod,2)}" valor="${aux_kgprod}" valorOriginal="${data.kgprod}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15"/>`;
-            $('td', row).eq(15).html(aux_text);
+            // Col 15 — KgEnvProg (kg enviados a programación, disponible para programar)
+            var aux_kgenvprog = parseFloat(data.kgenvprog) || 0;
+            var aux_kgdisponible = aux_kgenvprog - parseFloat(data.kgprog || 0);
+            aux_kgdisponible = (aux_kgdisponible < 0) ? 0 : aux_kgdisponible;
+            $('td', row).eq(15).attr('style','text-align:right; font-weight:bold; color:#1a6b1a;');
+            $('td', row).eq(15).attr('id','kgenvprog' + data.id);
+            $('td', row).eq(15).attr('valor', aux_kgenvprog);
+            $('td', row).eq(15).html(MASKLA(aux_kgenvprog, 2));
+
+            // Col 16 — Input kg a programar (limitado a kgenvprog - kgprog)
+            aux_kgprod = aux_kgdisponible;
+            aux_text =
+                `<input type="text" name="kgprod[]" id="kgprod${data.id}" class="form-control numerico requerido${data.id}" value="${MASKLA(aux_kgprod,2)}" valor="${aux_kgprod}" valorOriginal="${data.kgprod}" kgenvprog="${aux_kgenvprog}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15"/>`;
+            $('td', row).eq(16).html(aux_text);
 
 
-            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
             aux_displaybtnac = ``;
             aux_displaybtnbl = ``;
             if(aux_clienteBloqueado == ""){
@@ -617,21 +628,22 @@ function configurarTabla(nombreTabla,url,serverSide) {
                 aux_displaybtnbl = ``;
             }
 
-            // Generar el select con las Orden Atencion en la columna 14 (otdet_obs)
+            // Col 19 — Select Prioridad
             var aux_text = `<select class="form-control requerido${data.id}" name="prioridad${data.id}" id="prioridad${data.id}" data-width="100%" data-size="5">`;
             aux_text += `<option value="">...</option>`;
             for (let i = 1; i < 4; i++) {
                 aux_text += `<option value="${i}">${i}</option>`;
-                
             }
             aux_text += `</select>`;
-            $('td', row).eq(18).html(aux_text); // Insertar el select en la celda correspondiente
+            $('td', row).eq(19).html(aux_text);
 
-            aux_text = 
+            // Col 18 — Textarea Observación
+            aux_text =
                 `<textarea name="obs[]" id="obs${data.id}" class="form-control" value="" item="${data.id}" style="width: 150px;" placeholder="Observación" maxlength="100"></textarea>`;
-            $('td', row).eq(17).html(aux_text);
+            $('td', row).eq(18).html(aux_text);
 
-                        aux_text = 
+            // Col 20 — Botones acción
+            aux_text =
                 `<div class="tools11">
                     <a ${aux_displaybtnbl} class="btn-accion-tabla botonbloq${data.id}" title="Condición financiera en revisión: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},0,0)">
                         <i class="fa fa-fw fa-lock text-danger fa-lg"></i>
@@ -640,12 +652,11 @@ function configurarTabla(nombreTabla,url,serverSide) {
                         <i class="fa fa-fw fa-save fa-lg"></i>
                     </a>
                 </div>`;
-            //$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
-            $('td', row).eq(19).html(aux_text);            
-            
-            $('td', row).eq(23).addClass('updated_at');
-            $('td', row).eq(23).attr('id','updated_at' + data.id);
-            $('td', row).eq(23).attr('name','updated_at' + data.id);
+            $('td', row).eq(20).html(aux_text);
+
+            $('td', row).eq(24).addClass('updated_at');
+            $('td', row).eq(24).attr('id','updated_at' + data.id);
+            $('td', row).eq(24).attr('name','updated_at' + data.id);
 
             activarLimpiezaCampoRequerido(data.id);
 
@@ -1027,10 +1038,22 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
             swal({
                 title: `Falta incluir Informacion!`,
                 text: "Kg debe ser mayor a 0.",
-                buttons: {
-                    cancel: "Cancelar"
-                },
+                buttons: { cancel: "Cancelar" },
                 icon: 'warning',
+            });
+            return 0;
+        }
+        // Validar que no supere los kg disponibles para programar (kgenvprog - kgprog)
+        var aux_kgenvprog  = parseFloat($("#kgprod" + id).attr("kgenvprog") || 0);
+        var aux_kgprogAcum = parseFloat($("#kgprog" + id).attr("valor") || 0);
+        var aux_kgDisponible = aux_kgenvprog - aux_kgprogAcum;
+        if(data.kgprod > aux_kgDisponible + 0.001){
+            divPadre.addClass("error");
+            swal({
+                title: `Cantidad supera lo disponible`,
+                text: `Kg a programar (${MASKLA(data.kgprod,2)}) supera el saldo disponible (${MASKLA(aux_kgDisponible,2)} kg).\nKg enviados a prog.: ${MASKLA(aux_kgenvprog,2)} — Kg ya programados: ${MASKLA(aux_kgprogAcum,2)}`,
+                buttons: { cancel: "Cancelar" },
+                icon: 'error',
             });
             return 0;
         }
