@@ -135,7 +135,7 @@
             <input type="text" name="aux_cant" id="aux_cant" class="form-control numerico requerido" valor="{{$data->cant  ?? '0'}}" valorOriginal="{{$data->cant  ?? '0'}}" value="{{old('cant', number_format($data->cant ?? '0', 2, ',', '.'))}}" style="text-align:right;" readonly/>
         </div>
         <div class="form-group col-xs-12 col-sm-12">
-            <label for="unidadmedida_id" class="control-label requerido" data-toggle='tooltip' title="Unidad Medida">Unidad Medida ({{$opdet->areaproduccionsucetapaprod->unidadmedida->nombre}})</label>
+            <label for="unidadmedida_id" class="control-label requerido" data-toggle='tooltip' title="Unidad Medida">Unidad Medida ({{$opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? 'sin configurar'}})</label>
             <select name="unidadmedida_id" id="unidadmedida_id" class="form-control select2" required>
                 <option value="">Seleccione...</option>
                 @foreach($tablas['unidadmedidas'] as $unidadmedida)
@@ -143,7 +143,7 @@
                         value="{{$unidadmedida->id}}"
                         @if (isset($data) and ($data->unidadmedida_id==$unidadmedida->id))
                             {{'selected'}}
-                        @elseif (isset($opdet) and ($opdet->areaproduccionsucetapaprod->unidadmedida_id==$unidadmedida->id))
+                        @elseif (isset($opdet) and (optional($opdet->areaproduccionsucetapaprod)->unidadmedida_id==$unidadmedida->id))
                             {{'selected'}}
                         @endif
                         >{{$unidadmedida->nombre}}</option>

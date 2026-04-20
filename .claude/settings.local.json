@@ -10,7 +10,9 @@
       "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe -l app/Http/Controllers/OpDetRegProdTempController.php)",
       "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe -l app/Http/Controllers/OtItemEnvProgProdController.php)",
       "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe -l app/Models/InvMovDetOpDetRegProd.php)",
-      "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe -r ' *)"
+      "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe -r ' *)",
+      "Bash(php artisan *)",
+      "Bash(/c/laragon/bin/php/php8.0.28/php.exe artisan *)"
     ]
   }
 }
