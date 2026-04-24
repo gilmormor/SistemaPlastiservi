@@ -1626,8 +1626,8 @@ class Producto extends Model
                                     . number_format($data->cantdesp, 0, ",", ".") .
                                     "</a>";
                 }
-                $comuna = Comuna::findOrFail($data->comunaentrega_id);
-                $producto = Producto::findOrFail($data->producto_id);
+                //$comuna = Comuna::findOrFail($data->comunaentrega_id);
+                //$producto = Producto::findOrFail($data->producto_id);
                 //$notaventa = NotaVenta::findOrFail($data->notaventa_id);
                 //$aux_subtotalplata = ($aux_cantsaldo * $data->peso) * $data->precioxkilo;
             }
@@ -1650,6 +1650,18 @@ class Producto extends Model
             $total_totalplata += $data->subtotalplata;
             $total_precioxkilo += $data->precioxkilo;
             $total_totalplatamas_iva += $data->subtotalplatamasiva;
+            $data->at_peso = 0;
+            if(isset($request->staconsAT) and $request->staconsAT == 1){
+                $producto = Producto::findOrFail($data->producto_id);
+                if(isset($producto->acuerdotecnico)){
+                    if(isset($producto->acuerdotecnico->at_peso)){
+                        $data->at_peso = $producto->acuerdotecnico->at_peso;
+
+                    }else{
+                        $data->at_peso = pesounitattemp($producto->acuerdotecnico);
+                    }
+                }
+            }
         }
         //dd($datas);
         //$datas[]prueba = [];

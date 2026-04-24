@@ -297,7 +297,8 @@ function datosPentxProd(aux_filtro = 0){
         sucursal_id       : aux_sucursal_id,
         filtro            : 0,
         filtroacutec      : $("#filtroacutec").val(),
-        claseprod_id         : $("#claseprod_id").val(),
+        claseprod_id      : $("#claseprod_id").val(),
+        staconsAT         : 1,
         _token            : $('input[name=_token]').val()
     };
 
@@ -323,7 +324,8 @@ function datosPentxProd(aux_filtro = 0){
     "&filtro="+data1.filtro +
     "&filtroacutec="+data1.filtroacutec +
     "&_token="+data1._token +
-    "&claseprod_id="+data1.claseprod_id;
+    "&claseprod_id="+data1.claseprod_id +
+    "&staconsAT="+data1.staconsAT;
 
     var data = {
         data1 : data1,
@@ -849,8 +851,10 @@ function exportarExcel() {
         aux_totalMonto = 0;
         aux_totalkgtotal = 0;
         aux_totalmnttotal = 0;
+        aux_totalat_kgtotal = 0;
+        aux_total_at_kgdesp = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor"]);
+        datosExcel.push(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor","MateriaPrima","Peso","KgTotal","KgDesp"]);
         data.data.forEach(function(registro) {
             aux_cont++;
             aux_totalPicking += registro.picking;
@@ -872,6 +876,21 @@ function exportarExcel() {
             }else{
                 aux_diametro = "";
             }
+            at_peso = registro.peso;
+            at_kgtotal = 0;
+            at_kgdesp = 0;
+            aux_kgPend = registro.kgpend;
+            aux_precioxkilo = registro.precioxkilo;
+            if(registro.at_peso > 0){
+                at_peso = registro.at_peso;
+                at_kgtotal = registro.cant * registro.at_peso;
+                at_kgdesp = registro.cantdesp * registro.at_peso;
+                aux_kgPend = registro.cantsaldo * registro.at_peso;
+                aux_precioxkilo = registro.subtotalplata / at_kgtotal;
+            }
+            aux_totalat_kgtotal += at_kgtotal;
+            aux_total_at_kgdesp += at_kgdesp;
+            
             var filaExcel = [
                 registro.notaventa_id,
                 registro.oc_id,
@@ -893,11 +912,15 @@ function exportarExcel() {
                 registro.cant,
                 registro.cantdesp,
                 registro.cantsaldo,
-                registro.kgpend,
-                registro.precioxkilo,
+                aux_kgPend,
+                aux_precioxkilo,
                 registro.subtotalplata,
                 registro.vendedor_nombre,
-                registro.at_materiaprima
+                registro.at_materiaprima,
+                at_peso,
+                at_kgtotal,
+                at_kgdesp
+
             ];
             //aux_vendedor_id = registro.vendedor_id;
 
@@ -906,7 +929,7 @@ function exportarExcel() {
         if(aux_totalMonto > 0){
             prom_preciokg = (aux_totalPreciokg/aux_cont);
             prom_Monto = (aux_totalMonto/aux_cont);
-            datosExcel.push(["","","","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto]);
+            datosExcel.push(["","","","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto,"","","",aux_totalat_kgtotal,aux_total_at_kgdesp]);
             datosExcel.push(["","","","","","","","","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
         }
 
@@ -947,10 +970,14 @@ function createExcel(datosExcel) {
     ajustarcolumnaexcel(worksheet,"J");
     ajustarcolumnaexcel(worksheet,"K");
     ajustarcolumnaexcel(worksheet,"X");
+    ajustarcolumnaexcel(worksheet,"Y");
+    ajustarcolumnaexcel(worksheet,"Z");
+    ajustarcolumnaexcel(worksheet,"AA");
+    ajustarcolumnaexcel(worksheet,"AB");
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 24; i++) {
+    for (let i = 1; i <= 28; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -975,7 +1002,7 @@ function createExcel(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 24; i++) {
+    for (let i = 1; i <= 28; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -1038,6 +1065,20 @@ function createExcel(datosExcel) {
         }
     });
 
+    const columnAA = worksheet.getColumn(27);
+    columnAA.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
+    const columnAB = worksheet.getColumn(28);
+    columnAB.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
+        }
+    });
+
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
         const cell7 = worksheet.getCell(i, 9);
@@ -1069,6 +1110,14 @@ function createExcel(datosExcel) {
 
         const cell17 = worksheet.getCell(i, 23);
         cell17.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
+        const cell26 = worksheet.getCell(i, 26);
+        cell26.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+        const cell27 = worksheet.getCell(i, 27);
+        cell27.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+        const cell28 = worksheet.getCell(i, 28);
+        cell28.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
+
 
         /*
         const cell9 = worksheet.getCell(i, 9);
@@ -1156,6 +1205,16 @@ function createExcel(datosExcel) {
     cell.font = { bold: true };
     cell.alignment = { horizontal: "right" };
     cell.numFmt = "#,##0";
+
+    cell = row.getCell(27);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0.00";
+
+    cell = row.getCell(28);
+    cell.font = { bold: true };
+    cell.alignment = { horizontal: "right" };
+    cell.numFmt = "#,##0.00";
 
     //Negrilla Promedios
     row = worksheet.getRow(datosExcel.length);

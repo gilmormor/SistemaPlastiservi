@@ -655,8 +655,12 @@ if (!function_exists('ordenarArrayxCampo')) {
 if (!function_exists('pesounitattemp')) {
     function pesounitattemp($at) {
         $aux_doble = 2;
-        if($at->producto->categoriaprod_id == 13){
+        if(isset($at->producto->categoriaprod_id) and $at->producto->categoriaprod_id == 13){
             $aux_doble = 1;
+        }else{
+            if(isset($at->cotizaciondetalle->producto->categoriaprod_id) and $at->cotizaciondetalle->producto->categoriaprod_id == 13){
+                $aux_doble = 1;
+            }
         }
         if($at->at_formatofilm > 0 ){
             return $at->at_formatofilm;
