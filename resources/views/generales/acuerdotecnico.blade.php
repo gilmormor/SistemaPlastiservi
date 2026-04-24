@@ -29,7 +29,7 @@
                                         <div class="col-xs-12 col-sm-5" classorig="col-xs-12 col-sm-5">
                                             <label for="at_complementonomprod" class="control-label tooltipsC" data-original-title="Complemento nombre Producto para Factura">Complemento nombre Producto</label>
                                             <a class="btn-sm tooltipsC" data-original-title="Descripción que complementa el nombre del producto para la Factura" aria-describedby="tooltip202998"><i class="fa fa-fw fa-question-circle text-aqua"></i></a>
-                                            <input type="text" name="at_complementonomprod" id="at_complementonomprod" class="form-control form_acutec" placeholder="Complemento nombre Producto" maxlength="30"/>
+                                            <input type="text" name="at_complementonomprod" id="at_complementonomprod" class="form-control form_acutec" placeholder="Complemento nombre Producto" maxlength="20"/>
                                             <span class="help-block"></span>
                                         </div>
 

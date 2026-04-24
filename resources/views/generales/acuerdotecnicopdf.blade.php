@@ -94,6 +94,10 @@
 							<td style="width: 15% !important;"><p>{{$acuerdotecnico->at_entmuestra == '1' ? 'Si' : 'No' }}</p></td>
 							<td style="width: 20% !important;"><strong>Tipo Sello/Clase:</strong> {{$acuerdotecnico->claseprod->cla_nombre . ($acuerdotecnico->at_tiposelloobs ? ", " . $acuerdotecnico->at_tiposelloobs : "")}}</td>
 						</tr>
+						<tr class="headtarial">
+							<td style="width: 10% !important;"><strong>Glosa:</strong></td>
+							<td style="width: 85% !important;"><p>{{isset($acuerdotecnico->at_glosa) ? $acuerdotecnico->at_glosa : $acuerdotecnico->producto->glosa}}</p></td>
+						</tr>
 					</table>
 				</div>
 			</td>
