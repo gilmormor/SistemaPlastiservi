@@ -1560,7 +1560,7 @@ class Producto extends Model
         foreach ($datas as &$data){
             if(!isset($request->staConsStock) or (isset($request->staConsStock) and $request->staConsStock == 1)){
                 $id = $data->producto_id;
-                $atributoProd = Producto::atributosProducto($id);
+                $atributoProd = Producto::atributosProducto($id,$data->cotizaciondetalle_id);
                 $data->nombre = $atributoProd["nombre"];
                 $data->diametro = $atributoProd["at_ancho"];
                 $data->long = $atributoProd["at_largo"];
@@ -1653,12 +1653,20 @@ class Producto extends Model
             $data->at_peso = 0;
             if(isset($request->staconsAT) and $request->staconsAT == 1){
                 $producto = Producto::findOrFail($data->producto_id);
+                $acuerdotecnico = null;
                 if(isset($producto->acuerdotecnico)){
-                    if(isset($producto->acuerdotecnico->at_peso)){
-                        $data->at_peso = $producto->acuerdotecnico->at_peso;
-
+                    $acuerdotecnico = $producto->acuerdotecnico;
+                }else{
+                    $notaventadetalle = NotaVentaDetalle::findOrFail($data->id);
+                    if(isset($notaventadetalle->acuerdotecnicotempunoauno)){
+                        $acuerdotecnico = $notaventadetalle->acuerdotecnicotempunoauno;
+                    }
+                }
+                if($acuerdotecnico != null){
+                    if(isset($acuerdotecnico->at_peso)){
+                        $data->at_peso = $acuerdotecnico->at_peso;
                     }else{
-                        $data->at_peso = pesounitattemp($producto->acuerdotecnico);
+                        $data->at_peso = pesounitattemp($acuerdotecnico);
                     }
                 }
             }
@@ -1935,7 +1943,9 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
 
     //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
     if($aux_sql==1){
-        $sql = "SELECT notaventadetalle.id,notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,
+        $sql = "SELECT notaventadetalle.id,notaventadetalle.notaventa_id as id,
+        notaventadetalle.cotizaciondetalle_id,
+        notaventa.fechahora,notaventa.cliente_id,
         notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,notaventa.piva,
         cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
@@ -2042,6 +2052,7 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         }
 
         $sql = "SELECT notaventadetalle.producto_id $aux_campos ,notaventa.sucursal_id,
+        notaventadetalle.cotizaciondetalle_id,
         tipoentrega.nombre as tipentnombre,tipoentrega.icono,
         CONCAT(persona.nombre, ' ', UPPER(LEFT(persona.apellido, 1))) AS vendedor_nombre
         FROM notaventadetalle INNER JOIN notaventa
