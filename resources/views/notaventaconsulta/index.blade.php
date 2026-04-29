@@ -14,6 +14,7 @@ Consulta Nota Venta
 @endsection
 
 @section("scripts")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/notaventaconsulta/index.js")}}" type="text/javascript"></script>
@@ -270,6 +271,7 @@ Consulta Nota Venta
                                         <button type='button' id='btnpdf' name='btnpdf' class='btn btn-success tooltipsC' title="Reporte PDF">
                                             <i class='glyphicon glyphicon-print'></i> Reporte
                                         </button>
+                                        <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
                                     </div>
                                 </div>
                             </div>

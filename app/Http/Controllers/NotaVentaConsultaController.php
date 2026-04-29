@@ -89,7 +89,7 @@ class NotaVentaConsultaController extends Controller
             $aux_totalKG = 0;
             $aux_totalps = 0;
             $aux_prom = 0;
-            foreach ($datas as $data) {
+            foreach ($datas as &$data) {
                 //dd($data);
                 $notaventa = NotaVenta::findOrFail($data->id);
                 //dd($notaventa->notaventadetalles);
@@ -237,6 +237,7 @@ class NotaVentaConsultaController extends Controller
                                 </a>";
                 $comuna = Comuna::findOrFail($data->comunaentrega_id);
 
+                $aux_fecanulada = "";
                 if(!empty($data->anulada)){
                     $aux_fecanulada = date('d-m-Y h:i A', strtotime($data->anulada));
                     $aux_iconiInf .= "<a class='btn-accion-tabla btn-sm tooltipsC' title='Anulada: $aux_fecanulada' data-toggle='tooltip'>
@@ -352,7 +353,8 @@ class NotaVentaConsultaController extends Controller
                     $aux_totalKG += $aux_totalpesokg;
                     $aux_totalps += $data->subtotal;    
                 }
-
+                $data->estadoNV = $aux_iconiInf . " " . $aux_htmlEstadoNV;
+                //$data->estadoNV = $aux_ObsIcono . " " . $aux_obsdespachoNew . " " . "Anulada: " . $aux_fecanulada;
     
                 //dd($data->contacto);
             }
@@ -361,6 +363,10 @@ class NotaVentaConsultaController extends Controller
             if($aux_totalKG>0){
                 $aux_promGeneral = $aux_totalps / $aux_totalKG;
             }
+            if($request->sta_excel == 1){
+                return $datas;
+            }
+
             $respuesta['tabla'] .= "
             </tbody>
             <tfoot>
