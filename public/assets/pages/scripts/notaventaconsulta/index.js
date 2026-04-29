@@ -517,7 +517,7 @@ function exportarExcelDet() {
             XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
 
             // Generar el archivo Excel y descargarlo
-            XLSX.writeFile(libro, 'ReporteNotaventa.xlsx');
+            XLSX.writeFile(libro, 'ReporteNotaventaDetalle.xlsx');
             },
             error: function(xhr, status, error) {
             console.log(error);
