@@ -402,6 +402,7 @@ Route::post('notaventa/buscarNVActiva', 'NotaVentaController@buscarNVActiva')->n
 Route::get('notaventaconsulta', 'NotaVentaConsultaController@index')->name('notaventaconsulta');
 Route::post('notaventaconsulta/reporte', 'NotaVentaConsultaController@reporte')->name('notaventaconsulta_reporte');
 Route::get('notaventaconsulta/exportPdf', 'NotaVentaConsultaController@exportPdf')->name('exportPdf_notaventaconsulta');
+Route::post('notaventaconsulta/reportedet', 'NotaVentaConsultaController@reportedet')->name('notaventaconsulta_reportedet');
 
 /*RUTAS CONSULTAR PRODUCTOS POR NOTA DE VENTA*/
 Route::get('prodxnotaventa', 'ProducxNotaVentaController@index')->name('prodxnotaventa');

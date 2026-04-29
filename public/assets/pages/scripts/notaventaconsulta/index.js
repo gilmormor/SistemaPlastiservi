@@ -462,3 +462,65 @@ function htmlToText(html) {
 
     return resultado.join(" | ");
 }
+
+function exportarExcelDet() {
+    //var tabla = $('#tabla-data-producto').DataTable();
+    data = datosNVCons();
+    // Obtener todos los registros mediante una solicitud AJAX
+    /* $.ajax({
+        url: '/notaventaconsulta/reporte',
+        type: 'POST',
+        data: data.data1,
+        success: function (datos) {
+            if(datos['tabla'].length>0){
+                $("#tablaconsulta").html(datos['tabla']);
+                configurarTabla('.tablascons');
+            }
+        }
+    }); */
+    data.data1.sta_excel = 1; // Indicar que se desea exportar a Excel
+    $.ajax({
+        url: '/notaventaconsulta/reportedet', // ajusta la URL de la solicitud al endpoint correcto
+        type: 'POST',
+        data: data.data1,
+        dataType: 'json',
+        success: function(data) {
+        // Crear una matriz para los datos de Excel
+            var datosExcel = [];
+
+            datosExcel.push(["NroNV","Fecha","Rut","Cliente","Comuna","OC","CodProd","Glosa","Cantidad","TotalKg","Total","Prom"]);
+
+            //datosExcel.push(encabezadosExcel);
+
+            // Agregar los datos de la tabla al arreglo
+            data.forEach(function(registro) {            
+                var filaExcel = [
+                    registro.id,
+                    registro.fechahora,
+                    registro.rut,
+                    registro.razonsocial,
+                    registro.comunanombre,
+                    registro.oc_id,
+                    registro.producto_id,
+                    registro.glosa,
+                    registro.cant,
+                    registro.totalkilos,
+                    registro.subtotal,
+                    Math.round(registro.subtotal / (registro.totalkilos ? registro.totalkilos : 1) * 100) / 100
+                ];
+                datosExcel.push(filaExcel);
+            });
+
+            // Crear el libro de Excel
+            var libro = XLSX.utils.book_new();
+            var hoja = XLSX.utils.aoa_to_sheet(datosExcel);
+            XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
+
+            // Generar el archivo Excel y descargarlo
+            XLSX.writeFile(libro, 'ReporteNotaventa.xlsx');
+            },
+            error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
+}

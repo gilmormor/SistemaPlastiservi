@@ -272,6 +272,7 @@ Consulta Nota Venta
                                             <i class='glyphicon glyphicon-print'></i> Reporte
                                         </button>
                                         <button type="button" id="btnexportarExcel" name="btnexportarExcel" class="btn btn-success tooltipsC" title="Exportar Excel" onclick="exportarExcel()">Excel</button>
+                                        <button type="button" id="btnexportarExcelDet" name="btnexportarExcelDet" class="btn btn-success tooltipsC" title="Exportar Excel Detalle" onclick="exportarExcelDet()">ExcelDet</button>
                                     </div>
                                 </div>
                             </div>

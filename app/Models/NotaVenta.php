@@ -347,14 +347,6 @@ class NotaVenta extends Model
             $aux_condproducto_id = "notaventadetalle.producto_id in ($aux_codprod)";
         }
     
-/*
-        if(empty($request->comuna_id)){
-            $aux_condcomuna_id = " true";
-        }else{
-            $aux_condcomuna_id = "notaventa.comunaentrega_id='$request->comuna_id'";
-        }
-*/
-        //if(empty($aux_comuna )){
         if(empty($request->comuna_id)){
             $aux_condcomuna_id = " true ";
         }else{
@@ -432,7 +424,10 @@ class NotaVenta extends Model
         }
         //dd($aux_condclaseprod_id);
         if($aux_consulta == 1){
-            $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
+            $sql = "SELECT notaventadetalle.notaventa_id as id,notaventa.fechahora,
+            notaventadetalle.id as notaventadetalle_id,notaventadetalle.producto_id,producto.glosa,
+            notaventa.cliente_id,notaventa.comuna_id,
+            notaventa.comunaentrega_id,
             notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
             sum(notaventadetalle.cant) AS cant,sum(notaventadetalle.precioxkilo) AS precioxkilo,
             sum(notaventadetalle.totalkilos) AS totalkilos,sum(notaventadetalle.subtotal) AS subtotal,

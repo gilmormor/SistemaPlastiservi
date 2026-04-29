@@ -505,7 +505,19 @@ class NotaVentaConsultaController extends Controller
             dd('Ningún dato disponible en esta consulta.');
         }
         
-    }  
+    }
+    public function reportedet(Request $request){
+        $respuesta = array();
+		$respuesta['exito'] = false;
+		$respuesta['mensaje'] = "Código no Existe";
+		$respuesta['tabla'] = "";
+        //dd($request);
+        if($request->ajax()){
+            $request->request->add(['group' => "group by notaventadetalle.id"]);
+            $datas = NotaVenta::consulta($request,1);
+            return $datas;
+        }
+    }
 }
 
 
