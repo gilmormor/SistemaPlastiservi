@@ -35,7 +35,7 @@ Stock Inventario
                     <div class="col-xs-12 col-md-9 col-sm-12">
                         <div class="col-xs-12 col-md-12 col-sm-12">
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Mes">
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Mes">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="annomes">Fecha:</label>
                                     </div>
@@ -43,7 +43,7 @@ Stock Inventario
                                         <input type="text" name="annomes" id="annomes" class="form-control date-picker" value="{{old('annomes', $aux_mesanno ?? '')}}" readonly required>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 col-sm-6" data-toggle='tooltip' title="Sucursal">
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Sucursal">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="sucursal_id" >Sucursal</label>
                                     </div>
@@ -71,7 +71,7 @@ Stock Inventario
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Bodega">
+                                <div class="col-xs-12 col-sm-6" title="Bodega">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Bodega:</label>
                                     </div>
@@ -85,7 +85,7 @@ Stock Inventario
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                <div class="col-xs-12 col-sm-6" title="Código Producto">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="producto_idPxP" class="control-label">Producto</label>
                                     </div>
@@ -101,7 +101,7 @@ Stock Inventario
 
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Categoria">
+                                <div class="col-xs-12 col-sm-6" title="Categoria">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="categoriaprod_id" class="control-label">Categoria:</label>
                                     </div>
@@ -115,7 +115,7 @@ Stock Inventario
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Area de Producción">
+                                <div class="col-xs-12 col-sm-6" title="Area de Producción">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label >Area Prod:</label>
                                     </div>
@@ -128,6 +128,30 @@ Stock Inventario
                                                     {{$areaproduccion->nombre}}
                                                 </option>
                                             @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Mostrar Stock Cero?">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="MostrarStockCero" >Stock Cero?</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="MostrarStockCero" id="MostrarStockCero" class="selectpicker form-control">
+                                            <option value="0">No</option>
+                                            <option value="1">Sí</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 col-sm-6" title="Agrupar? Agrupa por producto, mostrando el total del stock por producto. Si no se agrupa, se muestra el stock detallado por cada producto en cada bodega.">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="AgruparxProducto" >AgruparxProducto?</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="AgruparxProducto" id="AgruparxProducto" class="selectpicker form-control">
+                                            <option value="0">No</option>
+                                            <option value="1">Sí</option>
                                         </select>
                                     </div>
                                 </div>

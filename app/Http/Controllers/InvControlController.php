@@ -36,6 +36,10 @@ class InvControlController extends Controller
     //public function invcontrolpage($mesanno,$sucursal_id){
     public function invcontrolpage(Request $request){
         //dd($request);
+        if(isset($request->AgruparxProducto) and $request->AgruparxProducto == 1){
+            $request->request->add(['aux_group' => " invmovdet.producto_id "]);
+        }
+        //dd($aux_group);
         $datas = InvMov::stocksql($request);
         return datatables($datas)->toJson();
         /*

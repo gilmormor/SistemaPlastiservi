@@ -123,7 +123,7 @@ function consultainvmov($request){
     }
     $sql = "SELECT invmov.id,invmovdet.id as invmovdet_id,
             usuario.usuario,
-            invmov.fechahora,invmov.annomes,invmov.desc,invbodegaproducto.producto_id,
+            invmov.fechahora,invmov.annomes,invmov.desc,invmov.obs,invbodegaproducto.producto_id,
             invmov.idmovmod,invmovmodulo.nombre as invmovmodulo_nombre,
             CONCAT (invbodega.nombre, ' / ' , sucursal.abrev) as invbodega_nombre,sucursal.nombre as sucursal_nombre,
             producto.glosa as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant,

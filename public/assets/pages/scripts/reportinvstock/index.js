@@ -234,6 +234,8 @@ function datosinvstock(){
         producto_id       : $("#producto_idPxP").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
         areaproduccion_id : $("#areaproduccion_id").val(),
+        MostrarStockCero  : $("#MostrarStockCero").val(),
+        AgruparxProducto   : $("#AgruparxProducto").val(),
         _token            : $('input[name=_token]').val()
     };
 
@@ -242,8 +244,9 @@ function datosinvstock(){
     "&invbodega_id="+data1.invbodega_id +
     "&producto_id="+data1.producto_id +
     "&categoriaprod_id="+data1.categoriaprod_id +
-    "&areaproduccion_id="+data1.areaproduccion_id
-
+    "&areaproduccion_id="+data1.areaproduccion_id +
+    "&MostrarStockCero="+data1.MostrarStockCero +
+    "&AgruparxProducto="+data1.AgruparxProducto;
 
     var data = {
         data1 : data1,
@@ -392,7 +395,7 @@ function exportarExcel() {
         aux_totalStock = 0;
         aux_totalkg = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["Cod","Producto","Categoria","Clase/Sello","Diam/Ancho","L","Peso/Esp","TU","Bodega","Ini","Stock","Kg"]);
+        datosExcel.push(["Cod","Producto","Categoria","Clase/Sello","Diam/Ancho","L","Peso/Esp","TU","Bodega","Stock","Kg"]);
         data.data.forEach(function(registro) {
             aux_totalStock += registro.stock;
             if(registro.peso <= 0){
@@ -413,7 +416,6 @@ function exportarExcel() {
                 registro.peso,
                 registro.tipounion,
                 registro.invbodega_nombre,
-                registro.stockini,
                 registro.stock,
                 stockKg
             ];
@@ -421,7 +423,7 @@ function exportarExcel() {
 
             datosExcel.push(filaExcel);
         });
-        datosExcel.push(["","","","","","","","","","Total: ",aux_totalStock,aux_totalkg]);
+        datosExcel.push(["","","","","","","","","Total: ",aux_totalStock,aux_totalkg]);
 
         createExcel(datosExcel);
 
@@ -458,12 +460,11 @@ function createExcel(datosExcel) {
     ajustarcolumnaexcel(worksheet,"H");
     ajustarcolumnaexcel(worksheet,"I");
     ajustarcolumnaexcel(worksheet,"J");
-    ajustarcolumnaexcel(worksheet,"K");
     //ajustarcolumnaexcel(worksheet,"L");
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 11; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -490,7 +491,7 @@ function createExcel(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 11; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
@@ -528,7 +529,7 @@ function createExcel(datosExcel) {
         }
     });
 
-    const columnL = worksheet.getColumn(12);
+    const columnL = worksheet.getColumn(11);
     columnL.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0.00";
@@ -579,7 +580,7 @@ function createExcel(datosExcel) {
 
     //Titulo Monto
     rowX = worksheet.getRow(4);
-    cell = rowX.getCell(12);
+    cell = rowX.getCell(11);
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
 
@@ -606,7 +607,7 @@ function createExcel(datosExcel) {
 
     // Establecer negrita a totales
     row = worksheet.getRow(datosExcel.length);
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 11; i++) {
         cell = row.getCell(i);
         cell.font = { bold: true };
         cell.alignment = { horizontal: "right" };

@@ -233,7 +233,7 @@ class InvMov extends Model
         if(!isset($request->MostrarStockCero) or empty($request->MostrarStockCero)){
             $aux_MostrarStockCero_Cond = "having SUM(cant) != 0";
         }else{
-            $aux_MostrarStockCero_Cond = "";
+            $aux_MostrarStockCero_Cond = " ";
         }
         $aux_areaproduccion_idSucursalCond = " categoriaprod.areaproduccion_id in (SELECT areaproduccion_id from areaproduccionsuc where sucursal_id in ($sucurArray)) ";
 
@@ -247,6 +247,13 @@ class InvMov extends Model
             }
             $aux_condclaseprod_id = " producto.claseprod_id IN ($aux_claseprodid)";
         }
+        $aux_nombre = "invbodega.nombre";
+        $aux_orden = "invbodegaproducto.producto_id asc, invbodega.orden ASC";
+        if(isset($request->aux_group) and !empty($request->aux_group)){
+            $aux_orden = $request->aux_group;
+            $agrupar = $request->aux_group;
+            $aux_nombre = "GROUP_CONCAT(DISTINCT invbodega.nombre ORDER BY invbodega.orden SEPARATOR ', ')";
+        }
 
         $sql = "SELECT invbodegaproducto.producto_id, producto.glosa as producto_nombre, 
         REPLACE(REPLACE(if(isnull(acuerdotecnico.id),producto.diametro,at_ancho), '\"', ''), '\'', '') as diametro,
@@ -255,7 +262,7 @@ class InvMov extends Model
         producto.long,
         producto.tipounion, claseprod.cla_nombre,
         categoriaprod.nombre as categoria_nombre, invbodegaproducto.invbodega_id, invbodegaproducto_id, 
-        invbodega.nombre as invbodega_nombre, SUM(if(invmovtipo.stacieinimes=1,cant,0)) as stockini, 
+        $aux_nombre AS  invbodega_nombre, SUM(if(invmovtipo.stacieinimes=1,cant,0)) as stockini, 
         SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant>0,cant,0)) AS mov_in, 
         SUM(if(invmovtipo.stacieinimes=0 AND invmovdet.cant < -1,cant,0)) AS mov_out, SUM(cant) as stock, 
         SUM(if(invbodega.tipo=2,cant,0)) as stockBodProdTerm, SUM(if(invbodega.tipo=1,cant,0)) as stockPiking, 
@@ -291,7 +298,7 @@ class InvMov extends Model
         and $aux_condclaseprod_id
         group by $agrupar 
         $aux_MostrarStockCero_Cond 
-        order by invbodegaproducto.producto_id asc, invbodega.orden ASC;";
+        order by $aux_orden;";
         //dd($sql);
         $datas = DB::select($sql);
         //dd($datas);

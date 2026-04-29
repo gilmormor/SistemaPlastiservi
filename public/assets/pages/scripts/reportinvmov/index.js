@@ -367,3 +367,84 @@ function tablascolsultainv(id){
         $(".selectpicker").selectpicker('refresh');
     }
 }
+
+function exportarExcel() {
+    data = datosInvmov();
+    data.data1.sta_excel = 1; // Indicar que se desea exportar a Excel
+    $.ajax({
+        url: '/reportinvmov/reporte/' + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        type: 'GET',
+        //data: data.data1,
+        dataType: 'json',
+        success: function(data) {
+            //console.log(data);
+        // Crear una matriz para los datos de Excel
+            var datosExcel = [];
+
+            datosExcel.push(["ID","Usuario","ID Detalle","ID Origen","FechaHora","Descripción","Obs","ID Producto","Nombre Producto","Módulo Origen","Bodega","Cantidad"]);
+
+            // Agregar los datos de la tabla al arreglo
+            data.data.forEach(function(registro) {
+                //datosExcel.push(encabezadosExcel);
+                aux_origen = registro.id;
+                switch (registro.invmovmodulo_id) {
+                    case 1:
+                        aux_origen = registro.idmovmod;
+                        break;
+                    case 2:
+                        if(registro.idmovmod !== null){
+                            aux_origen = registro.idmovmod;
+                        }
+                        break;
+                    case 3:
+                        if(registro.idmovmod !== null){
+                            aux_origen = registro.idmovmod;
+                        }
+                        break;
+                    case 4:
+                        aux_origen = registro.id;
+                        break;
+                    case 5:
+                        aux_origen = registro.idmovmod;
+                        break;
+                    case 6:
+                        aux_origen = registro.idmovmod;
+                        break;
+                    case 7:
+                        if(registro.idmovmod !== null){
+                            aux_origen = registro.idmovmod;
+                        }
+                        break;
+                    default:
+                        //aux_text = "Falta asignar PDF"
+                }
+                var filaExcel = [
+                    registro.id,
+                    registro.usuario,
+                    registro.invmovdet_id,
+                    aux_origen,
+                    registro.fechahora,
+                    registro.desc,
+                    registro.obs,
+                    registro.producto_id,
+                    registro.producto_nombre,
+                    registro.invmovmodulo_nombre,
+                    registro.invbodega_nombre,
+                    registro.cant
+                ];
+                datosExcel.push(filaExcel);
+            });
+
+            // Crear el libro de Excel
+            var libro = XLSX.utils.book_new();
+            var hoja = XLSX.utils.aoa_to_sheet(datosExcel);
+            XLSX.utils.book_append_sheet(libro, hoja, 'Datos');
+
+            // Generar el archivo Excel y descargarlo
+            XLSX.writeFile(libro, 'reportinvmov.xlsx');
+            },
+            error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
