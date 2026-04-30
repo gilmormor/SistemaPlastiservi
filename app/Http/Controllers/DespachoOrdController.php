@@ -771,7 +771,15 @@ class DespachoOrdController extends Controller
                                         $despachoorddet->save();
                                         //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
                                         if($despachoorddet->notaventadetalle->producto->tipoprod == 0){
-                                            DB::table('despachoorddet_invbodegaproducto')->where('despachoorddet_id', $despachoorddet->id)->delete();
+                                            $ids_dibp = DB::table('despachoorddet_invbodegaproducto')
+                                                ->where('despachoorddet_id', $despachoorddet->id)
+                                                ->pluck('id');
+                                            $tieneHijos = DB::table('invmovdet_bodorddesp')
+                                                ->whereIn('despachoorddet_invbodegaproducto_id', $ids_dibp)
+                                                ->exists();
+                                            if(!$tieneHijos){
+                                                DB::table('despachoorddet_invbodegaproducto')->where('despachoorddet_id', $despachoorddet->id)->delete();
+                                            }
                                         }                                        
                                         $despachoorddet->delete();
                                     }else{
