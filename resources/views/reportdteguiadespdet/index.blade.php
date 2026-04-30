@@ -186,6 +186,8 @@ Guia Despacho Detalle
                             <th class='width20 tooltipsC'  style='text-align:center' title='Cod Producto'>CodP</th>
                             <th class='tooltipsC' title='Producto'>Producto</th>
                             <th class='width40 tooltipsC' title='Cantidad'>Cant</th>
+                            <th class='width40 tooltipsC' title='Piking Inicial'>Picking Ini</th>
+                            <th class='width40 tooltipsC' title='Saldo Picking'>Saldo Picking</th>
                             <th class='width40 tooltipsC' title='Precio Unitario'>P/U</th>
                             <th class='width40 tooltipsC' title='Monto'>Monto</th>
                         </tr>
@@ -196,11 +198,11 @@ Guia Despacho Detalle
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan="11" style='text-align:right'>Total página</th>
+                            <th colspan="13" style='text-align:right'>Total página</th>
                             <th id='subtotalmonto' name='subtotalmonto' style='text-align:right'>0</th>
                         </tr>
                         <tr>
-                            <th colspan="11" style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan="13" style='text-align:right'>TOTAL GENERAL</th>
                             <th id='totalmonto' name='totalmonto' style='text-align:right'>0</th>
                         </tr>
                     </tfoot>

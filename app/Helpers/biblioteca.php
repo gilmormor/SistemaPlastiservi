@@ -6,6 +6,7 @@ use App\Models\Cliente;
 use App\Models\ClienteDesBloqueado;
 use App\Models\ClienteDesbloqueadoModulo;
 use App\Models\ClienteDesbloqueadoModuloDel;
+use App\Models\DespachoSolDet;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\LogCambio;
@@ -946,5 +947,27 @@ if (!function_exists('formatearRUTSinCerosIzq')) {
         return $rutFormateado;
     }
 }
+if (!function_exists('saldoPicking')) {
+    function saldoPicking($despachosoldet_id){
+        $despachosoldet = DespachoSolDet::find($despachosoldet_id);
+        if (!$despachosoldet) {
+            return ['cantBodSD' => 0, 'pickingIni' => 0];
+        }
 
+        $aux_cantBodSD = 0;
+        $aux_pickingIni = 0;
+        foreach ($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {
+            if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                $aux_pickingIni += $despachosoldet_invbodegaproducto->cant * -1;
+                foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp){
+                    $aux_cantBodSD += $invmovdet_bodsoldesp->invmovdet->cant;
+                }
+            }
+        }
+        return [
+            'cantBodSD' => $aux_cantBodSD,
+            'pickingIni' => $aux_pickingIni
+        ];
+    }
+}
 ?>

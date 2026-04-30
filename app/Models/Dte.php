@@ -936,7 +936,8 @@ class Dte extends Model
         dte.vendedor_id,persona.rut as vendedor_rut,concat(persona.nombre, ' ' ,persona.apellido) AS vendedor_nombre,
         acuerdotecnico.at_ancho,acuerdotecnico.at_largo,acuerdotecnico.at_largo,at_espesor,
         materiaprima.nombre as materiaprima_nombre,materiaprima.desc as materiaprima_desc,
-        dte.indtraslado,dte.usuario_id,usuario.usuario
+        dte.indtraslado,dte.usuario_id,usuario.usuario,
+        despachoorddet.despachosoldet_id
         $otrosCampos
         FROM dte INNER JOIN dteguiadesp
         ON dte.id = dteguiadesp.dte_id AND ISNULL(dte.deleted_at) and isnull(dteguiadesp.deleted_at)
@@ -956,6 +957,8 @@ class Dte extends Model
         ON dtedet_despachoorddet.dtedet_id = dtedet.id AND ISNULL(dtedet_despachoorddet.deleted_at)
         LEFT JOIN notaventadetalle
         ON notaventadetalle.id = dtedet_despachoorddet.notaventadetalle_id AND ISNULL(notaventadetalle.deleted_at)
+        LEFT JOIN despachoorddet
+        ON despachoorddet.id = dtedet_despachoorddet.despachoorddet_id AND ISNULL(despachoorddet.deleted_at)
         LEFT JOIN clientebloqueado
         ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         LEFT JOIN dteoc

@@ -39,7 +39,16 @@ class ReportDTEGuiaDespDetController extends Controller
     public function reportdteguiadespdetpage(Request $request){
         $request->merge(['filtroguiasusadas' => "1"]);
         $datas = Dte::consultadtedet($request);
-        //dd($datas);
+        foreach ($datas as &$data) {
+            if(isset($data->despachosoldet_id) and !empty($data->despachosoldet_id) and $data->despachosoldet_id != null){ 
+                $aux_saldoPicking = saldoPicking($data->despachosoldet_id);
+                $data->pickingIni = $aux_saldoPicking['pickingIni'];
+                $data->saldoPicking = $aux_saldoPicking['cantBodSD'];
+            }else{
+                $data->pickingIni = 0;
+                $data->saldoPicking = 0;
+            }
+        }
         if($request->genexcel == "0"){
             $respuesta = datatables($datas)->toJson();
         }else{

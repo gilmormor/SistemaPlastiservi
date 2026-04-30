@@ -49,8 +49,10 @@ function consultarpage(aux_data){
             {data: 'producto_id'}, // 7
             {data: 'nmbitem'}, // 8
             {data: 'qtyitem'}, // 9
-            {data: 'prcitem'}, // 10
-            {data: 'montoitem'}, // 11
+            {data: 'pickingIni'}, // 10
+            {data: 'saldoPicking'}, // 11
+            {data: 'prcitem'}, // 12
+            {data: 'montoitem'}, // 13
         ],
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -133,12 +135,14 @@ function consultarpage(aux_data){
 
             $('td', row).eq(9).attr('style','text-align:right');
             $('td', row).eq(10).attr('style','text-align:right');
-
             $('td', row).eq(11).attr('style','text-align:right');
-            $('td', row).eq(11).attr('data-order',data.montoitem);
-            $('td', row).eq(11).attr('data-search',data.montoitem);
-            $('td', row).eq(11).html(MASKLA(data.montoitem,0));
-            $('td', row).eq(11).addClass('subtotalmonto');
+            $('td', row).eq(12).attr('style','text-align:right');
+
+            $('td', row).eq(13).attr('style','text-align:right');
+            $('td', row).eq(13).attr('data-order',data.montoitem);
+            $('td', row).eq(13).attr('data-search',data.montoitem);
+            $('td', row).eq(13).html(MASKLA(data.montoitem,0));
+            $('td', row).eq(13).addClass('subtotalmonto');
             /*
             $('td', row).eq(9).attr('style','text-align:center');
             $('td', row).eq(9).attr('data-order',data.porc_comision);
@@ -362,7 +366,7 @@ function exportarExcelSantaEster() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["OC","N° Guia","TipoTras","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto"]);
+        datosExcel.push(["OC","N° Guia","TipoTras","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto","Pick IniCant","Pick IniKg","Saldo PickCant","Saldo Pickkg"]);
         //console.log(data);
         data.datos.forEach(function(registro) {
             aux_indtra = indtrasladoObj(registro.indtraslado);
@@ -408,7 +412,12 @@ function exportarExcelSantaEster() {
                 registro.dteanul_obs != null ? 0 : registro.qtyitem,
                 registro.dteanul_obs != null ? 0 : registro.itemkg,
                 registro.prcitem,
-                registro.dteanul_obs != null ? 0 : registro.montoitem
+                registro.dteanul_obs != null ? 0 : registro.montoitem,
+                registro.pickingIni,
+                (registro.itemkg/registro.qtyitem) * registro.pickingIni, //"Picking Ini Kg"
+                registro.saldoPicking,  //"Saldo Picking Unidades" 
+                (registro.itemkg/registro.qtyitem) * registro.saldoPicking //"Saldo Picking Kg"
+
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -471,10 +480,12 @@ function createExcelSantaEster(datosExcel) {
     ajustarcolumnaexcel(worksheet,"R");
     ajustarcolumnaexcel(worksheet,"S");
     ajustarcolumnaexcel(worksheet,"T");
-    
+    ajustarcolumnaexcel(worksheet,"U");
+    ajustarcolumnaexcel(worksheet,"V");
+    ajustarcolumnaexcel(worksheet,"W");
 
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 21; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
     }
@@ -487,6 +498,35 @@ function createExcelSantaEster(datosExcel) {
         cell.numFmt = "#,##0";
         }
     });
+
+    // Recorrer la columna 7 y dar formato con punto para separar los miles
+    const columnR = worksheet.getColumn(18);
+    columnR.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+    // Recorrer la columna 7 y dar formato con punto para separar los miles
+    const columnS = worksheet.getColumn(19);
+    columnS.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
+    const columnT = worksheet.getColumn(20);
+    columnT.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+    const columnU = worksheet.getColumn(21);
+    columnU.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0";
+        }
+    });
+
 
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
@@ -502,7 +542,13 @@ function createExcelSantaEster(datosExcel) {
         const cell14 = worksheet.getCell(i, 14);
         cell14.alignment = { horizontal: "center", vertical: "middle" };
         const cell18 = worksheet.getCell(i, 18);
-        cell18.alignment = { horizontal: "center", vertical: "middle" };
+        cell18.alignment = { horizontal: "right", vertical: "middle" };
+        const cell19 = worksheet.getCell(i, 19);
+        cell19.alignment = { horizontal: "right", vertical: "middle" };
+        const cell20 = worksheet.getCell(i, 20);
+        cell20.alignment = { horizontal: "right", vertical: "middle" };
+        const cell21 = worksheet.getCell(i, 21);
+        cell21.alignment = { horizontal: "right", vertical: "middle" };
     }
 
     /*
@@ -548,7 +594,7 @@ function createExcelSantaEster(datosExcel) {
 
     // Establecer negrita a totales
     row = worksheet.getRow(datosExcel.length);
-    for (let i = 1; i <= 17; i++) {
+    for (let i = 1; i <= 21; i++) {
         cell = row.getCell(i);
         cell.font = { bold: true };
         cell.alignment = { horizontal: "right" };
@@ -616,7 +662,7 @@ function exportarExcelLosPinos() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Vendedor","Kg","Neto","Categoria","Precio","Peso Nominal","Peso Real","Kg Desp","Precio x Kg","Venta $","Costo Formula Nom","Margen x Kg","Margen Total","Margen real ventas","Kg Desp Nom","Precio UniNom","Precio x Kg Nom","Ventas $ Nom","Costo Formula Nom","Margen x Unid Nom","Margen Total Nom","Margen % peso Nom","Pick IniCant","Pick IniKg","Saldo PickCant","Saldo Pickkg"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalComision += registro.comision;
@@ -672,6 +718,10 @@ function exportarExcelLosPinos() {
                 0, //"Margen x Unid Nom",
                 0, //"Margen Total Nom"
                 0, //"Margen % peso Nom"
+                registro.pickingIni, //"Picking Ini Unidades"
+                (registro.itemkg/registro.qtyitem) * registro.pickingIni, //"Picking Ini Kg"
+                registro.saldoPicking,  //"Saldo Picking Unidades" 
+                (registro.itemkg/registro.qtyitem) * registro.saldoPicking //"Saldo Picking Kg"
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -724,7 +774,7 @@ function createExcelLosPinos(datosExcel) {
     
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 38; i++) {
+    for (let i = 1; i <= 40; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
@@ -749,7 +799,7 @@ function createExcelLosPinos(datosExcel) {
     fila = 4;
 
     // Iterar a través de las celdas en la fila y configurar el formato
-    for (let i = 1; i <= 38; i++) {
+    for (let i = 1; i <= 40; i++) {
         columna = getColumnLetter(i); // Obten la letra de la columna correspondiente
         const celda = worksheet.getCell(`${columna}${fila}`);
         celda.alignment = { wrapText: true, vertical: 'middle' };
