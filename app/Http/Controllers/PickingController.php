@@ -248,28 +248,27 @@ class PickingController extends Controller
         }
 
         $invmodulo = InvMovModulo::where("cod","PICKING")->get();
-        $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
-        //dd($invmoduloBod->invmovmodulobodents[0]->id);
         if(count($invmodulo) == 0){
             return response()->json([
                 'mensaje' => 'No existe modulo PICKING'
             ]);
         }
+        $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
+        //dd($invmoduloBod->invmovmodulobodents[0]->id);
 
         $invmoduloPesaje = InvMovModulo::where("cod","PESAJE")->get();
-        $invmoduloBodPesaje = InvMovModulo::findOrFail($invmoduloPesaje[0]->id);
-        
         if(count($invmoduloPesaje) == 0){
             return response()->json([
                 'mensaje' => 'No existe modulo SOLDESP'
             ]);
         }
+        $invmoduloBodPesaje = InvMovModulo::findOrFail($invmoduloPesaje[0]->id);
         $statusSalPicking = false;
         $statusEntPicking = false;
         //VALIDAR EN EL CASO QUE EXISTAN 2 PRODUCTOS IGUALES EN LA NV 
         //NO PUEDO PASARME DEL STOCK POR PRODUCTO
         $array_exisInvbodegaproducto = [];
-        for ($i=0; $i < count($request->invbodegaproducto_id); $i++){
+        for ($i=0; $i < count($request->invbodegaproducto_id ?? []); $i++){
             $statusSalPicking = true; //por lo menos hay un movimiento para salida de Picking
             $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
             $requestProd = new Request();
@@ -286,7 +285,7 @@ class PickingController extends Controller
                 ];                    
             }
         }
-        for ($i=0; $i < count($request->invbodegaproducto_id); $i++){
+        for ($i=0; $i < count($request->invbodegaproducto_id ?? []); $i++){
             $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
             $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["stockresto"] -= $request->invcant[$i];
             $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["cant"] += $request->invcant[$i];

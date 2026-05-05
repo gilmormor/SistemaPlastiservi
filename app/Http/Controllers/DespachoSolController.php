@@ -597,6 +597,23 @@ class DespachoSolController extends Controller
                     $cont_producto = count($request->producto_id);
                     if($cont_producto>0){
                         for ($i=0; $i < $cont_producto ; $i++){
+                            $aux_saldoPicking = 0;
+                            $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
+                            if(isset($despachosoldet->despachosoldet_invbodegaproductos)){
+                                foreach($despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                    foreach ($despachosoldet_invbodegaproducto->invmovdet_bodsoldesps as $invmovdet_bodsoldesp) {
+                                        $aux_saldoPicking += $invmovdet_bodsoldesp->invmovdet->cant;
+                                    }
+                                    if($aux_saldoPicking > 0){
+                                        return redirect('despachosol')->with([
+                                            'mensaje'=>'Registro no fue actualizado. Hay una cantidad en proceso de picking para este producto: ' . $despachosoldet->notaventadetalle->producto->glosa . ' Cantidad en picking: ' . $aux_saldoPicking,
+                                            'tipo_alert' => 'alert-error'
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+                        for ($i=0; $i < $cont_producto ; $i++){
                             if(is_null($request->producto_id[$i])==false && is_null($request->cant[$i])==false){
                                 $despachosoldet = DespachoSolDet::findOrFail($request->NVdet_id[$i]);
                                 $despachosoldet->cantsoldesp = $request->cantsoldesp[$i];
@@ -606,7 +623,18 @@ class DespachoSolController extends Controller
                                         $despachosoldet->save();
                                         //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
                                         if($despachosoldet->notaventadetalle->producto->tipoprod == 0){ //tipoprod = 0 TIPO PRODUCTO QUE MUEVE INVENTARIO
-                                            DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
+                                            // Solo elimina despachosoldet_invbodegaproducto si no tiene movimientos de picking
+                                            // asociados en invmovdet_bodsoldesp (hijos). Si tiene hijos, se conservan
+                                            // los registros históricos para no violar la FK.
+                                            $ids_dsd_ibp = DB::table('despachosoldet_invbodegaproducto')
+                                                ->where('despachosoldet_id', $despachosoldet->id)
+                                                ->pluck('id');
+                                            $tieneHijos = DB::table('invmovdet_bodsoldesp')
+                                                ->whereIn('despachosoldet_invbodegaproducto_id', $ids_dsd_ibp)
+                                                ->exists();
+                                            if(!$tieneHijos){
+                                                DB::table('despachosoldet_invbodegaproducto')->where('despachosoldet_id', $despachosoldet->id)->delete();
+                                            }
                                             /* ESTO ES POR SI DA ERROR AL ELIMINAR EN DespachoSolDet_InvBodegaProducto Y HAY REGISTROA ASOCIADOS EN InvMovDet_BodSolDesp
                                             $despachosoldet_invbodegaproductos = DespachoSolDet_InvBodegaProducto::where('despachosoldet_id', $despachosoldet->id)->get();
                                             foreach ($despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto) {

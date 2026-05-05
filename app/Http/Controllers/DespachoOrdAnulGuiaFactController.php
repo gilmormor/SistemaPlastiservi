@@ -274,7 +274,21 @@ class DespachoOrdAnulGuiaFactController extends Controller
                                 'tipo_alert' => 'error'
                             ]);         
                         }
-
+                        if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
+                            /***VALIDO QUE EL VALOR EN CANT SEA MAYOR A CERO */
+                            foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                if(($despachosoldet_invbodegaproducto->cant * -1) <= 0){
+                                    return response()->json([
+                                        'status'=>'0',
+                                        'id' => 0,
+                                        'error' => '0',
+                                        'title' => '',            
+                                        'mensaje'=> "Valor en despachosoldet_invbodegaproducto->cant es <= 0. despachosoldet_invbodegaproducto->id: " . $despachosoldet_invbodegaproducto->id,
+                                        'tipo_alert' => 'error'
+                                    ]);
+                                }
+                            }
+                        }
                     }
                     //ESTO DEBE IR EN EL PROYECTO FINAL
                 }
@@ -335,8 +349,9 @@ class DespachoOrdAnulGuiaFactController extends Controller
                 $invmov_array = array();
                 $invmov_array["fechahora"] = date("Y-m-d H:i:s");
                 $invmov_array["annomes"] = $annomes;
-                $invmov_array["desc"] = "Entrada por anular aprobacion de OD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
-                $invmov_array["obs"] = "Entrada por anular aprobacion de OD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                //DOD: DEVOLVER DESDE ORDEN DE DESPACHO
+                $invmov_array["desc"] = "Entrada por anular aprobacion de OD DOD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
+                $invmov_array["obs"] = "Entrada por anular aprobacion de OD DOD / NV:" . $despachoord->notaventa_id . " SD:" . $despachoord->despachosol_id . " OD:" . $request->id;
                 $invmov_array["invmovmodulo_id"] = $invmoduloBod->id; //Orden de Despacho
                 $invmov_array["idmovmod"] = $request->id;
                 $invmov_array["invmovtipo_id"] = 1;

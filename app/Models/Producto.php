@@ -1064,7 +1064,8 @@ class Producto extends Model
         if(!isset($request->producto_id) or empty($request->producto_id)){
             $aux_producto_idCodn = "true";
         }else{
-            $aux_producto_idCodn = " producto.id in ($request->producto_id) ";
+            $cleaned = preg_replace('/[^0-9,]/', '', $request->producto_id);
+            $aux_producto_idCodn = empty($cleaned) ? "true" : " producto.id in ($cleaned) ";
         }
 
         if(!isset($request->categoriaprod_id) or empty($request->categoriaprod_id)){
