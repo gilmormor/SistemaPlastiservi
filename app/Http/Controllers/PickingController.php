@@ -267,8 +267,11 @@ class PickingController extends Controller
         $statusEntPicking = false;
         //VALIDAR EN EL CASO QUE EXISTAN 2 PRODUCTOS IGUALES EN LA NV 
         //NO PUEDO PASARME DEL STOCK POR PRODUCTO
+        // Cantidad de ítems de bodega enviados en el request. Se usa en los for siguientes.
+        // El ?? [] evita error si el campo no viene en el request (ej. formulario sin productos seleccionados).
+        $cont_invbodegaproducto = count($request->invbodegaproducto_id ?? []);
         $array_exisInvbodegaproducto = [];
-        for ($i=0; $i < count($request->invbodegaproducto_id ?? []); $i++){
+        for ($i=0; $i < $cont_invbodegaproducto; $i++){
             $statusSalPicking = true; //por lo menos hay un movimiento para salida de Picking
             $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
             $requestProd = new Request();
@@ -285,7 +288,7 @@ class PickingController extends Controller
                 ];                    
             }
         }
-        for ($i=0; $i < count($request->invbodegaproducto_id ?? []); $i++){
+        for ($i=0; $i < $cont_invbodegaproducto; $i++){
             $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
             $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["stockresto"] -= $request->invcant[$i];
             $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["cant"] += $request->invcant[$i];
@@ -301,7 +304,7 @@ class PickingController extends Controller
         }
         //HASTA AQUI LA VALIDACION: EN EL CASO QUE EXISTAN 2 PRODUCTOS IGUALES EN LA NV 
 
-        for ($i=0; $i < count($request->invbodegaproducto_id); $i++) {
+        for ($i=0; $i < $cont_invbodegaproducto; $i++) {
             //PROCESO PARA MODIFICAR PICKING DE SOLICITUD DESPACHO EXISTENTE
             if($request->pickingPrevio[$i] > 0 and $request->pickingPrevio[$i] > $request->invcant[$i]){
                 //VALIDACION SALIDA DE BODEGA PICKING
@@ -381,7 +384,7 @@ class PickingController extends Controller
                 'invmov_id' => $invmov->id
             ]);
         }
-        for ($j=0; $j < count($request->invbodegaproducto_id); $j++) {
+        for ($j=0; $j < $cont_invbodegaproducto; $j++) {
             //PROCESO PARA MODIFICAR PICKING DE SOLICITUD DESPACHO EXISTENTE
             $despachosoldet = DespachoSolDet::findOrFail($request->invbodegaproductoNVdet_id[$j]);
             $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$j]);
