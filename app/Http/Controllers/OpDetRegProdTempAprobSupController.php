@@ -94,24 +94,66 @@ class OpDetRegProdTempAprobSupController extends Controller
 
         $aux_statusaprob = "opdetregprodtemp.aprobstatus = 1";
         
-        $sql = "SELECT opdetregprodtemp.id,opdet.op_id,opdetregprodtemp.opdet_id,
+        $sql = "SELECT opdetregprodtemp.id,otdet.id as otdet_id,opdet.op_id,opdetregprodtemp.opdet_id,
                 sucursal.nombre AS sucursal_nombre,
                 cliente.razonsocial,ot.id as ot_id,producto.id as producto_id,
                 opdet.kg as opdet_kg,opdet.cant as opdet_cant,opdet.cantrec as opdet_cantrec,
                 opdet.kgrec as opdet_kgrec,opdet.cantprod as opdet_cantprod,
                 opdet.kgprod as opdet_kgprod,opdet.kgscrap as opdet_kgscrap,
-                opdetregprodtemp.kg,opdetregprodtemp.kgscrap,opdetregprodtemp.cant,
-                (opdet.kgrec - (opdet.kgprod + opdetregprodtemp.kg + opdetregprodtemp.kgscrap)) as kgsaldo,
+                opdetregprodtemp.kgent,opdetregprodtemp.kgprod,opdetregprodtemp.kgscrap,
+                opdetregprodtemp.cantent,opdetregprodtemp.cantprod,
+                opdetregprodtemp.unidadmedidaent_id,opdetregprodtemp.unidadmedidasal_id,
+                (opdet.kgrec - (opdet.kgprod + opdetregprodtemp.kgprod + opdetregprodtemp.kgscrap)) as kgsaldo,
                 opdetregprodtemp.updated_at,
-                UNIX_TIMESTAMP(opdetregprodtemp.updated_at) as updatednum_at
-                from opdetregprodtemp INNER JOIN sucursal 
+                UNIX_TIMESTAMP(opdetregprodtemp.updated_at) as updatednum_at,
+                (CASE WHEN IFNULL(opdetregprodtemp.cantprod,0) > 0 THEN 1 ELSE 0 END) AS rollo_cerrado,
+                operario.nombre AS operario_nombre,
+                /* puede_aprobar: no existe anterior pendiente (0 o 1) DENTRO DEL MISMO ROLLO
+                   (mismo opdet_id y sin registro cerrador entre medio). */
+                (SELECT COUNT(*) FROM opdetregprodtemp t1
+                    WHERE t1.opdet_id = opdetregprodtemp.opdet_id
+                      AND t1.id < opdetregprodtemp.id
+                      AND t1.aprobstatus IN (0,1)
+                      AND t1.deleted_at IS NULL
+                      AND NOT EXISTS (
+                          SELECT 1 FROM opdetregprodtemp c1
+                          WHERE c1.opdet_id = opdetregprodtemp.opdet_id
+                            AND c1.id >= t1.id
+                            AND c1.id < opdetregprodtemp.id
+                            AND IFNULL(c1.cantprod,0) > 0
+                            AND c1.deleted_at IS NULL
+                      )) = 0 AS puede_aprobar,
+                /* puede_rechazar: no existe posterior no-rechazado DENTRO DEL MISMO ROLLO. */
+                (SELECT COUNT(*) FROM opdetregprodtemp t2
+                    WHERE t2.opdet_id = opdetregprodtemp.opdet_id
+                      AND t2.id > opdetregprodtemp.id
+                      AND (t2.aprobstatus IS NULL OR t2.aprobstatus NOT IN (3,4))
+                      AND t2.deleted_at IS NULL
+                      AND NOT EXISTS (
+                          SELECT 1 FROM opdetregprodtemp c2
+                          WHERE c2.opdet_id = opdetregprodtemp.opdet_id
+                            AND c2.id >= opdetregprodtemp.id
+                            AND c2.id < t2.id
+                            AND IFNULL(c2.cantprod,0) > 0
+                            AND c2.deleted_at IS NULL
+                      )) = 0 AS puede_rechazar,
+                maquina.nombre AS maquina_nombre,
+                unidadmedidasal.nombre AS unidadmedidasal_nombre,
+                acuerdotecnico.id AS acuerdotecnico_id,acuerdotecnico.at_impresofoto
+                from opdetregprodtemp INNER JOIN sucursal
                 ON opdetregprodtemp.sucursal_id=sucursal.id
                 INNER JOIN producto
                 ON opdetregprodtemp.producto_id=producto.id
                 INNER JOIN etapaprod
-                ON opdetregprodtemp.etapaprod_id=etapaprod.id 
+                ON opdetregprodtemp.etapaprod_id=etapaprod.id
                 INNER JOIN opdet
                 ON opdetregprodtemp.opdet_id=opdet.id
+                LEFT JOIN opdetmaquina
+                ON opdetmaquina.opdet_id=opdet.id
+                LEFT JOIN maquina
+                ON maquina.id=opdetmaquina.maquina_id
+                LEFT JOIN unidadmedida AS unidadmedidasal
+                ON unidadmedidasal.id=opdetregprodtemp.unidadmedidasal_id
                 INNER JOIN op
                 ON opdet.op_id=op.id
                 INNER JOIN otdet
@@ -120,7 +162,11 @@ class OpDetRegProdTempAprobSupController extends Controller
                 ON otdet.ot_id=ot.id
                 INNER JOIN cliente
                 ON ot.cliente_id=cliente.id
-                where opdetregprodtemp.sucursal_id IN ($sucurcadena) 
+                INNER JOIN operario
+                ON opdetregprodtemp.operario_id=operario.id
+                LEFT JOIN acuerdotecnico
+                ON acuerdotecnico.producto_id=producto.id
+                where opdetregprodtemp.sucursal_id IN ($sucurcadena)
                 AND etapaprod.id=$aux_etapaprod_id
                 AND $aux_statusaprob
                 AND isnull(opdetregprodtemp.deleted_at);";
@@ -209,7 +255,56 @@ class OpDetRegProdTempAprobSupController extends Controller
                     'mensaje'=>'Registro fué modificado por otro usuario.'
                 ]);
             }
-            //dd($request);
+
+            // ──────────────────────────────────────────────────────────────────
+            // Validacion de orden ASC/DESC dentro del mismo opdet_id
+            // Aprobar  (staaprob=2)   : no puede haber registros anteriores (id<N)
+            //                           con aprobstatus IN (0,1) pendientes.
+            // Rechazar (staaprob=3/4) : no puede haber registros posteriores (id>N)
+            //                           con aprobstatus distinto de 3/4 (es decir,
+            //                           pendientes o aprobados). Si hay aprobados
+            //                           posteriores, se debera usar la funcionalidad
+            //                           futura "Anular registro aprobado".
+            // ──────────────────────────────────────────────────────────────────
+            if ($request->staaprob == 2) { // APROBAR
+                $previoBloqueante = OpDetRegProdTemp::buscarEnMismoRollo(
+                    $opdetregprodtemp->opdet_id,
+                    $opdetregprodtemp->id,
+                    'anterior',
+                    function ($q) { $q->whereIn('aprobstatus', [0, 1]); }
+                );
+                if ($previoBloqueante) {
+                    return response()->json([
+                        'resp' => 0,
+                        'tipmen' => 'error',
+                        'mensaje' => 'No se puede aprobar este registro. Debe aprobar primero el registro anterior id='
+                            . $previoBloqueante->id . ' (del mismo OpDet y rollo abierto). La aprobacion debe hacerse en orden ascendente.'
+                    ]);
+                }
+            } elseif (in_array($request->staaprob, [3, 4])) { // RECHAZAR
+                $posteriorBloqueante = OpDetRegProdTemp::buscarEnMismoRollo(
+                    $opdetregprodtemp->opdet_id,
+                    $opdetregprodtemp->id,
+                    'posterior',
+                    function ($q) {
+                        $q->where(function ($q2) {
+                            $q2->whereNull('aprobstatus')->orWhereNotIn('aprobstatus', [3, 4]);
+                        });
+                    }
+                );
+                if ($posteriorBloqueante) {
+                    $msgExtra = ($posteriorBloqueante->aprobstatus == 2)
+                        ? ' Como el posterior ya fue aprobado, primero se debe anularlo (funcionalidad en desarrollo).'
+                        : '';
+                    return response()->json([
+                        'resp' => 0,
+                        'tipmen' => 'error',
+                        'mensaje' => 'No se puede rechazar este registro. Debe rechazar primero el registro posterior id='
+                            . $posteriorBloqueante->id . ' (del mismo OpDet y rollo abierto). El rechazo debe hacerse en orden descendente.'
+                            . $msgExtra
+                    ]);
+                }
+            }
 
             DB::beginTransaction();
             try {
@@ -244,15 +339,20 @@ class OpDetRegProdTempAprobSupController extends Controller
                         ->first();
 
                     if ($siguienteEtapa) {
-                        // Hay siguiente etapa: transferir kg/cant a la siguiente etapa
+                        // Hay siguiente etapa: transferir kg producidos / cant producida a la siguiente etapa.
+                        // Se transfiere kgprod (sin scrap) y cantprod (unidades cerradas en UM salida
+                        // de la etapa actual = UM entrada de la siguiente).
                         $opdetSig = OpDet::findOrFail($siguienteEtapa->id);
+                        $kgTransfer   = (float) ($opdetregprodtemp->kgprod ?? 0);
+                        $cantTransfer = (float) ($opdetregprodtemp->cantprod ?? 0);
+
                         if($opdetSig->kgrec == 0){
-                            $opdetSig->saldokg = $opdetregprodtemp->kg;
+                            $opdetSig->saldokg = $kgTransfer;
                         }else{
-                            $opdetSig->saldokg += $opdetregprodtemp->kg;
+                            $opdetSig->saldokg += $kgTransfer;
                         }
-                        $opdetSig->cantrec += $opdetregprodtemp->cant;
-                        $opdetSig->kgrec   += $opdetregprodtemp->kg;
+                        $opdetSig->cantrec += $cantTransfer;
+                        $opdetSig->kgrec   += $kgTransfer;
                         $opdetSig->save();
 
                     } else {
@@ -260,7 +360,9 @@ class OpDetRegProdTempAprobSupController extends Controller
                         $esUltimaEtapa = true;
 
                         // Verificar período de inventario no cerrado
-                        $annomes = CategoriaGrupoValMes::annomes(date('Ym'));
+                        // date('Ym') ya devuelve 'yyyymm'; CategoriaGrupoValMes::annomes()
+                        // convierte "Mes Año" textual a yyyymm y no aplica aquí.
+                        $annomes = date('Ym');
                         $periodoVigente = InvControl::where('annomes', $annomes)
                             ->where('sucursal_id', $opdetregprodtemp->sucursal_id)
                             ->where('status', 1)
@@ -331,17 +433,30 @@ class OpDetRegProdTempAprobSupController extends Controller
                             'sucursal_id'          => $opdetregprodtemp->sucursal_id,
                             'unidadmedida_id'      => $producto->categoriaprod->unidadmedida_id,
                             'invmovtipo_id'        => 1,
-                            'cant'                 => $opdetregprodtemp->cant,
-                            'cantgrupo'            => $opdetregprodtemp->cant,
+                            'cant'                 => $opdetregprodtemp->cantprod,
+                            'cantgrupo'            => $opdetregprodtemp->cantprod,
                             'cantxgrupo'           => 1,
                             'peso'                 => $producto->peso,
-                            'cantkg'               => $opdetregprodtemp->kg,
+                            'cantkg'               => $opdetregprodtemp->kgprod,
                         ]);
 
-                        // Registrar trazabilidad: invmovdet ↔ opdetregprod
+                        // Resolver notaventadetalle_id para trazabilidad NV → bodega producción.
+                        // Cadena: opdetregprodtemp → opdet → op.otdet_id → otdetnvdet → notaventadetalle_id
+                        // (otdet_id está en op, no en opdet)
+                        // NULL cuando la OT no proviene de ninguna NV (producción para stock).
+                        $nvdetIdBodega = null;
+                        $otdetnvdetBodega = \App\Models\OtDetNVDet::where(
+                            'otdet_id', $opdetregprodtemp->opdet->op->otdet_id
+                        )->first();
+                        if ($otdetnvdetBodega) {
+                            $nvdetIdBodega = $otdetnvdetBodega->notaventadetalle_id;
+                        }
+
+                        // Registrar trazabilidad: invmovdet ↔ opdetregprod ↔ notaventadetalle
                         InvMovDetOpDetRegProd::create([
-                            'invmovdet_id'    => $invmovdet->id,
-                            'opdetregprod_id' => $produccion->id,
+                            'invmovdet_id'        => $invmovdet->id,
+                            'opdetregprod_id'     => $produccion->id,
+                            'notaventadetalle_id' => $nvdetIdBodega,
                         ]);
                     }
                 }
@@ -422,9 +537,11 @@ class OpDetRegProdTempAprobSupController extends Controller
         $operarioNombre = $operario ? $operario->nombre : '—';
 
         // Máquina asociada al opdet (si existe)
+        $maquina = null;
         $maquinaNombre = '—';
         if ($opdet->opdetmaquina && $opdet->opdetmaquina->maquina) {
-            $maquinaNombre = $opdet->opdetmaquina->maquina->nombre;
+            $maquina = $opdet->opdetmaquina->maquina;
+            $maquinaNombre = $maquina->nombre;
         }
 
         // Próxima etapa de producción
@@ -446,7 +563,7 @@ class OpDetRegProdTempAprobSupController extends Controller
 
         return view('opdetregprodtempaprobsup.etiqueta-etapa', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
-            'productoNombre', 'operarioNombre', 'maquinaNombre', 'proximaEtapaNombre'
+            'productoNombre', 'operarioNombre', 'maquina', 'maquinaNombre', 'proximaEtapaNombre'
         ));
     }
 

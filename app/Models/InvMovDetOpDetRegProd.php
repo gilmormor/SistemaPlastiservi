@@ -10,6 +10,7 @@ class InvMovDetOpDetRegProd extends Model
     protected $fillable = [
         'invmovdet_id',
         'opdetregprod_id',
+        'notaventadetalle_id', // FK a notaventadetalle; NULL cuando OT no viene de NV
     ];
 
     // Relación inversa → InvMovDet
@@ -22,5 +23,11 @@ class InvMovDetOpDetRegProd extends Model
     public function opdetregprod()
     {
         return $this->belongsTo(OpDetRegProd::class);
+    }
+
+    // Relación inversa → NotaVentaDetalle (nullable)
+    public function notaventadetalle()
+    {
+        return $this->belongsTo(NotaVentaDetalle::class);
     }
 }
