@@ -121,14 +121,14 @@ class NotaVentaDevolVendController extends Controller
                     'tipo_alert' => 'alert-error'
                 ];
             }
-            $sql = "SELECT notaventa_id 
-                        FROM despachosol 
-                        where notaventa_id = $request->id
-                        AND isnull(despachosol.deleted_at) and despachosol.id 
-                        not in (SELECT despachosolanul.despachosol_id 
-                                from despachosolanul 
-                                where isnull(despachosolanul.deleted_at)
-                                );";
+            /* Opt: anti-join reemplaza NOT IN; evita full scan de despachosolanul por cada fila */
+            $sql = "SELECT notaventa_id
+                        FROM despachosol
+                        LEFT JOIN despachosolanul
+                        ON despachosolanul.despachosol_id = despachosol.id AND ISNULL(despachosolanul.deleted_at)
+                        WHERE notaventa_id = $request->id
+                        AND ISNULL(despachosol.deleted_at)
+                        AND despachosolanul.despachosol_id IS NULL;";
             $datas = DB::select($sql);
             if(count($datas) > 0){
                 return [
@@ -210,32 +210,27 @@ function consulta($id){
             on notaventa.vendedor_id=vendedor.id
             inner join persona
             on vendedor.persona_id=persona.id
+            /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+            LEFT JOIN notaventacerrada
+            ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
             where $aux_condid
             and isnull(notaventa.findespacho)
             and isnull(anulada)
             and (aprobstatus=1 or aprobstatus=3)
             and $aux_condsucursal_id
-            and notaventa.id not in (SELECT notaventa_id 
-                                    FROM despachosol 
-                                    where despachosol.notaventa_id=notaventa.id and isnull(despachosol.deleted_at) 
-                                    and despachosol.id 
-                                    not in (SELECT despachosolanul.despachosol_id 
-                                            from despachosolanul 
-                                            where despachosolanul.despachosol_id = despachosol.id 
-                                            and isnull(despachosolanul.deleted_at)
-                                           )
-                                    )
-            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            /* Opt: NOT EXISTS con anti-join interno reemplaza NOT IN anidado; despachosol puede tener N filas por notaventa */
+            AND NOT EXISTS (SELECT 1 FROM despachosol
+                            LEFT JOIN despachosolanul ON despachosolanul.despachosol_id = despachosol.id AND ISNULL(despachosolanul.deleted_at)
+                            WHERE despachosol.notaventa_id = notaventa.id
+                            AND ISNULL(despachosol.deleted_at)
+                            AND despachosolanul.despachosol_id IS NULL)
+            AND notaventacerrada.notaventa_id IS NULL
             and isnull(notaventa.deleted_at)
-            and notaventa.id not in (SELECT notaventa_id 
-                                    FROM dteguiadespnv
-                                    WHERE dteguiadespnv.notaventa_id = notaventa.id
-                                    and dteguiadespnv.dte_id 
-                                    not in (SELECT dteanul.dte_id 
-                                            FROM dteanul 
-                                            WHERE isnull(dteanul.deleted_at)
-                                            )
-                                    )
+            /* Opt: NOT EXISTS con anti-join interno reemplaza NOT IN anidado; dteguiadespnv puede tener N filas por notaventa */
+            AND NOT EXISTS (SELECT 1 FROM dteguiadespnv
+                            LEFT JOIN dteanul ON dteanul.dte_id = dteguiadespnv.dte_id AND ISNULL(dteanul.deleted_at)
+                            WHERE dteguiadespnv.notaventa_id = notaventa.id
+                            AND dteanul.dte_id IS NULL)
             order by notaventa.id desc;";
     $datas = DB::select($sql);
     return $datas;

@@ -278,6 +278,9 @@ function consulta($request){
     ON claseprod.id=producto.claseprod_id
     INNER JOIN categoriaprod
     ON categoriaprod.id=producto.categoriaprod_id
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+    LEFT JOIN notaventacerrada
+    ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
     WHERE $vendedorcond
     and $aux_condFecha
     and $aux_condcategoriaprod_id
@@ -285,7 +288,7 @@ function consulta($request){
     and $aux_condrut
     and $aux_condareaproduccion_id
     and $aux_condsucursal_id
-    and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+    AND notaventacerrada.notaventa_id IS NULL
     and isnull(notaventa.anulada)
     and isnull(notaventa.deleted_at) and isnull(notaventadetalle.deleted_at)
     GROUP BY notaventadetalle.producto_id,categoriaprod.nombre,

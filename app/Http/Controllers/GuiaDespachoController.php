@@ -134,8 +134,14 @@ function consultaindex(){
     ON tipoentrega.id = despachoord.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
     LEFT JOIN clientebloqueado
     ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    WHERE despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
-    AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+    LEFT JOIN notaventacerrada
+    ON notaventacerrada.notaventa_id = despachoord.notaventa_id AND ISNULL(notaventacerrada.deleted_at)
+    WHERE despachoordanul.despachoord_id IS NULL
+    AND notaventacerrada.notaventa_id IS NULL
     AND notaventa.sucursal_id in ($sucurcadena)
     GROUP BY guiadespachodet.guiadespacho_id;";
     return DB::select($sql);

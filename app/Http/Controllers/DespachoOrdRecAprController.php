@@ -28,13 +28,16 @@ class DespachoOrdRecAprController extends Controller
                 despachoordrec.updated_at
             FROM despachoordrec inner join despachoord
             on despachoord.id = despachoordrec.despachoord_id and isnull(despachoord.deleted_at)
-            and despachoord.id not in (select despachoordanul.despachoord_id from despachoordanul where isnull(despachoordanul.deleted_at))
+            /* Opt: anti-join reemplaza NOT IN del ON; evita full scan de despachoordanul por cada fila */
+            left join despachoordanul
+            on despachoordanul.despachoord_id = despachoord.id and isnull(despachoordanul.deleted_at)
             inner join notaventa
             on notaventa.id = despachoord.notaventa_id and isnull(notaventa.deleted_at) and isnull(notaventa.anulada)
             inner join cliente
             on cliente.id = notaventa.cliente_id and isnull(cliente.deleted_at)
             where despachoordrec.aprobstatus=1
             and isnull(despachoordrec.anulada) and isnull(despachoordrec.deleted_at)
+            and despachoordanul.despachoord_id IS NULL
             ORDER BY despachoordrec.id desc;";
         $datas = DB::select($sql);
         return datatables($datas)->toJson();

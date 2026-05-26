@@ -171,11 +171,14 @@ class NotaVentaCerradaController extends Controller
                 'tipo_alert' => "alert-error"
             ]);
         }
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
         $sql = "SELECT COUNT(*) as cont
         FROM notaventa
+        LEFT JOIN notaventacerrada
+        ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
         where id = $request->notaventa_id
         and anulada is null
-        and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventacerrada.notaventa_id IS NULL
         and notaventa.deleted_at is null;";
         $datas = DB::select($sql);
         if($datas[0]->cont > 0){

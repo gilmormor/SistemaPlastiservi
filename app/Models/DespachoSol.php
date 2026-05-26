@@ -132,14 +132,14 @@ class DespachoSol extends Model
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            /* Opt: anti-join reemplaza NOT IN dentro del subquery de dte_nrodocto */
+            LEFT JOIN dteanul
+            ON dteanul.dte_id = dteguiadesp.dte_id AND ISNULL(dteanul.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND dteoc.oc_folder = 'notaventa'
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id
-            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                                            FROM dteanul 
-                                            WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                            and ISNULL(dteanul.deleted_at))
+            AND dteanul.dte_id IS NULL
             GROUP BY dteoc.oc_id) as dte_nrodocto,
         clientebloqueado.descripcion as clientebloqueado_descripcion,
         if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
@@ -151,9 +151,11 @@ class DespachoSol extends Model
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+        /* Opt: anti-join reemplaza NOT IN dentro del subquery contorddesp */
         (SELECT COUNT(*) FROM despachoord
+            LEFT JOIN despachoordanul ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
             WHERE despachoord.despachosol_id = despachosol.id
-            AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+            AND despachoordanul.despachoord_id IS NULL
         ) AS contorddesp
         FROM despachosol INNER JOIN notaventa
         ON despachosol.notaventa_id = notaventa.id AND ISNULL(despachosol.deleted_at) and isnull(notaventa.deleted_at)
@@ -184,10 +186,15 @@ class DespachoSol extends Model
         ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
         ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
-    
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de despachosolanul por cada fila */
+        LEFT JOIN despachosolanul
+        ON despachosolanul.despachosol_id = despachosol.id AND ISNULL(despachosolanul.deleted_at)
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+        LEFT JOIN notaventacerrada
+        ON notaventacerrada.notaventa_id = despachosol.notaventa_id AND ISNULL(notaventacerrada.deleted_at)
         WHERE ISNULL(despachosol.aprorddesp)
-        AND despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE ISNULL(despachosolanul.deleted_at))
-        AND despachosol.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+        AND despachosolanul.despachosol_id IS NULL
+        AND notaventacerrada.notaventa_id IS NULL
         AND notaventa.sucursal_id in ($sucurcadena)
         AND $aux_conddespachosol_id
         GROUP BY despachosoldet.despachosol_id;";
@@ -388,9 +395,11 @@ class DespachoSol extends Model
                 notaventa.oc_file,
                 comuna.nombre as comunanombre,sucursal.nombre as sucursal_nombre,
                 despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
+                /* Opt: anti-join reemplaza NOT IN en subquery de conteo; evita full scan de despachoordanul por cada fila */
                 (SELECT COUNT(*) FROM despachoord
+                    LEFT JOIN despachoordanul ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
                     WHERE despachoord.despachosol_id = despachosol.id
-                    AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+                    AND despachoordanul.despachoord_id IS NULL
                 ) AS contorddesp,
                 IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
                 IFNULL(vista_despordxdespsoltotales.subtotal,0) as subtotaldesp,
@@ -455,7 +464,12 @@ class DespachoSol extends Model
                 ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
                 LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
                 ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
-    
+                /* Opt: anti-join reemplaza NOT IN de notaventacerrada; evita full scan por cada fila */
+                LEFT JOIN notaventacerrada ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
+                /* Opt: alias requerido; despachosolenvorddesp ya existe en FROM sin staenvdesp=1; alias descriptivo indica la variante enviada */
+                LEFT JOIN despachosolenvorddesp AS despachosolenvorddesp_enviado
+                ON despachosolenvorddesp_enviado.despachosol_id = despachosol.id AND despachosolenvorddesp_enviado.staenvdesp = 1 AND ISNULL(despachosolenvorddesp_enviado.deleted_at)
+
                 WHERE $vendedorcond
                 and $aux_condFecha
                 and $aux_condrut
@@ -473,18 +487,17 @@ class DespachoSol extends Model
                 and $aux_condsucursal_id
                 and $aux_condsta_picking
                 AND $aux_conddespachosol_id
-                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                AND notaventacerrada.notaventa_id IS NULL
                 and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
                 and isnull(despachosoldet.deleted_at)
-                and despachosol.id not in (SELECT despachosol_id FROM despachosolenvorddesp where despachosolenvorddesp.despachosol_id = despachosol.id AND despachosolenvorddesp.staenvdesp = 1 AND ISNULL(despachosolenvorddesp.deleted_at))
-                AND despachosol.id NOT IN (SELECT despachoord.despachosol_id 
-                                                from despachoord 
-                                                WHERE despachoord.id NOT IN 
-                                                    (SELECT despachoordanul.despachoord_id from despachoordanul 
-                                                        WHERE despachoordanul.despachoord_id = despachoord.id 
-                                                        AND ISNULL(despachoordanul.deleted_at))
-                                                AND isnull(despachoord.aprguiadesp)
-                                                AND ISNULL(despachoord.deleted_at))
+                AND despachosolenvorddesp_enviado.despachosol_id IS NULL
+                /* Opt: NOT EXISTS con anti-join reemplaza NOT IN anidado despachoord+despachoordanul; evita row duplication */
+                AND NOT EXISTS (SELECT 1 FROM despachoord
+                                LEFT JOIN despachoordanul ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
+                                WHERE despachoord.despachosol_id = despachosol.id
+                                AND despachoordanul.despachoord_id IS NULL
+                                AND isnull(despachoord.aprguiadesp)
+                                AND ISNULL(despachoord.deleted_at))
                 GROUP BY despachosol.id
                 ORDER BY despachosol.id ASC;";
     /*
@@ -673,15 +686,10 @@ class DespachoSol extends Model
     
     
         //$suma = DespachoSol::findOrFail(2)->despachosoldets->where('notaventadetalle_id',1);
-    
-        $aux_notinNullSoldesp = "despachosol.id NOT IN (SELECT despachosolanul.despachosol_id FROM despachosolanul WHERE isnull(despachosolanul.deleted_at))";
-        $aux_sqlsumdesp = "SELECT cantdesp
-                            FROM vista_sumorddespdet
-                            WHERE despachosoldet_id=despachosoldet.id";
-        $aux_condactivas = "if((if(isnull(($aux_sqlsumdesp)),0,($aux_sqlsumdesp))
-                        ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
-                        AND $aux_notinNullSoldesp";
-        //$aux_condactivas = "true";
+
+        // Opt: las condiciones de solicitudes anuladas y cantidad pendiente se trasladan
+        // al WHERE usando LEFT JOIN anti-join, eliminando la subquery correlacionada doble
+        // que se evaluaba en el ON clause por cada fila de despachosoldet.
     
         $aux_orden = "ORDER BY despachosol.id DESC";
         //dd($request->orden);
@@ -728,9 +736,15 @@ class DespachoSol extends Model
                 modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
                 clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
                 IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
-                FROM despachosol INNER JOIN despachosoldet
+                /* Opt 1: anti-join para solicitudes anuladas; reemplaza el NOT IN que estaba en el ON */
+                FROM despachosol
+                LEFT JOIN despachosolanul
+                ON despachosolanul.despachosol_id = despachosol.id AND ISNULL(despachosolanul.deleted_at)
+                INNER JOIN despachosoldet
                 ON despachosol.id=despachosoldet.despachosol_id
-                AND $aux_condactivas
+                /* Opt 2: JOIN directo a la vista; evita evaluar la subquery correlacionada dos veces por fila */
+                LEFT JOIN vista_sumorddespdet
+                ON vista_sumorddespdet.despachosoldet_id = despachosoldet.id
                 INNER JOIN notaventa
                 ON notaventa.id=despachosol.notaventa_id
                 INNER JOIN notaventadetalle
@@ -767,12 +781,13 @@ class DespachoSol extends Model
                 ON modulo.id = clientedesbloqueadomodulo.modulo_id
                 LEFT JOIN clientedesbloqueadopro
                 ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
-    
                 LEFT JOIN clientedesbloqueado as clientedesbloqueado_orddesp
                 ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
                 LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
                 ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
-    
+                /* Opt 3: anti-join para NV cerradas; reemplaza el NOT IN del WHERE */
+                LEFT JOIN notaventacerrada
+                ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
                 WHERE $vendedorcond
                 and $aux_condFecha
                 and $aux_condrut
@@ -788,19 +803,27 @@ class DespachoSol extends Model
                 and $aux_condid
                 and $aux_condproducto_id
                 and $aux_condsucursal_id
-                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
                 and isnull(despachosol.deleted_at) AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
                 and isnull(despachosoldet.deleted_at)
                 AND despachosol.sucursal_id in ($sucurcadena)
                 AND $aux_codsolenvord
-                AND despachosol.id NOT IN (SELECT despachoord.despachosol_id 
-                                                from despachoord 
-                                                WHERE despachoord.id NOT IN 
-                                                    (SELECT despachoordanul.despachoord_id from despachoordanul 
-                                                        WHERE despachoordanul.despachoord_id = despachoord.id 
-                                                        AND ISNULL(despachoordanul.deleted_at))
-                                                AND isnull(despachoord.aprguiadesp)
-                                                AND ISNULL(despachoord.deleted_at))
+                /* Opt 1: solicitud no anulada (anti-join con despachosolanul) */
+                AND despachosolanul.despachosol_id IS NULL
+                /* Opt 2: ítem con cantidad pendiente de despachar (reemplaza subquery doble del ON) */
+                AND IFNULL(vista_sumorddespdet.cantdesp, 0) < despachosoldet.cantsoldesp
+                /* Opt 3: NV no cerrada (anti-join con notaventacerrada) */
+                AND notaventacerrada.notaventa_id IS NULL
+                /* Opt 4: reemplaza NOT IN anidado; excluye sol. con orden activa sin guía aprobada */
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM despachoord
+                    LEFT JOIN despachoordanul
+                    ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
+                    WHERE despachoord.despachosol_id = despachosol.id
+                    AND ISNULL(despachoord.aprguiadesp)
+                    AND ISNULL(despachoord.deleted_at)
+                    AND despachoordanul.despachoord_id IS NULL
+                )
                 GROUP BY despachosol.id
                 $aux_orden;";
     /*

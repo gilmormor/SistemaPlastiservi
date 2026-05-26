@@ -395,9 +395,15 @@ function consultaindex($dte_id){
     ON modulo.id = clientedesbloqueadomodulo.modulo_id
     LEFT JOIN clientedesbloqueadopro
     ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de dteanul por cada fila */
+    LEFT JOIN dteanul
+    ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de dtedte por cada fila */
+    LEFT JOIN dtedte
+    ON dtedte.dte_id = dte.id AND ISNULL(dtedte.deleted_at)
     WHERE dte.foliocontrol_id=7
-    AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
-    AND dte.id NOT IN (SELECT dtedte.dte_id FROM dtedte WHERE ISNULL(dtedte.deleted_at))
+    AND dteanul.dte_id IS NULL
+    AND dtedte.dte_id IS NULL
     AND dte.sucursal_id IN ($sucurcadena)
     AND ISNULL(dte.statusgen)
     AND $aux_conddte_id

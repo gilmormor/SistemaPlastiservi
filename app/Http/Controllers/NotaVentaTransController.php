@@ -47,10 +47,13 @@ class NotaVentaTransController extends Controller
                     '' as estado,'' as pdfnv
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
+                /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+                LEFT JOIN notaventacerrada
+                ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
                 where $aux_condvend
                 and anulada is null
-                and (aprobstatus=2) 
-                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                and (aprobstatus=2)
+                AND notaventacerrada.notaventa_id IS NULL
                 and notaventa.deleted_at is null;";
         //where usuario_id='.auth()->id();
         //dd($sql);

@@ -142,8 +142,11 @@ function consultaindex($dte_id){
     ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
     INNER JOIN dtefac
     ON dtefac.dte_id = dte.id
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de dteanul por cada fila */
+    LEFT JOIN dteanul
+    ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
     WHERE (dte.foliocontrol_id=1 or dte.foliocontrol_id=7)
-    AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+    AND dteanul.dte_id IS NULL
     AND dte.sucursal_id IN ($sucurcadena)
     AND dte.statusgen=1
     AND $aux_conddte_id

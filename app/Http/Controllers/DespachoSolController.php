@@ -832,8 +832,11 @@ class DespachoSolController extends Controller
             $sql = "SELECT COUNT(*) AS cont
                 FROM despachosol INNER JOIN despachoord
                 ON despachosol.id=despachoord.despachosol_id
+                /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+                LEFT JOIN despachoordanul
+                ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
                 WHERE despachosol.id = $request->id
-                AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+                AND despachoordanul.despachoord_id IS NULL
                 AND isnull(despachosol.deleted_at)
                 AND ISNULL(despachoord.deleted_at)";
             $cont = DB::select($sql);
@@ -885,9 +888,11 @@ class DespachoSolController extends Controller
         if ($request->ajax()) {
             $sql = "SELECT COUNT(*) as cont
             FROM despachoord
+            /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+            LEFT JOIN despachoordanul
+            ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
             WHERE despachoord.despachosol_id=$request->id
-            AND despachoord.id 
-            NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
+            AND despachoordanul.despachoord_id IS NULL;";
 
             $contorddesp = DB::select($sql);
             if($contorddesp[0]->cont > 0){
@@ -1533,8 +1538,11 @@ class DespachoSolController extends Controller
                 $sql = "SELECT COUNT(*) AS cont
                     FROM despachosol INNER JOIN despachoord
                     ON despachosol.id=despachoord.despachosol_id
+                    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+                    LEFT JOIN despachoordanul
+                    ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
                     WHERE despachosol.id = $request->id
-                    AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+                    AND despachoordanul.despachoord_id IS NULL
                     AND isnull(despachosol.deleted_at)
                     AND ISNULL(despachoord.deleted_at);";
                 $cont = DB::select($sql);
@@ -1965,8 +1973,11 @@ class DespachoSolController extends Controller
                     $sql = "SELECT despachoord.*
                         FROM despachosol INNER JOIN despachoord
                         ON despachosol.id=despachoord.despachosol_id
+                        /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+                        LEFT JOIN despachoordanul
+                        ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
                         WHERE despachosol.id = $request->id
-                        AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
+                        AND despachoordanul.despachoord_id IS NULL
                         AND isnull(despachosol.deleted_at)
                         AND ISNULL(despachoord.deleted_at);";
                     $despachoords = DB::select($sql);
@@ -2611,14 +2622,14 @@ function consulta($request,$aux_sql,$orden){
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            /* Opt 2: anti-join reemplaza NOT IN dentro del subquery; evita full scan de dteanul por fila */
+            LEFT JOIN dteanul
+            ON dteanul.dte_id = dteguiadesp.dte_id AND ISNULL(dteanul.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND dteoc.oc_folder = 'notaventa'
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id
-            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                                    FROM dteanul 
-                                    WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                    and ISNULL(dteanul.deleted_at))
+            AND dteanul.dte_id IS NULL
             GROUP BY dteoc.oc_id) as dte_nrodocto,
         if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         '' as rutanuevasoldesp,
@@ -2637,15 +2648,17 @@ function consulta($request,$aux_sql,$orden){
             SEPARATOR ';'
         ) AS nvdetalle
         FROM notaventa INNER JOIN notaventadetalle
-        ON notaventa.id=notaventadetalle.notaventa_id and 
-        if((SELECT cantsoldesp
-                FROM vista_sumsoldespdet
-                WHERE notaventadetalle_id=notaventadetalle.id
-                ) >= notaventadetalle.cant,false,true)
+        ON notaventa.id=notaventadetalle.notaventa_id
+        /* Opt 1: JOIN directo reemplaza subquery correlacionada del ON; condición pasa al WHERE */
+        LEFT JOIN vista_sumsoldespdet
+        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
         INNER JOIN producto
         ON notaventadetalle.producto_id=producto.id
         INNER JOIN categoriaprod
         ON categoriaprod.id=producto.categoriaprod_id AND ISNULL(categoriaprod.deleted_at)
+        /* Opt 3: INNER JOIN reemplaza IN (SELECT categoriaprodsuc...); evita subquery correlacionada */
+        INNER JOIN categoriaprodsuc
+        ON categoriaprodsuc.categoriaprod_id = categoriaprod.id AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu)
         INNER JOIN areaproduccion
         ON areaproduccion.id=categoriaprod.areaproduccion_id
         INNER JOIN cliente
@@ -2670,22 +2683,18 @@ function consulta($request,$aux_sql,$orden){
         ON modulo.id = clientedesbloqueadomodulo.modulo_id
         LEFT JOIN clientedesbloqueadopro
         ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
-        
         LEFT JOIN clientedesbloqueado as clientedesbloqueado_orddesp
         ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
         ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
-        LEFT JOIN vista_sumsoldespdet
-        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
         LEFT JOIN acuerdotecnico
         ON acuerdotecnico.producto_id = notaventadetalle.producto_id
+        /* Opt 4: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+        LEFT JOIN notaventacerrada
+        ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
 
         WHERE
-        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-            FROM categoriaprodsuc 
-            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
-            AND categoriaprodsuc.sucursal_id IN ($arraySucFisxUsu))
-        and $vendedorcond
+        $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
@@ -2701,7 +2710,10 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
-        and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        /* Opt 1: ítems con cantidad pendiente de solicitar (reemplaza subquery correlacionada del ON) */
+        AND IFNULL(vista_sumsoldespdet.cantsoldesp, 0) < notaventadetalle.cant
+        /* Opt 4: NV no cerrada */
+        AND notaventacerrada.notaventa_id IS NULL
         AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,notaventa.aprobstatus,visto,notaventa.oc_file,
@@ -2725,14 +2737,14 @@ function consulta($request,$aux_sql,$orden){
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            /* Opt 1: anti-join reemplaza NOT IN dentro del subquery; evita full scan de dteanul por fila */
+            LEFT JOIN dteanul
+            ON dteanul.dte_id = dteguiadesp.dte_id AND ISNULL(dteanul.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND dteoc.oc_folder = 'notaventa'
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id
-            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                                    FROM dteanul 
-                                    WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                    and ISNULL(dteanul.deleted_at))
+            AND dteanul.dte_id IS NULL
             GROUP BY dteoc.oc_id) as dte_nrodocto,
         if(cliente.plazopago_id = 1,'Condición pago: Contado',clientebloqueado.descripcion) as clientebloqueado_desc,
         '' as rutanuevasoldesp
@@ -2752,14 +2764,16 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.sucursal_id = sucursal.id AND ISNULL(sucursal.deleted_at)
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        WHERE 
-        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-            FROM categoriaprodsuc 
-            WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
-            AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
-                    FROM vista_sucfisxusu
-                    WHERE vista_sucfisxusu.usuario_id=$user->id))
-        and $vendedorcond
+        /* Opt 2: INNER JOIN reemplaza IN (SELECT categoriaprodsuc IN (SELECT vista_sucfisxusu)) anidado */
+        INNER JOIN categoriaprodsuc
+        ON categoriaprodsuc.categoriaprod_id = categoriaprod.id
+        INNER JOIN vista_sucfisxusu
+        ON vista_sucfisxusu.sucursal_id = categoriaprodsuc.sucursal_id AND vista_sucfisxusu.usuario_id=$user->id
+        /* Opt 3: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+        LEFT JOIN notaventacerrada
+        ON notaventacerrada.notaventa_id = notaventadetalle.notaventa_id AND ISNULL(notaventacerrada.deleted_at)
+        WHERE
+        $vendedorcond
         and $aux_condFecha
         and $aux_condrut
         and $aux_condoc_id
@@ -2775,7 +2789,8 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.findespacho)
         AND isnull(notaventa.anulada)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        /* Opt 3: NV no cerrada */
+        AND notaventacerrada.notaventa_id IS NULL
         AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventadetalle.producto_id
         ORDER BY producto.glosa,producto.peso;";
@@ -2827,9 +2842,12 @@ function consulta($request,$aux_sql,$orden){
         ON notaventa.id=vista_notaventatotales.id
         LEFT JOIN clientebloqueado
         ON notaventa.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-        WHERE 
-        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
-            FROM categoriaprodsuc 
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+        LEFT JOIN notaventacerrada
+        ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
+        WHERE
+        categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id
+            FROM categoriaprodsuc
             WHERE categoriaprodsuc.categoriaprod_id = categoriaprod.id
             AND categoriaprodsuc.sucursal_id IN (SELECT vista_sucfisxusu.sucursal_id
                     FROM vista_sucfisxusu
@@ -2849,7 +2867,7 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
-        and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventacerrada.notaventa_id IS NULL
         AND notaventa.sucursal_id in ($sucurcadena)
         GROUP BY notaventa.cliente_id
         ORDER BY $aux_orden;";
@@ -3317,9 +3335,11 @@ function reportesoldesp1($request){
             if($request->sololectura == "0"){
                 $sql = "SELECT COUNT(*) as cont
                 FROM despachoord
+                /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+                LEFT JOIN despachoordanul
+                ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
                 WHERE despachoord.despachosol_id=$data->id
-                AND despachoord.id 
-                NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
+                AND despachoordanul.despachoord_id IS NULL;";
     
                 $contorddesp = DB::select($sql);
                 if($contorddesp[0]->cont == 0){

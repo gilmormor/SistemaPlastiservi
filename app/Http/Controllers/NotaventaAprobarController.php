@@ -144,11 +144,14 @@ class NotaventaAprobarController extends Controller
                 ON vendedor.persona_id = persona.id
                 INNER JOIN vista_sucfisxusu
                 ON notaventa.usuario_id = vista_sucfisxusu.usuario_id and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
+                /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+                LEFT JOIN notaventacerrada
+                ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
                 where $aux_condvend
                 and $aux_condsucursal_id
                 and anulada is null
                 and aprobstatus=2
-                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                AND notaventacerrada.notaventa_id IS NULL
                 and notaventa.deleted_at is null;";
         //where usuario_id='.auth()->id();
         //dd($sql);

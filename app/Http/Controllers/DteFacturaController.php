@@ -674,9 +674,12 @@ class DteFacturaController extends Controller
             ON  cliente.formapago_id = formapago.id and isnull(formapago.deleted_at)
             INNER JOIN plazopago
             ON  cliente.plazopago_id = plazopago.id and isnull(plazopago.deleted_at)
-            WHERE dte.foliocontrol_id=1 
+            /* Opt: anti-join reemplaza NOT IN; evita full scan de dteanul por cada fila */
+            LEFT JOIN dteanul
+            ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+            WHERE dte.foliocontrol_id=1
             AND dte.nrodocto = $request->nrodocto
-            AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+            AND dteanul.dte_id IS NULL
             AND dte.statusgen = 1
             ORDER BY dte.id desc;";
             $dte = DB::select($sql);
@@ -1367,8 +1370,11 @@ function consultaindex($dte_id){
     ON modulo.id = clientedesbloqueadomodulo.modulo_id
     LEFT JOIN clientedesbloqueadopro
     ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de dteanul por cada fila */
+    LEFT JOIN dteanul
+    ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
     WHERE (dte.foliocontrol_id=1)
-    AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+    AND dteanul.dte_id IS NULL
     AND dte.sucursal_id IN ($sucurcadena)
     AND ISNULL(dte.statusgen)
     AND $aux_conddte_id

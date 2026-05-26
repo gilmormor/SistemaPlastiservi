@@ -162,7 +162,10 @@ function consultaindex(){
         ON factura.tipoentrega_id  = tipoentrega.id AND ISNULL(tipoentrega.deleted_at)
         LEFT JOIN clientebloqueado
         ON factura.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-        WHERE factura.id NOT IN (SELECT facturaanul.factura_id FROM facturaanul WHERE ISNULL(facturaanul.deleted_at))
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de facturaanul por cada fila */
+        LEFT JOIN facturaanul
+        ON facturaanul.factura_id = factura.id AND ISNULL(facturaanul.deleted_at)
+        WHERE facturaanul.factura_id IS NULL
         AND factura.sucursal_id in ($sucurcadena)
         AND ISNULL(factura.nrodocto)
         AND ISNULL(factura.fchemis)

@@ -126,19 +126,19 @@ class CategoriaProd extends Model
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurCadena = implode(",",$sucurArray);
+        /* Opt: anti-join reemplaza NOT IN; $cond_categoria se traslada al ON; grupoprod interno del subquery
+           es innecesario porque grupoprod ya está en el FROM externo y puede referenciarse directamente */
         $sql = "
             SELECT categoriaprod.id,categoriaprod.nombre
             FROM categoriaprod INNER JOIN grupoprod
             ON categoriaprod.id=grupoprod.categoriaprod_id
             INNER JOIN categoriaprodsuc
             ON categoriaprod.id=categoriaprodsuc.categoriaprod_id AND categoriaprodsuc.sucursal_id in ($sucurCadena)
+            LEFT JOIN categoriagrupovalmes
+            ON categoriagrupovalmes.grupoprod_id = grupoprod.id AND annomes=$annomes AND ISNULL(categoriagrupovalmes.deleted_at) $cond_categoria
             WHERE ISNULL(categoriaprod.deleted_at) AND ISNULL(grupoprod.deleted_at)
-            AND grupoprod.id NOT IN (SELECT grupoprod_id 
-                                        FROM categoriagrupovalmes inner join grupoprod
-                                        on categoriagrupovalmes.grupoprod_id=grupoprod.id $cond_categoria
-                                        WHERE annomes=$annomes 
-                                        and isnull(categoriagrupovalmes.deleted_at) )
-            GROUP BY categoriaprod.id,categoriaprod.nombre 
+            AND categoriagrupovalmes.grupoprod_id IS NULL
+            GROUP BY categoriaprod.id,categoriaprod.nombre
         ";
         $datas = DB::select($sql);
         return $datas;

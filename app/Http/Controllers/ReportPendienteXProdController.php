@@ -693,6 +693,9 @@ function consulta($request,$aux_sql,$orden){
         ON tipoentrega.id=notaventa.tipoentrega_id
         INNER JOIN vista_notaventatotales
         ON notaventa.id=vista_notaventatotales.id
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+        LEFT JOIN notaventacerrada
+        ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -709,7 +712,7 @@ function consulta($request,$aux_sql,$orden){
         and notaventa.anulada is null
         and notaventa.findespacho is null
         and notaventa.deleted_at is null and notaventadetalle.deleted_at is null
-        and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+        AND notaventacerrada.notaventa_id IS NULL
         GROUP BY notaventadetalle.notaventa_id,notaventa.fechahora,notaventa.cliente_id,notaventa.comuna_id,notaventa.comunaentrega_id,
         notaventa.oc_id,notaventa.anulada,cliente.rut,cliente.razonsocial,aprobstatus,visto,oc_file,
         notaventa.inidespacho,notaventa.guiasdespacho,notaventa.findespacho
@@ -740,6 +743,9 @@ function consulta($request,$aux_sql,$orden){
         ON cliente.id=notaventa.cliente_id
         LEFT JOIN vista_sumorddespxnvdetid
         ON notaventadetalle.id=vista_sumorddespxnvdetid.notaventadetalle_id
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+        LEFT JOIN notaventacerrada
+        ON notaventacerrada.notaventa_id = notaventadetalle.notaventa_id AND ISNULL(notaventacerrada.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -758,7 +764,7 @@ function consulta($request,$aux_sql,$orden){
         AND isnull(notaventa.anulada)
         AND notaventadetalle.cant>if(isnull(vista_sumorddespxnvdetid.cantdesp),0,vista_sumorddespxnvdetid.cantdesp)
         AND isnull(notaventa.deleted_at) AND isnull(notaventadetalle.deleted_at)
-        and notaventadetalle.notaventa_id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at));";
+        AND notaventacerrada.notaventa_id IS NULL;";
     }
     $datas = DB::select($sql);
     return $datas;

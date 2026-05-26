@@ -165,8 +165,12 @@ class NotaVentaController extends Controller
                 on cotizacion.cliente_id = cliente.id
                 LEFT join clientebloqueado
                 on cotizacion.cliente_id = clientebloqueado.cliente_id and isnull(clientebloqueado.deleted_at)
-                where $aux_condvendcot and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6) and 
-                cotizacion.id not in (SELECT cotizacion_id from notaventa WHERE !(cotizacion_id is NULL) and (anulada is null))
+                /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventa por cada fila;
+                   !(cotizacion_id is NULL) es redundante en JOIN porque NULL = cotizacion.id siempre es falso */
+                LEFT JOIN notaventa
+                ON notaventa.cotizacion_id = cotizacion.id AND ISNULL(notaventa.anulada)
+                where $aux_condvendcot and (aprobstatus=1 or aprobstatus=3 or aprobstatus=6)
+                AND notaventa.cotizacion_id IS NULL
                 and cotizacion.deleted_at is null
                 AND cotizacion.sucursal_id in ($sucurcadena)
                 ORDER BY cotizacion.id DESC;";
@@ -235,10 +239,13 @@ class NotaVentaController extends Controller
                 ON modulo.id = clientedesbloqueadomodulo.modulo_id
                 LEFT JOIN clientedesbloqueadopro
                 ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+                /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+                LEFT JOIN notaventacerrada
+                ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
                 where $aux_condvend
                 and anulada is null
-                and (aprobstatus is null or aprobstatus=0 or aprobstatus=4) 
-                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                and (aprobstatus is null or aprobstatus=0 or aprobstatus=4)
+                AND notaventacerrada.notaventa_id IS NULL
                 and notaventa.deleted_at is null
                 AND notaventa.sucursal_id in ($sucurcadena);";
         //where usuario_id='.auth()->id();
@@ -1597,10 +1604,13 @@ class NotaVentaController extends Controller
                     notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
                 FROM notaventa inner join cliente
                 on notaventa.cliente_id = cliente.id
+                /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+                LEFT JOIN notaventacerrada
+                ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
                 where $aux_condvend
                 and isnull(anulada)
                 and (aprobstatus=1 or aprobstatus=3)
-                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                AND notaventacerrada.notaventa_id IS NULL
                 and isnull(notaventa.deleted_at)
                 and notaventa.sucursal_id IN ($sucurcadena);";
         //where usuario_id='.auth()->id();
@@ -1764,9 +1774,12 @@ class NotaVentaController extends Controller
     }
 
     public function cerrartodasNV(){
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
         $sql = "SELECT *
-            FROM notaventa 
-            WHERE notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            FROM notaventa
+            LEFT JOIN notaventacerrada
+            ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
+            WHERE notaventacerrada.notaventa_id IS NULL
             and isnull(notaventa.deleted_at);";
         $datas = DB::select($sql);
         foreach ($datas as $data){
@@ -1801,11 +1814,14 @@ class NotaVentaController extends Controller
         }
 
         if($request->ajax()){
+            /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
             $sql = "SELECT COUNT(*) as cont
                 FROM notaventa
+                LEFT JOIN notaventacerrada
+                ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
                 where id = $request->id
                 and isnull(anulada)
-                and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+                AND notaventacerrada.notaventa_id IS NULL
                 and isnull(notaventa.deleted_at);";
             $datas = DB::select($sql);
             //dd($datas[0]->cont);
@@ -1961,7 +1977,10 @@ class NotaVentaController extends Controller
                     ON notaventadetalle.producto_id = producto.id
                     INNER JOIN notaventa
                     ON notaventa.id = notaventadetalle.notaventa_id
-                    WHERE notaventa.cliente_id NOT IN (SELECT cliente_producto.cliente_id FROM cliente_producto WHERE cliente_producto.producto_id = producto.id)
+                    /* Opt: anti-join reemplaza NOT IN correlacionado; la condición producto_id se traslada al ON */
+                    LEFT JOIN cliente_producto
+                    ON cliente_producto.cliente_id = notaventa.cliente_id AND cliente_producto.producto_id = producto.id
+                    WHERE cliente_producto.cliente_id IS NULL
                     AND (notaventa.aprobstatus='1' or notaventa.aprobstatus='3')
                     AND producto.tipoprod = 0
                     GROUP BY producto.id,notaventa.cliente_id;";
@@ -1998,14 +2017,12 @@ function consultaNVaprobadas($id){
             and isnull(notaventa.findespacho)
             and isnull(anulada)
             and (aprobstatus=1 or aprobstatus=3)
-            and notaventa.id not in (SELECT notaventa_id 
-                                    FROM despachosol 
-                                    where isnull(despachosol.deleted_at) and despachosol.id 
-                                    not in (SELECT despachosolanul.despachosol_id 
-                                            from despachosolanul 
-                                            where isnull(despachosolanul.deleted_at)
-                                           )
-                                    )
+            /* Opt: NOT EXISTS con anti-join interno reemplaza NOT IN anidado; despachosol puede tener N filas por notaventa */
+            AND NOT EXISTS (SELECT 1 FROM despachosol
+                            LEFT JOIN despachosolanul ON despachosolanul.despachosol_id = despachosol.id AND ISNULL(despachosolanul.deleted_at)
+                            WHERE despachosol.notaventa_id = notaventa.id
+                            AND ISNULL(despachosol.deleted_at)
+                            AND despachosolanul.despachosol_id IS NULL)
             and isnull(notaventa.deleted_at)
             order by notaventa.id desc;";
         //dd($sql);

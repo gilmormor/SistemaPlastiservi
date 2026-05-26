@@ -83,12 +83,15 @@ class ClienteTemp extends Model
         $aux_condsucursal_id = " (clientetemp.sucursal_id in ($aux_sucursal))";
 
 
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de cliente por cada fila */
         $sql = "SELECT clientetemp.*,persona.nombre as vendedor_nombre,persona.apellido as vendedor_apellido
         FROM clientetemp INNER JOIN vendedor
         ON clientetemp.vendedor_id = vendedor.id
         INNER JOIN persona
         ON persona.id = vendedor.persona_id
-        WHERE clientetemp.rut not in (SELECT cliente.rut from cliente where ISNULL(cliente.deleted_at))
+        LEFT JOIN cliente
+        ON cliente.rut = clientetemp.rut AND ISNULL(cliente.deleted_at)
+        WHERE cliente.rut IS NULL
         AND $aux_condsucursal_id;";
         //dd($sql);
         $datas = DB::select($sql);

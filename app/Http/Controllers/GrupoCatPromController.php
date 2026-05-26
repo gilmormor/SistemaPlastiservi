@@ -47,10 +47,12 @@ class GrupoCatPromController extends Controller
     public function crear()
     {
         can('crear-grupo-cat-prom');
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de grupocatpromcategoriaprod por cada fila */
         $sql = "SELECT categoriaprod.id,categoriaprod.nombre
                 FROM categoriaprod
-                where categoriaprod.id not in (SELECT categoriaprod_id 
-                                                FROM grupocatpromcategoriaprod)
+                LEFT JOIN grupocatpromcategoriaprod
+                ON grupocatpromcategoriaprod.categoriaprod_id = categoriaprod.id
+                WHERE grupocatpromcategoriaprod.categoriaprod_id IS NULL
                 AND isnull(categoriaprod.deleted_at);";
         $categoriaprods = DB::select($sql);
         return view('grupocatprom.crear',compact('categoriaprods'));

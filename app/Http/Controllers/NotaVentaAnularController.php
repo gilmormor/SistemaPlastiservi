@@ -132,19 +132,20 @@ function consulta($id){
                 notaventadetalle.precioxkilo < notaventadetalle.precioxkiloreal) AS contador
             FROM notaventa inner join cliente
             on notaventa.cliente_id = cliente.id
+            /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+            LEFT JOIN notaventacerrada
+            ON notaventacerrada.notaventa_id = notaventa.id AND ISNULL(notaventacerrada.deleted_at)
             where $aux_condid
             and isnull(notaventa.findespacho)
             and isnull(anulada)
             and (aprobstatus=1 or aprobstatus=3)
-            and notaventa.id not in (SELECT notaventa_id 
-                                    FROM despachosol 
-                                    where isnull(despachosol.deleted_at) and despachosol.id 
-                                    not in (SELECT despachosolanul.despachosol_id 
-                                            from despachosolanul 
-                                            where isnull(despachosolanul.deleted_at)
-                                           )
-                                    )
-            and notaventa.id not in (select notaventa_id from notaventacerrada where isnull(notaventacerrada.deleted_at))
+            /* Opt: NOT EXISTS con anti-join interno reemplaza NOT IN anidado; despachosol puede tener N filas por notaventa */
+            AND NOT EXISTS (SELECT 1 FROM despachosol
+                            LEFT JOIN despachosolanul ON despachosolanul.despachosol_id = despachosol.id AND ISNULL(despachosolanul.deleted_at)
+                            WHERE despachosol.notaventa_id = notaventa.id
+                            AND ISNULL(despachosol.deleted_at)
+                            AND despachosolanul.despachosol_id IS NULL)
+            AND notaventacerrada.notaventa_id IS NULL
             and isnull(notaventa.deleted_at)
             order by notaventa.id desc;";
         //dd($sql);

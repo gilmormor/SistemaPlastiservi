@@ -1602,14 +1602,17 @@ class DespachoOrdController extends Controller
                             dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,
                             dte.indtraslado,
                             dte_rel_guia.indtraslado as indtrasladoorigen
-                            FROM dte 
+                            FROM dte
                             LEFT JOIN dtedte as dtedte_rel_guia
                             ON dtedte_rel_guia.dte_id = dte.id AND isnull(dtedte_rel_guia.deleted_at)
                             LEFT JOIN dte as dte_rel_guia
                             ON dtedte_rel_guia.dter_id = dte_rel_guia.id AND (dte_rel_guia.foliocontrol_id = 2)  AND isnull(dte_rel_guia.deleted_at)
-                            WHERE dte.nrodocto = $aux_numguia 
+                            /* Opt: anti-join reemplaza NOT IN; evita full scan de dteanul por cada fila */
+                            LEFT JOIN dteanul
+                            ON dteanul.dte_id = dte.id AND isnull(dteanul.deleted_at)
+                            WHERE dte.nrodocto = $aux_numguia
                             AND isnull(dte.deleted_at)
-                            AND dte.id not in (SELECT dteanul.dte_id from dteanul WHERE  isnull(dteanul.deleted_at));";
+                            AND dteanul.dte_id IS NULL;";
                         $dte = DB::select($sql);
                         if(count($dte) > 0 and $dte[0]->guiaorigenprecio_nrodocto != null){
                             $guiaorigenprecio_nrodocto = $dte[0]->guiaorigenprecio_nrodocto;
@@ -3159,9 +3162,15 @@ function consultaindexSuc($request){
     ON clientebloqueado.cliente_id = notaventa.cliente_id AND ISNULL(clientebloqueado.deleted_at)
     INNER JOIN sucursal
     ON notaventa.sucursal_id in $sucurcadena
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de notaventacerrada por cada fila */
+    LEFT JOIN notaventacerrada
+    ON notaventacerrada.notaventa_id = despachoord.notaventa_id AND ISNULL(notaventacerrada.deleted_at)
     WHERE ISNULL(despachoord.aprguiadesp)
-    AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
-    AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+    AND despachoordanul.despachoord_id IS NULL
+    AND notaventacerrada.notaventa_id IS NULL
     AND notaventa.sucursal_id = $request->sucursal_id
     GROUP BY despachoorddet.despachoord_id;";
 

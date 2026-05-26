@@ -373,12 +373,14 @@ class Dte extends Model
         if(!isset($request->nrofactura) or empty($request->nrofactura)){
             $aux_condnrofactura = " true";
         }else{
+            /* Opt: anti-join reemplaza NOT IN de dteanul en subquery de filtro por nrofactura */
             $aux_condnrofactura = " $request->nrofactura in (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
             FROM dtedte as dtedte1 INNER JOIN dte as dte1
             ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+            LEFT JOIN dteanul ON dteanul.dte_id = dtedte1.dte_id AND isnull(dteanul.deleted_at)
             WHERE dtedte1.dter_id = dte.id
-            AND (dte1.foliocontrol_id = 1) 
-            AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at)))";
+            AND (dte1.foliocontrol_id = 1)
+            AND dteanul.dte_id IS NULL)";
             $aux_condFecha = " true";
         }
     
@@ -414,26 +416,32 @@ class Dte extends Model
         tipoentrega.nombre as tipoentrega_nombre,tipoentrega.icono,dtedte.dter_id,
         dteguiadesp.notaventa_id,dteguiadespnv.notaventa_id as dteguiadespnv_notaventa_id,
         despachoord.fechaestdesp,dteguiadesp.despachoord_id,despachoord.despachosol_id,
+        /* Opt: anti-join reemplaza NOT IN en subquery fact_nrodocto; evita full scan de dteanul por cada fila */
         (SELECT GROUP_CONCAT(DISTINCT dte1.nrodocto) AS nrodocto
-        FROM dtedte as dtedte1 INNER JOIN dte as dte1
-        ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
-        WHERE dtedte1.dter_id = dte.id
-        AND (dte1.foliocontrol_id = 1) 
-        AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nrodocto,
+            FROM dtedte as dtedte1 INNER JOIN dte as dte1
+            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+            LEFT JOIN dteanul ON dteanul.dte_id = dtedte1.dte_id AND isnull(dteanul.deleted_at)
+            WHERE dtedte1.dter_id = dte.id
+            AND (dte1.foliocontrol_id = 1)
+            AND dteanul.dte_id IS NULL) as fact_nrodocto,
+        /* Opt: anti-join reemplaza NOT IN en subquery fact_dte_id; evita full scan de dteanul por cada fila */
         (SELECT GROUP_CONCAT(DISTINCT dte1.id) AS id
-        FROM dtedte as dtedte1 INNER JOIN dte as dte1
-        ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
-        WHERE dtedte1.dter_id = dte.id
-        AND (dte1.foliocontrol_id = 1) 
-        AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_dte_id,
+            FROM dtedte as dtedte1 INNER JOIN dte as dte1
+            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+            LEFT JOIN dteanul ON dteanul.dte_id = dtedte1.dte_id AND isnull(dteanul.deleted_at)
+            WHERE dtedte1.dter_id = dte.id
+            AND (dte1.foliocontrol_id = 1)
+            AND dteanul.dte_id IS NULL) as fact_dte_id,
+        /* Opt: anti-join reemplaza NOT IN en subquery fact_nombrepdf; evita full scan de dteanul por cada fila */
         (SELECT GROUP_CONCAT(DISTINCT foliocontrol.nombrepdf) AS nombrepdf
         FROM dtedte as dtedte1 INNER JOIN dte as dte1
-        ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
-        INNER JOIN foliocontrol
-        ON foliocontrol.id = dte1.foliocontrol_id
-        WHERE dtedte1.dter_id = dte.id
-        AND (dte1.foliocontrol_id = 1) 
-        AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nombrepdf,
+            ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+            INNER JOIN foliocontrol
+            ON foliocontrol.id = dte1.foliocontrol_id
+            LEFT JOIN dteanul ON dteanul.dte_id = dtedte1.dte_id AND isnull(dteanul.deleted_at)
+            WHERE dtedte1.dter_id = dte.id
+            AND (dte1.foliocontrol_id = 1)
+            AND dteanul.dte_id IS NULL) as fact_nombrepdf,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
         dte_rel_guia.id as guiaorigenprecio_id,
         dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,
@@ -611,6 +619,12 @@ class Dte extends Model
         if(isset($request->aux_condindtraslado) and $request->aux_condindtraslado != "" and $request->aux_condindtraslado != null){
             $aux_condindtraslado = $request->aux_condindtraslado;
         }
+        // JOINs adicionales opcionales para anti-join desde el controlador (ej. DteGuiaDespAnularController)
+        // Los callers que no envíen aux_joinindtraslado reciben string vacío y la consulta no cambia
+        $aux_joinindtraslado = "";
+        if(isset($request->aux_joinindtraslado) and $request->aux_joinindtraslado != "" and $request->aux_joinindtraslado != null){
+            $aux_joinindtraslado = $request->aux_joinindtraslado;
+        }
         if(!isset($request->centroeconomico_id) or empty($request->centroeconomico_id) or ($request->centroeconomico_id == "") or ($request->centroeconomico_id == "undefined")){
             $aux_centroeconomico_idCond = "true";
         }else{
@@ -674,6 +688,10 @@ class Dte extends Model
         ON modulo.id = clientedesbloqueadomodulo.modulo_id
         LEFT JOIN clientedesbloqueadopro
         ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+        /* Opt: anti-join reemplaza NOT IN; evita full scan de dteanul por cada fila */
+        LEFT JOIN dteanul
+        ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+        $aux_joinindtraslado
 
         WHERE $vendedorcond
         AND $aux_condFecha
@@ -690,7 +708,7 @@ class Dte extends Model
         AND dte.foliocontrol_id = 2
         AND dte.statusgen = 1
         AND $aux_condindtraslado
-        AND dte.id not in (SELECT dte_id from dteanul where ISNULL(dteanul.deleted_at))
+        AND dteanul.dte_id IS NULL
         AND $aux_condsucurArray
         AND $aux_sucursal_idCond
         AND $aux_centroeconomico_idCond
@@ -816,19 +834,23 @@ class Dte extends Model
             $filtroNoMostrarGuiasUsadas = "true";
             $filtroNoMostrarDTeAnuladas = "true";
             $otrosCampos = ",dtedte.dter_id,
+                            /* Opt: anti-join reemplaza NOT IN en subquery fact_nrodocto; evita full scan de dteanul por cada fila */
                             (SELECT dte1.nrodocto
                                 FROM dtedte as dtedte1 INNER JOIN dte as dte1
                                 ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+                                LEFT JOIN dteanul ON dteanul.dte_id = dtedte1.dte_id AND isnull(dteanul.deleted_at)
                                 WHERE dtedte1.dter_id = dte.id
-                                AND (dte1.foliocontrol_id = 1) 
-                                AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))
+                                AND (dte1.foliocontrol_id = 1)
+                                AND dteanul.dte_id IS NULL
                                 ORDER BY dtedte1.id DESC LIMIT 1) as fact_nrodocto,
+                            /* Opt: anti-join reemplaza NOT IN en subquery fact_dte_id; evita full scan de dteanul por cada fila */
                             (SELECT dte1.id
                                 FROM dtedte as dtedte1 INNER JOIN dte as dte1
                                 ON dte1.id = dtedte1.dte_id AND isnull(dte1.deleted_at) AND isnull(dtedte1.deleted_at)
+                                LEFT JOIN dteanul ON dteanul.dte_id = dtedte1.dte_id AND isnull(dteanul.deleted_at)
                                 WHERE dtedte1.dter_id = dte.id
-                                AND (dte1.foliocontrol_id = 1) 
-                                AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))
+                                AND (dte1.foliocontrol_id = 1)
+                                AND dteanul.dte_id IS NULL
                                 ORDER BY dtedte1.id DESC LIMIT 1) as fact_dte_id,
                                 dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at
              ";
@@ -2623,7 +2645,8 @@ class Dte extends Model
         AND $aux_condsucurArray
         AND $aux_centroeconomico_idCond
         AND NOT ISNULL(dte.nrodocto)
-        AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+        /* Opt: dteanul ya está en LEFT JOIN del FROM con igual condición; IS NULL reemplaza NOT IN sin JOIN adicional */
+        AND dteanul.dte_id IS NULL
         $aux_groupby
         $aux_orderby;";
 
@@ -2692,6 +2715,8 @@ class Dte extends Model
         ON dte.cliente_id  = cliente.id AND ISNULL(cliente.deleted_at)
         INNER JOIN foliocontrol
         ON  foliocontrol.id = dte.foliocontrol_id AND ISNULL(foliocontrol.deleted_at)
+        /* Opt: anti-join reemplaza NOT IN de dteanul; evita full scan por cada fila */
+        LEFT JOIN dteanul ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
         WHERE $aux_condfoliocontrol_id
         AND dte.sucursal_id IN ($sucurcadena)
         AND $aux_sucursal_idCond
@@ -2701,7 +2726,7 @@ class Dte extends Model
         AND $aux_condrut
         AND $aux_condoc_id
         AND $aux_condstatusgen
-        AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+        AND dteanul.dte_id IS NULL
         AND NOT ISNULL(dte.nrodocto);";
 
         //dd($sql);
@@ -3038,7 +3063,8 @@ class Dte extends Model
         AND NOT ISNULL(dte.nrodocto)
         AND $aux_condclaseprod_id
         AND $aux_condcategoriaprod_id
-        AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+        /* Opt: dteanul ya está en LEFT JOIN del FROM con igual condición; IS NULL reemplaza NOT IN sin JOIN adicional */
+        AND dteanul.dte_id IS NULL
         $aux_groupby
         $aux_orderby;";
 
@@ -3590,9 +3616,16 @@ class Dte extends Model
             ON modulo.id = clientedesbloqueadomodulo.modulo_id
             LEFT JOIN clientedesbloqueadopro
             ON clientedesbloqueadopro.cliente_id = dte.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
-            WHERE despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
-            AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
-            AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+            /* Opt: tres anti-joins reemplazan tres NOT IN; evitan full scan de cada tabla por cada fila */
+            LEFT JOIN despachoordanul 
+            ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
+            LEFT JOIN notaventacerrada 
+            ON notaventacerrada.notaventa_id = despachoord.notaventa_id AND ISNULL(notaventacerrada.deleted_at)
+            LEFT JOIN dteanul 
+            ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+            WHERE despachoordanul.despachoord_id IS NULL
+            AND notaventacerrada.notaventa_id IS NULL
+            AND dteanul.dte_id IS NULL
             AND despachosol.sucursal_id in ($sucurcadena)
             AND ISNULL(dte.statusgen)
             AND dte.foliocontrol_id=2
@@ -3716,13 +3749,12 @@ class Dte extends Model
             ON dteoc.dte_id = dte.id AND ISNULL(dteoc.deleted_at) AND ISNULL(dte.deleted_at)
             INNER JOIN dteguiadesp
             ON dteoc.dte_id = dteguiadesp.dte_id AND ISNULL(dteguiadesp.deleted_at)
+            /* Opt: anti-join reemplaza NOT IN de dteanul en subquery dte_nrodocto; condición correlacionada pasa al ON */
+            LEFT JOIN dteanul ON dteanul.dte_id = dteguiadesp.dte_id AND ISNULL(dteanul.deleted_at)
             WHERE dteoc.oc_id = notaventa.oc_id
             AND isnull(dteguiadesp.notaventa_id)
             AND dte.cliente_id= notaventa.cliente_id
-            AND dteguiadesp.dte_id NOT IN (SELECT dteanul.dte_id 
-                                            FROM dteanul 
-                                            WHERE dteanul.dte_id = dteguiadesp.dte_id 
-                                            and ISNULL(dteanul.deleted_at))
+            AND dteanul.dte_id IS NULL
             GROUP BY dteoc.oc_id) as dte_nrodocto,
         bloquearhacerguia,
         cliente.limitecredito,
@@ -3759,6 +3791,9 @@ class Dte extends Model
         ON modulo.id = clientedesbloqueadomodulo.modulo_id
         LEFT JOIN clientedesbloqueadopro
         ON clientedesbloqueadopro.cliente_id = notaventa.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
+        /* Opt: anti-joins reemplazan NOT IN de despachoordanul y notaventacerrada; evitan full scan por cada fila */
+        LEFT JOIN despachoordanul ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
+        LEFT JOIN notaventacerrada ON notaventacerrada.notaventa_id = despachoord.notaventa_id AND ISNULL(notaventacerrada.deleted_at)
         WHERE $vendedorcond
         and $aux_condFecha
         and $aux_condrut
@@ -3771,15 +3806,21 @@ class Dte extends Model
         and $aux_condcomuna_id
         AND $aux_conddespachoord_id
         and despachoord.aprguiadesp='1' and isnull(despachoord.guiadespacho)
-        AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
-        AND despachoord.notaventa_id NOT IN (SELECT notaventacerrada.notaventa_id FROM notaventacerrada WHERE ISNULL(notaventacerrada.deleted_at))
+        AND despachoordanul.despachoord_id IS NULL
+        AND notaventacerrada.notaventa_id IS NULL
         AND despachosol.sucursal_id in ($sucurcadena)
-        AND despachoord.id NOT IN (SELECT guiadesp.despachoord_id FROM guiadesp WHERE ISNULL(guiadesp.deleted_at) AND guiadesp.id not in (SELECT guiadespanul.guiadesp_id FROM guiadespanul WHERE ISNULL(guiadespanul.deleted_at)))
-        AND despachoord.id NOT IN (SELECT dteguiadesp.despachoord_id
-            FROM dte INNER JOIN dteguiadesp
-            ON dte.id=dteguiadesp.dte_id AND ISNULL(dte.deleted_at) AND ISNULL(dteguiadesp.deleted_at)
-            WHERE dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
-            AND NOT ISNULL(dteguiadesp.despachoord_id))
+        /* Opt: NOT EXISTS con anti-join reemplaza NOT IN anidado guiadesp+guiadespanul; evita row duplication */
+        AND NOT EXISTS (SELECT 1 FROM guiadesp
+                        LEFT JOIN guiadespanul ON guiadespanul.guiadesp_id = guiadesp.id AND ISNULL(guiadespanul.deleted_at)
+                        WHERE guiadesp.despachoord_id = despachoord.id AND ISNULL(guiadesp.deleted_at)
+                        AND guiadespanul.guiadesp_id IS NULL)
+        /* Opt: NOT EXISTS con anti-join reemplaza NOT IN anidado dte+dteguiadesp+dteanul; evita row duplication */
+        AND NOT EXISTS (SELECT 1 FROM dte INNER JOIN dteguiadesp
+                        ON dte.id=dteguiadesp.dte_id AND ISNULL(dte.deleted_at) AND ISNULL(dteguiadesp.deleted_at)
+                        LEFT JOIN dteanul ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+                        WHERE dteguiadesp.despachoord_id = despachoord.id
+                        AND dteanul.dte_id IS NULL
+                        AND NOT ISNULL(dteguiadesp.despachoord_id))
         GROUP BY despachoorddet.despachoord_id
         ORDER BY despachoorddet.despachoord_id DESC";
         $arrays = DB::select($sql);
@@ -4678,8 +4719,10 @@ function consultaindex($dte_id){
     ON comuna.id = cliente.comunap_id
     LEFT JOIN clientebloqueado
     ON dte.cliente_id = clientebloqueado.cliente_id AND ISNULL(clientebloqueado.deleted_at)
-    WHERE dte.foliocontrol_id=5 
-    AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+    /* Opt: anti-join reemplaza NOT IN de dteanul; evita full scan por cada fila */
+    LEFT JOIN dteanul ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+    WHERE dte.foliocontrol_id=5
+    AND dteanul.dte_id IS NULL
     AND ISNULL(dte.statusgen)
     AND dte.sucursal_id IN ($sucurcadena)
     AND $aux_conddte_id
@@ -4724,9 +4767,11 @@ function consultasql_dte($request){
     ON cliente.plazopago_id = plazopago.id and isnull(plazopago.deleted_at)
     INNER JOIN foliocontrol
     ON foliocontrol.id = dte.foliocontrol_id
-    WHERE dte.foliocontrol_id in ($request->condFoliocontrol) 
+    /* Opt: anti-join reemplaza NOT IN de dteanul; evita full scan por cada fila */
+    LEFT JOIN dteanul ON dteanul.dte_id = dte.id AND ISNULL(dteanul.deleted_at)
+    WHERE dte.foliocontrol_id in ($request->condFoliocontrol)
     AND dte.nrodocto = $request->nrodocto
-    AND dte.id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE ISNULL(dteanul.deleted_at))
+    AND dteanul.dte_id IS NULL
     AND $aux_statusCond
     ORDER BY dte.id desc;";
     $dte = DB::select($sql);

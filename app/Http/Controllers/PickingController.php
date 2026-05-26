@@ -753,11 +753,13 @@ function reportesoldesp1($request){
                                 </a>";    
             }
 
+            /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
             $sql = "SELECT COUNT(*) as cont
             FROM despachoord
+            LEFT JOIN despachoordanul
+            ON despachoordanul.despachoord_id = despachoord.id AND ISNULL(despachoordanul.deleted_at)
             WHERE despachoord.despachosol_id=$data->id
-            AND despachoord.id 
-            NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at));";
+            AND despachoordanul.despachoord_id IS NULL;";
 
             $contorddesp = DB::select($sql);
             if($contorddesp[0]->cont == 0){

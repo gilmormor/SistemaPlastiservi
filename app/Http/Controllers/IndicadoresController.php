@@ -2400,6 +2400,9 @@ function consultaODcerrada($request){
     ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
     LEFT JOIN categoriagrupovalmes
     ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2408,8 +2411,8 @@ function consultaODcerrada($request){
     and $aux_condareaproduccion_id
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
-    and isnull(vista_despachoorddet.deleted_at) 
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and isnull(vista_despachoorddet.deleted_at)
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY grupoprod.id,grupoprod.gru_nombre;";
     //dd($sql);
     //" and " . $aux_condrut .
@@ -2438,6 +2441,9 @@ function consultaODcerrada($request){
     ON vendedor.persona_id=persona.id and isnull(persona.deleted_at)
     INNER JOIN cliente
     ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2447,7 +2453,7 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
     and isnull(vista_despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY persona.id,persona.nombre;";
 
     $datas = DB::select($sql);
@@ -2476,6 +2482,9 @@ function consultaODcerrada($request){
     ON vendedor.persona_id=persona.id and isnull(persona.deleted_at)
     INNER JOIN cliente
     ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2485,7 +2494,7 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
     and isnull(vista_despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY grupoprod.id,grupoprod.gru_nombre,persona.id,persona.nombre;";
     $datas = DB::select($sql);
     $respuesta['totales'] = $datas;
@@ -2518,6 +2527,9 @@ function consultaODcerrada($request){
     ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
     LEFT JOIN categoriagrupovalmes
     ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2527,7 +2539,7 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
     and isnull(vista_despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY producto.id;";
     $datas = DB::select($sql);
     $respuesta['agruxproducto'] = $datas;
@@ -2554,6 +2566,9 @@ function consultaODcerrada($request){
     ON grupoprod.id=categoriagrupovalmes.grupoprod_id and categoriagrupovalmes.annomes='$annomes' and isnull(categoriagrupovalmes.deleted_at)
     INNER JOIN cliente
     ON cliente.id = notaventa.cliente_id
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2563,7 +2578,7 @@ function consultaODcerrada($request){
     and areaproduccion.stapromkg=1
     and isnull(notaventa.anulada)
     and isnull(vista_despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY categoriaprod.areaproduccion_id
     ORDER BY categoriaprod.areaproduccion_id;";
     //dd($sql);
@@ -2588,6 +2603,9 @@ function consultaODcerrada($request){
     ON categoriaprod.areaproduccion_id = areaproduccion.id and isnull(areaproduccion.deleted_at)
     INNER JOIN cliente
     ON cliente.id = notaventa.cliente_id
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFechahoy
     and $vendedorcond
@@ -2597,7 +2615,7 @@ function consultaODcerrada($request){
     and areaproduccion.stapromkg=1
     and isnull(notaventa.anulada)
     and isnull(vista_despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY categoriaprod.areaproduccion_id
     ORDER BY categoriaprod.areaproduccion_id;";
 
@@ -2629,6 +2647,9 @@ function consultaODcerrada($request){
     ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
     INNER JOIN grupoprod
     ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condanno
     and $vendedorcond
@@ -2638,7 +2659,7 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
     and isnull(vista_despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY date_format(despachoord.fechafactura,'%Y%m');";
     $datas = DB::select($sql);
     $respuesta['ventasxmes'] = $datas;
@@ -2703,6 +2724,9 @@ function consultaODcerrada($request){
     ON notaventa.cliente_id=cliente.id and isnull(cliente.deleted_at)
     INNER JOIN grupoprod
     ON producto.grupoprod_id=grupoprod.id and isnull(grupoprod.deleted_at)
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condanno
     and $vendedorcond
@@ -2712,7 +2736,7 @@ function consultaODcerrada($request){
     and $aux_condstatusact_id
     and isnull(notaventa.anulada)
     and isnull(vista_despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY categoriaprod.areaproduccion_id,date_format(despachoord.fechafactura,'%Y%m')
     ORDER BY date_format(despachoord.fechafactura,'%Y%m'),categoriaprod.areaproduccion_id;";
     //dd($sql);
@@ -2953,6 +2977,9 @@ function consultakilostipoentrega($request){
     on despachoord.tipoentrega_id=tipoentrega.id
     inner join cliente
     on cliente.id = notaventa.cliente_id
+    /* Opt: anti-join reemplaza NOT IN; evita full scan de despachoordanul por cada fila */
+    LEFT JOIN despachoordanul
+    ON despachoordanul.despachoord_id = despachoord.id AND isnull(despachoordanul.deleted_at)
     WHERE (despachoord.guiadespacho IS NOT NULL AND despachoord.numfactura IS NOT NULL)
     and $aux_condFecha
     and $vendedorcond
@@ -2963,7 +2990,7 @@ function consultakilostipoentrega($request){
     and areaproduccion.stapromkg=1
     and isnull(notaventa.anulada)
     and isnull(despachoorddet.deleted_at)
-    and despachoord.id not in (SELECT despachoord_id FROM despachoordanul where isnull(despachoordanul.deleted_at))
+    and despachoordanul.despachoord_id IS NULL
     GROUP BY despachoord.tipoentrega_id
     ORDER BY despachoord.tipoentrega_id;";
     //dd($sql);

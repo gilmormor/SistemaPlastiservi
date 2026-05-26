@@ -133,15 +133,15 @@ class CategoriaGrupoValMes extends Model
             $id = $request['id'];
             $cond_categoriagrupovalmes = " categoriagrupovalmes.id!=$id";
         }
+        /* Opt: anti-join reemplaza NOT IN; condiciones dinámicas trasladadas al ON del LEFT JOIN */
         $sql = "
             SELECT grupoprod.id,grupoprod.gru_nombre
             FROM grupoprod INNER JOIN categoriaprod
             ON grupoprod.categoriaprod_id=categoriaprod.id
+            LEFT JOIN categoriagrupovalmes
+            ON categoriagrupovalmes.grupoprod_id = grupoprod.id AND $cond_annomes AND $cond_categoriagrupovalmes AND ISNULL(categoriagrupovalmes.deleted_at)
             WHERE $cond_categoriaprod_id
-            and grupoprod.id NOT IN (SELECT grupoprod_id 
-                                        FROM categoriagrupovalmes 
-                                        WHERE $cond_annomes and $cond_categoriagrupovalmes
-                                        and isnull(categoriagrupovalmes.deleted_at))
+            AND categoriagrupovalmes.grupoprod_id IS NULL
             and ISNULL(categoriaprod.deleted_at) AND ISNULL(grupoprod.deleted_at)
             order BY categoriaprod.id
         ";
