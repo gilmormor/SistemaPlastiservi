@@ -68,4 +68,10 @@ class OpDetRegProd extends Model
     {
         return $this->belongsTo(UnidadMedida::class, 'unidadmedidasal_id');
     }
+
+    // Valores de campos adicionales del registro aprobado
+    public function campovalues()
+    {
+        return $this->hasMany(OpDetRegProdCampoVal::class, 'opdetregprod_id');
+    }
 }

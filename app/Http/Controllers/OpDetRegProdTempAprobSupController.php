@@ -14,6 +14,7 @@ use App\Models\InvMovDetNVDet;
 use App\Models\InvMovDetOpDetRegProd;
 use App\Models\OpDet;
 use App\Models\OpDetRegProd;
+use App\Models\OpDetRegProdCampoVal;
 use App\Models\OpDetRegProdTemp;
 use App\Models\OtDetNVDet;
 use App\Models\Produccion;
@@ -334,6 +335,17 @@ class OpDetRegProdTempAprobSupController extends Controller
                     //    para poder usar $produccion->id en la trazabilidad de inventario)
                     //$produccion = OpDetRegProd::create($data);
                     $opdetregprod = OpDetRegProd::create($data);
+
+                    // Copiar campos adicionales de temp → aprobado.
+                    // Si la etapa no tiene campos configurados, campovalues estará vacío
+                    // y este bloque no hace nada. No afecta el flujo existente.
+                    foreach ($opdetregprodtemp->campovalues as $tempVal) {
+                        OpDetRegProdCampoVal::create([
+                            'opdetregprod_id'    => $opdetregprod->id,
+                            'etapaprod_campo_id' => $tempVal->etapaprod_campo_id,
+                            'valor'              => $tempVal->valor,
+                        ]);
+                    }
 
                     // 3️⃣ Obtener la siguiente etapa de producción (la de mayor orden inmediato)
                     $siguienteEtapa = collect($op->opdets)

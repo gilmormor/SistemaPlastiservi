@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidarOpDetRegProdTemp;
 use App\Models\AcuerdoTecnico;
 use App\Models\EtapaProd;
+use App\Models\EtapaProdCampo;
 use App\Models\OpDet;
 use App\Models\OpDetRegProdTemp;
+use App\Models\OpDetRegProdTempCampoVal;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\UnidadMedida;
@@ -219,7 +221,10 @@ public function etapaprod()
         $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')
                         ->get();
         $tablas['unidadmedida_id'] = $opdet->op->otdet->producto->categoriaprod->unidadmedida_id;
-        //dd($tablas["operarios"]);
+        // Campos adicionales configurados para esta etapa (puede ser colección vacía)
+        $tablas['campos'] = EtapaProdCampo::where('apsucetapaprod_id', $opdet->apsucetapaprod_id)
+                        ->orderBy('orden')->get();
+        $tablas['campovals'] = collect(); // sin valores previos en crear
         return view('opdetregprodtemp.crear', compact('opdet','tablas'));
     }
 
@@ -257,6 +262,19 @@ public function etapaprod()
             $opdet->updated_at = date("Y-m-d H:i:s");
             $opdet->save();
             $opdetregprodtemp = OpDetRegProdTemp::create($request->all());
+
+            // Guardar campos adicionales si la etapa tiene alguno configurado
+            // Los valores llegan en $request->campo_val[etapaprod_campo_id] = valor
+            if ($request->has('campo_val') && is_array($request->campo_val)) {
+                foreach ($request->campo_val as $campoId => $valor) {
+                    OpDetRegProdTempCampoVal::updateOrCreate(
+                        ['opdetregprodtemp_id' => $opdetregprodtemp->id,
+                         'etapaprod_campo_id'  => (int)$campoId],
+                        ['valor' => $valor]
+                    );
+                }
+            }
+
             DB::commit();
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de Produccion creado con exito');
         } catch (\Exception $e) {
@@ -320,6 +338,11 @@ public function etapaprod()
         $tablas['unidadmedidas'] = UnidadMedida::orderBy('id')
                         ->get();
         $tablas['unidadmedida_id'] = $opdet->op->otdet->producto->categoriaprod->unidadmedida_id;
+        // Campos adicionales y valores existentes para este registro
+        $tablas['campos'] = EtapaProdCampo::where('apsucetapaprod_id', $opdet->apsucetapaprod_id)
+                        ->orderBy('orden')->get();
+        $tablas['campovals'] = OpDetRegProdTempCampoVal::where('opdetregprodtemp_id', $data->id)
+                        ->pluck('valor', 'etapaprod_campo_id'); // keyed by campo id
         return view('opdetregprodtemp.editar', compact('data','opdet','tablas'));
     }
 
@@ -365,6 +388,18 @@ public function etapaprod()
             $request->merge(['kgent' => $kgprodReq + $kgscrapReq]);
 
             $opdetregprodtemp->update($request->all());
+
+            // Actualizar campos adicionales (reemplazar los existentes)
+            if ($request->has('campo_val') && is_array($request->campo_val)) {
+                foreach ($request->campo_val as $campoId => $valor) {
+                    OpDetRegProdTempCampoVal::updateOrCreate(
+                        ['opdetregprodtemp_id' => $opdetregprodtemp->id,
+                         'etapaprod_campo_id'  => (int)$campoId],
+                        ['valor' => $valor]
+                    );
+                }
+            }
+
             DB::commit();
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de produccion actualizado con exito');
         } catch (\Exception $e) {

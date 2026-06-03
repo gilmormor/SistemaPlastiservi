@@ -56,6 +56,12 @@ class OpDetRegProdTemp extends Model
         return $this->belongsTo(Usuario::class);
     }
 
+    // Valores de campos adicionales ingresados en este registro temporal
+    public function campovalues()
+    {
+        return $this->hasMany(OpDetRegProdTempCampoVal::class, 'opdetregprodtemp_id');
+    }
+
     /**
      * Busca el primer registro bloqueante DENTRO DEL MISMO ROLLO del opdet_id dado.
      *

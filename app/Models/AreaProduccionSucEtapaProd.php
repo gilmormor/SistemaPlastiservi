@@ -60,4 +60,11 @@ class AreaProduccionSucEtapaProd extends Model
         return $this->belongsTo(UnidadMedida::class,'unidadmedida_id');
     }
 
+    // Campos adicionales configurados para esta etapa (ordenados por 'orden')
+    public function campos()
+    {
+        return $this->hasMany(EtapaProdCampo::class, 'apsucetapaprod_id')
+                    ->orderBy('orden');
+    }
+
 }

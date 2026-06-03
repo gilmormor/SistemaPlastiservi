@@ -139,6 +139,9 @@
     </div>
 </div>
 
+{{-- Campos adicionales configurados para esta etapa (si los hay) --}}
+@include('opdetregprodtemp._campos_adicionales')
+
 <div class="form-group col-xs-12 col-sm-2">
     <div class="row">
         <div class="form-group col-xs-12 col-sm-12">
