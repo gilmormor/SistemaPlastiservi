@@ -131,6 +131,17 @@ class Producto extends Model
         return $this->hasOne(AcuerdoTecnico::class);
     }
 
+    /**
+     * Peso unitario del producto (kg por unidad).
+     * Se deriva del acuerdo técnico via accesor `peso_unitario` del AT.
+     * Devuelve 0 si no hay AT o no se puede calcular.
+     */
+    public function getPesoUnitarioAttribute()
+    {
+        if (!$this->acuerdotecnico) return 0;
+        return $this->acuerdotecnico->peso_unitario;
+    }
+
     //RELACION MUCHO A MUCHOS vendedor A TRAVES DE producto_vendedor
     public function vendedores()
     {

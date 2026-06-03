@@ -3,8 +3,10 @@
 <input type="hidden" name="usuario_id" id="usuario_id" value="{{old('usuario_id', auth()->id() ?? '')}}">
 <input type="hidden" name="guardar_updatednum_at" id="guardar_updatednum_at" value="{{old('guardar_updatednum_at', session('opdet_updatednum_at') ?? '')}}">
 <input type="hidden" name="editar_updatednum_at" id="editar_updatednum_at" value="{{old('editar_updatednum_at', isset($data->updated_at) ? (strtotime($data->updated_at) ?? '') : '')}}">
-<input type="hidden" name="cant" id="cant" value="{{old('cant', isset($data) ? ($data->cant ?? '0') : $opdet->cant)}}"/>
-<input type="hidden" name="unidadmedida_id" id="unidadmedida_id" value="{{old('cant', isset($opdet) ? $tablas['unidadmedida_id'] : "")}}"/>
+<input type="hidden" name="cantent" id="cantent" value="{{old('cantent', isset($data) ? ($data->cantent ?? '0') : ($opdet->cant ?? 0))}}"/>
+<input type="hidden" name="cantprod" id="cantprod" value="{{old('cantprod', $data->cantprod ?? '0')}}"/>
+<input type="hidden" name="unidadmedidaent_id" id="unidadmedidaent_id" value="{{old('unidadmedidaent_id', $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? '')}}"/>
+<input type="hidden" name="unidadmedidasal_id" id="unidadmedidasal_id" value="{{old('unidadmedidasal_id', $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? '')}}"/>
 <input type="hidden" name="cantrec" id="cantrec" value="{{old('cantrec', $opdet->cantrec ?? 0)}}"/>
 
 <div class="row">
@@ -59,6 +61,14 @@
         <label for="kgrec" class="control-label" title="Kilos procesar">Kg Procesar</label>
         <input type="text" name="kgrec" id="kgrec" class="form-control" value="{{old('kgrec', number_format($opdet->kgrec, 2, ',', '.') ?? '')}}" valor="{{$opdet->kgrec}}" style="text-align:right;" readonly disabled/>
     </div>
+    <div class="form-group col-xs-12 col-sm-1">
+        <label for="kg" class="control-label" title="Total Kg OT">Total Kg OT</label>
+        <input type="text" name="kg" id="kg" class="form-control" value="{{old('kg', number_format($opdet->op->otdet->kg, 2, ',', '.') ?? '')}}" valor="{{$opdet->op->otdet->kg}}" style="text-align:right;" readonly disabled/>
+    </div>
+    <div class="form-group col-xs-12 col-sm-1">
+        <label for="kgprog" class="control-label" title="Kilos Programados">Kg Prog</label>
+        <input type="text" name="kgprog" id="kgprog" class="form-control" value="{{old('kgprog', number_format($opdet->op->otdet->kgprog, 2, ',', '.') ?? '')}}" valor="{{$opdet->op->otdet->kgprog}}" style="text-align:right;" readonly disabled/>
+    </div>
 </div>
 <div class="row">
     <div class="form-group col-xs-12 col-sm-3">
@@ -82,21 +92,22 @@
     <div class="row">
         <div class="form-group col-xs-12 col-sm-12">
             <label for="kgprod" class="control-label" title="Kg Procesados">Kg Procesados</label>
-            <input type="text" name="kgprod" id="kgprod" class="form-control" value="{{old('kgprod', number_format($opdet->kgprod + $opdet->totales_pendientes->total_kg - ($data->kg ?? 0), 2, ',', '.') ?? '')}}" valor={{$opdet->kgprod + $opdet->totales_pendientes->total_kg  - ($data->kg ?? 0)}} style="text-align:right;" readonly disabled/>
+            <input type="text" name="aux_kgprod_opdet" id="aux_kgprod_opdet" class="form-control" value="{{old('aux_kgprod_opdet', number_format($opdet->kgprod + $opdet->totales_pendientes->total_kgprod - ($data->kgprod ?? 0), 2, ',', '.') ?? '')}}" valor={{$opdet->kgprod + $opdet->totales_pendientes->total_kgprod  - ($data->kgprod ?? 0)}} style="text-align:right;" readonly disabled/>
         </div>
         <div class="form-group col-xs-12 col-sm-12">
             <label for="saldokg" class="control-label" title="Kg Faltantes">Kg Faltantes</label>
-            {{-- <input type="text" name="saldokg" id="saldokg" class="form-control" valor="{{$opdet->saldokg  ? ($opdet->saldokg - ($opdet->totales_pendientes->total_kg + $opdet->totales_pendientes->total_kgscrap + ($data->kg ?? 0))) : '0'}}" value="{{old('saldokg', number_format($opdet->saldokg - ($opdet->totales_pendientes->total_kg + $opdet->totales_pendientes->total_kgscrap + ($data->kg ?? 0)), 2, ',', '.') ?? '')}}" style="text-align:right;" readonly disabled/> --}}
-            <input type="text" name="saldokg" id="saldokg" class="form-control" valor="{{$opdet->saldokg  ? ($opdet->saldokg + ($data->kg ?? 0) - ($opdet->totales_pendientes->total_kg + $opdet->totales_pendientes->total_kgscrap)) : '0'}}" value="{{old('saldokg', number_format($opdet->saldokg + ($data->kg ?? 0) - ($opdet->totales_pendientes->total_kg + $opdet->totales_pendientes->total_kgscrap), 2, ',', '.') ?? '')}}" style="text-align:right;" readonly disabled/>
+            {{-- saldokg dinamico: saldo kg del opdet + (kgent del registro editado) - (pendientes_kgprod + pendientes_kgscrap) --}}
+            <input type="text" name="saldokg" id="saldokg" class="form-control" valor="{{$opdet->saldokg  ? ($opdet->saldokg + ($data->kgent ?? 0) - ($opdet->totales_pendientes->total_kgprod + $opdet->totales_pendientes->total_kgscrap)) : '0'}}" value="{{old('saldokg', number_format($opdet->saldokg + ($data->kgent ?? 0) - ($opdet->totales_pendientes->total_kgprod + $opdet->totales_pendientes->total_kgscrap), 2, ',', '.') ?? '')}}" style="text-align:right;" readonly disabled/>
         </div>
     </div>
 </div>
 <div class="form-group col-xs-12 col-sm-2">
     <div class="row">
         <div class="form-group col-xs-12 col-sm-12">
-            <label for="kg" class="control-label" title="Procesar Kg">Kg</label>
-            <input type="text" name="aux_kg" id="aux_kg" nomcamp="kg" class="form-control numerico requerido validarsaldokg sumarkg" valor="{{$data->kg  ?? ''}}" valorOriginal="{{$data->kg  ?? '0'}}" value="{{old('kg', $data->kg  ?? '')}}" style="text-align:right;" maxlength="10"/>
-            <input type="hidden" name="kg" id="kg" value="{{old('kg', $data->kg ?? '')}}" class="form-control requerido"/>
+            <label for="aux_kgprod" class="control-label" title="Kg producidos (buenos). kgent = kgprod + kgscrap se calcula automático">Kg Producción</label>
+            <input type="text" name="aux_kgprod" id="aux_kgprod" nomcamp="kgprod" class="form-control numerico requerido validarsaldokg sumarkg" valor="{{$data->kgprod ?? ''}}" valorOriginal="{{$data->kgprod ?? '0'}}" value="{{old('kgprod', $data->kgprod ?? '')}}" style="text-align:right;" maxlength="10"/>
+            <input type="hidden" name="kgprod" id="kgprod" value="{{old('kgprod', $data->kgprod ?? '')}}" class="form-control requerido"/>
+            <input type="hidden" name="kgent" id="kgent" value="{{old('kgent', $data->kgent ?? '')}}"/>
         </div>
         <div class="form-group col-xs-12 col-sm-12">
             <label for="kgscrap" class="control-label" title="Kg Scrap">Kg Scrap</label>
@@ -131,24 +142,15 @@
 <div class="form-group col-xs-12 col-sm-2">
     <div class="row">
         <div class="form-group col-xs-12 col-sm-12">
-            <label for="aux_cant" class="control-label" title="Cantidad">Cantidad</label>
-            <input type="text" name="aux_cant" id="aux_cant" class="form-control numerico requerido" valor="{{$data->cant  ?? '0'}}" valorOriginal="{{$data->cant  ?? '0'}}" value="{{old('cant', number_format($data->cant ?? '0', 2, ',', '.'))}}" style="text-align:right;" readonly/>
+            <label for="aux_cantprod" class="control-label requerido" title="Cantidad producida en UM de salida de la etapa">Cant. Producida ({{$opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? 'sin configurar'}})</label>
+            <input type="text" name="aux_cantprod" id="aux_cantprod" class="form-control numerico requerido" valor="{{$data->cantprod  ?? '0'}}" valorOriginal="{{$data->cantprod  ?? '0'}}" value="{{old('cantprod', number_format($data->cantprod ?? '0', 2, ',', '.'))}}" style="text-align:right;" maxlength="10"/>
         </div>
         <div class="form-group col-xs-12 col-sm-12">
-            <label for="unidadmedida_id" class="control-label requerido" data-toggle='tooltip' title="Unidad Medida">Unidad Medida ({{$opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? 'sin configurar'}})</label>
-            <select name="unidadmedida_id" id="unidadmedida_id" class="form-control select2" required>
-                <option value="">Seleccione...</option>
-                @foreach($tablas['unidadmedidas'] as $unidadmedida)
-                    <option
-                        value="{{$unidadmedida->id}}"
-                        @if (isset($data) and ($data->unidadmedida_id==$unidadmedida->id))
-                            {{'selected'}}
-                        @elseif (isset($opdet) and (optional($opdet->areaproduccionsucetapaprod)->unidadmedida_id==$unidadmedida->id))
-                            {{'selected'}}
-                        @endif
-                        >{{$unidadmedida->nombre}}</option>
-                @endforeach
-            </select>
+            <label class="control-label" data-toggle='tooltip' title="Unidades de medida configuradas para la etapa">UM Etapa</label>
+            <div style="font-size:11px;color:#555;">
+                <strong>Entrada:</strong> {{ $opdet->areaproduccionsucetapaprod->unidadmedida_entrada_nombre ?? '—' }}<br>
+                <strong>Salida:</strong> {{ $opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? 'sin configurar' }}
+            </div>
         </div>
     </div>
 </div>

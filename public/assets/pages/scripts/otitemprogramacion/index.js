@@ -8,6 +8,9 @@ $(document).ready(function () {
 		todayHighlight: true
     }).datepicker("setDate");
 
+    // Inputs de filtro: solo enteros, sin decimales ni negativos
+    $(".numerico-entero").numeric({ decimal: false, negative: false });
+    // Inputs generales con decimales (los del DataTable los maneja claseformatonumerico en draw)
     $(".numerico").numeric();
     nombreTabla = "#tabla-data-factura";
     $(nombreTabla).append(encabezadoTabla());
@@ -265,6 +268,12 @@ function calcularDigitoVerificador(rut) {
   // Evento cuando el campo pierde el foco (blur)
 $('#rut1').on('blur', function() {
     let rut = $(this).val().trim();
+
+    // Si el campo está vacío no validar ni mostrar error
+    if (rut === '') {
+        $('#error-message').hide();
+        return;
+    }
 
     // Agregar el guion si no está presente
     if (!rut.includes('-') && rut.length >= 8) {
@@ -651,6 +660,9 @@ function configurarTabla(nombreTabla,url,serverSide) {
                     <a ${aux_displaybtnac} id="bntaprobnv${data.id}" name="bntaprobnv${data.id}" class="btn-accion-tabla btn-sm action-buttons botonac${data.id}" onclick="procesarRegOt(${data.id},${data.updatednum_at},${data.otupdatednum_at})" title="Enviar a Producción">
                         <i class="fa fa-fw fa-save fa-lg"></i>
                     </a>
+                    <a id="bntcerrarprog${data.id}" name="bntcerrarprog${data.id}" class="btn-accion-tabla btn-sm action-buttons botonac${data.id}" onclick="cerrarOpDet(${data.id},${data.updatednum_at},${data.otupdatednum_at})" title="Cerrar programación">
+                        <i class="fa fa-fw fa-close text-danger fa-lg"></i>
+                    </a>
                 </div>`;
             $('td', row).eq(20).html(aux_text);
 
@@ -753,9 +765,10 @@ function format(d) {
     aux_updated_at = $("#fila" + d.id).attr('updated_at');
     aux_botoneditarep = ``;
     if($("#aux_et").val() == 1){
+        // Se pasa también d.id (otdet_id) para que al guardar se sepa qué fila actualizar
         aux_botoneditarep = `
-                <button type="button" class="btn btn-sm btn-primary mt-2" 
-                    onclick="editaretapasprod(${d.acuerdotecnico_id})" title="Editar etapas de producción">
+                <button type="button" class="btn btn-sm btn-primary mt-2"
+                    onclick="editaretapasprod(${d.acuerdotecnico_id}, ${d.id})" title="Editar etapas de producción">
                     + Editar etapas
                 </button>
             `;
@@ -1000,6 +1013,20 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
 			'<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-bottom text-aqua" title="Mostrar Detalle"></i>'
 		);
 	}
+    // Validar que la tabla de etapas de produccion tenga al menos un registro real.
+    // Se excluye fila-vacia-{id} que es el placeholder "Sin etapas de producción".
+    if ($('#etapaprod' + id + ' tbody tr').not('#fila-vacia-' + id).length === 0) {
+        swal({
+            title: `Falta incluir Informacion!`,
+            text: "Debe asignar etapas de produccion.",
+            buttons: {
+                cancel: "Cancelar"
+            },
+            icon: 'warning',
+        });
+        return 0;
+    }
+
     if(validarCamposRequeridos(id)){
         aux_apetapaprod = recogerEtapas(id);
         //return recogerEtapas(id);
@@ -1157,6 +1184,74 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
 
 }
 
+function cerrarOpDet(id,updatednum_at,otupdatednum_at) {
+	let filaId = id; // O dinámico según el contexto
+	let row = tabla.row('#fila' + filaId);
+
+    aux_apetapaprod = recogerEtapas(id);
+    //return recogerEtapas(id);
+    $("#aux_detalle" + id).on('click');
+    var data = {
+        otdet_id: id,
+        nfila: id,
+        modulo_id: 34,
+        updatednum_at: updatednum_at,
+        otupdatednum_at: otupdatednum_at,
+        nombreobjeto: "bntaprobnv" + id,
+        obs         : $("#obs" + id).val(),
+        kgprod      : $("#kgprod" + id).attr("valor"),
+        kgprodOriginal : $("#kgprod" + id).attr("valorOriginal"),
+        kgprog      : $("#kgprog" + id).attr("valor"),
+        statusCerrar_otDet : 1,
+        _token: $('input[name=_token]').val()
+    };
+    //return recogerEtapas(data);
+    ruta = '/otitemprogramacion/cerraropdet';
+    mensaje = 'Cerrar OtDet';
+
+
+    /* return swal({
+        title: `¿${mensaje}?`,
+        text: "Esta acción no se puede deshacer!",
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+        icon: 'warning',
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data, ruta, 'procesarDTE');
+        }
+    }); */
+
+    return swal({
+        title: `¿${mensaje}?`,
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        content: {
+            element: "input",
+            attributes: {
+                placeholder: "Escribe un motivo...",
+                type: "text",
+            },
+        },
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value === null) return;
+
+        if (!value.trim()) {
+            swal("Error", "Debes ingresar un texto", "error");
+            return;
+        }
+
+        data.obs = value;
+        ajaxRequestGeneral(data, ruta, 'procesarDTE');
+    });
+}
+
 function recibirChange(aux_this) {
     //console.log(aux_this);
     //console.log(aux_this.id);
@@ -1274,21 +1369,139 @@ function recogerEtapas(idFila) {
     return etapas;
 }
 
-function editaretapasprod(id){
-    /* var data = {
-        acuerdotecnico_id : id,
-        updated_at : updated_at,
-        ruta       : aux_ruta,
-        _token: $('input[name=_token]').val()
-    }; */
-    var loc = window.location;
-    //alert(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+"/editar");
-    /* console.log(loc.protocol+"//"+loc.hostname+"/"+form.attr('href')+"/"+id+updated_at+"/editar");
-    return false; */
-    window.open(loc.protocol + "//" + loc.hostname + "/acuerdotecnicoetapaprod/" + id + "/editar",'_blank');
-    /* window.location = loc.protocol+"//"+loc.hostname+"/acuerdotecnicoetapaprod/"+id+"/editar";
+// Variables de estado del modal (accesibles desde el handler del botón Guardar)
+var _etapasAtId    = null; // acuerdotecnico_id activo en el modal
+var _etapasOtdetId = null; // otdet_id que originó la apertura (para refrescar la fila)
 
-    window.open(aux_data.ruta, '_blank');
-    ruta = '/picking/validareditarpicking';
-    ajaxRequest(data,ruta,"validareditarpicking"); */
+/**
+ * editaretapasprod — abre el modal de asignación de etapas.
+ *
+ * Hace GET a /acuerdotecnicoetapaprod/{id}/modal-data, que devuelve:
+ *   - etapaprods: todas las etapas disponibles para el producto
+ *   - seleccionadas: IDs de las ya asignadas (para pre-marcar los checkboxes)
+ *
+ * @param {number} acuerdotecnico_id  - ID del acuerdo técnico del producto
+ * @param {number} otdet_id           - ID del otdet que inició la acción (para refrescar su fila)
+ */
+function editaretapasprod(acuerdotecnico_id, otdet_id) {
+    _etapasAtId    = acuerdotecnico_id;
+    _etapasOtdetId = otdet_id;
+
+    // Limpiar contenido previo y mostrar cargando
+    $('#modalEtapasProdBody').html('<p class="text-muted text-center"><i class="fa fa-spinner fa-spin"></i> Cargando etapas...</p>');
+    $('#modalEtapasProdInfo').text('');
+    $('#modalEtapasProd').modal('show');
+
+    $.ajax({
+        url  : '/acuerdotecnicoetapaprod/' + acuerdotecnico_id + '/modal-data',
+        type : 'GET',
+        success: function (resp) {
+            // Info del producto en el encabezado del modal
+            $('#modalEtapasProdInfo').html(
+                '<strong>Producto:</strong> ' + resp.nombre_producto +
+                ' &nbsp;|&nbsp; <strong>ID Prod:</strong> ' + resp.producto_id +
+                ' &nbsp;|&nbsp; <strong>AT:</strong> ' + resp.at_id
+            );
+
+            if (resp.etapaprods.length === 0) {
+                $('#modalEtapasProdBody').html(
+                    '<p class="text-warning">No hay etapas de producción configuradas para este producto.</p>'
+                );
+                return;
+            }
+
+            // Construir select multiple tipo selectpicker (Bootstrap Select),
+            // igual al usado en los filtros de esta misma pantalla.
+            // data-actions-box añade los botones "Seleccionar todo / Ninguno".
+            var htmlBody = '<label>Etapas de Producción</label>' +
+                           '<select id="selectEtapasProd" ' +
+                                   'class="selectpicker form-control" ' +
+                                   'multiple ' +
+                                   'data-live-search="true" ' +
+                                   'data-actions-box="true" ' +
+                                   'title="Seleccione las etapas...">' ;
+
+            resp.etapaprods.forEach(function (e) {
+                // pre-seleccionar las etapas que el producto ya tiene asignadas
+                var selected = (resp.seleccionadas.indexOf(e.areaproduccionsucetapaprod_id) !== -1)
+                               ? 'selected' : '';
+                htmlBody += '<option value="' + e.areaproduccionsucetapaprod_id + '" ' + selected + '>'
+                          + e.etapaprod_nombre + ' — ' + e.sucursal_nombre
+                          + '</option>';
+            });
+
+            htmlBody += '</select>';
+
+            $('#modalEtapasProdBody').html(htmlBody);
+
+            // Inicializar el selectpicker después de inyectar el HTML en el DOM
+            //$('#selectEtapasProd').selectpicker();
+            $("#selectEtapasProd").selectpicker({
+                noneSelectedText : "Seleccione...", // by this default "Nothing selected" -->will change to Please Select
+                selectAllText : "Seleccionar todo",
+                deselectAllText : "Borrar todo",
+                noneResultsText: "No se encontraron resultados para {0}", // Texto cuando no hay coincidencias
+                });
+
+        },
+        error: function () {
+            $('#modalEtapasProdBody').html(
+                '<p class="text-danger">Error al cargar las etapas. Intente nuevamente.</p>'
+            );
+        }
+    });
 }
+
+/**
+ * Handler del botón "Guardar etapas" del modal.
+ *
+ * Recoge los checkboxes marcados, hace POST a /actualizar-ajax,
+ * y en éxito actualiza en memoria el detetapaprod_array de TODAS las filas
+ * del DataTable que compartan el mismo acuerdotecnico_id (puede haber varias OTs
+ * del mismo producto). Si la fila tiene el detalle expandido, lo re-renderiza.
+ */
+$('#btnGuardarEtapas').click(function () {
+    // Recoger los IDs de las opciones seleccionadas en el select multiple
+    var ids = $('#selectEtapasProd').val() || [];
+
+    // Deshabilitar el botón mientras se guarda para evitar doble clic
+    var $btn = $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Guardando...');
+
+    $.ajax({
+        url  : '/acuerdotecnicoetapaprod/' + _etapasAtId + '/actualizar-ajax',
+        type : 'POST',
+        data : { apsucetapaprod_id: ids, _token: $('input[name=_token]').val() },
+        success: function (resp) {
+            $btn.prop('disabled', false).html('<i class="fa fa-save"></i> Guardar etapas');
+
+            if (resp.resp !== 1) {
+                Biblioteca.notificaciones(resp.mensaje, 'Plastiservi', 'error');
+                return;
+            }
+
+            $('#modalEtapasProd').modal('hide');
+            Biblioteca.notificaciones(resp.mensaje, 'Plastiservi', 'success');
+
+            // Actualizar en memoria TODAS las filas con el mismo acuerdotecnico_id.
+            // Puede haber múltiples ítems de OTs distintas para el mismo producto.
+            tabla.rows().every(function () {
+                var rowData = this.data();
+                if (rowData.acuerdotecnico_id != _etapasAtId) return;
+
+                // rowData es referencia al objeto interno de DataTables: modificarlo
+                // directamente actualiza el dato sin re-renderizar la fila (que destruiría
+                // elementos personalizados como prioridad{id} y bntcerrarprog{id}).
+                rowData.detetapaprod_array = resp.detetapaprod_array;
+
+                // Si el detalle está expandido → re-renderizarlo con los datos nuevos
+                if (this.child.isShown()) {
+                    this.child(format(rowData)).show();
+                }
+            });
+        },
+        error: function () {
+            $btn.prop('disabled', false).html('<i class="fa fa-save"></i> Guardar etapas');
+            Biblioteca.notificaciones('Error de conexión al guardar.', 'Plastiservi', 'error');
+        }
+    });
+});

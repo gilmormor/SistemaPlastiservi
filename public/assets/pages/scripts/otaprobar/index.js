@@ -12,7 +12,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         "order"       : [[ 1, "desc" ]],
-        'ajax'        : "otaprobarpage",
+        'ajax'        : "/otaprobar/otaprobarpage",
         'columns'     : [
             {
                 className: 'dt-control',
@@ -157,7 +157,7 @@ function format(d) {
     //console.log(d);
     //console.log(d.nvdetalle);
     const detalleArray = decodeHtml(d.nvdetalle).split(';').map(detalle => {
-        const [producto_id, cant, precio,subtotal,kg,producto_nombre,kgprod,id,unidadmedida_nombre] = detalle.split('|');
+        const [producto_id, cant, precio,subtotal,kg,producto_nombre,kgprod,id,unidadmedida_nombre,requiere_fabricacion] = detalle.split('|');
         return {
             producto_id: parseInt(producto_id),
             cant: parseInt(cant),
@@ -167,7 +167,8 @@ function format(d) {
             precio: parseFloat(precio),
             subtotal: parseInt(subtotal),
             acuerdotecnico_id: id,
-            unidadmedida_nombre : unidadmedida_nombre
+            unidadmedida_nombre : unidadmedida_nombre,
+            requiere_fabricacion: requiere_fabricacion
         };
     });
     // Generar tabla HTML
@@ -182,6 +183,7 @@ function format(d) {
                         <th style="text-align: center;" title="Cantidad Unidades">Cant</th>
                         <th style="text-align: center;" title="Unidad Medida">UM</th>
                         <th style="text-align: center;" title="Kg segun formula">Kg</th>
+                        <th style="text-align: center;" title="Requiere Fabricación?">ReqFab</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -203,6 +205,7 @@ function format(d) {
                 <td style="text-align: center;">${detalle.cant}</td>
                 <td style="text-align: center;">${detalle.unidadmedida_nombre}</td>
                 <td style="text-align: right;">${detalle.kg}</td>
+                <td style="text-align: center;">${detalle.requiere_fabricacion === '1' ? 'Sí' : 'No'}</td>
             </tr>
         `;
     });

@@ -93,12 +93,12 @@
                 </tr>
                 <tr>
                     <td>Cód. Producto:</td>
-                    <td>{{ $productoCodigo }}</td>
+                    <td>{{ $producto_id }}</td>
                 </tr>
                 <tr>
                     <td>Cant / Kg:</td>
-                    <td><strong>{{ number_format($produccion->cant, 0, ',', '.') }}</strong>
-                        uds / <strong>{{ number_format($produccion->kg, 2, ',', '.') }}</strong> kg</td>
+                    <td><strong>{{ number_format($produccion->cantprod, 0, ',', '.') }}</strong>
+                        {{ $produccion->unidadmedidasal->nombre ?? 'UM' }} / <strong>{{ number_format($produccion->kgprod, 2, ',', '.') }}</strong> kg</td>
                 </tr>
                 <tr>
                     <td>Fecha prod.:</td>

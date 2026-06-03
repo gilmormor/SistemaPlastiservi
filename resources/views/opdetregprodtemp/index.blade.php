@@ -26,27 +26,31 @@ Registrar Produccion
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                    <thead>
-                        <tr>
-                            <th class="width70">ID</th>
-                            <th class="width70">OP ID</th>
-                            <th class="width70">opdet_id</th>
-                            <th class="width70">Razon Social</th>
-                            <th class="width70">Total kg</th>
-                            <th class="width70">Kg Recibidos</th>
-                            <th class="width70">Kg Procesados</th>
-                            <th class="width70">Kg Scrap</th>
-                            <th class="width70">Kg</th>
-                            <th class="width70">Kg Scrap</th>
-                            <th class="width70">Kg Saldo</th>
-                            <th class="width70"></th>
-                            <th class="width70">Usuario</th>
-                            <th class="width70">Operario</th>
-                            <th class="width70">Accion</th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                        <thead>
+                            <tr>
+                                <th class="width70">ID</th>
+                                <th class="width70">ot</th>
+                                <th class="width70">op_id</th>
+                                <th class="width70">opdet_id</th>
+                                <th class="width70">Razon Social</th>
+                                <th class="width70" title="Kilos recibidos">KgRec</th>
+                                <th class="width70" title="Kilos procesados">KgProc</th>
+                                <th class="width70">Kg Scrap</th>
+                                <th class="width70">Kg</th>
+                                <th class="width70">Kg Scrap</th>
+                                <th class="width70">Kg Saldo</th>
+                                <th class="width70"></th>
+                                <th class="width70">Usuario</th>
+                                <th class="width70">Maquina</th>
+                                <th class="width70">Operario</th>
+                                <th class="width70" title="Estado del cierre de la unidad de medida de salida de la etapa (rollo, bolsa, pieza, etc.)">Cierre UM Sal.</th>
+                                <th class="width70">Accion</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -64,7 +64,7 @@
 					<th width="30px">Cant.</th>
 					<th width="25px" class="textcenter">UN</th>
 					<th width="150px" class="textleft">Descripción</th>
-					<th width="15px">Fab</th>
+					<th width="15px" title="Requiere Fabricación">ReqFab</th>
 					<th width="30px" class="textright">Total Kg</th>
 				</tr>
 			</thead>
@@ -88,7 +88,7 @@
 								<br><span class="small-text">{{$otdet->obs}}</span>
 							@endif
 						</td>
-						<td class="textcenter">{{$otdet->requiere_fabricacion == 1 ? "Si" : "No"}}</td>
+						<td class="textcenter">{{$otdet->requiere_fabricacion == 1 ? "Sí" : "No"}}</td>
 						<td class="textright">{{number_format($otdet->kg, 2, ",", ".")}}</td>
 					</tr>
 				@endforeach

@@ -278,7 +278,7 @@ function format(d) {
             subtotal: parseInt(subtotal),
             producto_nombre: producto_nombre,
             totalkilos: parseFloat(totalkilos),
-            requiere_fabricacion: requiere_fabricacion,
+            requiere_fabricacion: parseInt(requiere_fabricacion),
             acuerdotecnico_id : acuerdotecnico_id
         };
     });
@@ -298,7 +298,7 @@ function format(d) {
                         <th style="text-align: right;" title="Precio unitario">Precio</th>
                         <th style="text-align: right;" title="Total kilos">Kg</th>
                         <th style="text-align: right;">Subtotal</th>
-                        <th style="text-align: center;">Fabr</th>
+                        <th style="text-align: center;" title="Requiere Fabricación">ReqFab</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -324,7 +324,7 @@ function format(d) {
                 <td style="text-align: right;">${detalle.precio.toFixed(2)}</td>
                 <td style="text-align: right;">${detalle.totalkilos.toFixed(2)}</td>
                 <td style="text-align: right;">${detalle.subtotal.toFixed(2)}</td>
-                <td style="text-align: center;">${detalle.requiere_fabricacion}</td>
+                <td style="text-align: center;">${detalle.requiere_fabricacion === 1 ? 'Sí' : 'No'}</td>
             </tr>
         `;
     });
@@ -480,7 +480,6 @@ function datoslnv1(){
         areaproduccion_id : $("#areaproduccion_id").val(),
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
-        aprobstatus       : $("#aprobstatus").val(),
         comuna_id         : $("#comuna_id").val(),
         plazoentrega      : $("#plazoentrega").val(),
         producto_id       : $("#producto_idPxP").val(),
@@ -500,7 +499,6 @@ function datoslnv1(){
             "&areaproduccion_id=" + data1.areaproduccion_id +
             "&tipoentrega_id=" + data1.tipoentrega_id +
             "&notaventa_id=" + data1.notaventa_id +
-            "&aprobstatus=" + data1.aprobstatus +
             "&comuna_id=" + data1.comuna_id +
             "&plazoentrega=" + data1.plazoentrega +
             "&filtro=" + data1.filtro +

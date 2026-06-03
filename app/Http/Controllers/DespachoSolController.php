@@ -35,6 +35,7 @@ use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovDet_BodSolDesp;
+use App\Models\InvMovDetNVDet;
 use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
@@ -1022,6 +1023,17 @@ class DespachoSolController extends Controller
                             $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant;
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
+
+                            //ESTO ES PARA EL MODULO DE PRODUCCION
+                            //SI EL CAMPO notaventadetalle->requiere_fabricacion=1 ENTONCES DEBE 
+                            //CREAR UN REGISTRO EN invmovdetnvdet PARA CONTROLAR EL SALDO DE LO QUE 
+                            //INGRESO POR PRODUCCION Y LO QUE FUE DEVUELTO POR SOLICITUD DE DESPACHO
+                            if($despachosoldet->notaventadetalle->requiere_fabricacion == 1){
+                                $array_invmovdetnvdet = array();
+                                $array_invmovdetnvdet["invmovdet_id"] = $invmovdet->id;
+                                $array_invmovdetnvdet["notaventadetalle_id"] = $despachosoldet->notaventadetalle->id;
+                                InvMovDetNVDet::create($array_invmovdetnvdet);
+                            }
                         }
                     }
                 }
@@ -1590,6 +1602,17 @@ class DespachoSolController extends Controller
                                         $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
                                         $array_invmovdet["invmov_id"] = $invmov->id;
                                         $invmovdet = InvMovDet::create($array_invmovdet);
+
+                                        //ESTO ES PARA EL MODULO DE PRODUCCION
+                                        //SI EL CAMPO notaventadetalle->requiere_fabricacion=1 ENTONCES DEBE 
+                                        //CREAR UN REGISTRO EN invmovdetnvdet PARA CONTROLAR EL SALDO DE LO QUE 
+                                        //INGRESO POR PRODUCCION Y LO QUE FUE DEVUELTO POR SOLICITUD DE DESPACHO
+                                        if($despachosoldet->notaventadetalle->requiere_fabricacion == 1){
+                                            $array_invmovdetnvdet = array();
+                                            $array_invmovdetnvdet["invmovdet_id"] = $invmovdet->id;
+                                            $array_invmovdetnvdet["notaventadetalle_id"] = $despachosoldet->notaventadetalle->id;
+                                            InvMovDetNVDet::create($array_invmovdetnvdet);
+                                        }
                                     }
                 
                                 }
@@ -2525,7 +2548,7 @@ function consulta($request,$aux_sql,$orden){
         clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
         GROUP_CONCAT(
-            CONCAT_WS('|', notaventadetalle.producto_id, notaventadetalle.cant, notaventadetalle.preciounit, notaventadetalle.subtotal,if(ISNULL(vista_sumsoldespdet.cantsoldesp),0,vista_sumsoldespdet.cantsoldesp), notaventadetalle.requiere_fabricacion, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),notaventadetalle.totalkilos)
+            CONCAT_WS('|', notaventadetalle.producto_id, notaventadetalle.cant, notaventadetalle.preciounit, notaventadetalle.subtotal,if(ISNULL(vista_sumsoldespdet.cantsoldesp),0,vista_sumsoldespdet.cantsoldesp), notaventadetalle.requiere_fabricacion, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),notaventadetalle.totalkilos,notaventadetalle.id)
             SEPARATOR ';'
         ) AS nvdetalle,
         ot.id as ot_id,ot.aprobstatus as ot_aprobstatus
@@ -2749,7 +2772,7 @@ function consulta($request,$aux_sql,$orden){
         ORDER BY $aux_orden;";
         //dd($sql);
     }
-
+    $aux_permCambiarRF = can('cambiar-estatus-requiere-fabricacion-nota-de-venta',false);
     $datas = DB::select($sql);
     //dd($datas);
     if($aux_sql==1){
@@ -2773,15 +2796,16 @@ function consulta($request,$aux_sql,$orden){
             foreach ($detalleArray as $index => $detalle) {
                 //dd($detalle);
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
-                list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);
+                list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos,$notaventadetalle_id) = explode('|', $detalle);
                 //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
-                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos]);
+                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos,$notaventadetalle_id]);
                 $detalleArrayFinal[] = $detalleFinal;
             }
             //dd(implode(';', $detalleArrayFinal));
     
             // Reconstruir el campo detallenv con los nuevos valores
             $data->nvdetalle = implode(';', $detalleArrayFinal);
+            $data->permCambiarRF = $aux_permCambiarRF;
         }
     }
     //dd($datas);

@@ -87,26 +87,63 @@ public function etapaprod()
 
         $aux_statusaprob = "(opdetregprodtemp.aprobstatus in (0,3) or ISNULL(opdetregprodtemp.aprobstatus))";
         
-        $sql = "SELECT opdetregprodtemp.id,opdetregprodtemp.etapaprod_id,opdet.op_id,opdetregprodtemp.opdet_id,
+        $sql = "SELECT opdetregprodtemp.id,ot.id as ot_id,opdetregprodtemp.etapaprod_id,
+                opdet.op_id,opdetregprodtemp.opdet_id,
                 sucursal.nombre AS sucursal_nombre,
                 cliente.razonsocial,
                 opdet.kg as opdet_kg,opdet.cant as opdet_cant,opdet.cantrec as opdet_cantrec,
                 opdet.kgrec as opdet_kgrec,opdet.cantprod as opdet_cantprod,
                 opdet.kgprod as opdet_kgprod,opdet.kgscrap as opdet_kgscrap,
-                opdetregprodtemp.kg,opdetregprodtemp.kgscrap,opdetregprodtemp.cant,
-                (opdet.kgrec - (opdet.kgprod + opdetregprodtemp.kg + opdetregprodtemp.kgscrap)) as kgsaldo,
+                opdetregprodtemp.kgent,opdetregprodtemp.kgprod,opdetregprodtemp.kgscrap,
+                opdetregprodtemp.cantent,opdetregprodtemp.cantprod,
+                opdetregprodtemp.unidadmedidaent_id,opdetregprodtemp.unidadmedidasal_id,
+                (opdet.kgrec - (opdet.kgprod + opdetregprodtemp.kgprod + opdetregprodtemp.kgscrap)) as kgsaldo,
                 opdetregprodtemp.aprobstatus,opdetregprodtemp.aprobobs,
                 usuario.nombre AS usuario_nombre,operario.nombre AS operario_nombre,
                 opdetregprodtemp.updated_at,
-                UNIX_TIMESTAMP(opdetregprodtemp.updated_at) as updatednum_at
-                from opdetregprodtemp INNER JOIN sucursal 
+                UNIX_TIMESTAMP(opdetregprodtemp.updated_at) as updatednum_at,
+                /* rollo_cerrado: 1 = la UM salida cerro una unidad (cantprod>0), 0 = parcial/abierto */
+                (CASE WHEN IFNULL(opdetregprodtemp.cantprod,0) > 0 THEN 1 ELSE 0 END) AS rollo_cerrado,
+                /* puede_enviar_aprob: no hay anterior sin enviar DENTRO DEL MISMO ROLLO
+                   (mismo opdet_id y sin cerrador entre medio). */
+                (SELECT COUNT(*) FROM opdetregprodtemp t1
+                    WHERE t1.opdet_id = opdetregprodtemp.opdet_id
+                      AND t1.id < opdetregprodtemp.id
+                      AND (t1.aprobstatus IS NULL OR t1.aprobstatus = 0)
+                      AND t1.deleted_at IS NULL
+                      AND NOT EXISTS (
+                          SELECT 1 FROM opdetregprodtemp c1
+                          WHERE c1.opdet_id = opdetregprodtemp.opdet_id
+                            AND c1.id >= t1.id
+                            AND c1.id < opdetregprodtemp.id
+                            AND IFNULL(c1.cantprod,0) > 0
+                            AND c1.deleted_at IS NULL
+                      )) = 0 AS puede_enviar_aprob,
+                /* puede_eliminar: estado != 2 Y no hay posterior del mismo opdet_id
+                   (sin scoping de rollo: eliminar un historico rompe acumulados). */
+                (CASE WHEN opdetregprodtemp.aprobstatus = 2 THEN 0
+                      WHEN (SELECT COUNT(*) FROM opdetregprodtemp t2
+                            WHERE t2.opdet_id = opdetregprodtemp.opdet_id
+                              AND t2.id > opdetregprodtemp.id
+                              AND t2.deleted_at IS NULL) > 0 THEN 0
+                      ELSE 1 END) AS puede_eliminar,
+                maquina.nombre AS maquina_nombre,
+                unidadmedidasal.nombre AS unidadmedidasal_nombre,
+                acuerdotecnico.id AS acuerdotecnico_id,acuerdotecnico.at_impresofoto
+                from opdetregprodtemp INNER JOIN sucursal
                 ON opdetregprodtemp.sucursal_id=sucursal.id
                 INNER JOIN producto
                 ON opdetregprodtemp.producto_id=producto.id
                 INNER JOIN etapaprod
-                ON opdetregprodtemp.etapaprod_id=etapaprod.id 
+                ON opdetregprodtemp.etapaprod_id=etapaprod.id
                 INNER JOIN opdet
                 ON opdetregprodtemp.opdet_id=opdet.id
+                LEFT JOIN opdetmaquina
+                ON opdetmaquina.opdet_id=opdet.id
+                LEFT JOIN maquina
+                ON maquina.id=opdetmaquina.maquina_id
+                LEFT JOIN unidadmedida AS unidadmedidasal
+                ON unidadmedidasal.id=opdetregprodtemp.unidadmedidasal_id
                 INNER JOIN op
                 ON opdet.op_id=op.id
                 INNER JOIN otdet
@@ -119,6 +156,8 @@ public function etapaprod()
                 ON opdetregprodtemp.usuario_id=usuario.id
                 INNER JOIN operario
                 ON opdetregprodtemp.operario_id=operario.id
+                LEFT JOIN acuerdotecnico
+                ON acuerdotecnico.producto_id=producto.id
                 where opdetregprodtemp.sucursal_id IN ($sucurcadena) 
                 AND opdetregprodtemp.etapaprod_id=$aux_etapaprod_id
                 AND $aux_statusaprob
@@ -200,14 +239,19 @@ public function etapaprod()
                 'tipo_alert' => 'alert-error'
             ]);
         }
-        $kgProduccion_temp = $opdet->totales_pendientes->total_kg + $opdet->totales_pendientes->total_kgscrap;
+        $kgProduccion_temp = $opdet->totales_pendientes->total_kgprod + $opdet->totales_pendientes->total_kgscrap;
         $saldokg_temp = $opdet->saldokg - $kgProduccion_temp;
-        if($saldokg_temp < ($request->kg + $request->kgscrap)){
+        $kgprodReq  = (float) $request->kgprod;
+        $kgscrapReq = (float) $request->kgscrap;
+        $kgentReq   = $kgprodReq + $kgscrapReq;  // kgent = kgprod + kgscrap (invariante)
+        if($saldokg_temp < $kgentReq){
             return redirect('opdetregprodtemp/listaropdet')->with([
                 'mensaje'=>'La cantidad de Kg a registrar excede el saldo disponible en la Orden de Producción Detalle. Kg Saldo Disponible: '.number_format($saldokg_temp, 2, ',', '.'),
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        // kgent = kgprod + kgscrap (invariante). El operario ingresa kgprod y kgscrap.
+        $request->merge(['kgent' => $kgentReq]);
         DB::beginTransaction();
         try {
             $opdet->updated_at = date("Y-m-d H:i:s");
@@ -315,6 +359,11 @@ public function etapaprod()
             $opdet->updated_at = date("Y-m-d H:i:s");
             $opdet->save();
 
+            // kgent = kgprod + kgscrap (invariante). El operario ingresa kgprod y kgscrap.
+            $kgprodReq  = (float) $request->kgprod;
+            $kgscrapReq = (float) $request->kgscrap;
+            $request->merge(['kgent' => $kgprodReq + $kgscrapReq]);
+
             $opdetregprodtemp->update($request->all());
             DB::commit();
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de produccion actualizado con exito');
@@ -376,6 +425,43 @@ public function etapaprod()
                         'tipo_alert' => "error"
                     ]);
                 }
+
+                // Regla: no eliminar un registro ya aprobado supervisor (estado 2),
+                // porque ya paso a opdetregprod (eso requiere la funcionalidad futura
+                // "Anular registro aprobado").
+                if ($opdetregprodtemp->aprobstatus == 2) {
+                    return response()->json([
+                        'id' => 1,
+                        'mensaje' => 'No se puede eliminar: el registro ya fue aprobado por supervisor y existe en opdetregprod. Se requiere la funcionalidad de "Anular registro aprobado" (en desarrollo).',
+                        'tipo_alert' => 'error'
+                    ]);
+                }
+
+                // Regla orden DESC para ELIMINAR: no se scopea al rollo. Cualquier posterior
+                // del mismo opdet_id bloquea — porque eliminar un registro historico rompe
+                // los acumulados (kgprod, cantprod, etc.) del opdet y de rollos ya cerrados.
+                // Esto es mas estricto que aprobar/rechazar (que si se scopean al rollo).
+                $posterior = OpDetRegProdTemp::where('opdet_id', $opdetregprodtemp->opdet_id)
+                    ->where('id', '>', $opdetregprodtemp->id)
+                    ->whereNull('deleted_at')
+                    ->orderBy('id', 'desc')
+                    ->first();
+                if ($posterior) {
+                    $esParcial = (($opdetregprodtemp->cantprod ?? 0) == 0);
+                    $posteriorCerroRollo = (($posterior->cantprod ?? 0) > 0);
+                    if ($esParcial && $posteriorCerroRollo) {
+                        $msg = 'No se puede eliminar: este registro es parcial (rollo abierto) y existe un registro posterior id='
+                            . $posterior->id . ' que ya cerro rollo (UM salida con cierre). Si lo elimina, el rollo posterior quedaria incompleto en kg. Debe eliminar primero los registros posteriores del mismo OpDet.';
+                    } else {
+                        $msg = 'No se puede eliminar: existe un registro posterior id='
+                            . $posterior->id . ' del mismo OpDet. Debe eliminarlo primero (orden descendente).';
+                    }
+                    return response()->json([
+                        'id' => 1,
+                        'mensaje' => $msg,
+                        'tipo_alert' => 'error'
+                    ]);
+                }
                 DB::beginTransaction();
                 try {
                     OpDetRegProdTemp::destroy($request->id);
@@ -422,6 +508,28 @@ public function etapaprod()
                 return response()->json([
                     'id' => 0,
                     'mensaje'=>'Registro fué modificado por otro usuario.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
+
+            // Regla orden ASC dentro del mismo rollo (opdet_id): no enviar a aprobacion
+            // un registro si existe otro anterior del mismo OpDet y ROLLO ABIERTO (sin
+            // cerrador entre medio) aun sin enviar (aprobstatus NULL o 0).
+            $previoBloqueante = OpDetRegProdTemp::buscarEnMismoRollo(
+                $opdetregprodtemp->opdet_id,
+                $opdetregprodtemp->id,
+                'anterior',
+                function ($q) {
+                    $q->where(function ($q2) {
+                        $q2->whereNull('aprobstatus')->orWhere('aprobstatus', 0);
+                    });
+                }
+            );
+            if ($previoBloqueante) {
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => 'No se puede enviar a aprobacion. Debe enviar primero el registro anterior id='
+                        . $previoBloqueante->id . ' del mismo OpDet y rollo abierto. El envio debe hacerse en orden ascendente.',
                     'tipo_alert' => 'error'
                 ]);
             }
@@ -492,6 +600,12 @@ function consultaopdet($request){
         $aux_condnotaventa_id = " true";
     }else{
         $aux_condnotaventa_id = "otnotaventa.notaventa_id='$request->notaventa_id'";
+    }
+    // Filtro por OT: se usa intval() para evitar inyección SQL
+    if(empty($request->ot_id)){
+        $aux_condot_id = " true";
+    }else{
+        $aux_condot_id = "ot.id = " . intval($request->ot_id);
     }
 
     $aux_condproducto_id = " true";
@@ -574,6 +688,7 @@ function consultaopdet($request){
             AND $aux_condFecha
             AND $aux_condrut
             AND $aux_condnotaventa_id
+            AND $aux_condot_id
             AND $aux_condproducto_id
             AND opdet.kgrec > 0 AND (opdet.saldokg > 0)
             AND opdet.id not in (SELECT opdetcerr.opdet_id from opdetcerr WHERE  isnull(opdetcerr.deleted_at))
@@ -591,9 +706,11 @@ function consultaopdet($request){
         $pendientes = $opdet->totales_pendientes;
         //dd($data);
 
-        $data->cantprod += $pendientes->total_cant;
-        $data->kgprod += $pendientes->total_kg;
-        $data->kgscrap += $pendientes->total_kgscrap;
+        // Sumar a los totales agregados de opdet los pendientes aun no aprobados.
+        // total_cantprod/total_kgprod vienen de getTotalesPendientesAttribute (opdetregprodtemp).
+        $data->cantprod += $pendientes->total_cantprod;
+        $data->kgprod   += $pendientes->total_kgprod;
+        $data->kgscrap  += $pendientes->total_kgscrap;
         $data->mtslineal += $pendientes->total_mtslineal;
         $data->saldokg -= ($pendientes->total_kg + $pendientes->total_kgscrap);
         if($data->saldokg > 0)

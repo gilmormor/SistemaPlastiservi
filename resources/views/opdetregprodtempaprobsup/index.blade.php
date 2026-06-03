@@ -21,26 +21,30 @@ Aprobar Registro de Produccion
                     <h3 class="box-title">Aprobar Registro de Produccion: {{$tablas["etapaprod"]->nombre}}</h3>
                 </div>
                 <div class="box-body">
-                    <table class="table table-striped table-bordered table-hover" id="tabla-data">
-                        <thead>
-                            <tr>
-                                <th class="width70">ID</th>
-                                <th class="width70">OT-OP-OPDet</th>
-                                <th class="width70">CodProd</th>
-                                <th class="width70">Producto</th>
-                                <th class="width70">Razon Social</th>
-                                <th class="width70">Total kg</th>
-                                <th class="width70">Kg Recibidos</th>
-                                <th class="width70">Kg Procesados</th>
-                                <th class="width70">Kg Scrap</th>
-                                <th class="width70">Kg</th>
-                                <th class="width70">Kg Scrap</th>
-                                <th class="width70">Kg Saldo</th>
-                                <th class="width70"></th>
-                                <th class="width70">Accion</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="tabla-data">
+                            <thead>
+                                <tr>
+                                    <th class="width70" title="Id Registro produccion temporal">ID</th>
+                                    <th class="width70" title="Trazabilidad">Trazabilidad</th>
+                                    <th class="width70" title="Codigo de Producto">CodProd</th>
+                                    <th class="width70" title="Producto">Producto</th>
+                                    <th class="width70" title="Razon Social">Razon Social</th>
+                                    <th class="width70" title="Kilos recibidos">KgRec</th>
+                                    <th class="width70" title="Kilos procesados">KgProc</th>
+                                    <th class="width70" title="Kilos de desperdicio">Kg Scrap</th>
+                                    <th class="width70" title="Kilos">Kg</th>
+                                    <th class="width70" title="Kilos de desperdicio">Kg Scrap</th>
+                                    <th class="width70" title="Kilos de saldo">Kg Saldo</th>
+                                    <th class="width70" title="Acciones"></th>
+                                    <th class="width70" title="Maquina">Maquina</th>
+                                    <th class="width70" title="Operario">Operario</th>
+                                    <th class="width70" title="Estado del cierre de la unidad de medida de salida de la etapa (rollo, bolsa, pieza, etc.)">Cierre UM Sal.</th>
+                                    <th class="width70">Accion</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -11,6 +11,20 @@ class AcuerdoTecnico extends Model
 {
     use SoftDeletes;
     protected $table = "acuerdotecnico";
+
+    /**
+     * Peso unitario derivado.
+     * Usa el helper global `pesounitat($at)` definido en app/Helpers/biblioteca.php,
+     * que considera at_formatofilm, at_peso, densidad de materia prima (pe) y
+     * ancho×largo×espesor cuando aplica.
+     * Devuelve 0 si no se puede calcular.
+     */
+    public function getPesoUnitarioAttribute()
+    {
+        if (!function_exists('pesounitat')) return 0;
+        return pesounitat($this);
+    }
+
     protected $fillable = [
         'at_notaventadetalle_id',
         'producto_id',

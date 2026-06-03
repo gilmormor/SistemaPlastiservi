@@ -4,6 +4,17 @@
 @endsection
 
 @section("scripts")
+    <script>
+        // Datos de la etapa para conversión kg ↔ cant y validaciones JS
+        const ETAPA_UM_SALIDA_ID       = {{ $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? 'null' }};
+        const ETAPA_UM_SALIDA_NOMBRE   = "{{ $opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? '' }}";
+        const ETAPA_UM_ENTRADA_NOMBRE  = "{{ $opdet->areaproduccionsucetapaprod->unidadmedida_entrada_nombre ?? '' }}";
+        const ETAPA_REQUIERE_KG        = {{ (int)($opdet->areaproduccionsucetapaprod->requiere_kg ?? 1) }};
+        const ETAPA_REQUIERE_CC        = {{ (int)($opdet->areaproduccionsucetapaprod->requiere_cc ?? 0) }};
+        const ETAPA_USA_MATPRIMA       = {{ (int)($opdet->areaproduccionsucetapaprod->usa_matprima ?? 0) }};
+        // peso_unitario (kg por unidad) del producto. 0 = no hay conversión automática.
+        const PRODUCTO_PESO_UNITARIO   = {{ $opdet->op->otdet->producto->peso_unitario ?? 0 }};
+    </script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/opdetregprodtemp/crear.js")}}" type="text/javascript"></script>
 @endsection

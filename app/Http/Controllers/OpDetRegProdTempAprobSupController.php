@@ -10,10 +10,12 @@ use App\Models\InvBodegaProducto;
 use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
+use App\Models\InvMovDetNVDet;
 use App\Models\InvMovDetOpDetRegProd;
 use App\Models\OpDet;
 use App\Models\OpDetRegProd;
 use App\Models\OpDetRegProdTemp;
+use App\Models\OtDetNVDet;
 use App\Models\Produccion;
 use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
@@ -330,7 +332,8 @@ class OpDetRegProdTempAprobSupController extends Controller
 
                     // 2️⃣ Crear el registro definitivo en opdetregprod (necesario antes del else
                     //    para poder usar $produccion->id en la trazabilidad de inventario)
-                    $produccion = OpDetRegProd::create($data);
+                    //$produccion = OpDetRegProd::create($data);
+                    $opdetregprod = OpDetRegProd::create($data);
 
                     // 3️⃣ Obtener la siguiente etapa de producción (la de mayor orden inmediato)
                     $siguienteEtapa = collect($op->opdets)
@@ -402,10 +405,10 @@ class OpDetRegProdTempAprobSupController extends Controller
                         $invmov = InvMov::create([
                             'fechahora'       => date('Y-m-d H:i:s'),
                             'annomes'         => $annomes,
-                            'desc'            => 'Ingreso producción — última etapa',
-                            'obs'             => 'OP: ' . $opdetregprodtemp->opdet->op_id,
+                            'desc'            => 'Ingreso produccion - OT: ' . $opdetregprod->opdet->op->otdet->ot_id . ' OP: ' . $opdetregprod->opdet->op_id,
+                            'obs'             => 'OP: ' . $opdetregprod->opdet->op_id,
                             'invmovmodulo_id' => 9,               // Producción
-                            'idmovmod'        => $produccion->id, // Trazabilidad → opdetregprod
+                            'idmovmod'        => $opdetregprod->id, // Trazabilidad → opdetregprod
                             'invmovtipo_id'   => 1,               // Entrada
                             'sucursal_id'     => $opdetregprodtemp->sucursal_id,
                             'usuario_id'      => auth()->id(),
@@ -445,7 +448,7 @@ class OpDetRegProdTempAprobSupController extends Controller
                         // (otdet_id está en op, no en opdet)
                         // NULL cuando la OT no proviene de ninguna NV (producción para stock).
                         $nvdetIdBodega = null;
-                        $otdetnvdetBodega = \App\Models\OtDetNVDet::where(
+                        $otdetnvdetBodega = OtDetNVDet::where(
                             'otdet_id', $opdetregprodtemp->opdet->op->otdet_id
                         )->first();
                         if ($otdetnvdetBodega) {
@@ -455,7 +458,11 @@ class OpDetRegProdTempAprobSupController extends Controller
                         // Registrar trazabilidad: invmovdet ↔ opdetregprod ↔ notaventadetalle
                         InvMovDetOpDetRegProd::create([
                             'invmovdet_id'        => $invmovdet->id,
-                            'opdetregprod_id'     => $produccion->id,
+                            'opdetregprod_id'     => $opdetregprod->id,
+                            'notaventadetalle_id' => $nvdetIdBodega,
+                        ]);
+                        InvMovDetNVDet::create([
+                            'invmovdet_id'        => $invmovdet->id,
                             'notaventadetalle_id' => $nvdetIdBodega,
                         ]);
                     }
@@ -471,8 +478,8 @@ class OpDetRegProdTempAprobSupController extends Controller
                     'mensaje' => 'Actualizado con exito.',
                 ];
                 // Si se aprobó (no rechazado), incluir id de producción para etiquetas
-                if ($opdetregprodtemp->aprobstatus == 2 && isset($produccion)) {
-                    $respData['opdetregprod_id'] = $produccion->id;
+                if ($opdetregprodtemp->aprobstatus == 2 && isset($opdetregprod)) {
+                    $respData['opdetregprod_id'] = $opdetregprod->id;
                     $respData['es_ultima_etapa'] = $esUltimaEtapa ? 1 : 0;
                 }
                 return response()->json($respData);
@@ -505,7 +512,7 @@ class OpDetRegProdTempAprobSupController extends Controller
         // Nombre del producto usando la función global del proyecto
         $productoData = Producto::atributosProducto($produccion->producto_id);
         $productoNombre = $productoData['nombre'] ?? '—';
-        $productoCodigo = $produccion->producto_id;
+        $producto_id = $produccion->producto_id;
 
         // Nota de Venta (si el OT tiene relación con NV)
         $notaventa_id = null;
@@ -515,7 +522,7 @@ class OpDetRegProdTempAprobSupController extends Controller
 
         return view('opdetregprodtempaprobsup.etiqueta-bodega', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
-            'productoNombre', 'productoCodigo', 'notaventa_id'
+            'productoNombre', 'producto_id', 'notaventa_id'
         ));
     }
 
@@ -559,11 +566,13 @@ class OpDetRegProdTempAprobSupController extends Controller
 
         // Nombre del producto
         $productoData   = Producto::atributosProducto($produccion->producto_id);
+        $producto_id = $produccion->producto_id;
         $productoNombre = $productoData['nombre'] ?? '—';
 
         return view('opdetregprodtempaprobsup.etiqueta-etapa', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
-            'productoNombre', 'operarioNombre', 'maquina', 'maquinaNombre', 'proximaEtapaNombre'
+            'productoNombre','producto_id', 'operarioNombre', 'maquina',
+            'maquinaNombre', 'proximaEtapaNombre'
         ));
     }
 

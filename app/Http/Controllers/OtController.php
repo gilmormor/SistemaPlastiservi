@@ -342,7 +342,8 @@ class OtController extends Controller
                         'unidadmedida_id' => $request->unidadmedidainp_id[$i],
                         'obs' => $request->otdet_obs[$i],
                         'kg' => $aux_itemkg,
-                        'kgprod' => $aux_itemkg
+                        'kgprod' => $aux_itemkg,
+                        'requiere_fabricacion' => 1
                     ]
                 );
                 $Tkgtotal += $aux_itemkg;

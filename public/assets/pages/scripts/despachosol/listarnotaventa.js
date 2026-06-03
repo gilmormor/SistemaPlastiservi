@@ -1,41 +1,41 @@
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
-/*
-    $('.tablas').DataTable({
-		'paging'      : true, 
-		'lengthChange': true,
-		'searching'   : true,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false,
-		"language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
-        }
-	});
-*/
+    /*
+        $('.tablas').DataTable({
+            'paging'      : true, 
+            'lengthChange': true,
+            'searching'   : true,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            }
+        });
+    */
 
-/*
-    consultar(datoslnv());
-    $("#btnconsultar").click(function()
-    {
+    /*
         consultar(datoslnv());
-    });
-
-    $("#btnpdf1").click(function()
-    {
-        consultarpdf(datoslnv());
-    });
-*/
+        $("#btnconsultar").click(function()
+        {
+            consultar(datoslnv());
+        });
+    
+        $("#btnpdf1").click(function()
+        {
+            consultarpdf(datoslnv());
+        });
+    */
     //alert(aux_nfila);
     $('.datepicker').datepicker({
-		language: "es",
+        language: "es",
         autoclose: true,
-        clearBtn : true,
-		todayHighlight: true
+        clearBtn: true,
+        todayHighlight: true
     }).datepicker("setDate");
-    
-    $("#rut").focus(function(){
+
+    $("#rut").focus(function () {
         eliminarFormatoRut($(this));
     });
 
@@ -44,72 +44,72 @@ $(document).ready(function () {
 
 
     data = datoslnv1();
-    let table =$('#tabla-data-consulta').DataTable({
-        'paging'      : true, 
+    let table = $('#tabla-data-consulta').DataTable({
+        'paging': true,
         'lengthChange': true,
-        'ordering'    : true,
-        'info'        : true,
-        'autoWidth'   : false,
-        'processing'  : true,
-        'serverSide'  : true,
-        'ajax'        : "/despachosol/listarnvpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
-        "order": [[ 0, "desc" ]],
-        'columns'     : [
+        'ordering': true,
+        'info': true,
+        'autoWidth': false,
+        'processing': true,
+        'serverSide': true,
+        'ajax': "/despachosol/listarnvpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+        "order": [[0, "desc"]],
+        'columns': [
             {
                 className: 'dt-control',
                 orderable: false,
                 data: null,
                 defaultContent: '<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>'
             },
-            {data: 'id'},
-            {data: 'fechahora'},
-            {data: 'notaventa_aprobfechahora'},
-            {data: 'razonsocial'},
-            {data: 'oc_id'},
-            {data: 'id'},
-            {data: 'comunanombre'},
-            {data: 'totalkilos'},
-            {data: 'subtotal'},
-            {data: 'id'},
-            {data: 'nvdetalle',className:"ocultar"},
+            { data: 'id' },
+            { data: 'fechahora' },
+            { data: 'notaventa_aprobfechahora' },
+            { data: 'razonsocial' },
+            { data: 'oc_id' },
+            { data: 'id' },
+            { data: 'comunanombre' },
+            { data: 'totalkilos' },
+            { data: 'subtotal' },
+            { data: 'id' },
+            { data: 'nvdetalle', className: "ocultar" },
         ],
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
-        "createdRow": function ( row, data, index ) {
-            $(row).attr('id','fila' + data.id);
-            $(row).attr('name','fila' + data.id);
+        "createdRow": function (row, data, index) {
+            $(row).attr('id', 'fila' + data.id);
+            $(row).attr('name', 'fila' + data.id);
 
             aux_text = `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta PDF" onclick="genpdfNV(${data.id},1)">
                 ${data.id}
             </a>`
             $('td', row).eq(1).html(aux_text);
-            $('td', row).eq(1).attr('data-order',data.id);
+            $('td', row).eq(1).attr('data-order', data.id);
 
-            $('td', row).eq(2).attr('data-order',data.fechahora);
+            $('td', row).eq(2).attr('data-order', data.fechahora);
             aux_fecha = new Date(data.fechahora);
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha) + " " + data.fechahora.substr(11, 8));
-            $('td', row).eq(2).attr("style","font-size:12px");
+            $('td', row).eq(2).attr("style", "font-size:12px");
 
-            $('td', row).eq(3).attr('data-order',data.notaventa_aprobfechahora);
+            $('td', row).eq(3).attr('data-order', data.notaventa_aprobfechahora);
             aux_fecha = new Date(data.notaventa_aprobfechahora);
             $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha) + " " + data.notaventa_aprobfechahora.substr(11, 8));
-            $('td', row).eq(3).attr("style","font-size:12px");
+            $('td', row).eq(3).attr("style", "font-size:12px");
 
 
-            $('td', row).eq(5).attr("style","font-size:13px");
+            $('td', row).eq(5).attr("style", "font-size:13px");
 
-            if(data.oc_file != "" && data.oc_file != null){
-                aux_text = 
-                    "<a class='btn-accion-tabla btn-sm' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
-                        data.oc_id + 
+            if (data.oc_file != "" && data.oc_file != null) {
+                aux_text =
+                    "<a class='btn-accion-tabla btn-sm' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" +
+                    data.oc_id +
                     "</a>";
                 $('td', row).eq(5).html(aux_text);
             }
 
-            aux_text = 
-            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Precio x Kg" onclick="genpdfNV(${data.id},2)">
+            aux_text =
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Precio x Kg" onclick="genpdfNV(${data.id},2)">
                 <i class="fa fa-fw fa-file-pdf-o"></i>
             </a>`;
             $('td', row).eq(6).html(aux_text);
@@ -117,36 +117,36 @@ $(document).ready(function () {
             aux_kgpend = data.totalkilos - data.totalkgsoldesp;
             aux_dinpend = data.subtotal - data.totalsubtotalsoldesp;
             $('td', row).eq(8).attr('class', "kgpend");
-            $('td', row).eq(8).attr('data-order',aux_kgpend);
-            $('td', row).eq(8).attr('data-search',aux_kgpend);
-            $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).html(MASKLA(aux_kgpend,2));
+            $('td', row).eq(8).attr('data-order', aux_kgpend);
+            $('td', row).eq(8).attr('data-search', aux_kgpend);
+            $('td', row).eq(8).attr('style', 'text-align:right');
+            $('td', row).eq(8).html(MASKLA(aux_kgpend, 2));
 
             $('td', row).eq(9).attr('class', "dinpend");
-            $('td', row).eq(9).attr('data-order',aux_dinpend);
-            $('td', row).eq(9).attr('data-search',aux_dinpend);
-            $('td', row).eq(9).attr('style','text-align:right');
-            $('td', row).eq(9).html(MASKLA(aux_dinpend,0));
+            $('td', row).eq(9).attr('data-order', aux_dinpend);
+            $('td', row).eq(9).attr('data-search', aux_dinpend);
+            $('td', row).eq(9).attr('style', 'text-align:right');
+            $('td', row).eq(9).html(MASKLA(aux_dinpend, 0));
 
-            aux_text = 
-            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa SD" onclick="pdfSolDespPrev(${data.id},2)">
+            aux_text =
+                `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa SD" onclick="pdfSolDespPrev(${data.id},2)">
                 <i class='fa fa-fw fa-file-pdf-o'></i>                                    
             </a>`;
             let aux_rutadespsol = $("#aux_ruta_creardespsol").val();
-            let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/"+data.id+"/");
-            $('td', row).eq(9).attr('class','action-buttons');
+            let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/" + data.id + "/");
+            $('td', row).eq(9).attr('class', 'action-buttons');
             aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
             aux_displaybtnac = ``;
             aux_displaybtnbl = ``;
             aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;
             aux_iconobloqueo = "fa-lock text-danger";
-            if(aux_clienteBloqueado == ""){
+            if (aux_clienteBloqueado == "") {
                 aux_displaybtnac = ``;
                 aux_displaybtnbl = `style="display:none;"`;
-            }else{
+            } else {
                 aux_displaybtnac = `style="display:none;"`;
                 aux_displaybtnbl = ``;
-                if(data.modulo_id_orddesp  !== null){
+                if (data.modulo_id_orddesp !== null) {
                     aux_iconobloqueo = "fa-unlock text-yellow";
                     aux_mensajebloqueo = `Habilitado para Despacho`;
                 }
@@ -176,14 +176,14 @@ $(document).ready(function () {
             data_icono = data.icono;
             aux_titlehacersoldesp = `Hacer solicitud despacho: ${data.tipentnombre}`;
 
-            aux_text += 
+            aux_text +=
                 `<a ${aux_displaybtnac} href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="${aux_titlehacersoldesp}">
                     <button type="button" class="btn btn-default btn-xs">
                         <i class="fa fa-fw ${data_icono}"></i>
                     </button>
                 </a>`;
 
-            if(data.ot_aprobstatus == 1){
+            if (data.ot_aprobstatus == 1) {
                 data_icono = 'fa fa-fw fa-cog text-aqua';
                 aux_titlehacersoldesp += `. OT Nro. ${data.ot_id} aprobada`;
             }
@@ -196,13 +196,13 @@ $(document).ready(function () {
                 </a>`;
             } */
 
-            aux_text += 
-            `<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
+            aux_text +=
+                `<a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
                 <button type="button" class="btn btn-default btn-xs">
                     <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
                 </button>
             </a>`;
-            
+
 
 
             /* if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null) || ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)))){
@@ -231,29 +231,29 @@ $(document).ready(function () {
                     <i class="fa fa-fw ${data.icono}"></i>
                 </a>`;
             } */
-            if(data.anulada != null && data.anulada != ""){
+            if (data.anulada != null && data.anulada != "") {
                 aux_text = "";
                 colorFila = 'background-color: #87CEEB;';
                 aux_data_toggle = "tooltip";
                 aux_title = "Anulada Fecha: " + data.anulada;
                 //$nuevoSolDesp = "";
             }
-            if (data.ot_aprobstatus == 0){
-                aux_text += 
-                `<a class="btn-accion-tabla tooltipsC" title="OT Nro. ${data.ot_id} esta pendiente x aprobacion">
+            if (data.ot_aprobstatus == 0) {
+                aux_text +=
+                    `<a class="btn-accion-tabla tooltipsC" title="OT Nro. ${data.ot_id} pendiente x aprobacion">
                     <i class="fa fa-fw fa-cog text-yellow"></i>
                 </a>`;
             }
 
-            if(data.ot_aprobstatus == 1){
-                aux_text += 
-                `<a class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="OT Nro. ${data.ot_id} enviada a aprobacion">
+            if (data.ot_aprobstatus == 1) {
+                aux_text +=
+                    `<a class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="OT Nro. ${data.ot_id} enviada a aprobacion">
                     <i class="fa fa-fw fa-cog text-yellow"></i>
                 </a>`;
             }
-            if(data.ot_aprobstatus == 2){
-                aux_text += 
-                `<a class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="OT Nro. ${data.ot_id} aprobada">
+            if (data.ot_aprobstatus == 2) {
+                aux_text +=
+                    `<a class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="OT Nro. ${data.ot_id} aprobada">
                     <i class="fa fa-fw fa-cog text-aqua"></i>
                 </a>`;
             }
@@ -266,10 +266,9 @@ $(document).ready(function () {
 
     totalizar();
 
-    $("#btnconsultar").click(function()
-    {
+    $("#btnconsultar").click(function () {
         data = datoslnv1();
-        $('#tabla-data-consulta').DataTable().ajax.url( "/despachosol/listarnvpage/" + data.data2 ).load();
+        $('#tabla-data-consulta').DataTable().ajax.url("/despachosol/listarnvpage/" + data.data2).load();
         totalizar();
     });
 
@@ -277,7 +276,7 @@ $(document).ready(function () {
     table.on('click', 'td.dt-control', function (e) {
         let tr = e.target.closest('tr');
         let row = table.row(tr);
-    
+
         if (row.child.isShown()) {
             // This row is already open - close it
             row.child.hide();
@@ -289,7 +288,7 @@ $(document).ready(function () {
             $(this).html('<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-bottom text-aqua" title="Mostrar Detalle"></i>');
         }
     });
-    
+
 });
 
 // Función para decodificar entidades HTML con jQuery
@@ -303,7 +302,7 @@ function format(d) {
     //console.log(d);
     //console.log(d.nvdetalle);
     const detalleArray = decodeHtml(d.nvdetalle).split(';').map(detalle => {
-        const [producto_id, cant, precio,subtotal,cantsoldesp,producto_nombre,requiere_fabricacion,id,totalkilos] = detalle.split('|');
+        const [producto_id, cant, precio, subtotal, cantsoldesp, producto_nombre, requiere_fabricacion, id, totalkilos, notaventadetalle_id] = detalle.split('|');
         return {
             producto_id: parseInt(producto_id),
             cant: parseInt(cant),
@@ -311,9 +310,10 @@ function format(d) {
             precio: parseFloat(precio),
             subtotal: parseInt(subtotal),
             producto_nombre: producto_nombre,
-            requiere_fabricacion: requiere_fabricacion,
+            requiere_fabricacion: parseInt(requiere_fabricacion),
             acuerdotecnico_id: id,
-            totalkilos: parseFloat(totalkilos)
+            totalkilos: parseFloat(totalkilos),
+            notaventadetalle_id: parseInt(notaventadetalle_id)
         };
     });
     // Generar tabla HTML
@@ -331,7 +331,7 @@ function format(d) {
                         <th style="text-align: right;">Precio</th>
                         <th style="text-align: right;">Subtotal</th>
                         <th style="text-align: right;" title="Total kilos">Total Kg</th>
-                        <th style="text-align: center;" title="Estatus requiere Fabricacion">Fabr</th>
+                        <th style="text-align: center;" title="Requiere Fabricación">ReqFab</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -340,12 +340,13 @@ function format(d) {
     // Recorrer los detalles y agregar filas a la tabla
     detalleArray.forEach(detalle => {
         aux_producto_id = detalle.producto_id;
-        if(detalle.acuerdotecnico_id != 0){
-            aux_producto_id = 
-            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${detalle.acuerdotecnico_id},${d.cliente_id},"")'>
+        if (detalle.acuerdotecnico_id != 0) {
+            aux_producto_id =
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${detalle.acuerdotecnico_id},${d.cliente_id},"")'>
                 ${detalle.producto_id}
-            </a>`;    
+            </a>`;
         }
+        $valorSiNo = detalle.requiere_fabricacion === 1 ? 'Sí' : 'No';
         tableHtml += `
             <tr>
                 <td style="text-align: center;">${aux_producto_id}</td>
@@ -356,9 +357,16 @@ function format(d) {
                 <td style="text-align: right;">${detalle.precio.toFixed(2)}</td>
                 <td style="text-align: right;">${detalle.subtotal.toFixed(2)}</td>
                 <td style="text-align: right;">${detalle.totalkilos.toFixed(2)}</td>
-                <td style="text-align: center;">${detalle.requiere_fabricacion}</td>
+                <td style="text-align: center;">
+                    ${
+                        d.permCambiarRF
+                            ? `<input id="chkRF${detalle.notaventadetalle_id}" name="chkRF${detalle.notaventadetalle_id}" type="checkbox" ${detalle.requiere_fabricacion === 1 ? 'checked' : ''} title="Marque o desmarque según corresponda." onclick="updateRF(${detalle.notaventadetalle_id}, this)">`
+                            : $valorSiNo
+                    }
+                </td>
             </tr>
         `;
+        //<td style="text-align: center;">${detalle.requiere_fabricacion === 1 ? 'Sí' : 'No'}</td>
     });
 
     // Cerrar la tabla
@@ -371,202 +379,202 @@ function format(d) {
 
     // Devolver la tabla HTML
     return tableHtml;
-    
+
 }
 
-function totalizar(){
-    let  table = $('#tabla-data-consulta').DataTable();
+function totalizar() {
+    let table = $('#tabla-data-consulta').DataTable();
     //console.log(table);
     table
         .on('draw', function () {
-            eventFired( 'Page' );
+            eventFired('Page');
         });
     data = datoslnv1();
     $.ajax({
         url: '/despachosol/totalizarlistarnvpage/' + data.data2,
         type: 'GET',
         success: function (datos) {
-            $("#totalgenkg").html(MASKLA(datos.aux_kgpend,2));
-            $("#totalgendin").html(MASKLA(datos.aux_dinpend,2));
+            $("#totalgenkg").html(MASKLA(datos.aux_kgpend, 2));
+            $("#totalgendin").html(MASKLA(datos.aux_dinpend, 2));
         }
     });
 }
 
-var eventFired = function ( type ) {
-	total = 0;
-	$("#tabla-data-consulta tr .kgpend").each(function() {
-		valor = $(this).attr('data-order') ;
-		valorNum = parseFloat(valor);
-		total += valorNum;
-	});
-    $("#totalkg").html(MASKLA(total,2))
-	total = 0;
-	$("#tabla-data-consulta tr .dinpend").each(function() {
-		valor = $(this).attr('data-order') ;
-		valorNum = parseFloat(valor);
-		total += valorNum;
-	});
-    $("#totaldinero").html(MASKLA(total,0))
+var eventFired = function (type) {
+    total = 0;
+    $("#tabla-data-consulta tr .kgpend").each(function () {
+        valor = $(this).attr('data-order');
+        valorNum = parseFloat(valor);
+        total += valorNum;
+    });
+    $("#totalkg").html(MASKLA(total, 2))
+    total = 0;
+    $("#tabla-data-consulta tr .dinpend").each(function () {
+        valor = $(this).attr('data-order');
+        valorNum = parseFloat(valor);
+        total += valorNum;
+    });
+    $("#totaldinero").html(MASKLA(total, 0))
 }
 
-function configurarTabla(aux_tabla){
+function configurarTabla(aux_tabla) {
     $(aux_tabla).DataTable({
-        'paging'      : true, 
+        'paging': true,
         'lengthChange': true,
-        'searching'   : true,
-        'ordering'    : true,
-        'info'        : true,
-        'autoWidth'   : false,
-        "order"       : [[ 0, "desc" ]],
+        'searching': true,
+        'ordering': true,
+        'info': true,
+        'autoWidth': false,
+        "order": [[0, "desc"]],
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
-    });    
+    });
 }
-function configurarTabla2(aux_tabla){
+function configurarTabla2(aux_tabla) {
     $(aux_tabla).DataTable({
-        'paging'      : true, 
+        'paging': true,
         'lengthChange': true,
-        'searching'   : true,
-        'ordering'    : true,
-        'info'        : true,
-        'autoWidth'   : false,
+        'searching': true,
+        'ordering': true,
+        'info': true,
+        'autoWidth': false,
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         }
-    });    
+    });
 }
 
 
-function ajaxRequest(data,url,funcion) {
-	$.ajax({
-		url: url,
-		type: 'POST',
-		data: data,
-		success: function (respuesta) {
-			if(funcion=='aprobarcotvend'){
-				if (respuesta.mensaje == "ok") {
-					$("#fila"+data['nfila']).remove();
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
-            }
-            if(funcion=='vistonotaventa'){
-				if (respuesta.mensaje == "ok") {
-					//$("#fila"+data['nfila']).remove();
+function ajaxRequest(data, url, funcion) {
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            if (funcion == 'aprobarcotvend') {
+                if (respuesta.mensaje == "ok") {
+                    $("#fila" + data['nfila']).remove();
                     Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
-                    
-				} else {
-					if (respuesta.mensaje == "sp"){
-						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
-					}else{
-						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
-					}
-				}
-			}
+                } else {
+                    if (respuesta.mensaje == "sp") {
+                        Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                    } else {
+                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                    }
+                }
+            }
+            if (funcion == 'vistonotaventa') {
+                if (respuesta.mensaje == "ok") {
+                    //$("#fila"+data['nfila']).remove();
+                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
 
-		},
-		error: function () {
-		}
-	});
+                } else {
+                    if (respuesta.mensaje == "sp") {
+                        Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+                    } else {
+                        Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+                    }
+                }
+            }
+
+        },
+        error: function () {
+        }
+    });
 }
 
-function datoslnv(){
+function datoslnv() {
     var data = {
-        fechad            : $("#fechad").val(),
-        fechah            : $("#fechah").val(),
-        rut               : eliminarFormatoRutret($("#rut").val()),
-        vendedor_id       : $("#vendedor_id").val(),
-        oc_id             : $("#oc_id").val(),
-        giro_id           : $("#giro_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
-        tipoentrega_id    : $("#tipoentrega_id").val(),
-        notaventa_id      : $("#notaventa_id").val(),
-        aprobstatus       : $("#aprobstatus").val(),
-        comuna_id         : $("#comuna_id").val(),
-        plazoentrega      : $("#plazoentrega").val(),
-        producto_id       : $("#producto_idPxP").val(),
-        filtro            : 0,
-        sucursal_id       : $("#sucursal_id").val(),
-        _token            : $('input[name=_token]').val()
+        fechad: $("#fechad").val(),
+        fechah: $("#fechah").val(),
+        rut: eliminarFormatoRutret($("#rut").val()),
+        vendedor_id: $("#vendedor_id").val(),
+        oc_id: $("#oc_id").val(),
+        giro_id: $("#giro_id").val(),
+        areaproduccion_id: $("#areaproduccion_id").val(),
+        tipoentrega_id: $("#tipoentrega_id").val(),
+        notaventa_id: $("#notaventa_id").val(),
+        aprobstatus: $("#aprobstatus").val(),
+        comuna_id: $("#comuna_id").val(),
+        plazoentrega: $("#plazoentrega").val(),
+        producto_id: $("#producto_idPxP").val(),
+        filtro: 0,
+        sucursal_id: $("#sucursal_id").val(),
+        _token: $('input[name=_token]').val()
     };
     return data;
 }
 
-function datoslnv1(){
-    aux_titulo ="";
+function datoslnv1() {
+    aux_titulo = "";
     var data1 = {
-        fechad            : $("#fechad").val(),
-        fechah            : $("#fechah").val(),
-        rut               : eliminarFormatoRutret($("#rut").val()),
-        vendedor_id       : $("#vendedor_id").val(),
-        oc_id             : $("#oc_id").val(),
-        giro_id           : $("#giro_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
-        tipoentrega_id    : $("#tipoentrega_id").val(),
-        notaventa_id      : $("#notaventa_id").val(),
-        aprobstatus       : $("#aprobstatus").val(),
-        comuna_id         : $("#comuna_id").val(),
-        plazoentrega      : $("#plazoentrega").val(),
-        producto_id       : $("#producto_idPxP").val(),
-        sucursal_id       : $("#sucursal_id").val(),
-        filtro            : 0,
-        modulo_id         : 4,
-        statusBloqueo     : $("#statusBloqueo").val(),
-        _token            : $('input[name=_token]').val()
+        fechad: $("#fechad").val(),
+        fechah: $("#fechah").val(),
+        rut: eliminarFormatoRutret($("#rut").val()),
+        vendedor_id: $("#vendedor_id").val(),
+        oc_id: $("#oc_id").val(),
+        giro_id: $("#giro_id").val(),
+        areaproduccion_id: $("#areaproduccion_id").val(),
+        tipoentrega_id: $("#tipoentrega_id").val(),
+        notaventa_id: $("#notaventa_id").val(),
+        aprobstatus: $("#aprobstatus").val(),
+        comuna_id: $("#comuna_id").val(),
+        plazoentrega: $("#plazoentrega").val(),
+        producto_id: $("#producto_idPxP").val(),
+        sucursal_id: $("#sucursal_id").val(),
+        filtro: 0,
+        modulo_id: 4,
+        statusBloqueo: $("#statusBloqueo").val(),
+        _token: $('input[name=_token]').val()
     };
 
-    data2 = "?fechad="+data1.fechad+
-            "&fechah="+data1.fechah +
-            "&rut=" + data1.rut +
-            "&vendedor_id=" + data1.vendedor_id +
-            "&oc_id=" + data1.oc_id +
-            "&giro_id=" + data1.giro_id + 
-            "&areaproduccion_id=" + data1.areaproduccion_id +
-            "&tipoentrega_id=" + data1.tipoentrega_id +
-            "&notaventa_id=" + data1.notaventa_id +
-            "&aprobstatus=" + data1.aprobstatus +
-            "&comuna_id=" + data1.comuna_id +
-            "&plazoentrega=" + data1.plazoentrega +
-            "&filtro=" + data1.filtro +
-            "&producto_id=" + data1.producto_id +
-            "&sucursal_id=" + data1.sucursal_id +
-            "&modulo_id=" + data1.modulo_id +
-            "&statusBloqueo=" + data1.statusBloqueo +
-            "&aux_titulo=" + aux_titulo;
-    
+    data2 = "?fechad=" + data1.fechad +
+        "&fechah=" + data1.fechah +
+        "&rut=" + data1.rut +
+        "&vendedor_id=" + data1.vendedor_id +
+        "&oc_id=" + data1.oc_id +
+        "&giro_id=" + data1.giro_id +
+        "&areaproduccion_id=" + data1.areaproduccion_id +
+        "&tipoentrega_id=" + data1.tipoentrega_id +
+        "&notaventa_id=" + data1.notaventa_id +
+        "&aprobstatus=" + data1.aprobstatus +
+        "&comuna_id=" + data1.comuna_id +
+        "&plazoentrega=" + data1.plazoentrega +
+        "&filtro=" + data1.filtro +
+        "&producto_id=" + data1.producto_id +
+        "&sucursal_id=" + data1.sucursal_id +
+        "&modulo_id=" + data1.modulo_id +
+        "&statusBloqueo=" + data1.statusBloqueo +
+        "&aux_titulo=" + aux_titulo;
+
     var data = {
-        data1 : data1,
-        data2 : data2
+        data1: data1,
+        data2: data2
     };
     return data;
 }
 
 
-function consultar(data){
+function consultar(data) {
     $.ajax({
         url: '/despachosol/reporte',
         type: 'POST',
         data: data,
         success: function (datos) {
-            if(datos['tabla'].length>0){
+            if (datos['tabla'].length > 0) {
                 $("#tablaconsulta").html(datos['tabla']);
                 $("#tablaconsulta2").html(datos['tabla2']);
                 $("#tablaconsulta3").html(datos['tabla3']);
 
                 configurarTabla('#tabla-data-listar1');
-                let  table = $('#tabla-data-listar1').DataTable();
+                let table = $('#tabla-data-listar1').DataTable();
                 //console.log(table);
                 table
                     .on('draw', function () {
-                        eventFired( 'Page' );
+                        eventFired('Page');
                     });
                 configurarTabla('.tablascons');
                 configurarTabla2('.tablascons2');
@@ -575,7 +583,7 @@ function consultar(data){
     });
 }
 
-function consultarpdf(data){
+function consultarpdf(data) {
     $.ajax({
         url: '/notaventaconsulta/exportPdf',
         type: 'GET',
@@ -592,40 +600,39 @@ function consultarpdf(data){
     });
 }
 
-$("#rut").blur(function(){
-	codigo = $("#rut").val();
-	aux_sta = $("#aux_sta").val();
-	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
-	{
-		//totalizar();
-		if(!dgv(codigo.substr(0, codigo.length-1))){
-			swal({
-				title: 'Dígito verificador no es Válido.',
-				text: "",
-				icon: 'error',
-				buttons: {
-					confirm: "Aceptar"
-				},
-			}).then((value) => {
-				if (value) {
-					//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
-					$("#rut").focus();
-				}
-			});
-			//$(this).val('');
-		}else{
-			var data = {
-				rut: $("#rut").val(),
-				_token: $('input[name=_token]').val()
-			};
-			$.ajax({
-				url: '/cliente/buscarCli',
-				type: 'POST',
-				data: data,
-				success: function (respuesta) {
-					if(respuesta.length>0){
-						formato_rut($("#rut"));
-					}else{
+$("#rut").blur(function () {
+    codigo = $("#rut").val();
+    aux_sta = $("#aux_sta").val();
+    if (!(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo))) {
+        //totalizar();
+        if (!dgv(codigo.substr(0, codigo.length - 1))) {
+            swal({
+                title: 'Dígito verificador no es Válido.',
+                text: "",
+                icon: 'error',
+                buttons: {
+                    confirm: "Aceptar"
+                },
+            }).then((value) => {
+                if (value) {
+                    //ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+                    $("#rut").focus();
+                }
+            });
+            //$(this).val('');
+        } else {
+            var data = {
+                rut: $("#rut").val(),
+                _token: $('input[name=_token]').val()
+            };
+            $.ajax({
+                url: '/cliente/buscarCli',
+                type: 'POST',
+                data: data,
+                success: function (respuesta) {
+                    if (respuesta.length > 0) {
+                        formato_rut($("#rut"));
+                    } else {
                         formato_rut($("#rut"));
                         swal({
                             title: 'Cliente no existe.',
@@ -638,108 +645,107 @@ $("#rut").blur(function(){
                         }).then((value) => {
                             if (value) {
                                 limpiarclientemp();
-                                
+
                                 $("#myModalClienteTemp").modal('show');
-                            }else{
+                            } else {
                                 $("#rut").focus();
                                 //$("#rut").val('');
                             }
-                        });		
-					}
-				}
-			});
-		}
-	}
+                        });
+                    }
+                }
+            });
+        }
+    }
 });
 
-$("#btnbuscarcliente").click(function(event){
+$("#btnbuscarcliente").click(function (event) {
     $("#rut").val("");
     $("#myModalBusqueda").modal('show');
 });
 
-function copiar_rut(id,rut){
-	$("#myModalBusqueda").modal('hide');
-	$("#rut").val(rut);
-	//$("#rut").focus();
-	$("#rut").blur();
+function copiar_rut(id, rut) {
+    $("#myModalBusqueda").modal('hide');
+    $("#rut").val(rut);
+    //$("#rut").focus();
+    $("#rut").blur();
 }
 
-function visto(id,visto){
+function visto(id, visto) {
     //alert($(this).attr("value"));
     var data = {
-        id     : id,
-        _token : $('input[name=_token]').val()
+        id: id,
+        _token: $('input[name=_token]').val()
     };
     var ruta = '/notaventa/visto/' + id;
-    ajaxRequest(data,ruta,'vistonotaventa');
+    ajaxRequest(data, ruta, 'vistonotaventa');
 }
 
-$("#btnpdf21").click(function()
-{
+$("#btnpdf21").click(function () {
     aux_titulo = 'Nota de Venta Pendientes';
     data = datoslnv();
-    cadena = "?fechad="+data.fechad+
-            "&fechah="+data.fechah +
-            "&rut=" + data.rut +
-            "&vendedor_id=" + data.vendedor_id +
-            "&oc_id=" + data.oc_id +
-            "&giro_id=" + data.giro_id + 
-            "&areaproduccion_id=" + data.areaproduccion_id +
-            "&tipoentrega_id=" + data.tipoentrega_id +
-            "&notaventa_id=" + data.notaventa_id +
-            "&aprobstatus=" + data.aprobstatus +
-            "&comuna_id=" + data.comuna_id +
-            "&plazoentrega=" + data.plazoentrega +
-            "&filtro=" + data.filtro +
-            "&producto_id=" + data.producto_id +
-            "&aux_titulo=" + aux_titulo;
-    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
+    cadena = "?fechad=" + data.fechad +
+        "&fechah=" + data.fechah +
+        "&rut=" + data.rut +
+        "&vendedor_id=" + data.vendedor_id +
+        "&oc_id=" + data.oc_id +
+        "&giro_id=" + data.giro_id +
+        "&areaproduccion_id=" + data.areaproduccion_id +
+        "&tipoentrega_id=" + data.tipoentrega_id +
+        "&notaventa_id=" + data.notaventa_id +
+        "&aprobstatus=" + data.aprobstatus +
+        "&comuna_id=" + data.comuna_id +
+        "&plazoentrega=" + data.plazoentrega +
+        "&filtro=" + data.filtro +
+        "&producto_id=" + data.producto_id +
+        "&aux_titulo=" + aux_titulo;
+    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/' + cadena);
     $("#myModalpdf").modal('show');
 });
 
-function btnpdf(numrep){
+function btnpdf(numrep) {
     data = datoslnv();
-    cadena = "?fechad="+data.fechad+
-            "&fechah="+data.fechah +
-            "&rut=" + data.rut +
-            "&vendedor_id=" + data.vendedor_id +
-            "&oc_id=" + data.oc_id +
-            "&giro_id=" + data.giro_id + 
-            "&areaproduccion_id=" + data.areaproduccion_id +
-            "&tipoentrega_id=" + data.tipoentrega_id +
-            "&notaventa_id=" + data.notaventa_id +
-            "&aprobstatus=" + data.aprobstatus +
-            "&comuna_id=" + data.comuna_id +
-            "&plazoentrega=" + data.plazoentrega +
-            "&producto_id=" + data.producto_id +
-            "&filtro=" + data.filtro +
-            "&statusBloqueo=" + data.statusBloqueo +
-            "&numrep=" + numrep;
-    if(numrep==1){
+    cadena = "?fechad=" + data.fechad +
+        "&fechah=" + data.fechah +
+        "&rut=" + data.rut +
+        "&vendedor_id=" + data.vendedor_id +
+        "&oc_id=" + data.oc_id +
+        "&giro_id=" + data.giro_id +
+        "&areaproduccion_id=" + data.areaproduccion_id +
+        "&tipoentrega_id=" + data.tipoentrega_id +
+        "&notaventa_id=" + data.notaventa_id +
+        "&aprobstatus=" + data.aprobstatus +
+        "&comuna_id=" + data.comuna_id +
+        "&plazoentrega=" + data.plazoentrega +
+        "&producto_id=" + data.producto_id +
+        "&filtro=" + data.filtro +
+        "&statusBloqueo=" + data.statusBloqueo +
+        "&numrep=" + numrep;
+    if (numrep == 1) {
         aux_titulo = 'Nota de Venta Pendientes';
         cadena = cadena +
             "&aux_titulo=" + aux_titulo +
-            "&aux_sql=1" + 
+            "&aux_sql=1" +
             "&aux_orden=1";
     }
-    if(numrep==2){
+    if (numrep == 2) {
         aux_titulo = 'Pendiente por Cliente y comuna';
         cadena = cadena +
             "&aux_titulo=" + aux_titulo +
-            "&aux_sql=1" + 
+            "&aux_sql=1" +
             "&aux_orden=2";
     }
-    if(numrep==3){
+    if (numrep == 3) {
         aux_titulo = 'Pendiente por Producto';
         cadena = cadena +
             "&aux_titulo=" + aux_titulo +
-            "&aux_sql=2" + 
+            "&aux_sql=2" +
             "&aux_orden=1";
     }
-    if(data.statusBloqueo == "1"){
+    if (data.statusBloqueo == "1") {
         aux_titulo = 'Clientes bloqueados';
     }
-    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/'+cadena);
+    $('#contpdf').attr('src', '/despachosol/pdfnotaventapendiente/' + cadena);
     $("#myModalpdf").modal('show');
 }
 

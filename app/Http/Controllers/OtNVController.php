@@ -80,6 +80,7 @@ class OtNVController extends Controller
     }
 
     public function listarnvpage(Request $request){
+        $request->merge(['aprobstatus' => "3"]);
         $datas = consulta($request,1,1);
         return datatables($datas)->toJson();
     }
@@ -1174,7 +1175,7 @@ function consulta($request,$aux_sql,$orden){
             foreach ($detalleArray as $index => $detalle) {
                 //dd($detalle);
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
-                list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $totalkilos, $requiere_fabricacion,$acuerdotecnico_id) = explode('|', $detalle);
+                list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $totalkilos, $requiere_fabricacion,$acuerdotecnico_id) = array_pad(explode('|', $detalle), 8, null);
                 //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
                 $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $totalkilos, $requiere_fabricacion,$acuerdotecnico_id]);
                 $detalleArrayFinal[] = $detalleFinal;

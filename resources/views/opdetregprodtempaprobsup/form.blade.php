@@ -90,9 +90,9 @@
 <div class="form-group col-xs-12 col-sm-2">
     <div class="row">
         <div class="form-group col-xs-12 col-sm-12">
-            <label for="kg" class="control-label" title="Procesar Kg">Kg</label>
-            <input type="text" name="aux_kg" id="aux_kg" nomcamp="kg" class="form-control numerico requerido validarsaldokg sumarkg" valor="{{$data->kg  ?? ''}}" valorOriginal="{{$data->kg  ?? '0'}}" value="{{old('kg', $data->kg  ?? '')}}" style="text-align:right;" maxlength="10"/>
-            <input type="hidden" name="kg" id="kg" value="{{old('kg', $data->kg ?? '')}}" class="form-control requerido"/>
+            <label for="aux_kgprod" class="control-label" title="Kg producidos (buenos). kgent = kgprod + kgscrap">Kg Producción</label>
+            <input type="text" name="aux_kgprod" id="aux_kgprod" class="form-control" valor="{{$data->kgprod ?? ''}}" value="{{old('kgprod', number_format($data->kgprod ?? 0, 2, ',', '.'))}}" style="text-align:right;" readonly disabled/>
+            <small class="text-muted">Kg Entrada (total): {{ number_format(($data->kgprod ?? 0) + ($data->kgscrap ?? 0), 2, ',', '.') }}</small>
         </div>
         <div class="form-group col-xs-12 col-sm-12">
             <label for="kgscrap" class="control-label" title="Kg Scrap">Kg Scrap</label>

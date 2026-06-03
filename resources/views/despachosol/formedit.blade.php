@@ -583,80 +583,267 @@
                                         <input type="text" name="cantsoldesp[]" id="cantsoldesp{{$aux_nfila}}" class="form-control" value="{{$detalle->cantsoldesp}}" style="text-align:right;"/>
                                     </td>
                                     <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:center;">
-                                        <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
-                                            <tbody>
-                                                <?php $i=0 ?>
-                                                @foreach($invbodegaproductos as $invbodegaproducto)
-                                                    @if (true or $invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                        <?php
+                                        // Verificar si hay stock en bodega de producción para este ítem NV.
+                                        // Si requiere_fabricacion=1 pero ya se fabricó, se muestra la bodega
+                                        // de producción en lugar de "En proceso de fabricacion".
+                                        // Cadena: invmovdet_opdetregprod.notaventadetalle_id → invmovdet.cant (SUM)
+                                        $stockProdRows = collect();
+                                        if ($detalle->notaventadetalle->requiere_fabricacion == 1) {
+                                            /* $stockProdRows = DB::table('invmovdet_opdetregprod as iodr')
+                                                ->join('invmovdet as imd',   'imd.id',  '=', 'iodr.invmovdet_id')
+                                                ->join('invbodega as ib',    'ib.id',   '=', 'imd.invbodega_id')
+                                                ->join('opdetregprod as odrp','odrp.id','=', 'iodr.opdetregprod_id')
+                                                ->join('opdet as od',        'od.id',   '=', 'odrp.opdet_id')
+                                                ->join('op',                 'op.id',   '=', 'od.op_id')
+                                                ->join('otdet as otd',       'otd.id',  '=', 'op.otdet_id')
+                                                ->where('iodr.notaventadetalle_id', $detalle->id)
+                                                ->whereNull('imd.deleted_at')
+                                                ->whereNull('odrp.deleted_at')
+                                                ->whereNull('od.deleted_at')
+                                                ->whereNull('op.deleted_at')
+                                                ->select(
+                                                    'imd.invbodega_id',
+                                                    'ib.nombre as bodega_nombre',
+                                                    'ib.nomabre as bodega_nomabre',
+                                                    'ib.sucursal_id as bodega_sucursal_id',
+                                                    DB::raw('SUM(imd.cant) as cant_prod'),
+                                                    DB::raw('GROUP_CONCAT(DISTINCT otd.ot_id ORDER BY otd.ot_id SEPARATOR \', \') as ot_ids')
+                                                )
+                                                ->groupBy('imd.invbodega_id', 'ib.nombre', 'ib.nomabre', 'ib.sucursal_id')
+                                                ->having('cant_prod', '>', 0)
+                                                ->get(); */
+
+                                            $stockProdRows = DB::table('invmovdetnvdet as imdnv')
+                                                ->join('invmovdet as imd',   'imd.id',  '=', 'imdnv.invmovdet_id')
+                                                ->join('invbodega as ib',    'ib.id',   '=', 'imd.invbodega_id')
+                                                ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle->id)
+                                                ->whereNull('imd.deleted_at')
+                                                ->select(
+                                                    'imd.invbodega_id',
+                                                    'imd.invbodegaproducto_id',
+                                                    'ib.nombre as bodega_nombre',
+                                                    'ib.nomabre as bodega_nomabre',
+                                                    'ib.sucursal_id as bodega_sucursal_id',
+                                                    DB::raw('SUM(imd.cant) as cant_prod')
+                                                )
+                                                ->groupBy('imd.invbodegaproducto_id', 'ib.sucursal_id')
+                                                ->having('cant_prod', '>', 0)
+                                                ->get();
+                                        }
+                                        ?>
+                                        @if ($detalle->notaventadetalle->requiere_fabricacion == 1 && $stockProdRows->isEmpty())
+                                            En proceso de fabricacion
+                                        @elseif ($detalle->notaventadetalle->requiere_fabricacion == 1 && $stockProdRows->isNotEmpty())
+                                            <?php 
+                                                $stockProdRowsOT = DB::table('invmovdet_opdetregprod as iodr')
+                                                    ->join('invmovdet as imd',   'imd.id',  '=', 'iodr.invmovdet_id')
+                                                    ->join('invbodega as ib',    'ib.id',   '=', 'imd.invbodega_id')
+                                                    ->join('opdetregprod as odrp','odrp.id','=', 'iodr.opdetregprod_id')
+                                                    ->join('opdet as od',        'od.id',   '=', 'odrp.opdet_id')
+                                                    ->join('op',                 'op.id',   '=', 'od.op_id')
+                                                    ->join('otdet as otd',       'otd.id',  '=', 'op.otdet_id')
+                                                    ->where('iodr.notaventadetalle_id', $detalle->id)
+                                                    ->whereNull('imd.deleted_at')
+                                                    ->whereNull('odrp.deleted_at')
+                                                    ->whereNull('od.deleted_at')
+                                                    ->whereNull('op.deleted_at')
+                                                    ->select(
+                                                        'imd.invbodega_id',
+                                                        'imd.invbodegaproducto_id',
+                                                        DB::raw('SUM(imd.cant) as cant_prod'),
+                                                        DB::raw('GROUP_CONCAT(DISTINCT otd.ot_id ORDER BY otd.ot_id SEPARATOR \', \') as ot_ids')
+                                                    )
+                                                    ->groupBy('imd.invbodegaproducto_id', 'ib.sucursal_id')
+                                                    ->having('cant_prod', '>', 0)
+                                                    ->get();
+                                                //dd($stockProdRowsOT);
+                                            ?>
+                                            {{-- Hay producción en bodega: mostrar igual que bodegas PT --}}
+                                            {{-- <table class="table" id="tabla-bod-prod{{$aux_nfila}}" style="font-size:14px;table-layout:fixed;width:200px;"> --}}
+                                            <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
+                                                <tbody>
+                                                @foreach($stockProdRows as $spRow)
+                                                    <?php
+                                                        //dd($stockProdRows);
+                                                        // Obtener o crear el registro invbodegaproducto para esta bodega producción
+                                                        $invbodegaproducto = InvBodegaProducto::firstOrCreate(
+                                                            ['producto_id'  => $detalle->notaventadetalle->producto_id,
+                                                             'invbodega_id' => $spRow->invbodega_id],
+                                                            ['producto_id'  => $detalle->notaventadetalle->producto_id,
+                                                             'invbodega_id' => $spRow->invbodega_id]
+                                                        );
+                                                        // Buscar en $stockProdRowsOT el registro que coincide con este invbodegaproducto.
+                                                        // $stockProdRowsOT ya agrupa por invbodegaproducto_id y tiene ot_ids.
+                                                        $aux_ot_ids = "";
+                                                        $matchOT = $stockProdRowsOT->firstWhere('invbodegaproducto_id', $invbodegaproducto->id);
+                                                        if ($matchOT) {
+                                                            $aux_ot_ids = $matchOT->ot_ids ?? "";
+                                                        }
+                                                        //dd($invbodegaproducto);
+                                                        // Color por sucursal (mismo criterio que bodegas PT)
+                                                        switch ((int)$spRow->bodega_sucursal_id) {
+                                                            case 1:  $colorSucProd = '#26ff00'; break;
+                                                            case 2:  $colorSucProd = '#1500ff'; break;
+                                                            case 3:  $colorSucProd = '#00c3ff'; break;
+                                                            default: $colorSucProd = '#ff8c00'; break;
+                                                        }
+                                                    ?>
+                                                    {{-- <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$spRow->bodega_sucursal_id}}"> --}}
+                                                    <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}">
+                                                        <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
+                                                            <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
+                                                            <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                            <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
+                                                            {{$invbodegaproducto->id}}
+                                                        </td>
+                                                        {{-- <td style="text-align:left;width:15% !important;padding-right:0px;padding-left:2px;" class="tooltipsC" title="Bodega Producción: {{$spRow->bodega_nombre}} | OT: {{$spRow->ot_ids}}">
+                                                            <div class="centrarhorizontal">
+                                                                <p style="color:{{$colorSucProd}};font-size:11px;margin-bottom:0px;">
+                                                                    {{$spRow->bodega_nomabre ?? $spRow->bodega_nombre}}
+                                                                </p>
+                                                            </div>
+                                                        </td> --}}
+                                                        {{-- <td style="text-align:left;width: 15% !important;padding-right: 0px;padding-left: 2px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}} | OT: {{$spRow->ot_ids}}'> --}}
+                                                        {{-- El @if estaba fuera del title (el ' cerraba antes). Se usa ternario PHP para concatenar dentro del atributo. --}}
+                                                        <td style="text-align:left;width: 15% !important;padding-right: 0px;padding-left: 2px;" class='tooltipsC'
+                                                            title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}{{$aux_ot_ids !== "" ? " | OT: " . $aux_ot_ids : ""}}'>
+                                                            <div class="centrarhorizontal">
+                                                                <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSucProd}};font-size: 11px;margin-bottom: 0px;">
+                                                                    {{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}
+                                                                </p>
+                                                            </div>
+                                                        </td>
+
+                                                        {{-- <td style="text-align:right;width: 20% !important;padding-left: 0px;padding-right: 0px;" class="tooltipsC" title="Stock en bodega producción">
+                                                            <div class="centrarhorizontal">
+                                                                <p style="font-size:11px;margin-bottom: 0px;">{{number_format($spRow->cant_prod, 0, ',', '.')}}</p>
+                                                            </div>
+                                                        </td> --}}
+                                                        <td style="text-align:right;width: 20% !important;padding-left: 0px;padding-right: 0px;" class='tooltipsC' title='Stock disponible'>
+                                                            <div class="centrarhorizontal">
+                                                                <p name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="font-size: 11px;margin-bottom: 0px;">{{$spRow->cant_prod}}</p>
+                                                            </div>
+                                                        </td>
+
+                                                        {{-- <td  class="width90 tooltipsC" style="text-align:right;width:40% !important" title="Cant a despachar">
+                                                            <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD')" style="text-align:right;" sucursal_id="{{$spRow->bodega_sucursal_id}}"/>
+                                                        </td> --}}
+                                                        <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !important;vertical-align:middle;" title='Cant a despachar'>
+                                                            <div style='display:none;'>
+                                                                <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD',{{$detalle->notaventadetalle->requiere_fabricacion}})" style="text-align:right;" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}" value="{{$detalle->cantsoldesp}}"/>
+                                                            </div>
+                                                            <label style="margin:0;">{{$detalle->cantsoldesp}}</label>
+                                                        </td>
+
+                                                        {{-- <td class="tooltipsC" style="text-align:center;padding-left:0px;padding-right:0px;width:10% !important;" title="Marcar para no usar Stock">
+                                                            <div class="checkbox">
+                                                                <label style="font-size:1.2em;padding-left:0px;">
+                                                                    <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="0">
+                                                                    <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" onchange="clickstaex({{$invbodegaproducto->id}})">
+                                                                    <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                                                </label>
+                                                            </div>
+                                                        </td> --}}
+
                                                         <?php
-                                                            $i++;
-                                                            $request = new Request();
-                                                            $request["producto_id"] = $invbodegaproducto->producto_id;
-                                                            $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
-                                                            $request["tipo"] = 2;
-                                                            $existencia = $invbodegaproducto::existencia($request);
-                                                            //$existencia = $invbodegaproductoobj->consexistencia($request);
-                                                            if ($invbodegaproducto->invbodega->sucursal_id == 1) {
-                                                                $colorSuc = "#26ff00";
-                                                            }
-                                                            if ($invbodegaproducto->invbodega->sucursal_id == 2) {
-                                                                $colorSuc = "#1500ff";
-                                                            }
-                                                            if ($invbodegaproducto->invbodega->sucursal_id == 3) {
-                                                                $colorSuc = "#00c3ff";
+                                                            $aux_staexchecked = "";
+                                                            $staex = 0;
+                                                            if($spRow->cant_prod <=0){
+                                                                $aux_staexchecked = "checked";
+                                                                $staex = 1;
                                                             }
                                                         ?>
-                                                        @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
-                                                            <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
-                                                                <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
-                                                                    <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
-                                                                    <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
-                                                                    <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
+                                                        <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;width: 10% !important;' class='tooltipsC' title='Marcar para no usar Stock'>
+                                                            <div class='checkbox' style='display:none;'>
+                                                                <label style='font-size: 1.2em;padding-left: 0px;'>
+                                                                    <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{old('staex', $staex ?? '0')}}">
+                                                                    <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
+                                                                    <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        @else
+                                            {{-- No hay producción en bodega: mostrar mensaje dentro del mismo formato de tabla --}}
+                                            <table class="table" id="tabla-bod" style="font-size:14px;table-layout: fixed;width: 200px;">
+                                                <tbody>
+                                                    <?php $i=0 ?>
+                                                    @foreach($invbodegaproductos as $invbodegaproducto)
+                                                        @if (true or $invbodegaproducto->invbodega->sucursal_id == $data->notaventa->sucursal_id)
+                                                            <?php
+                                                                $i++;
+                                                                $request = new Request();
+                                                                $request["producto_id"] = $invbodegaproducto->producto_id;
+                                                                $request["invbodega_id"] = $invbodegaproducto->invbodega_id;
+                                                                $request["tipo"] = 2;
+                                                                $existencia = $invbodegaproducto::existencia($request);
+                                                                //$existencia = $invbodegaproductoobj->consexistencia($request);
+                                                                if ($invbodegaproducto->invbodega->sucursal_id == 1) {
+                                                                    $colorSuc = "#26ff00";
+                                                                }
+                                                                if ($invbodegaproducto->invbodega->sucursal_id == 2) {
+                                                                    $colorSuc = "#1500ff";
+                                                                }
+                                                                if ($invbodegaproducto->invbodega->sucursal_id == 3) {
+                                                                    $colorSuc = "#00c3ff";
+                                                                }
+                                                            ?>
+                                                            @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                                <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
+                                                                    <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
+                                                                        <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
+                                                                        <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
+                                                                        <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
 
-                                                                    {{$invbodegaproducto->id}}
-                                                                </td>
-                                                                <td style="text-align:left;width: 10% !importan;padding-right: 0px;padding-left: 2px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
-                                                                    <div class="centrarhorizontal">
-                                                                        <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px;">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
-                                                                    </div>
-                                                                </td>
-                                                                <td style="text-align:right;width: 20% !importan;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
-                                                                    <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
-                                                                        {{$existencia["stock"]["cant"]}}
-                                                                    </div>
-                                                                </td>
-                                                                <?php 
-                                                                    $aux_invcant = 0;
-                                                                    $aux_staexchecked = "";
-                                                                    $aux_staex = "";
-                                                                    foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                                                                        if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
-                                                                            $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
-                                                                            if($despachosoldet_invbodegaproducto->staex == 1){
-                                                                                $aux_staexchecked = "checked";
-                                                                                $aux_staex = "1";
+                                                                        {{$invbodegaproducto->id}}
+                                                                    </td>
+                                                                    <td style="text-align:left;width: 10% !importan;padding-right: 0px;padding-left: 2px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
+                                                                        <div class="centrarhorizontal">
+                                                                            <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px;">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="text-align:right;width: 20% !importan;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
+                                                                        <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
+                                                                            {{$existencia["stock"]["cant"]}}
+                                                                        </div>
+                                                                    </td>
+                                                                    <?php 
+                                                                        $aux_invcant = 0;
+                                                                        $aux_staexchecked = "";
+                                                                        $aux_staex = "";
+                                                                        foreach($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                                                            if ($despachosoldet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id){
+                                                                                $aux_invcant = (($despachosoldet_invbodegaproducto->cant + $despachosoldet_invbodegaproducto->cantex) * -1);
+                                                                                if($despachosoldet_invbodegaproducto->staex == 1){
+                                                                                    $aux_staexchecked = "checked";
+                                                                                    $aux_staex = "1";
+                                                                                }
                                                                             }
                                                                         }
-                                                                    }
-                                                                ?>
-                                                                <td class="width90 tooltipsC" name="cantorddespFInput{{$invbodegaproducto->id}}" id="cantorddespFInput{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !importan"  title="Cant a despachar">
-                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD')" style="text-align:right;" value="{{$aux_invcant}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}"/>
-                                                                </td>
-                                                                <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar para no usar Stock'>
-                                                                    <div class='checkbox'>
-                                                                        <label style='font-size: 1.2em;padding-left: 0px;'>
-                                                                            <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{$aux_staex}}">
-                                                                            <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
-                                                                            <span class='cr'><i class='cr-icon fa fa-check'></i></span>
-                                                                        </label>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
+                                                                    ?>
+                                                                    <td class="width90 tooltipsC" name="cantorddespFInput{{$invbodegaproducto->id}}" id="cantorddespFInput{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !importan"  title="Cant a despachar">
+                                                                        <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD')" style="text-align:right;" value="{{$aux_invcant}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}"/>
+                                                                    </td>
+                                                                    <td class='tooltipsC' style='text-align:center;padding-left: 0px;padding-right: 0px;' class='tooltipsC' title='Marcar para no usar Stock'>
+                                                                        <div class='checkbox'>
+                                                                            <label style='font-size: 1.2em;padding-left: 0px;'>
+                                                                                <input type="hidden" id="staex{{$invbodegaproducto->id}}" name="staex[]" value="{{$aux_staex}}">
+                                                                                <input type="checkbox" class="checkstaex" id="aux_staex{{$invbodegaproducto->id}}" name="aux_staex[]" {{$aux_staexchecked}} onchange="clickstaex({{$invbodegaproducto->id}})">
+                                                                                <span class='cr'><i class='cr-icon fa fa-check'></i></span>
+                                                                            </label>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @endif
                                                         @endif
-                                                    @endif
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        @endif
                                     </td>
                                     <td style="display:none;">
                                         <input type="text" name="unidadmedida_id[]" id="unidadmedida_id{{$aux_nfila}}" class="form-control" value="4" style="display:none;"/>

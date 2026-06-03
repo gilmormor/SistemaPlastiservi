@@ -15,9 +15,13 @@ function encabezadoTablabuscar(){
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
+                    <th>Etapa</th>
                     <th>Orden</th>
-                    <th title='Unidad Medida'>UnidMed</th>
+                    <th title='UM Entrada (deducida de la etapa anterior)'>UM Ent.</th>
+                    <th title='UM Salida de esta etapa'>UM Sal.</th>
+                    <th title='Requiere capturar kg producidos'>Req Kg</th>
+                    <th title='Requiere pasar por Control de Calidad'>Req CC</th>
+                    <th title='Consume materia prima en esta etapa'>Usa MP</th>
                     <th>Acción</th>
                 </tr>
             </thead>
@@ -55,7 +59,11 @@ function configurarTablabuscar(nombreTabla,url,serverSide) {
             {data: 'id'},
             {data: 'etapaprod_nombre'},
             {data: 'orden'},
+            {data: 'unidadmedida_entrada_nombre'},
             {data: 'unidadmedida_id'},
+            {data: 'requiere_kg'},
+            {data: 'requiere_cc'},
+            {data: 'usa_matprima'},
             {data: 'updatednum_at'}
         ],
 		"language": {
@@ -63,31 +71,47 @@ function configurarTablabuscar(nombreTabla,url,serverSide) {
             "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
         },
         "createdRow": function ( row, data, index ) {
-            //aux_nfila++;
-
-            aux_text = 
-                `<input type="text" name="orden[]" id="orden${data.id}" class="form-control numerico" value="${data.orden}" valor="${data.orden}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="3" valororiginal="${data.orden}"/>`;
+            // Col 2: orden editable
+            aux_text =
+                `<input type="text" name="orden[]" id="orden${data.id}" class="form-control numerico" value="${data.orden}" valor="${data.orden}" item="${data.id}" style="width: 80px;text-align:right;" maxlength="3" valororiginal="${data.orden}" data-rowid="${data.id}"/>`;
             $('td', row).eq(2).html(aux_text);
 
-            // Campo unidadmedida_id (select Bootstrap 3)
-            let select = `<select class="form-control input-sm" 
-                            name="unidadmedida_id[]" id="unidadmedida_id${data.id}" 
-                            style="width:150px;">
-                            <option value="">Seleccione...</option>`;
+            // Col 3: UM entrada (readonly, deducida de etapa anterior)
+            $('td', row).eq(3).html(
+                `<span style="color:#777;font-style:italic;">${data.unidadmedida_entrada_nombre ?? '—'}</span>`
+            );
 
+            // Col 4: UM salida (select editable)
+            let select = `<select class="form-control input-sm"
+                            name="unidadmedida_id[]" id="unidadmedida_id${data.id}"
+                            style="width:130px;" data-rowid="${data.id}">
+                            <option value="">Seleccione...</option>`;
             UNIDADMEDIDAS.forEach(function(um) {
                 const selected = (um.id == data.unidadmedida_id) ? 'selected' : '';
                 select += `<option value="${um.id}" ${selected}>${um.nombre}</option>`;
             });
             select += `</select>`;
+            $('td', row).eq(4).html(select);
 
-            $('td', row).eq(3).html(select);
-            
-            aux_text = 
-                `<a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar" onclick="saveordenetapaprod(${data.id},${data.updatednum_at})" updated_at="${data.updated_at}">
+            // Col 5: Req Kg (checkbox)
+            $('td', row).eq(5).html(
+                `<input type="checkbox" id="requiere_kg${data.id}" ${data.requiere_kg == 1 ? 'checked' : ''} style="transform:scale(1.3);" data-rowid="${data.id}"/>`
+            );
+            // Col 6: Req CC (checkbox)
+            $('td', row).eq(6).html(
+                `<input type="checkbox" id="requiere_cc${data.id}" ${data.requiere_cc == 1 ? 'checked' : ''} style="transform:scale(1.3);" data-rowid="${data.id}"/>`
+            );
+            // Col 7: Usa MP (checkbox)
+            $('td', row).eq(7).html(
+                `<input type="checkbox" id="usa_matprima${data.id}" ${data.usa_matprima == 1 ? 'checked' : ''} style="transform:scale(1.3);" data-rowid="${data.id}"/>`
+            );
+
+            // Col 8: Acción — botón oculto, se muestra al detectar cambio en la fila
+            aux_text =
+                `<a name="savefed${data.id}" id="savefed${data.id}" class="btn-accion-tabla btn-sm tooltipsC savefed" title="Guardar" onclick="saveordenetapaprod(${data.id},${data.updatednum_at})" updated_at="${data.updated_at}" style="display:none;">
                     <i class="fa fa-fw fa-save text-red"></i>
                 </a>`;
-            $('td', row).eq(4).html(aux_text);
+            $('td', row).eq(8).html(aux_text);
         }
     });
     // Aplicar el plugin numeric a los inputs dinámicos después de cada redibujado de la tabla
@@ -158,6 +182,11 @@ function datos(){
     return data;
 }
 
+// Mostrar botón guardar al detectar cualquier cambio en los campos editables de la fila
+$(document).on('change', '#tabla-data-OrdenEtapaProd input[data-rowid], #tabla-data-OrdenEtapaProd select[data-rowid]', function() {
+    $('#savefed' + $(this).data('rowid')).show();
+});
+
 function saveordenetapaprod(id,updatednum_at){
     swal({
         title: '¿ Seguro desea actualizar el registro ?',
@@ -172,12 +201,32 @@ function saveordenetapaprod(id,updatednum_at){
             var data = {
                 areaproduccionsucetapaprod_id : id,
                 unidadmedida_id : $("#unidadmedida_id" + id).val(),
-                orden : $("#orden" + id).val(),
-                updatednum_at  : updatednum_at,
-                _token : $('input[name=_token]').val()
+                orden           : $("#orden" + id).val(),
+                requiere_kg     : $("#requiere_kg" + id).is(':checked')  ? 1 : 0,
+                requiere_cc     : $("#requiere_cc" + id).is(':checked')  ? 1 : 0,
+                usa_matprima    : $("#usa_matprima" + id).is(':checked') ? 1 : 0,
+                updatednum_at   : updatednum_at,
+                _token          : $('input[name=_token]').val()
             };
-            var ruta = '/areaproduccionsucetapaprod/guardarordenetapaprod'; //Guardar Fecha estimada de despacho
-            ajaxRequestGeneral(data,ruta,'procesarDTE');
+            $.ajax({
+                url  : '/areaproduccionsucetapaprod/guardarordenetapaprod',
+                type : 'POST',
+                data : data,
+                success: function(respuesta) {
+                    if (respuesta.id != 0) {
+                        // Ocultar botón guardar tras guardar exitosamente
+                        $('#savefed' + id).hide();
+                        Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', 'success');
+                    } else {
+                        swal({
+                            title: 'Error',
+                            text : respuesta.mensaje,
+                            icon : respuesta.tipo_alert,
+                            buttons: { confirm: "Aceptar" },
+                        });
+                    }
+                }
+            });
         }
     });
 }

@@ -57,7 +57,7 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             $(row).attr('updated_at',data.updated_at);
             
-            aux_text = 
+            /* aux_text = 
                 `<a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OT: ${data.ot_id}" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")'>
                     ${data.ot_id}
                 </a>
@@ -65,11 +65,7 @@ $(document).ready(function () {
                     ${data.op_id}-${data.id}
                 </a>`;
 
-            /* aux_text = `
-                <a class="btn-accion-tabla btn-sm tooltipsC" title="Op-OpDet" onclick="genpdfNV(${data.id},1)">
-                    ${data.op_id}-${data.id}
-                </a>` */
-            $('td', row).eq(1).html(aux_text);
+            $('td', row).eq(1).html(aux_text); */
             $('td', row).eq(1).attr('data-order',data.id);
 
             $('td', row).eq(2).attr('data-order',data.created_at);
@@ -77,34 +73,48 @@ $(document).ready(function () {
             $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha) + " " + data.created_at.substr(11, 8));
             $('td', row).eq(2).attr("style","font-size:12px");
 
-            aux_text = `
-                <a class="btn-accion-tabla btn-sm tooltipsC" title="Nota Venta" onclick="genpdfNV(${data.notaventa_id},1)" style="padding-left: 0px;">
+            aux_textNV = "";
+            if(data.notaventa_id){
+                aux_textNV = `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota Venta" onclick="genpdfNV(${data.notaventa_id},1)" style="padding-left: 0px;">
                     ${data.notaventa_id}
-                </a>
-                <a class="btn-accion-tabla btn-sm tooltipsC" title="Oden Trabajo" onclick="genpdfNV(${data.id},1)" style="padding-left: 0px;">
+                </a>`;
+            }
+            aux_text = aux_textNV + `
+                <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Trabajo" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")' style="padding-left: 0px;">
                     ${data.ot_id}
                 </a>
-                <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Trabajo Detalle" onclick="genpdfNV(${data.id},1)" style="padding-left: 0px;">
+                <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Trabajo Detalle" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")' style="padding-left: 0px;">
                     ${data.otdet_id}
                 </a>
-                <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Produccion" onclick="genpdfNV(${data.id},1)" style="padding-left: 0px;">
+                <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Produccion" ${data.op_id}" onclick='genpdf(${data.op_id},"","ver-pdf-op","/op/exportPdf/${data.op_id}")' style="padding-left: 0px;">
                     ${data.op_id}
                 </a>
-                <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Produccion Detalle" onclick="genpdfNV(${data.id},1)" style="padding-left: 0px;">
+                <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Produccion Detalle ${data.opdet_id}" onclick='genpdf(${data.op_id},"","ver-pdf-op","/op/exportPdf/${data.op_id}")' style="padding-left: 0px;">
                     ${data.id}
                 </a>`
             $('td', row).eq(3).html(aux_text);
 
 
-            aux_text = `${data.producto_id}`;
-            if(data.acuerdotecnico_id != null){
-                aux_text = 
-                `<a class="btn-accion-tabla btn-sm tooltipsC" title="" onclick="genpdfAcuTec(${data.acuerdotecnico_id},${data.cliente_id},1)" data-original-title="Acuerdo Técnico PDF">
-                    ${data.producto_id}
-                </a>`;
-            }
-            $('td', row).eq(6).html(aux_text);
-
+			if(data.acuerdotecnico_id != null){
+				//$('td', row).eq(0).html(aux_text);
+				if (data.hasOwnProperty('cliente_id')) {
+					aux_cliente_id = data.cliente_id;
+				} else {
+					aux_cliente_id = 0;
+				}
+				aux_text = 
+				`<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${data.acuerdotecnico_id},${aux_cliente_id},"")'>
+					${data.producto_id}
+				</a>`;
+				if(data.at_impresofoto != "" && data.at_impresofoto != null){
+					aux_text += 
+						`<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
+							<i class="fa fa-fw fa-photo"></i>
+						</a>`;
+				}
+				$('td', row).eq(6).html(aux_text);
+				//$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
+			}
             $('td', row).eq(8).attr('style','text-align:right');
             $('td', row).eq(8).html(MASKLA(data.cantrec,2));
             $('td', row).eq(9).attr('style','text-align:right');
@@ -283,7 +293,7 @@ function format(d) {
             precio: parseFloat(precio),
             subtotal: parseInt(subtotal),
             producto_nombre: producto_nombre,
-            requiere_fabricacion: requiere_fabricacion,
+            requiere_fabricacion: parseInt(requiere_fabricacion),
             acuerdotecnico_id: id,
             totalkilos: parseFloat(totalkilos)
         };
@@ -303,7 +313,7 @@ function format(d) {
                         <th style="text-align: right;">Precio</th>
                         <th style="text-align: right;">Subtotal</th>
                         <th style="text-align: right;" title="Total kilos">Total Kg</th>
-                        <th style="text-align: center;" title="Estatus requiere Fabricacion">Fabr</th>
+                        <th style="text-align: center;" title="Requiere Fabricación">ReqFab</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -328,7 +338,7 @@ function format(d) {
                 <td style="text-align: right;">${detalle.precio.toFixed(2)}</td>
                 <td style="text-align: right;">${detalle.subtotal.toFixed(2)}</td>
                 <td style="text-align: right;">${detalle.totalkilos.toFixed(2)}</td>
-                <td style="text-align: center;">${detalle.requiere_fabricacion}</td>
+                <td style="text-align: center;">${detalle.requiere_fabricacion === 1 ? 'Sí' : 'No'}</td>
             </tr>
         `;
     });
@@ -479,6 +489,7 @@ function datosopdet(){
         fechah            : $("#fechah").val(),
         rut               : eliminarFormatoRutret($("#rut").val()),
         notaventa_id      : $("#notaventa_id").val(),
+        ot_id             : $("#ot_id").val(),
         op_id             : $("#op_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         sucursal_id       : $("#sucursal_id").val(),
@@ -493,6 +504,7 @@ function datosopdet(){
             "&rut=" + data1.rut +
             "&op_id=" + data1.op_id +
             "&notaventa_id=" + data1.notaventa_id +
+            "&ot_id=" + data1.ot_id +
             "&filtro=" + data1.filtro +
             "&producto_id=" + data1.producto_id +
             "&sucursal_id=" + data1.sucursal_id +

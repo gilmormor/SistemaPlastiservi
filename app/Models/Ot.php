@@ -106,7 +106,7 @@ class Ot extends Model
             $fechad = date_format($fecha, 'Y-m-d');
             $fecha = date_create_from_format('d/m/Y', $request->fechah);
             $fechah = date_format($fecha, 'Y-m-d');
-            $aux_condFecha = "ot.fechahora>='$fechad' and ot.fechahora<='$fechah'";
+            $aux_condFecha = "DATE(ot.fechahora)>='$fechad' and DATE(ot.fechahora)<='$fechah'";
         }
         if(!isset($request->rut) or empty($request->rut)){
             $aux_condrut = " true";
@@ -275,7 +275,7 @@ class Ot extends Model
         otnotaventa.notaventa_id,notaventa.cotizacion_id,comuna.nombre as nombre_comuna,
         otanul.obs as otanul_obs,otanul.created_at as otanulcreated_at,
         GROUP_CONCAT(
-            CONCAT_WS('|', otdet.producto_id, otdet.cant, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),unidadmedida.nombre)
+            CONCAT_WS('|', otdet.producto_id, otdet.cant, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),unidadmedida.nombre, otdet.requiere_fabricacion)
             SEPARATOR ';'
         ) AS nvdetalle
         FROM ot INNER JOIN otdet
@@ -354,9 +354,9 @@ class Ot extends Model
             foreach ($detalleArray as $index => $detalle) {
                 //dd($detalle);
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
-                list($producto_id, $cant, $precio, $subtotal,$kg,$kgprod, $id,$unidadmedida_nombre) = explode('|', $detalle);
+                list($producto_id, $cant, $precio, $subtotal,$kg,$kgprod, $id,$unidadmedida_nombre, $requiere_fabricacion) = explode('|', $detalle);
                 //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
-                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $kg, $productoarray["nombre"],$kgprod, $id, $unidadmedida_nombre]);
+                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $kg, $productoarray["nombre"],$kgprod, $id, $unidadmedida_nombre, $requiere_fabricacion]);
                 $detalleArrayFinal[] = $detalleFinal;
             }
             //dd(implode(';', $detalleArrayFinal));
@@ -614,6 +614,15 @@ class Ot extends Model
         otdet.obs as otdet_obs,otdet.kgprog,
         if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id) as acuerdotecnico_id,
         acuerdotecnico.at_desc,acuerdotecnico.at_espesor,otdet.espesorprod,
+        /* Campos del AT necesarios para calcular el peso unitario en el frontend.
+           Replican la lógica de pesounitat() sin necesidad de llamar al backend. */
+        IFNULL(acuerdotecnico.at_ancho, 0)           AS at_ancho,
+        IFNULL(acuerdotecnico.at_largo, 0)           AS at_largo,
+        IFNULL(acuerdotecnico.at_formatofilm, 0)     AS at_formatofilm,
+        IFNULL(acuerdotecnico.at_unidadmedida_id, 0) AS at_unidadmedida_id,
+        IFNULL(materiaprima.pe, 0)                   AS at_pe,
+        /* categoriaprod_id=13 → film (1 capa, doble=1); resto → bolsa (2 capas, doble=2) */
+        IFNULL(producto.categoriaprod_id, 0)         AS at_categoriaprod_id,
         unidadmedida.nombre as unidadmedida_nombre,
         '' as obsdev, '' as rutaeditar,
         otnotaventa.notaventa_id,notaventa.cotizacion_id,comuna.nombre as nombre_comuna,
@@ -622,7 +631,7 @@ class Ot extends Model
         acuerdotecnico.at_impresoobs,acuerdotecnico.at_tiposelloobs,acuerdotecnico.at_materiaprimaobs,
         GROUP_CONCAT(
             CONCAT_WS('|', areaproduccionsucetapaprod.id,etapaprod.id, etapaprod.nombre)
-            ORDER BY etapaprod.id ASC
+            ORDER BY areaproduccionsucetapaprod.orden ASC
             SEPARATOR ';'
         ) AS detetapaprod_array
         FROM ot INNER JOIN otdet
@@ -653,6 +662,12 @@ class Ot extends Model
         ON otanul.ot_id = ot.id
         LEFT JOIN acuerdotecnico
         ON acuerdotecnico.producto_id = otdet.producto_id
+        /* JOIN materia prima para obtener la densidad (pe) usada en la fórmula de peso */
+        LEFT JOIN materiaprima
+        ON materiaprima.id = acuerdotecnico.at_materiaprima_id
+        /* JOIN producto para obtener categoriaprod_id (define si es bolsa o film) */
+        LEFT JOIN producto
+        ON producto.id = otdet.producto_id
         LEFT JOIN acuerdotecnicoapsucetapaprod
         ON acuerdotecnicoapsucetapaprod.acuerdotecnico_id = acuerdotecnico.id
         LEFT JOIN areaproduccionsucetapaprod

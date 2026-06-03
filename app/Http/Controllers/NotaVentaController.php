@@ -49,6 +49,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use SplFileInfo;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Support\Facades\File;
 use PhpParser\Node\Stmt\Foreach_;
 use Illuminate\Support\Facades\Storage;
@@ -1849,6 +1850,41 @@ class NotaVentaController extends Controller
         }
     }
 
+    public function updateRF(Request $request){
+        //dd($request);
+        if(can('cambiar-estatus-requiere-fabricacion-nota-de-venta',false)){
+            DB::beginTransaction();
+            try {
+                $notaventadetalle = NotaVentaDetalle::findOrFail($request->notaventadetalle_id);
+                $notaventadetalle->requiere_fabricacion = $request->rf;
+                //dd($notaventadetalle);
+                $notaventadetalle->save();
+                //throw new \Exception("Prueba de rollback"); // ← quitar después de probar
+                DB::commit();
+                return [
+                    "id" => 1,
+                    "title" => "",
+                    "mensaje" => "Estatus actualizado correctamente",
+                    "tipo_alert" => 'success'
+                ];
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return [
+                    "id" => 0,
+                    "title" => "",
+                    "mensaje" => "Error: " . $e->getMessage(),
+                    "tipo_alert" => 'error'
+                ];
+            }
+        }else{
+            return [
+                "id" => 0,
+                "title" => "",
+                "mensaje" => "No tienes permisos para realizar esta acción",
+                "tipo_alert" => 'error'
+             ];
+        }
+    }
 }
 
 function consultaNVaprobadas($id){

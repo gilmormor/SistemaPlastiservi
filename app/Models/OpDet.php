@@ -39,7 +39,7 @@ class OpDet extends Model
     //RELACION UNO A UNO OpDetMaquina
     public function opdetmaquina()
     {
-        return $this->hasOne(OpDetMaquina::class,'opdet_id','maquina_id');
+        return $this->hasOne(OpDetMaquina::class,'opdet_id','id');
     }
 
     //RELACION DE UNO A MUCHOS OpDetRegProdTemp
@@ -57,44 +57,38 @@ class OpDet extends Model
     /**
      * Obtiene los totales de producción pendientes de aprobación asociados al registro actual de OpDet.
      *
-     * Esta función calcula las sumas totales de los campos `cant`, `kg`, `kgscrap` y `mtslineal`
-     * en la tabla `opdetregprodtemp`, únicamente considerando los registros que:
-     *  - No han sido eliminados (campo `deleted_at` es NULL)
-     *  - No han sido aprobados por el supervisor (`aprobstatus` != 2)
+     * Calcula las sumas totales pendientes (opdetregprodtemp no aprobado) para este opdet.
+     * Considera los registros que:
+     *  - No han sido eliminados (deleted_at IS NULL)
+     *  - No han sido aprobados por supervisor (aprobstatus != 2)
      *
-     * Se utiliza como un atributo dinámico de Eloquent (Accessor) y permite acceder
-     * a los totales pendientes como una propiedad del modelo `OpDet`.
+     * @return \stdClass Campos expuestos:
+     *  - total_cantprod  Suma de opdetregprodtemp.cantprod (cant. producida en UM salida pendiente)
+     *  - total_kgprod    Suma de opdetregprodtemp.kgprod   (kg producidos pendientes)
+     *  - total_kgent     Suma de opdetregprodtemp.kgent    (kg entrada comprometidos)
+     *  - total_kgscrap   Suma de opdetregprodtemp.kgscrap
+     *  - total_mtslineal Suma de opdetregprodtemp.mtslineal
      *
-     * Ejemplo de uso:
-     * ```php
-     * $opdet = OpDet::findOrFail($id);
-     * $totales = $opdet->totales_pendientes;
-     *
-     * echo $totales->total_cant;      // Total de unidades pendientes
-     * echo $totales->total_kg;        // Total de kilos pendientes
-     * echo $totales->total_kgscrap;   // Total de scrap pendiente
-     * echo $totales->total_mtslineal; // Total de metros lineales pendientes
-     * ```
-     *
-     * @return \stdClass  Objeto con los campos:
-     *                    - total_cant
-     *                    - total_kg
-     *                    - total_kgscrap
-     *                    - total_mtslineal
+     * Aliases legacy (mantener compatibilidad con codigo que aun usa los nombres antiguos):
+     *  - total_cant  ==  total_cantprod  (era opdetregprodtemp.cant, hoy cantprod)
+     *  - total_kg    ==  total_kgprod    (era opdetregprodtemp.kg,   hoy kgprod)
      */
     public function getTotalesPendientesAttribute()
     {
         return $this->opdetregprodtemps()
-            ->whereNull('deleted_at')                 // Ignorar registros eliminados
-            ->where(function($q) {                    // Excluir los aprobados
+            ->whereNull('deleted_at')
+            ->where(function($q) {
                 $q->where('aprobstatus', '!=', 2)
                 ->orWhereNull('aprobstatus');
             })
             ->selectRaw('
-                COALESCE(SUM(cant), 0) as total_cant,
-                COALESCE(SUM(kg), 0) as total_kg,
-                COALESCE(SUM(kgscrap), 0) as total_kgscrap,
-                COALESCE(SUM(mtslineal), 0) as total_mtslineal
+                COALESCE(SUM(cantprod),  0) as total_cantprod,
+                COALESCE(SUM(kgprod),    0) as total_kgprod,
+                COALESCE(SUM(kgent),     0) as total_kgent,
+                COALESCE(SUM(kgscrap),   0) as total_kgscrap,
+                COALESCE(SUM(mtslineal), 0) as total_mtslineal,
+                COALESCE(SUM(cantprod),  0) as total_cant,
+                COALESCE(SUM(kgprod),    0) as total_kg
             ')
             ->first();
     }

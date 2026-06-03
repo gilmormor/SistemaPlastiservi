@@ -13,19 +13,21 @@ $(document).ready(function () {
         'order'       : [[ 0, "desc" ]],
         'columns'     : [
             {data: 'id'},
+            {data: 'ot_id'},
             {data: 'op_id'},
             {data: 'opdet_id'},
             {data: 'razonsocial'},
-            {data: 'opdet_kg'},
             {data: 'opdet_kgrec'},
             {data: 'opdet_kgprod'},
             {data: 'opdet_kgscrap'},
-            {data: 'kg'},
+            {data: 'kgprod'},
             {data: 'kgscrap'},
             {data: 'kgsaldo'},
             {data: 'updatednum_at',className:"ocultar"},
             {data: 'usuario_nombre'},
+            {data: 'maquina_nombre'},
             {data: 'operario_nombre'},
+            {defaultContent : ``},
             {defaultContent : ``}
         ],
 		"language": {
@@ -46,11 +48,7 @@ $(document).ready(function () {
 			}
             $('td', row).eq(0).attr('updated_at', data.updatednum_at);
 
-            $('td', row).eq(4).attr('style','text-align:right');
-            $('td', row).eq(4).attr('data-order',data.opdet_kg);
-            $('td', row).eq(4).attr('data-search',data.opdet_kg);
-            $('td', row).eq(4).html(MASKLA(data.opdet_kg, 2));
-
+            // Columna 5 (opdet_kgrec): desplazada +1 por la nueva columna 'ot' en posicion 1
             $('td', row).eq(5).attr('style','text-align:right');
             $('td', row).eq(5).attr('data-order',data.opdet_kgrec);
             $('td', row).eq(5).attr('data-search',data.opdet_kgrec);
@@ -67,9 +65,9 @@ $(document).ready(function () {
             $('td', row).eq(7).html(MASKLA(data.opdet_kgscrap, 2));
 
             $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).attr('data-order',data.kg);
-            $('td', row).eq(8).attr('data-search',data.kg);
-            $('td', row).eq(8).html(MASKLA(data.kg, 2));
+            $('td', row).eq(8).attr('data-order',data.kgprod);
+            $('td', row).eq(8).attr('data-search',data.kgprod);
+            $('td', row).eq(8).html(MASKLA(data.kgprod, 2));
 
             $('td', row).eq(9).attr('style','text-align:right');
             $('td', row).eq(9).attr('data-order',data.kgscrap);
@@ -86,17 +84,46 @@ $(document).ready(function () {
             $('td', row).eq(11).attr('updated_at',data.updatednum_at);
             $('td', row).eq(11).addClass('updated_at');
 
-            aux_text = `<a href="/opdetregprodtemp/enviaraprob" class="btn-accion-tabla btn-sm tooltipsC btnaprobar botonac${data.id}" title="Enviar aprobacion" item="${data.id}">
-                    <i class="fa fa-fw fa-save fa-lg"></i>
-                </a>
+            // Columna 15: Estado del cierre de la UM de salida
+            const cantprodNum = parseFloat(data.cantprod) || 0;
+            const umSalNombre = data.unidadmedidasal_nombre ? data.unidadmedidasal_nombre : 'UM salida';
+            if (data.rollo_cerrado == 1 || cantprodNum > 0) {
+                $('td', row).eq(15).html(
+                    `<span class="label" style="background-color:#5cb85c;color:#fff;padding:4px 8px;font-size:11px;" title="Este registro cerro ${cantprodNum} ${umSalNombre}(s) de salida de la etapa">✔ ${umSalNombre} Cerrado: ${cantprodNum}</span>`
+                );
+            } else {
+                $('td', row).eq(15).html(
+                    `<span class="label" style="background-color:#f0ad4e;color:#fff;padding:4px 8px;font-size:11px;" title="Registro parcial: kg procesados que aun no completan un(a) ${umSalNombre} de salida de la etapa">⚠ ${umSalNombre} Abierto (parcial)</span>`
+                );
+            }
+
+            // Columna 16: Acciones con flags de orden
+            const pEnviar   = (data.puede_enviar_aprob == 1 || data.puede_enviar_aprob === true) ? 1 : 0;
+            const pEliminar = (data.puede_eliminar     == 1 || data.puede_eliminar     === true) ? 1 : 0;
+
+            const btnEnviar = pEnviar
+                ? `<a href="/opdetregprodtemp/enviaraprob" class="btn-accion-tabla btn-sm tooltipsC btnaprobar botonac${data.id}" title="Enviar aprobacion" item="${data.id}">
+                        <i class="fa fa-fw fa-save fa-lg"></i>
+                    </a>`
+                : `<a class="btn-accion-tabla btn-sm tooltipsC" title="No se puede enviar: existe un registro anterior del mismo OpDet aun sin enviar" style="opacity:0.35;cursor:not-allowed;pointer-events:none;">
+                        <i class="fa fa-fw fa-save fa-lg text-muted"></i>
+                    </a>`;
+
+            const btnEliminar = pEliminar
+                ? `<a href='opdetregprodtemp' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>
+                        <i class='fa fa-fw fa-trash text-danger'></i>
+                    </a>`
+                : `<a class='btn-accion-tabla tooltipsC' title='No se puede eliminar: existe un registro posterior del mismo OpDet o ya fue aprobado' style="opacity:0.35;cursor:not-allowed;pointer-events:none;">
+                        <i class='fa fa-fw fa-trash text-muted'></i>
+                    </a>`;
+
+            aux_text = `${btnEnviar}
                 <a href='opdetregprodtemp' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>
                     <i class='fa fa-fw fa-pencil'></i>
                 </a>
-                <a href='opdetregprodtemp' class='btn-accion-tabla btnEliminar tooltipsC' title='Eliminar este registro'>
-                    <i class='fa fa-fw fa-trash text-danger'></i>
-                </a>`;
-            $('td', row).eq(14).html(aux_text);
-            $('td', row).eq(14).attr('class','action-buttons');
+                ${btnEliminar}`;
+            $('td', row).eq(16).html(aux_text);
+            $('td', row).eq(16).attr('class','action-buttons');
 
         }
       });

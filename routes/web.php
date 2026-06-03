@@ -391,6 +391,7 @@ Route::get('notaventa/clientebuscarpage', 'NotaVentaController@clientebuscarpage
 Route::get('notaventa/{id}/productobuscarpage', 'NotaVentaController@productobuscarpageid')->name('productobuscarpageid_notaventa');
 Route::get('notaventa/{id}/clientebuscarpage', 'NotaVentaController@clientebuscarpageid')->name('clientebuscarpageid_notaventa');
 Route::post('notaventa/buscarNVActiva', 'NotaVentaController@buscarNVActiva')->name('buscarNVActiva_notaventa');
+Route::post('notaventa/updateRF', 'NotaVentaController@updateRF')->name('updateRF_notaventa');
 
 
 /*RUTAS CONSULTAR NOTA DE VENTA*/
@@ -1618,7 +1619,7 @@ Route::get('ot/exportPdf/{id}', 'OtController@exportPdf')->name('exportPdf_ot');
 
 /*RUTAS OTNV*/
 Route::get('otnv', 'OtNVController@index')->name('otnv');
-Route::get('otnvpage', 'OtNVController@otnvpage')->name('otnvpage');
+Route::get('otnv/otnvpage', 'OtNVController@otnvpage')->name('otnvpage');
 Route::get('otnv/listarnv', 'OtNVController@listarnv')->name('listarnv_otnv');
 Route::get('otnv/totalizarindex', 'OtNVController@totalizarindex')->name('otnv_totalizarindex');
 Route::get('otnv/crear', 'OtNVController@crear')->name('crear_otnv');
@@ -1644,7 +1645,7 @@ Route::get('reportot/listardtedet', 'ReportOtController@listardtedet')->name('re
 
 /*RUTAS OT*/
 Route::get('otaprobar', 'OtAprobarController@index')->name('otaprobar');
-Route::get('otaprobarpage', 'OtAprobarController@otaprobarpage')->name('otaprobarpage');
+Route::get('otaprobar/otaprobarpage', 'OtAprobarController@otaprobarpage')->name('otaprobarpage');
 Route::post('otaprobar/aprobar', 'OtAprobarController@aprobar')->name('aprobar_otaprobar');
 Route::post('otaprobar/rechazar', 'OtAprobarController@rechazar')->name('rechazar_otaprobar');
 
@@ -1661,6 +1662,7 @@ Route::get('otitemprogramacion', 'OtItemProgramacionController@index')->name('ot
 Route::get('otitemprogramacionpage', 'OtItemProgramacionController@otitemprogramacionpage')->name('otitemprogramacionpage');
 Route::post('otitemprogramacion/aprobar', 'OtItemProgramacionController@aprobar')->name('aprobar_otitemprogramacion');
 Route::post('otitemprogramacion/rechazar', 'OtItemProgramacionController@rechazar')->name('rechazar_otitemprogramacion');
+Route::post('otitemprogramacion/cerraropdet', 'OtItemProgramacionController@cerraropdet')->name('cerraropdet_otitemprogramacion');
 
 /*RUTAS MAQUINAGRUPO*/
 Route::get('maquinagrupo', 'MaquinaGrupoController@index')->name('maquinagrupo');
@@ -1722,6 +1724,9 @@ Route::get('acuerdotecnicoetapaprod', 'AcuerdoTecnicoEtapaProdController@index')
 Route::get('acuerdotecnicoetapaprodpage', 'AcuerdoTecnicoEtapaProdController@acuerdotecnicoetapaprodpage')->name('acuerdotecnicoetapaprodpage');
 Route::get('acuerdotecnicoetapaprod/{id}/editar', 'AcuerdoTecnicoEtapaProdController@editar')->name('editar_acuerdotecnicoetapaprod');
 Route::put('acuerdotecnicoetapaprod/{id}', 'AcuerdoTecnicoEtapaProdController@actualizar')->name('actualizar_acuerdotecnicoetapaprod');
+// Endpoints AJAX usados por el modal de edición de etapas en otitemprogramacion
+Route::get('acuerdotecnicoetapaprod/{id}/modal-data', 'AcuerdoTecnicoEtapaProdController@modalData')->name('acuerdotecnicoetapaprod_modal_data');
+Route::post('acuerdotecnicoetapaprod/{id}/actualizar-ajax', 'AcuerdoTecnicoEtapaProdController@actualizarAjax')->name('acuerdotecnicoetapaprod_actualizar_ajax');
 
 /*RUTAS PRODUCCION MOVIMIENTO ANTES DE PRODUCCION FINAL*/
 Route::get('opdetregprodtemp/etapaprod', 'OpDetRegProdTempController@etapaprod')->name('opdetregprodtemp_etapaprod');

@@ -17,14 +17,16 @@ $(document).ready(function () {
             {data: 'producto_id'},
             {data: 'producto_nombre'},
             {data: 'razonsocial'},
-            {data: 'opdet_kg'},
             {data: 'opdet_kgrec'},
             {data: 'opdet_kgprod'},
             {data: 'opdet_kgscrap'},
-            {data: 'kg'},
+            {data: 'kgprod'},
             {data: 'kgscrap'},
             {data: 'kgsaldo'},
             {data: 'updatednum_at',className:"ocultar"},
+            {data: 'maquina_nombre'},
+            {data: 'operario_nombre'},
+            {defaultContent : ``},
             {defaultContent : ``
             }
         ],
@@ -37,67 +39,141 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             $(row).attr('updated_at', data.updatednum_at);
 
-            aux_text = 
+            /* aux_text = 
                 `<a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OT: ${data.ot_id}" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")'>
                     ${data.ot_id}
                 </a>
                 <a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OP: ${data.op_id}" onclick='genpdf(${data.op_id},"","ver-pdf-op","/op/exportPdf/${data.op_id}")'>
                     ${data.op_id}-${data.opdet_id}
-                </a>`;
+                </a>`; */
+
+			aux_textNV = "";
+			if(data.notaventa_id){
+				aux_textNV = `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota Venta" onclick="genpdfNV(${data.notaventa_id},1)" style="padding-left: 0px;">
+					${data.notaventa_id}
+				</a>`;
+			}
+			aux_text = aux_textNV + `
+				<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Trabajo" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")' style="padding-left: 0px;">
+					${data.ot_id}
+				</a>
+				<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Trabajo Detalle" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")' style="padding-left: 0px;">
+					${data.otdet_id}
+				</a>
+				<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Produccion" ${data.op_id}" onclick='genpdf(${data.op_id},"","ver-pdf-op","/op/exportPdf/${data.op_id}")' style="padding-left: 0px;">
+					${data.op_id}
+				</a>
+				<a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Produccion Detalle ${data.opdet_id}" onclick='genpdf(${data.op_id},"","ver-pdf-op","/op/exportPdf/${data.op_id}")' style="padding-left: 0px;">
+					${data.id}
+				</a>`
             $('td', row).eq(1).html(aux_text);
 
+			if(data.acuerdotecnico_id != null){
+				//$('td', row).eq(0).html(aux_text);
+				if (data.hasOwnProperty('cliente_id')) {
+					aux_cliente_id = data.cliente_id;
+				} else {
+					aux_cliente_id = 0;
+				}
+				aux_text = 
+				`<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${data.acuerdotecnico_id},${aux_cliente_id},"")'>
+					${data.producto_id}
+				</a>`;
+				if(data.at_impresofoto != "" && data.at_impresofoto != null){
+					aux_text += 
+						`<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick='verpdf2(\"at/${data.at_impresofoto}\",2,"","ver-arte-acuerdo-tecnico")'>
+							<i class="fa fa-fw fa-photo"></i>
+						</a>`;
+				}
+				$('td', row).eq(2).html(aux_text);
+				//$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
+			}
 
             $('td', row).eq(5).attr('style','text-align:right');
-            $('td', row).eq(5).attr('data-order',data.opdet_kg);
-            $('td', row).eq(5).attr('data-search',data.opdet_kg);
-            $('td', row).eq(5).html(MASKLA(data.opdet_kg, 2));
+            $('td', row).eq(5).attr('data-order',data.opdet_kgrec);
+            $('td', row).eq(5).attr('data-search',data.opdet_kgrec);
+            $('td', row).eq(5).html(MASKLA(data.opdet_kgrec, 2));
 
             $('td', row).eq(6).attr('style','text-align:right');
-            $('td', row).eq(6).attr('data-order',data.opdet_kgrec);
-            $('td', row).eq(6).attr('data-search',data.opdet_kgrec);
-            $('td', row).eq(6).html(MASKLA(data.opdet_kgrec, 2));
+            $('td', row).eq(6).attr('data-order',data.opdet_kgprod);
+            $('td', row).eq(6).attr('data-search',data.opdet_kgprod);
+            $('td', row).eq(6).html(MASKLA(data.opdet_kgprod, 2));
 
             $('td', row).eq(7).attr('style','text-align:right');
-            $('td', row).eq(7).attr('data-order',data.opdet_kgprod);
-            $('td', row).eq(7).attr('data-search',data.opdet_kgprod);
-            $('td', row).eq(7).html(MASKLA(data.opdet_kgprod, 2));
+            $('td', row).eq(7).attr('data-order',data.opdet_kgscrap);
+            $('td', row).eq(7).attr('data-search',data.opdet_kgscrap);
+            $('td', row).eq(7).html(MASKLA(data.opdet_kgscrap, 2));
 
             $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).attr('data-order',data.opdet_kgscrap);
-            $('td', row).eq(8).attr('data-search',data.opdet_kgscrap);
-            $('td', row).eq(8).html(MASKLA(data.opdet_kgscrap, 2));
+            $('td', row).eq(8).attr('data-order',data.kgprod);
+            $('td', row).eq(8).attr('data-search',data.kgprod);
+            $('td', row).eq(8).html(MASKLA(data.kgprod, 2));
 
             $('td', row).eq(9).attr('style','text-align:right');
-            $('td', row).eq(9).attr('data-order',data.kg);
-            $('td', row).eq(9).attr('data-search',data.kg);
-            $('td', row).eq(9).html(MASKLA(data.kg, 2));
+            $('td', row).eq(9).attr('data-order',data.kgscrap);
+            $('td', row).eq(9).attr('data-search',data.kgscrap);
+            $('td', row).eq(9).html(MASKLA(data.kgscrap, 2));
 
             $('td', row).eq(10).attr('style','text-align:right');
-            $('td', row).eq(10).attr('data-order',data.kgscrap);
-            $('td', row).eq(10).attr('data-search',data.kgscrap);
-            $('td', row).eq(10).html(MASKLA(data.kgscrap, 2));
+            $('td', row).eq(10).attr('data-order',data.kgsaldo);
+            $('td', row).eq(10).attr('data-search',data.kgsaldo);
+            $('td', row).eq(10).html(MASKLA(data.kgsaldo, 2));
 
-            $('td', row).eq(11).attr('style','text-align:right');
-            $('td', row).eq(11).attr('data-order',data.kgsaldo);
-            $('td', row).eq(11).attr('data-search',data.kgsaldo);
-            $('td', row).eq(11).html(MASKLA(data.kgsaldo, 2));
+            $('td', row).eq(11).attr('updated_at',data.updatednum_at);
+            $('td', row).eq(11).addClass('updated_at');
 
-            $('td', row).eq(12).attr('updated_at',data.updatednum_at);
-            $('td', row).eq(12).addClass('updated_at');
+            // Columnas 12-13: Maquina y Operario (se renderizan automaticamente por datatables)
 
-            aux_text = `<a class='btn-accion-tabla btn-sm tooltipsC' title='Aprobar Produccion' onclick='aprobrecproducc(${data.id},${data.updatednum_at})'>
+            // Columna 14: Estado del cierre de la UM de salida
+            const cantprodNum = parseFloat(data.cantprod) || 0;
+            const umSalNombre = data.unidadmedidasal_nombre ? data.unidadmedidasal_nombre : 'UM salida';
+            if (data.rollo_cerrado == 1 || cantprodNum > 0) {
+                $('td', row).eq(14).html(
+                    `<span class="label" style="background-color:#5cb85c;color:#fff;padding:4px 8px;font-size:11px;" title="Este registro cerro ${cantprodNum} ${umSalNombre}(s) de salida de la etapa">✔ ${umSalNombre} Cerrado: ${cantprodNum}</span>`
+                );
+            } else {
+                $('td', row).eq(14).html(
+                    `<span class="label" style="background-color:#f0ad4e;color:#fff;padding:4px 8px;font-size:11px;" title="Registro parcial: kg procesados que aun no completan un(a) ${umSalNombre} de salida de la etapa">⚠ ${umSalNombre} Abierto (parcial)</span>`
+                );
+            }
+
+            // Columna 15: puede_aprobar / puede_rechazar llegan como 0/1 desde SQL
+            const pAprob = (data.puede_aprobar == 1 || data.puede_aprobar === true) ? 1 : 0;
+            const pRech  = (data.puede_rechazar == 1 || data.puede_rechazar === true) ? 1 : 0;
+            aux_text = `<a class='btn-accion-tabla btn-sm tooltipsC' title='Aprobar / Rechazar Produccion' onclick='aprobrecproducc(${data.id},${data.updatednum_at},${pAprob},${pRech})'>
                             <span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>
                         </a>`;
-            $('td', row).eq(13).html(aux_text);
+            $('td', row).eq(15).html(aux_text);
         }
       });
 
 });
 
-function aprobrecproducc(id,updatednum_at){
+function aprobrecproducc(id,updatednum_at,puedeAprobar,puedeRechazar){
 	quitarvalidacioneach();
 	$("#id").val(id);
 	$("#aprobobs").val("");
+
+	// Aplicar reglas de orden ASC/DESC sobre los botones del modal.
+	// Por defecto ambos botones visibles/habilitados.
+	$("#btnaprobarM").prop('disabled', false).show();
+	$("#btnrechazarM").prop('disabled', false).show();
+	$("#avisoOrden").remove();
+
+	let avisos = [];
+	if (puedeAprobar === 0) {
+		$("#btnaprobarM").prop('disabled', true);
+		avisos.push("No se puede aprobar: existe un registro anterior pendiente del mismo OpDet. Apruebe primero el anterior.");
+	}
+	if (puedeRechazar === 0) {
+		$("#btnrechazarM").prop('disabled', true);
+		avisos.push("No se puede rechazar: existe un registro posterior (pendiente o aprobado) del mismo OpDet. Rechace primero el posterior.");
+	}
+	if (avisos.length > 0) {
+		const html = `<div id="avisoOrden" class="alert alert-warning" style="margin:10px 0;font-size:12px;"><strong>Atencion:</strong><br>${avisos.join('<br>')}</div>`;
+		$("#aprobobs").before(html);
+	}
+
 	$("#myModalaprobcot").modal('show');
 }
 

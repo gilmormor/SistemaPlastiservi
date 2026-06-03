@@ -5,81 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Etiqueta Etapa — OP {{ $op->id }}</title>
     <style>
+        /* Medida fisica de la etiqueta termica: 10.4 cm x 5.08 cm */
+        @page {
+            size: 10.4cm 5.08cm;
+            margin: 0;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #fff; }
+        html, body {
+            background: #fff;
+            /* Fuentes con trazo grueso/uniforme — mejor render en impresoras termicas
+               que Arial regular (que sale borroso). Se usa sans-serif bold por defecto. */
+            font-family: "Arial Black", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: bold;
+            -webkit-font-smoothing: none;
+            -moz-osx-font-smoothing: grayscale;
+            color: #000;
+        }
 
         .etiqueta {
-            width: 10cm;
-            min-height: 6.5cm;
-            border: 2px solid #000;
-            padding: 8px 10px;
-            margin: 10px auto;
+            width: 10.4cm;
+            height: 5.08cm;
+            padding: 2mm 3mm;
+            margin: 0 auto;
             page-break-inside: avoid;
+            page-break-after: always;
+            overflow: hidden;
         }
         .etiqueta-titulo {
             text-align: center;
-            font-size: 10pt;
+            font-size: 8pt;
             font-weight: bold;
             border-bottom: 1px solid #000;
-            padding-bottom: 4px;
-            margin-bottom: 6px;
+            padding-bottom: 1px;
+            margin-bottom: 2px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.3px;
+            line-height: 1.1;
         }
         .etiqueta-proxima {
             text-align: center;
-            font-size: 11pt;
+            font-size: 9pt;
             font-weight: bold;
             background: #000;
             color: #fff;
-            padding: 3px 6px;
-            margin-bottom: 6px;
-            border-radius: 2px;
+            padding: 1px 3px;
+            margin-bottom: 2px;
+            line-height: 1.1;
         }
         .etiqueta-body {
-            display: flex;
-            gap: 8px;
+            display: table;
+            width: 100%;
+            table-layout: fixed;
         }
         .etiqueta-datos {
-            flex: 1;
-            font-size: 8pt;
+            display: table-cell;
+            vertical-align: top;
+            font-size: 7.5pt;
+            font-weight: bold;
+            padding-right: 2mm;
         }
         .etiqueta-datos table { width: 100%; border-collapse: collapse; }
-        .etiqueta-datos td { padding: 2px 3px; vertical-align: top; }
-        .etiqueta-datos td:first-child { font-weight: bold; white-space: nowrap; width: 42%; }
-        .etiqueta-qr {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-width: 80px;
+        .etiqueta-datos td {
+            padding: 0 2px;
+            vertical-align: top;
+            font-weight: bold;
+            line-height: 1.15;
         }
-        .etiqueta-qr small { font-size: 6pt; text-align: center; margin-top: 3px; }
-        .etiqueta-footer {
-            border-top: 1px solid #ccc;
-            margin-top: 6px;
-            padding-top: 3px;
-            font-size: 7pt;
-            color: #555;
-            text-align: right;
+        .etiqueta-datos td:first-child { white-space: nowrap; width: 38%; }
+        .etiqueta-qr {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            width: 22mm;
+        }
+        .etiqueta-qr small {
+            display: block;
+            font-size: 6pt;
+            font-weight: bold;
+            margin-top: 1px;
         }
 
         .btn-imprimir {
             display: block;
             width: 200px;
-            margin: 20px auto 5px;
+            margin: 10px auto 5px;
             padding: 8px 16px;
             background: #5cb85c;
             color: #fff;
             border: none;
             border-radius: 4px;
             font-size: 13px;
+            font-weight: bold;
             cursor: pointer;
         }
         @media print {
             .btn-imprimir { display: none !important; }
             body { margin: 0; }
-            .etiqueta { margin: 0; border: 2px solid #000; }
+            .etiqueta { margin: 0; border: none; }
         }
     </style>
 </head>
@@ -88,43 +110,50 @@
 <button class="btn-imprimir" onclick="window.print()">Imprimir etiqueta</button>
 
 <div class="etiqueta">
+    <br>
     <div class="etiqueta-titulo">
-        Etiqueta de Etapa — {{ $produccion->opdet->areaproduccionsucetapaprod->etapaprod->nombre ?? '—' }}
+        Etapa: {{ $produccion->opdet->areaproduccionsucetapaprod->etapaprod->nombre ?? '—' }}
     </div>
     <div class="etiqueta-proxima">
-        Próxima etapa: {{ $proximaEtapaNombre }}
+        Proxima: {{ $proximaEtapaNombre }}
     </div>
     <div class="etiqueta-body">
         <div class="etiqueta-datos">
             <table>
                 <tr>
                     <td>Producto:</td>
-                    <td><strong>{{ $productoNombre }}</strong></td>
+                    <td>id {{ $producto_id }} - {{ $productoNombre }}</td>
                 </tr>
                 <tr>
                     <td>Cant / Kg:</td>
-                    <td>{{ number_format($produccion->cant, 0, ',', '.') }} uds /
-                        {{ number_format($produccion->kg, 2, ',', '.') }} kg</td>
+                    <td>{{ number_format($produccion->cantprod, 0, ',', '.') }} {{ $produccion->unidadmedidasal->nombre ?? 'UM' }} /
+                        {{ number_format($produccion->kgprod, 2, ',', '.') }} kg</td>
                 </tr>
                 <tr>
                     <td>Fecha:</td>
                     <td>{{ $produccion->aprobfechahora ? \Carbon\Carbon::parse($produccion->aprobfechahora)->format('d/m/Y H:i') : '—' }}</td>
                 </tr>
                 <tr>
-                    <td>OP / OT:</td>
-                    <td>OP-{{ $op->id }} / OT-{{ $ot->id }}</td>
+                    <td>OP/OT/Det:</td>
+                    <td>OP-{{ $op->id }} / OT-{{ $ot->id }} / {{ $otdet->id }}</td>
                 </tr>
                 <tr>
-                    <td>Det. OT:</td>
-                    <td>{{ $otdet->id }}</td>
+                    <td>OpDet:</td>
+                    <td>{{ $opdet->id }}</td>
                 </tr>
                 <tr>
                     <td>Operario:</td>
                     <td>{{ $operarioNombre }}</td>
                 </tr>
                 <tr>
-                    <td>Máquina:</td>
-                    <td>{{ $maquinaNombre }}</td>
+                    <td>Maquina:</td>
+                    <td>
+                        @if($maquina)
+                            Id:{{ $maquina->id }} Nom:{{ $maquina->nombre }}
+                        @else
+                            —
+                        @endif
+                    </td>
                 </tr>
             </table>
         </div>
@@ -133,10 +162,6 @@
             <small>ID: {{ $produccion->id }}</small>
         </div>
     </div>
-    <div class="etiqueta-footer">
-        {{-- Plastiservi &mdash; Sistema ERP --}}
-        Plastiservi
-    </div>
 </div>
 
 <!-- QR Code library (CDN) -->
@@ -144,8 +169,8 @@
 <script>
     new QRCode(document.getElementById("qrcode"), {
         text: "{{ $produccion->id }}",
-        width: 75,
-        height: 75,
+        width: 70,
+        height: 70,
         correctLevel: QRCode.CorrectLevel.M
     });
 </script>

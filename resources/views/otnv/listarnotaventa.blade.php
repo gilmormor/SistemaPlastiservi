@@ -157,13 +157,14 @@ Notas de Venta
                                         <label>Estatus:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus">
+                                        <input type="text" value="Aprobadas" class="form-control" readonly/>
+                                        {{-- <select name="aprobstatus" id="aprobstatus" class="selectpicker form-control aprobstatus" readonly>
                                             <option value="0">Todos</option>
                                             <option value="1">Emitidas sin aprobar</option>
                                             <option value="2">Por debajo precio en tabla</option>
                                             <option value="3" selected>Aprobadas</option>
                                             <option value="4">Rechazadas</option>
-                                        </select>
+                                        </select> --}}
                                     </div>
                                 </div>
                             </div>

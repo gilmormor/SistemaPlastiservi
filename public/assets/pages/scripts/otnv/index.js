@@ -11,7 +11,7 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         "order"       : [[ 0, "desc" ]],
-        'ajax'        : "otnvpage",
+        'ajax'        : "/otnv/otnvpage",
         'columns'     : [
             {data: 'id'},
             {data: 'fechahora'},

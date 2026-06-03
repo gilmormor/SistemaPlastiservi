@@ -82,6 +82,14 @@ OP Det
                                         <input type="text" name="notaventa_id" id="notaventa_id" class="form-control" value="{{old('notaventa_id')}}" maxlength="12"/>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número OT">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="ot_id">OT:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="ot_id" id="ot_id" class="form-control" value="{{old('ot_id')}}" maxlength="8"/>
+                                    </div>
+                                </div>
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Orden Produccion">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="op_id">OP:</label>

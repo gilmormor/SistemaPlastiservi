@@ -8,13 +8,13 @@ $(document).ready(function () {
 		todayHighlight: true
     }).datepicker("setDate");
 
+    // Inputs de filtro: solo enteros, sin decimales ni negativos
+    $(".numerico-entero").numeric({ decimal: false, negative: false });
+    // Inputs generales con decimales (los del DataTable los maneja claseformatonumerico en draw)
     $(".numerico").numeric();
-    nombreTabla = "#tabla-data-factura";
-    $(nombreTabla).append(encabezadoTabla());
-    configurarTabla(nombreTabla,"",false)
-
-    
-
+    // No se inicializa la tabla en document.ready porque causaba un salto visual:
+    // el <thead> se renderizaba con la fuente del browser y recién en el evento draw
+    // se aplicaba font-size: 12px. La tabla se inicializa únicamente al presionar "Consultar".
 });
 
 function claseformatonumerico(clase,numdecimales){
@@ -255,6 +255,12 @@ function calcularDigitoVerificador(rut) {
 $('#rut1').on('blur', function() {
     let rut = $(this).val().trim();
 
+    // Si el campo está vacío no validar ni mostrar error
+    if (rut === '') {
+        $('#error-message').hide();
+        return;
+    }
+
     // Agregar el guion si no está presente
     if (!rut.includes('-') && rut.length >= 8) {
       rut = rut.slice(0, -1) + '-' + rut.slice(-1);
@@ -390,11 +396,7 @@ function encabezadoTabla(){
                     <th class="ocultar">updated_at</th>
                     <th class="width80">Acción</th>
                 </tr>
-            </thead>
-            <tfoot>
-            </tfoot>
-
-        `;
+            </thead>`;
     return html;
 }
 
@@ -521,26 +523,56 @@ function configurarTabla(nombreTabla,url,serverSide) {
             $('td', row).eq(10).attr('style','text-align:right');
             $('td', row).eq(10).html(aux_text);
 
-            aux_text = 
-                `<input type="text" name="espesorprod[]" id="espesorprod${data.id}" class="form-control numerico3d" value="${MASKLA(data.espesorprod,3)}" valor="${data.espesorprod}" item="${data.id}" style="width: 70px;text-align:right;" maxlength="6" data-producto-id="${data.producto_id}" onblur="calcularPeso(this)" valororiginal="${data.espesorprod}" kgoriginal="${data.kgprod}"/>`;
+            // espesorprod — lleva los data-* con los parámetros del AT para que
+            // pesoUnitario() pueda calcular sin llamar al backend.
+            // doble: 2 = bolsa (2 capas de film), 1 = film plano (categoriaprod_id=13)
+            aux_text =
+                `<input type="text" name="espesorprod[]" id="espesorprod${data.id}"
+                 class="form-control numerico3d"
+                 value="${MASKLA(data.espesorprod,3)}" valor="${data.espesorprod}"
+                 item="${data.id}" style="width: 70px;text-align:right;" maxlength="6"
+                 data-producto-id="${data.producto_id}"
+                 data-ancho="${data.at_ancho        || 0}"
+                 data-largo="${data.at_largo        || 0}"
+                 data-pe="${data.at_pe              || 0}"
+                 data-formatofilm="${data.at_formatofilm     || 0}"
+                 data-um-id="${data.at_unidadmedida_id || 0}"
+                 data-doble="${data.at_categoriaprod_id == 13 ? 1 : 2}"
+                 onfocus="guardarValorPrev(this)"
+                 onblur="calcularPeso(this)"
+                 valororiginal="${data.espesorprod}" kgoriginal="${data.kgprod}"/>`;
             $('td', row).eq(11).html(aux_text);
 
-            // Saldo pendiente de kg a enviar a programación
+            // kgprod — también tiene onfocus/onblur para el cálculo inverso kg→cant
             let kgPendiente = data.kg - (parseFloat(data.kgenvprog) || 0);
             if (kgPendiente < 0) kgPendiente = 0;
             aux_text =
-                `<input type="text" name="kgprod[]" id="kgprod${data.id}" class="form-control numerico" value="${MASKLA(kgPendiente,2)}" valor="${kgPendiente}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15" valororiginal="${kgPendiente}"/>`;
+                `<input type="text" name="kgprod[]" id="kgprod${data.id}"
+                 class="form-control numerico"
+                 value="${MASKLA(kgPendiente,2)}" valor="${kgPendiente}"
+                 item="${data.id}" style="width: 100px;text-align:right;" maxlength="15"
+                 valororiginal="${kgPendiente}"
+                 onfocus="guardarValorPrev(this)"
+                 title="Valor original Pendiente : ${MASKLA(kgPendiente,2)} kg"
+                 onblur="calcularCant(this)"/>`;
             $('td', row).eq(12).html(aux_text);
 
             aux_text = MASKLA(data.cant,0);
             $('td', row).eq(13).attr('style','text-align:right');
             $('td', row).eq(13).html(aux_text);
 
-            // Saldo pendiente de unidades a enviar a programación
+            // cantprod — onfocus guarda el valor previo, onblur recalcula kg→cant
             let cantPendiente = data.cant - (parseFloat(data.cantenvprog) || 0);
             if (cantPendiente < 0) cantPendiente = 0;
             aux_text =
-                `<input type="text" name="cantprod[]" id="cantprod${data.id}" class="form-control numerico" value="${MASKLA(cantPendiente,2)}" valor="${cantPendiente}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15" onblur="calcularPeso(this)" valororiginal="${cantPendiente}" data-cant="${data.cant}" data-cantenvprog="${parseFloat(data.cantenvprog)||0}"/>`;
+                `<input type="text" name="cantprod[]" id="cantprod${data.id}"
+                 class="form-control numerico"
+                 value="${MASKLA(cantPendiente,2)}" valor="${cantPendiente}"
+                 item="${data.id}" style="width: 100px;text-align:right;" maxlength="15"
+                 onfocus="guardarValorPrev(this)"
+                 onblur="calcularPeso(this)"
+                 valororiginal="${cantPendiente}"
+                 data-cant="${data.cant}" data-cantenvprog="${parseFloat(data.cantenvprog)||0}"/>`;
             $('td', row).eq(14).html(aux_text);    
 
             $('td', row).eq(19).addClass('updated_at');
@@ -576,8 +608,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
     tabla.on('draw', function() {
         claseformatonumerico(".numerico",2);
         claseformatonumerico(".numerico3d",3);
-        $('#tabla-data-factura th, #tabla-data-factura td').css('font-size', '12px');
-
+        // font-size ya está definido en el <style> del blade → no es necesario aplicarlo aquí
     });
 };
 
@@ -684,6 +715,7 @@ function procesarRegOt(id,updatednum_at,otupdatednum_at) {
         });
         return 0;
     }
+
 
     // Validar que no exceda el saldo pendiente
     let cantMaxEnviar = parseFloat($("#cantprod" + id).data("cant")) - parseFloat($("#cantprod" + id).data("cantenvprog") || 0);
@@ -805,47 +837,50 @@ function enviarAProgamacion(data, ruta) {
     });
 }
 
-function calcularPeso(input){
+/**
+ * calcularPeso — recalcula kgprod cuando el usuario cambia espesorprod o cantprod.
+ * Se dispara en onblur de ambos inputs.
+ * Si el valor no cambió respecto al focus anterior, no hace nada (evita cálculos
+ * innecesarios al navegar con Tab sin modificar nada).
+ */
+function calcularPeso(input) {
+    var $input   = $(input);
+    var id       = $input.attr('item');
+
+    // No recalcular si el valor no cambió desde el último focus
+    if ($input.data('prev-valor') === $input.attr('valor')) return;
+
+    var cantprod = parseFloat($("#cantprod" + id).attr('valor')) || 0;
+    var pUnit    = pesoUnitario(id);
+    var kgNuevo  = pUnit * cantprod;
+
+    $("#kgprod" + id)
+        .val(MASKLA(kgNuevo, 2))
+        .attr('valor', parseFloat(kgNuevo).toFixed(2));
+}
+
+/**
+ * calcularCant — cálculo inverso: recalcula cantprod cuando el usuario
+ * cambia kgprod directamente.
+ * Se dispara en onblur del input kgprod.
+ * Si el peso unitario no es calculable (= 0) no hace nada para evitar división por cero.
+ */
+function calcularCant(input) {
     var $input = $(input);
-    var id = $input.attr('item');
-    //var id = $input.attr('id').replace('espesorprod', '');
-    var valororiginal = $input.attr('valororiginal');
-    var valorActual = $input.attr("valor");
-    var producto_id = $("#espesorprod" + id).data('producto-id'); // O reemplaza esta línea si usas otro input para el producto_id
+    var id     = $input.attr('item');
 
-    //console.log(valorActual == valororiginal);
-/*     if (valorActual == valororiginal) {
-        //console.log($("#kgprod" + id).attr('valororiginal'))
-        $("#kgprod" +id).val(MASKLA($("#espesorprod" + id).attr('kgoriginal'),2));
-        $("#kgprod" +id).attr($("#espesorprod" + id).attr('kgoriginal'));
-    }else{
- */        var data = {
-            id: id,
-            nfila: id,
-            producto_id: producto_id,
-            espesorprod : $("#espesorprod" + id).attr("valor"),
-            cantprod: $("#cantprod" + id).attr("valor"),
-            _token: $('input[name=_token]').val()
-        };
-        ruta = '/otitemenvprogprod/calcularPeso';
-        //aux_peso = ajaxRequestGeneral(data, ruta, 'devolverValor');
-        $.ajax({
-			url: ruta,
-			type: 'POST',
-			data: data,
-			success: function (respuesta) {
-                console.log("Peso Unitario: " + respuesta);
-                console.log("Peso Cantidad: " + $("#cantprod" + id).attr("valor"));
-                aux_totalkg = respuesta * $("#cantprod" + id).attr("valor");
-                $("#kgprod" +id).val(MASKLA(aux_totalkg,2));
-                $("#kgprod" +id).attr("valor",parseFloat(aux_totalkg).toFixed(2));
-			}
-		});
+    // No recalcular si el valor no cambió desde el último focus
+    if ($input.data('prev-valor') === $input.attr('valor')) return;
 
-        //const aux_peso = ajaxRequestGeneral(data, ruta, 'devolverValor');
-        //console.log('Peso devuelto: ' + aux_peso);
-    
-        //calcularPeso(id, producto_id);
-    /* } */
+    var kgprod = parseFloat($input.attr('valor')) || 0;
+    var pUnit  = pesoUnitario(id);
 
+    // Sin peso unitario calculable no se puede obtener la cantidad
+    if (pUnit <= 0) return;
+
+    var cantNueva = kgprod / pUnit;
+
+    $("#cantprod" + id)
+        .val(MASKLA(cantNueva, 2))
+        .attr('valor', parseFloat(cantNueva).toFixed(2));
 }

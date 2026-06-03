@@ -72,7 +72,7 @@ Programación de Producción
                                     <label>Num OT:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <input type="text" name="ot_id" id="ot_id" class="form-control numerico" value="{{old('ot_id')}}" maxlength="8"/>
+                                    <input type="text" name="ot_id" id="ot_id" class="form-control numerico-entero" value="{{old('ot_id')}}" maxlength="8"/>
                                 </div>
                             </div>
                         </div>
@@ -82,7 +82,7 @@ Programación de Producción
                                     <label>Nota Venta:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <input type="text" name="notaventa_id" id="notaventa_id" class="form-control numerico" value="{{old('notaventa_id')}}" maxlength="10"/>
+                                    <input type="text" name="notaventa_id" id="notaventa_id" class="form-control numerico-entero" value="{{old('notaventa_id')}}" maxlength="10"/>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-6" title="Orden de Compra">
@@ -100,7 +100,7 @@ Programación de Producción
                                     <label>Ancho Ini:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <input type="text" name="at_AnchoIni" id="at_AnchoIni" class="form-control numerico" value="{{old('at_AnchoIni')}}" maxlength="3"/>
+                                    <input type="text" name="at_AnchoIni" id="at_AnchoIni" class="form-control numerico-entero" value="{{old('at_AnchoIni')}}" maxlength="3"/>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-6" title="Ancho Final">
@@ -108,7 +108,7 @@ Programación de Producción
                                     <label>Ancho Fin:</label>
                                 </div>
                                 <div class="col-xs-12 col-md-8 col-sm-8">
-                                    <input type="text" name="at_AnchoFin" id="at_AnchoFin" class="form-control numerico" value="{{old('at_AnchoFin')}}" maxlength="3"/>
+                                    <input type="text" name="at_AnchoFin" id="at_AnchoFin" class="form-control numerico-entero" value="{{old('at_AnchoFin')}}" maxlength="3"/>
                                 </div>
                             </div>
                         </div>
@@ -186,4 +186,30 @@ Programación de Producción
 @include('generales.buscarclientebd')
 @include('generales.buscarproductobd')
 @include('generales.modalpdf')
+
+{{-- Modal para asignar etapas de producción a un AT sin salir de la pantalla --}}
+<div class="modal fade" id="modalEtapasProd" tabindex="-1" role="dialog" aria-labelledby="modalEtapasProdLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalEtapasProdLabel">Etapas de Producción</h4>
+            </div>
+            <div class="modal-body">
+                {{-- Info del producto (se llena dinámicamente) --}}
+                <div id="modalEtapasProdInfo" class="alert alert-info" style="padding:6px 10px; margin-bottom:10px;"></div>
+                {{-- Lista de checkboxes (se llena dinámicamente) --}}
+                <div id="modalEtapasProdBody"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnGuardarEtapas" class="btn btn-success">
+                    <i class="fa fa-save"></i> Guardar etapas
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

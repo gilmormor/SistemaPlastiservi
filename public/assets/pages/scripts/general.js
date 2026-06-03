@@ -2453,13 +2453,21 @@ function llenarselectbodega(respuesta){
 	}	
 }
 
-function sumbod(i,y,aux_orig){
+function sumbod(i,y,aux_orig,requiere_fabricacion = 0){
+	//console.log("sumbod",i,y,aux_orig,requiere_fabricacion);
 	aux_stockcant = parseFloat($("#stockcantTD" + y).html());
 	if(aux_orig == "OD"){
 		if($("#invcant" + y).attr("stadespsinstock") == "0"){
 			if ($("#invcant" + y).val() > aux_stockcant){
 				$("#invcant" + y).val(aux_stockcant);
 			}	
+		}
+	}
+	if(aux_orig == "SD"){
+		if(requiere_fabricacion == 1){
+			if ($("#invcant" + y).val() > aux_stockcant){
+				$("#invcant" + y).val(aux_stockcant);
+			}
 		}
 	}
 	totalSolDe = 0;
@@ -2494,6 +2502,7 @@ function sumbod(i,y,aux_orig){
 		}
 		valorNum = parseFloat(valor);
 		total += valorNum;
+		//console.log("total",total);
 		/*
 		aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
 		if(total > aux_saldo){
@@ -3376,7 +3385,13 @@ function ajaxRequestGeneral(datatemp,url,funcion) {
 				Biblioteca.notificaciones(aux_mensaje, 'Plastiservi', aux_tipoaler);
 			}
 			if(funcion=='devolverValor'){
-				console.log("Valor en ajax: " + respuesta);
+				//console.log("Valor en ajax: " + respuesta);
+				return respuesta;
+			}
+			if(funcion=='ProcesarAlgo'){
+				//console.log("Valor en ajax: " + respuesta.mensaje);
+				//return respuesta;
+				Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
 				return respuesta;
 			}
 
@@ -4502,3 +4517,110 @@ $("#totalkilosM").blur(function(){
 		totalizarItem(0);
 	}
 });
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Utilidades de cálculo de peso — Módulo de Producción
+ * Disponibles globalmente para cualquier JS del proyecto.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * guardarValorPrev — memoriza el valor numérico del input al entrar (focus).
+ *
+ * Se llama con onfocus="guardarValorPrev(this)" en cualquier input que use
+ * los helpers calcularPeso / calcularCant. Permite detectar si el usuario
+ * realmente modificó el valor antes de ejecutar el recálculo en el blur,
+ * evitando cálculos innecesarios al navegar con Tab sin tocar el campo.
+ *
+ * Uso:  <input ... onfocus="guardarValorPrev(this)" onblur="calcularPeso(this)">
+ */
+function guardarValorPrev(input) {
+    // Guarda el valor numérico actual (atributo 'valor') como referencia
+    $(input).data('prev-valor', $(input).attr('valor'));
+}
+
+/**
+ * pesoUnitario — calcula el peso por unidad a partir de los parámetros del
+ * Acuerdo Técnico (AT) almacenados en atributos data-* del input #espesorprod{id}.
+ *
+ * Replica la lógica de pesounitat() definida en app/Helpers/biblioteca.php.
+ * Al ser JS puro no requiere ninguna llamada AJAX al backend.
+ *
+ * Convención de data-* esperados en el input #espesorprod{id}
+ * (se inyectan en createdRow del DataTable de cada módulo):
+ *   data-ancho       → acuerdotecnico.at_ancho
+ *   data-largo       → acuerdotecnico.at_largo
+ *   data-pe          → materiaprima.pe  (densidad del material)
+ *   data-formatofilm → acuerdotecnico.at_formatofilm
+ *   data-um-id       → acuerdotecnico.at_unidadmedida_id
+ *   data-doble       → 2 = bolsa (2 capas) | 1 = film (categoriaprod_id = 13)
+ *
+ * Fórmula principal:
+ *   peso_unit = ancho × largo × espesor × pe / 1000 × doble
+ *
+ * Casos especiales (mismo orden que el PHP):
+ *   1. at_formatofilm > 0       → devuelve at_formatofilm directamente
+ *   2. at_unidadmedida_id = 7  → peso unitario = 1 (UM especial)
+ *   3. espesor = 0              → devuelve 0 (sin espesor no hay fórmula)
+ *
+ * Nota: el backend fuerza at_peso = 0 antes de llamar pesounitat(), por eso
+ * aquí se omite ese campo y se aplica siempre la fórmula dimensional.
+ *
+ * @param  {string|number} id  — sufijo numérico del input (#espesorprod{id})
+ * @return {number}            — peso unitario calculado
+ */
+function pesoUnitario(id) {
+    var $esp        = $("#espesorprod" + id);
+    var espesor     = parseFloat($esp.attr('valor'))       || 0;
+    var formatofilm = parseFloat($esp.data('formatofilm')) || 0;
+    var umId        = parseInt($esp.data('um-id'))         || 0;
+    var ancho       = parseFloat($esp.data('ancho'))       || 0;
+    var largo       = parseFloat($esp.data('largo'))       || 0;
+    var pe          = parseFloat($esp.data('pe'))          || 0;
+    var doble       = parseInt($esp.data('doble'))         || 2;
+
+    if (formatofilm > 0) return formatofilm;   // caso: formato film fijo (sin fórmula)
+    if (umId === 7)      return 1;             // caso: UM especial, 1 kg por unidad
+    if (espesor === 0)   return 0;             // sin espesor no se puede calcular
+    return (ancho * largo * espesor * pe / 1000) * doble;
+}
+
+function updateRF(notaventadetalle_id, chkRF){
+	swal({
+		title: '¿ Seguro desea cambiar el estado de requiere fabricación ?',
+		//text: "Se eliminaran todos los item asociados a la guia: ",
+		icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			//console.log('NVDet: ' + notaventadetalle_id, "checked: " + chkRF.checked);
+			var data = {
+				notaventadetalle_id: notaventadetalle_id,
+				rf : (chkRF.checked ? 1 : 0),
+				_token: $('input[name=_token]').val()
+			};
+			//respuesta= ajaxRequestGeneral(data,'/notaventa/updateRF', "ProcesarAlgo");
+			// ajaxRequestGeneral es async y no retorna la respuesta: se usa $.ajax directo
+			$.ajax({
+				url: '/notaventa/updateRF',
+				type: 'POST',
+				data: data,
+				success: function(respuesta) {
+					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+					if (respuesta.id == 0) {
+						// Si falló, revertir el checkbox al estado anterior
+						chkRF.checked = !chkRF.checked;
+					}
+				},
+				error: function() {
+					Biblioteca.notificaciones('Error de conexión.', 'Plastiservi', 'error');
+					chkRF.checked = !chkRF.checked;
+				}
+			});
+		}else{
+			chkRF.checked = !chkRF.checked;
+		}
+	});
+}

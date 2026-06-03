@@ -338,7 +338,7 @@ function format(d) {
             precio: parseFloat(precio),
             subtotal: parseInt(subtotal),
             producto_nombre: producto_nombre,
-            requiere_fabricacion: requiere_fabricacion,
+            requiere_fabricacion: parseInt(requiere_fabricacion),
             acuerdotecnico_id: id
         };
     });
@@ -356,7 +356,7 @@ function format(d) {
                         <th style="text-align: center;">Saldo</th>
                         <th style="text-align: right;">Precio</th>
                         <th style="text-align: right;">Subtotal</th>
-                        <th style="text-align: center;">Fabr</th>
+                        <th style="text-align: center;" title="Requiere Fabricación">ReqFab</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -380,7 +380,7 @@ function format(d) {
                 <td style="text-align: center;">${detalle.cant - detalle.cantsoldesp}</td>
                 <td style="text-align: right;">${detalle.precio.toFixed(2)}</td>
                 <td style="text-align: right;">${detalle.subtotal.toFixed(2)}</td>
-                <td style="text-align: center;">${detalle.requiere_fabricacion}</td>
+                <td style="text-align: center;">${detalle.requiere_fabricacion === 1 ? 'Sí' : 'No'}</td>
             </tr>
         `;
     });

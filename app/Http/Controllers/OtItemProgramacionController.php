@@ -64,7 +64,7 @@ class OtItemProgramacionController extends Controller
         $request->request->set('noanul', 1);
         $request->request->set('modulo_id', 35);
         //$request->merge(['sta_envprog' => 1]);
-        $request->request->set('sta_envprog', 1);
+        $request->request->set('sta_envprog', '1,2');
 
         /* $users = Usuario::findOrFail(auth()->id());
         $sucurArray = $users->sucursales->pluck('id')->toArray();
@@ -290,4 +290,85 @@ class OtItemProgramacionController extends Controller
         }
     }
 
+    public function cerraropdet(Request $request, OpDetService $service)
+    {
+        if ($request->ajax()) {
+            //dd($request->obs);
+            $otdet = OtDet::findOrFail($request->otdet_id);
+
+            $ot = $otdet->ot; //Ot::findOrFail($otdet->ot_id);
+            if(strtotime($ot->updated_at) != $request->otupdatednum_at){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>"Encabezado de registro modificado por otro usuario. \nFecha: " . date('d-m-Y h:i:s A', strtotime($ot->updated_at)),
+                    'tipo_alert' => 'error'
+                ]);    
+            }
+
+            if(strtotime($otdet->updated_at) != $request->updatednum_at){
+                return response()->json([
+                    'id' => 0,
+                    'mensaje'=>"Detalle de registro modificado por otro usuario. \nFecha: " . date('d-m-Y h:i:s A', strtotime($otdet->updated_at)),
+                    'tipo_alert' => 'error'
+                ]);    
+            }
+            //dd($request);
+            $request1 = new Request();
+            $request1->merge(['modulo_id' => 35]);
+            $request1->request->set('modulo_id', 35);
+            $request1->merge(['deldesbloqueo' => 0]);
+            $request1->request->set('deldesbloqueo', 0);
+            $clibloq = clienteBloqueado($ot->cliente_id,0,$request1);
+            if(!is_null($clibloq["bloqueo"])){
+                /* return redirect('ot')->with([
+                    "mensaje" => "Condición financiera en revisión: " . $clibloq["bloqueo"],
+                    "tipo_alert" => "alert-error"
+                ]); */
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => "Condición financiera en revisión: " . $clibloq["bloqueo"],
+                    'tipo_alert' => 'error'
+                ]);
+            }
+            $request1->merge(['deldesbloqueo' => 1]);
+            $request1->request->set('deldesbloqueo', 1);
+            $clibloq = clienteBloqueado($ot->cliente_id,0,$request1);
+
+
+            DB::beginTransaction();
+
+            try {
+                //$otdet->kgprog = $otdet->kgprog + $request->kgprod;
+                $otdet->updated_at = date("Y-m-d H:i:s");
+                $otdet->save();
+
+                if(isset($request->statusCerrar_otDet) and $request->statusCerrar_otDet == 1){
+                    $otdetcerr = new OtDetCerr();
+                    $otdetcerr->otdet_id = $request->otdet_id;
+                    $otdetcerr->obs = $request->obs;
+                    $otdetcerr->tipo = 1;
+                    $otdetcerr->usuario_id = auth()->id();
+                    $otdetcerr->save();
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'mensaje' => 'Registro guardado con éxito.',
+                    'status' => '0',
+                    'id' => $request->otdet_id,
+                    'nfila' => $request->otdet_id,
+                    'dte_id' => $request->otdet_id,
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+
+                return response()->json([
+                    'id' => 0,
+                    'mensaje' => "Error: " . $e->getMessage(),
+                    'tipo_alert' => 'error'
+                ]);
+            }
+        }
+    }
 }

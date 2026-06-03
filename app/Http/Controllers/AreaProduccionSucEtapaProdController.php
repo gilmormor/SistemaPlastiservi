@@ -8,6 +8,7 @@ use App\Http\Requests\ValidarEtapaProd;
 use App\Models\AreaProduccionSuc;
 use App\Models\AreaProduccionSucEtapaProd;
 use App\Models\EtapaProd;
+use App\Models\PersonaEtapaProd;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\UnidadMedida;
@@ -47,14 +48,32 @@ class AreaProduccionSucEtapaProdController extends Controller
         if(isset($request->areaproduccionsuc_id) and $request->areaproduccionsuc_id >= 0){
             $aux_areaproduccionsuc_idCond = "areaproduccionsucetapaprod.areaproduccionsuc_id = $request->areaproduccionsuc_id";
         }
-        $sql = "SELECT areaproduccionsucetapaprod.id,etapaprod.nombre as etapaprod_nombre,
-            unidadmedida_id,
+        // UM entrada = UM salida de la etapa con orden-1 dentro del mismo areaproduccionsuc_id
+        $sql = "SELECT
+            areaproduccionsucetapaprod.id,
+            etapaprod.nombre as etapaprod_nombre,
+            areaproduccionsucetapaprod.unidadmedida_id,
             areaproduccionsucetapaprod.orden,
+            areaproduccionsucetapaprod.requiere_kg,
+            areaproduccionsucetapaprod.requiere_cc,
+            areaproduccionsucetapaprod.usa_matprima,
+            (SELECT a2.unidadmedida_id
+               FROM areaproduccionsucetapaprod a2
+              WHERE a2.areaproduccionsuc_id = areaproduccionsucetapaprod.areaproduccionsuc_id
+                AND a2.orden < areaproduccionsucetapaprod.orden
+              ORDER BY a2.orden DESC LIMIT 1
+            ) as unidadmedida_entrada_id,
+            (SELECT u.nombre FROM areaproduccionsucetapaprod a2 LEFT JOIN unidadmedida u ON u.id = a2.unidadmedida_id
+              WHERE a2.areaproduccionsuc_id = areaproduccionsucetapaprod.areaproduccionsuc_id
+                AND a2.orden < areaproduccionsucetapaprod.orden
+              ORDER BY a2.orden DESC LIMIT 1
+            ) as unidadmedida_entrada_nombre,
             UNIX_TIMESTAMP(areaproduccionsucetapaprod.updated_at) as updatednum_at,
             areaproduccionsucetapaprod.updated_at
         from areaproduccionsucetapaprod INNER JOIN etapaprod
         ON areaproduccionsucetapaprod.etapaprod_id = etapaprod.id
-        where $aux_areaproduccionsuc_idCond;";
+        where $aux_areaproduccionsuc_idCond
+        ORDER BY areaproduccionsucetapaprod.orden;";
         $datas = DB::select($sql);
         return datatables($datas)->toJson();
     }
@@ -94,6 +113,26 @@ class AreaProduccionSucEtapaProdController extends Controller
         DB::beginTransaction();
 
         try {
+            // Detectar registros de areaproduccionsucetapaprod que sync() eliminaría
+            $etapaprod_ids_nuevos = $request->etapaprod_id ?? [];
+            //dd($etapaprod_ids_nuevos);
+            $idsAEliminar = AreaProduccionSucEtapaProd::where('areaproduccionsuc_id', $id)
+                ->whereNotIn('etapaprod_id', $etapaprod_ids_nuevos)
+                ->pluck('id')
+                ->toArray();
+            //dd($idsAEliminar);
+            // Bloquear si alguna etapa a eliminar tiene personas asignadas
+            if (!empty($idsAEliminar)) {
+                $personasAsignadas = PersonaEtapaProd::whereIn('areaproduccionsucetapaprod_id', $idsAEliminar)->count();
+                if ($personasAsignadas > 0) {
+                    DB::rollBack();
+                    return redirect('areaproduccionsucetapaprod')->with([
+                        'mensaje' => "No se puede eliminar la etapa porque tiene {$personasAsignadas} persona(s) asignada(s). Desasigne las personas antes de eliminar la etapa.",
+                        'tipo_alert' => 'alert-error'
+                    ]);
+                }
+            }
+
             $areaproduccionsuc->etapaprods()->sync($request->etapaprod_id);
             DB::commit();
         } catch (\Exception $e) {
@@ -119,8 +158,11 @@ class AreaProduccionSucEtapaProdController extends Controller
             ]);    
         }
         $AreaProduccionSucEtapaProd->unidadmedida_id = $request->unidadmedida_id;
-        $AreaProduccionSucEtapaProd->orden = $request->orden;
-        $AreaProduccionSucEtapaProd->updated_at = date("Y-m-d H:i:s");
+        $AreaProduccionSucEtapaProd->orden           = $request->orden;
+        $AreaProduccionSucEtapaProd->requiere_kg     = $request->requiere_kg  ? 1 : 0;
+        $AreaProduccionSucEtapaProd->requiere_cc     = $request->requiere_cc  ? 1 : 0;
+        $AreaProduccionSucEtapaProd->usa_matprima    = $request->usa_matprima ? 1 : 0;
+        $AreaProduccionSucEtapaProd->updated_at      = date("Y-m-d H:i:s");
         if($AreaProduccionSucEtapaProd->save()){
             return response()->json([
                 'id' => $AreaProduccionSucEtapaProd->id,
