@@ -1,25 +1,21 @@
 /**
- * seguimiento.js — Pantalla de seguimiento de Órdenes de Producción
- * Ruta: /op/seguimiento
+ * seguimiento.js — Seguimiento de Órdenes de Producción
+ * Rediseño UX/UI 2026 — interfaz moderna y profesional.
  */
 
 var tabla;
 
 $(document).ready(function () {
-    // Inicializar datepickers
     $('.datepicker').datepicker({
-        language: 'es',
-        autoclose: true,
-        clearBtn: true,
-        todayHighlight: true
-    }).datepicker('setDate', new Date());   // hoy por defecto
+        language: 'es', autoclose: true, clearBtn: true, todayHighlight: true
+    }).datepicker('setDate', new Date());
 
     $('.numerico-entero').numeric({ decimal: false, negative: false });
 
-    // Construir tabla vacía al cargar
     construirTabla('');
 });
 
+// ── Consultar ──────────────────────────────────────────────────────────────────
 $('#btnconsultar').click(function () {
     var params = datosFiltros();
     if ($.fn.DataTable.isDataTable('#tabla-seguimiento')) {
@@ -32,308 +28,295 @@ $('#btnconsultar').click(function () {
 function datosFiltros() {
     return '?fechad='      + encodeURIComponent($('#fechad').val()) +
            '&fechah='      + encodeURIComponent($('#fechah').val()) +
-           '&op_id='       + ($('#op_id').val() || '') +
-           '&ot_id='       + ($('#ot_id').val() || '') +
-           '&nv_id='       + ($('#nv_id').val() || '') +
+           '&op_id='       + ($('#op_id').val()       || '') +
+           '&ot_id='       + ($('#ot_id').val()       || '') +
+           '&nv_id='       + ($('#nv_id').val()       || '') +
            '&producto_id=' + ($('#producto_id').val() || '');
 }
 
+// ── Construir DataTable ────────────────────────────────────────────────────────
 function construirTabla(url) {
-    // Encabezado
-    var thead = '<thead><tr>' +
-        '<th></th>' +
-        '<th title="OP">OP</th>' +
-        '<th title="Fecha">Fecha</th>' +
-        '<th title="OT">OT</th>' +
-        '<th title="NV">NV</th>' +
-        '<th title="Producto">Producto</th>' +
-        '<th title="Cliente">Cliente</th>' +
-        '<th title="Kg programados" style="text-align:right;">Kg Prog</th>' +
-        '<th title="Progreso etapas" style="text-align:center;">Etapas</th>' +
-        '<th title="Estado pendientes" style="text-align:center;">Pendientes</th>' +
+    var thead =
+        '<thead><tr>' +
+        '<th style="width:32px;"></th>' +
+        '<th>OP</th>' +
+        '<th>Fecha</th>' +
+        '<th>OT</th>' +
+        '<th>NV</th>' +
+        '<th>Producto</th>' +
+        '<th>Cliente</th>' +
+        '<th>Kg Prog.</th>' +
+        '<th>Progreso Etapas</th>' +
+        '<th>Pendientes</th>' +
         '</tr></thead><tfoot></tfoot>';
     $('#tabla-seguimiento').html(thead);
 
     tabla = $('#tabla-seguimiento').DataTable({
-        paging      : true,
-        scrollX     : true,
-        lengthChange: true,
-        searching   : true,
-        ordering    : true,
-        info        : true,
-        autoWidth   : false,
-        processing  : true,
-        serverSide  : url !== '',
-        ajax        : url || null,
-        order       : [[1, 'desc']],
-        language    : { url: 'https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json' },
+        paging: true, scrollX: true, lengthChange: true,
+        searching: true, ordering: true, info: true,
+        autoWidth: false, processing: true,
+        serverSide: url !== '',
+        ajax: url || null,
+        order: [[1, 'desc']],
+        language: { url: 'https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json' },
         columns: [
-            {   // child row toggle
-                className    : 'dt-control',
-                orderable    : false,
-                data         : null,
-                defaultContent: '<i class="fa fa-plus-circle text-aqua" title="Ver etapas"></i>'
-            },
-            { data: 'op_id',           width: '50px' },
-            { data: 'op_fecha',        width: '90px' },
-            { data: 'ot_id',           width: '50px' },
-            { data: 'notaventa_id',    width: '60px' },
-            { data: 'producto_nombre', width: '180px' },
-            { data: 'razonsocial',     width: '160px' },
-            { data: 'op_kgprod',       width: '80px' },
-            { data: 'num_etapas',      width: '80px', orderable: false },
-            { data: 'pend_no_enviados',width: '100px', orderable: false }
+            { className: 'dt-control', orderable: false, data: null,
+              defaultContent: '<i class="fa fa-plus-circle" style="color:#3498db; font-size:14px; cursor:pointer;" title="Ver etapas"></i>' },
+            { data: 'op_id',            width: '55px'  },
+            { data: 'op_fecha',         width: '95px'  },
+            { data: 'ot_id',            width: '50px'  },
+            { data: 'notaventa_id',     width: '60px'  },
+            { data: 'producto_nombre',  width: '180px' },
+            { data: 'razonsocial',      width: '170px' },
+            { data: 'op_kgprod',        width: '80px'  },
+            { data: 'num_etapas',       width: '160px', orderable: false },
+            { data: 'pend_no_enviados', width: '120px', orderable: false }
         ],
+        drawCallback: function () { actualizarKPIs(); },
         createdRow: function (row, data) {
             $(row).attr('id', 'fila-op-' + data.op_id);
 
-            // Col OP: enlace al listaropdet de esa OP
+            // Col OP — negrita con badge de prioridad
+            var prioColor = data.prioridad == 1 ? '#e74c3c' : (data.prioridad == 2 ? '#f39c12' : '#95a5a6');
             $('td', row).eq(1).html(
-                '<strong><a href="/opdetregprodtemp/listaropdet" style="color:#3c8dbc;" title="OP #' + data.op_id + '">' +
-                data.op_id + '</a></strong>'
+                '<strong style="font-size:13px; color:#1a3a5c;">' + data.op_id + '</strong>' +
+                (data.prioridad ? ' <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:' + prioColor + '; margin-left:3px;" title="Prioridad ' + data.prioridad + '"></span>' : '')
             );
 
-            // Col fecha
-            var f = new Date(data.op_fecha);
-            $('td', row).eq(2).html(fechaddmmaaaa(f));
-
-            // Col Kg programados
-            $('td', row).eq(7).css('text-align', 'right').html(MASKLA(data.op_kgprod, 2));
-
-            // Col Etapas (badge progreso)
-            // etapas_completadas = saldokg<=0 con producción aprobada
-            // etapas_parciales   = saldokg>0 con algo de producción aprobada
-            var numEtapas   = parseInt(data.num_etapas)        || 0;
-            var completadas = parseInt(data.etapas_completadas) || 0;
-            var parciales   = parseInt(data.etapas_parciales)   || 0;
-            var pct = numEtapas > 0
-                ? Math.round((completadas / numEtapas) * 10000) / 100  // 2 decimales
-                : 0;
-            var color = completadas === numEtapas && numEtapas > 0
-                ? '#00a65a'                          // todo completo
-                : (completadas > 0 || parciales > 0 ? '#f39c12' : '#aaa'); // parcial o sin iniciar
-            var etiquetaEtapas = completadas + '/' + numEtapas;
-            if (parciales > 0) {
-                etiquetaEtapas += ' <small style="color:#f39c12;">+' + parciales + ' parc.</small>';
-            }
-            $('td', row).eq(8).css('text-align', 'center').html(
-                '<span style="color:' + color + '; font-weight:bold;">' + etiquetaEtapas + '</span>' +
-                ' <small>(' + pct.toFixed(2).replace('.', ',') + '%)</small>'
+            // Col Fecha
+            $('td', row).eq(2).html(
+                '<span style="font-size:11px; color:#5a6a7e;">' + fechaHoraStr(data.op_fecha).split(' ')[0] + '</span>'
             );
 
-            // Col Pendientes
-            var badges = '';
-            if (data.pend_no_enviados > 0)
-                badges += '<span style="color:#f39c12;" title="No enviados a aprobación"><i class="fa fa-circle"></i> ' + data.pend_no_enviados + '</span> ';
-            if (data.pend_esperando_sup > 0)
-                badges += '<span style="color:#3c8dbc;" title="Esperando supervisor"><i class="fa fa-circle"></i> ' + data.pend_esperando_sup + '</span> ';
-            if (data.pend_rechazados > 0)
-                badges += '<span style="color:#dd4b39;" title="Rechazados"><i class="fa fa-circle"></i> ' + data.pend_rechazados + '</span>';
-            if (!badges) badges = '<span style="color:#aaa;">—</span>';
-            $('td', row).eq(9).css('text-align', 'center').html(badges);
+            // Col OT
+            $('td', row).eq(3).html('<span style="color:#5a6a7e; font-size:12px;">' + (data.ot_id || '—') + '</span>');
+
+            // Col NV
+            $('td', row).eq(4).html('<span style="color:#5a6a7e; font-size:12px;">' + (data.notaventa_id || '—') + '</span>');
+
+            // Col Kg
+            $('td', row).eq(7).css('text-align', 'right').html(
+                '<strong style="color:#1a3a5c;">' + MASKLA(data.op_kgprod, 2) + '</strong>' +
+                '<br><span style="font-size:10px; color:#aaa;">kg</span>'
+            );
+
+            // Col Progreso (barra visual)
+            var n          = parseInt(data.num_etapas)         || 0;
+            var comp       = parseInt(data.etapas_completadas)  || 0;
+            var parc       = parseInt(data.etapas_parciales)    || 0;
+            var pct        = n > 0 ? Math.round((comp / n) * 10000) / 100 : 0;
+            var barColor   = comp === n && n > 0 ? '#27ae60' : (comp > 0 || parc > 0 ? '#f39c12' : '#bdc3c7');
+            var labelExtra = parc > 0 ? ' <span style="color:#e67e22;">+' + parc + ' parc.</span>' : '';
+            $('td', row).eq(8).html(
+                '<div class="seg-progress-wrap">' +
+                '<div class="seg-progress-bar-bg">' +
+                '<div class="seg-progress-bar-fill" style="width:' + Math.min(pct, 100) + '%; background:' + barColor + ';"></div>' +
+                '</div>' +
+                '<div class="seg-progress-label">' +
+                '<strong style="color:' + barColor + ';">' + comp + '/' + n + '</strong>' + labelExtra +
+                ' <span style="color:#aaa;">(' + pct.toFixed(1) + '%)</span>' +
+                '</div></div>'
+            );
+
+            // Col Pendientes — chips compactos
+            var chips = '';
+            if (parseInt(data.pend_no_enviados)  > 0) chips += '<span class="seg-chip orange"><i class="fa fa-pencil"></i> ' + data.pend_no_enviados  + ' sin enviar</span> ';
+            if (parseInt(data.pend_esperando_sup) > 0) chips += '<span class="seg-chip blue"><i class="fa fa-clock-o"></i> ' + data.pend_esperando_sup + ' esp. sup.</span> ';
+            if (parseInt(data.pend_rechazados)    > 0) chips += '<span class="seg-chip red"><i class="fa fa-times-circle"></i> ' + data.pend_rechazados + ' rechaz.</span>';
+            if (!chips) chips = '<span class="seg-chip gray"><i class="fa fa-check"></i> Sin pendientes</span>';
+            $('td', row).eq(9).html('<div style="display:flex; flex-wrap:wrap; gap:3px;">' + chips + '</div>');
         }
     });
 
-    // Click en la celda dt-control → child row con detalle de etapas
+    // Click expand
     $('#tabla-seguimiento').on('click', 'td.dt-control', function (e) {
         var tr  = e.target.closest('tr');
         var row = tabla.row(tr);
         if (row.child.isShown()) {
             row.child.hide();
-            $(this).html('<i class="fa fa-plus-circle text-aqua" title="Ver etapas"></i>');
+            $(this).html('<i class="fa fa-plus-circle" style="color:#3498db; font-size:14px; cursor:pointer;"></i>');
         } else {
-            $(this).html('<i class="fa fa-minus-circle text-yellow" title="Ocultar etapas"></i>');
-            row.child('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Cargando etapas...</div>').show();
+            $(this).html('<i class="fa fa-minus-circle" style="color:#e67e22; font-size:14px; cursor:pointer;"></i>');
+            row.child(loadingHtml()).show();
             cargarEtapasDetalle(row.data().op_id, row);
         }
     });
 }
 
-/**
- * Carga el detalle de etapas de una OP y lo muestra en el child row.
- */
+// ── KPIs ───────────────────────────────────────────────────────────────────────
+function actualizarKPIs() {
+    if (!tabla) return;
+    var rows = tabla.rows({ search: 'applied' }).data();
+    var total = rows.length, completas = 0, enProceso = 0, conPendientes = 0;
+    rows.each(function (d) {
+        var n = parseInt(d.num_etapas) || 0, c = parseInt(d.etapas_completadas) || 0;
+        if (n > 0 && c === n) completas++;
+        else if (c > 0 || parseInt(d.etapas_parciales) > 0) enProceso++;
+        if (parseInt(d.pend_no_enviados) > 0 || parseInt(d.pend_esperando_sup) > 0) conPendientes++;
+    });
+    $('#kpi-total').text(total);
+    $('#kpi-completas').text(completas);
+    $('#kpi-parciales').text(enProceso);
+    $('#kpi-pendientes').text(conPendientes);
+}
+
+// ── Loader ─────────────────────────────────────────────────────────────────────
+function loadingHtml() {
+    return '<div style="padding:16px 24px; color:#8a99aa; font-size:12px;">' +
+           '<i class="fa fa-spinner fa-spin"></i>&nbsp; Cargando detalle de etapas...</div>';
+}
+
+// ── Detalle de etapas ──────────────────────────────────────────────────────────
 function cargarEtapasDetalle(op_id, row) {
     $.ajax({
-        url : '/op/' + op_id + '/etapas-detalle',
-        type: 'GET',
-        success: function (etapas) {
-            row.child(renderEtapas(op_id, etapas)).show();
-        },
-        error: function () {
-            row.child('<p class="text-danger">Error al cargar las etapas.</p>').show();
-        }
+        url: '/op/' + op_id + '/etapas-detalle', type: 'GET',
+        success: function (etapas) { row.child(renderEtapas(op_id, etapas)).show(); },
+        error:   function ()       { row.child('<p class="text-danger" style="padding:12px 20px;"><i class="fa fa-exclamation-circle"></i> Error al cargar las etapas.</p>').show(); }
     });
 }
 
-/**
- * Formatea una fecha+hora desde string "YYYY-MM-DD HH:MM:SS" a "DD/MM/YYYY HH:MM".
- * Evita problemas de zona horaria que tiene new Date() con strings sin 'Z'.
- */
+// ── Estado helper ──────────────────────────────────────────────────────────────
+function estadoConfig(e) {
+    var kgEnt     = (parseFloat(e.opdet_kgprod) || 0) + (parseFloat(e.opdet_kgscrap) || 0);
+    var opKg      = parseFloat(e.op_kgprod) || 0;
+    var completa  = opKg > 0 && kgEnt >= opKg;
+    var parcial   = kgEnt > 0 && !completa;
+    var espSup    = parseInt(e.temp_esperando_sup) > 0;
+    var sinEnviar = parseInt(e.temp_no_enviados)   > 0;
+    var rechazado = parseInt(e.temp_rechazados)    > 0;
+
+    if (completa)        return { color:'#27ae60', borde:'#27ae60', chip:'green',  label:'Completa',           icon:'check-circle' };
+    if (espSup)          return { color:'#2980b9', borde:'#3498db', chip:'blue',   label:'Esp. aprobación',    icon:'clock-o'      };
+    if (sinEnviar)       return { color:'#e67e22', borde:'#f39c12', chip:'orange', label:'En proceso',         icon:'pencil'       };
+    if (rechazado)       return { color:'#c0392b', borde:'#e74c3c', chip:'red',    label:'Rechazado',          icon:'times-circle' };
+    if (parcial)         return { color:'#e67e22', borde:'#f39c12', chip:'orange', label:'Parcial',            icon:'spinner'      };
+    return                      { color:'#bdc3c7', borde:'#d0d9e4', chip:'gray',   label:'Sin iniciar',        icon:'circle-o'     };
+}
+
+// ── Render etapas (child row) ──────────────────────────────────────────────────
+function renderEtapas(op_id, etapas) {
+    if (!etapas || etapas.length === 0) {
+        return '<div style="padding:16px 24px; color:#8a99aa; font-size:12px;"><i class="fa fa-inbox"></i> Sin etapas registradas.</div>';
+    }
+
+    var wrap = '<div style="padding:10px 20px 14px; background:#f8fafd;">';
+
+    etapas.forEach(function (e) {
+        var cfg    = estadoConfig(e);
+        var kgEnt  = (parseFloat(e.opdet_kgprod) || 0) + (parseFloat(e.opdet_kgscrap) || 0);
+        var opKg   = parseFloat(e.op_kgprod) || 0;
+        var pctEt  = opKg > 0 ? Math.min(Math.round(kgEnt / opKg * 100), 100) : 0;
+
+        // Cabecera de la etapa
+        wrap +=
+            '<div class="seg-etapa-card" style="border-left-color:' + cfg.borde + '; margin-bottom:8px;">' +
+            '<div class="seg-etapa-header">' +
+            '<span class="seg-etapa-nombre">' +
+                '<i class="fa fa-caret-right" style="color:' + cfg.color + '; margin-right:4px;"></i>' +
+                e.etapa_nombre +
+            '</span>' +
+            '<span class="seg-chip ' + cfg.chip + '"><i class="fa fa-' + cfg.icon + '"></i> ' + cfg.label + '</span>' +
+            '<span class="seg-etapa-meta">OpDet <strong>#' + e.opdet_id + '</strong></span>' +
+            '<span class="seg-etapa-meta">Máq: ' + e.maquina_nombre + '</span>' +
+            // Mini barra de progreso de la etapa
+            '<div style="flex:1; min-width:100px;">' +
+                '<div class="seg-progress-bar-bg" style="height:5px;">' +
+                '<div class="seg-progress-bar-fill" style="width:' + pctEt + '%; background:' + cfg.borde + ';"></div>' +
+                '</div>' +
+                '<div style="font-size:10px; color:#8a99aa; margin-top:2px;">' +
+                MASKLA(kgEnt, 2) + ' / ' + MASKLA(opKg, 2) + ' kg (' + pctEt + '%)' +
+                '</div>' +
+            '</div>' +
+            '</div>';
+
+        // Registros individuales
+        var tieneRegs = (e.registros_temp && e.registros_temp.length > 0) ||
+                        (e.registros_aprobados && e.registros_aprobados.length > 0);
+
+        if (tieneRegs) {
+            wrap += '<div class="seg-etapa-body">' +
+                '<div class="seg-tl-header">' +
+                '<span>ID</span><span>Operario</span><span>Fecha/Hora</span>' +
+                '<span style="text-align:right;">Kg Prod</span>' +
+                '<span style="text-align:right;">Kg Scrap</span>' +
+                '<span style="text-align:right;">Cant</span>' +
+                '<span>Estado</span><span>Obs</span>' +
+                '</div>' +
+                '<ul class="seg-timeline">';
+
+            // Temp (pendientes)
+            if (e.registros_temp) {
+                e.registros_temp.forEach(function (r) {
+                    wrap += '<li>' +
+                        '<span style="color:#8a99aa; font-size:10px;"><i class="fa fa-clock-o"></i> tmp-' + r.id + '</span>' +
+                        '<span style="font-weight:600;">' + r.operario_nombre + '</span>' +
+                        '<span style="color:#8a99aa;">' + fechaHoraStr(r.created_at) + '</span>' +
+                        '<span style="text-align:right; font-weight:600;">' + MASKLA(r.kgprod, 2)   + '</span>' +
+                        '<span style="text-align:right; color:#e74c3c;">'   + MASKLA(r.kgscrap, 2)  + '</span>' +
+                        '<span style="text-align:right;">'                  + MASKLA(r.cantprod, 0)  + '</span>' +
+                        '<span>' + labelEstadoTemp(r.aprobstatus) + '</span>' +
+                        '<span style="color:#e74c3c; font-size:10px;">' + (r.aprobobs || '') + '</span>' +
+                        '</li>';
+                });
+            }
+
+            // Aprobados
+            if (e.registros_aprobados) {
+                e.registros_aprobados.forEach(function (r) {
+                    var idLink = '<a href="javascript:void(0)" onclick="verEtiquetaEtapa(' + r.id + ')" ' +
+                        'title="Ver/imprimir etiqueta" style="color:#2980b9; font-weight:600;">' +
+                        '<i class="fa fa-tag"></i> apr-' + r.id + '</a>';
+                    wrap += '<li class="aprobado">' +
+                        '<span>' + idLink + '</span>' +
+                        '<span style="font-weight:600;">' + r.operario_nombre + '</span>' +
+                        '<span style="color:#8a99aa;">' + fechaHoraStr(r.created_at) + '</span>' +
+                        '<span style="text-align:right; font-weight:600; color:#27ae60;">' + MASKLA(r.kgprod, 2)  + '</span>' +
+                        '<span style="text-align:right; color:#e74c3c;">'                 + MASKLA(r.kgscrap, 2) + '</span>' +
+                        '<span style="text-align:right;">'                                + MASKLA(r.cantprod, 0) + '</span>' +
+                        '<span><span class="seg-chip green"><i class="fa fa-check-circle"></i> Aprobado</span></span>' +
+                        '<span></span>' +
+                        '</li>';
+                });
+            }
+
+            wrap += '</ul></div>';
+        } else {
+            wrap += '<div style="padding:8px 14px; color:#bdc3c7; font-size:11px; font-style:italic;">' +
+                    '<i class="fa fa-inbox"></i> Sin registros de producción aún.</div>';
+        }
+
+        wrap += '</div>'; // seg-etapa-card
+    });
+
+    wrap += '</div>';
+    return wrap;
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+function labelEstadoTemp(s) {
+    s = parseInt(s);
+    if (s === 1) return '<span class="seg-chip blue"><i class="fa fa-clock-o"></i> Esp. sup.</span>';
+    if (s === 3) return '<span class="seg-chip red"><i class="fa fa-times-circle"></i> Rechazado</span>';
+    return '<span class="seg-chip orange"><i class="fa fa-pencil"></i> Sin enviar</span>';
+}
+
 function fechaHoraStr(val) {
     if (!val) return '—';
     var s = val.toString().replace('T', ' ');
-    var partes = s.split(' ');
-    if (partes.length < 2) return s;
-    var fecha = partes[0].split('-');
-    var hora  = partes[1].substring(0, 5); // HH:MM
-    if (fecha.length === 3) {
-        return fecha[2] + '/' + fecha[1] + '/' + fecha[0] + ' ' + hora;
-    }
-    return s;
+    var p = s.split(' ');
+    if (p.length < 2) return s;
+    var f = p[0].split('-');
+    var h = p[1].substring(0, 5);
+    return f.length === 3 ? f[2] + '/' + f[1] + '/' + f[0] + ' ' + h : s;
 }
 
-/**
- * Etiqueta de estado para aprobstatus de opdetregprodtemp.
- */
-function labelEstadoTemp(s) {
-    s = parseInt(s);
-    if (s === 1)  return '<span style="color:#3c8dbc;"><i class="fa fa-clock-o"></i> Esperando sup.</span>';
-    if (s === 3)  return '<span style="color:#dd4b39;"><i class="fa fa-times-circle"></i> Rechazado</span>';
-    return '<span style="color:#f39c12;"><i class="fa fa-pencil"></i> Sin enviar</span>';
-}
-
-/**
- * Genera el HTML del detalle de etapas para el child row.
- * Incluye opdet_id, resumen por etapa y sub-tabla de registros individuales.
- */
-function renderEtapas(op_id, etapas) {
-    if (!etapas || etapas.length === 0) {
-        return '<p class="text-muted" style="padding:10px;">Sin etapas registradas para esta OP.</p>';
-    }
-
-    var html = '<div style="margin-left:30px; margin-bottom:10px;">';
-
-    etapas.forEach(function (e) {
-        // ── Determinar color y estado general de la etapa ──────────────
-        var estado = '', colorHeader = '#f4f4f4';
-        // kgprod + kgscrap = kgent total procesado en la etapa
-        var opdetKgent = (parseFloat(e.opdet_kgprod) || 0) + (parseFloat(e.opdet_kgscrap) || 0);
-        var opKgprod   = parseFloat(e.op_kgprod)     || 0;
-        // Completa: material procesado (kgprod + kgscrap) >= kg total de la OP
-        var esCompleta = opKgprod > 0 && opdetKgent >= opKgprod;
-        var esParcial  = opdetKgent > 0 && !esCompleta;
-
-        if (esCompleta) {
-            estado = '<span style="color:#00a65a;"><i class="fa fa-check-circle"></i> Completa</span>';
-            colorHeader = '#eaffea';
-        } else if (parseInt(e.temp_esperando_sup) > 0) {
-            estado = '<span style="color:#3c8dbc;"><i class="fa fa-clock-o"></i> Esperando aprobación</span>';
-            colorHeader = '#eef4ff';
-        } else if (parseInt(e.temp_no_enviados) > 0) {
-            estado = '<span style="color:#f39c12;"><i class="fa fa-pencil"></i> En proceso</span>';
-            colorHeader = '#fff8ee';
-        } else if (parseInt(e.temp_rechazados) > 0) {
-            estado = '<span style="color:#dd4b39;"><i class="fa fa-times-circle"></i> Rechazado</span>';
-            colorHeader = '#fff0f0';
-        } else if (esParcial) {
-            estado = '<span style="color:#f39c12;"><i class="fa fa-spinner"></i> Parcial</span>';
-            colorHeader = '#fffbee';
-        } else {
-            estado = '<span style="color:#aaa;"><i class="fa fa-circle-o"></i> Sin iniciar</span>';
-        }
-
-        // ── Encabezado de la etapa ──────────────────────────────────────
-        html += '<table class="table table-condensed table-bordered" style="font-size:12px; width:95%; margin-bottom:4px;">' +
-            '<thead><tr style="background:' + colorHeader + ';">' +
-            '<th style="width:60px;">OpDet</th>' +
-            '<th style="width:40px;">Ord</th>' +
-            '<th>Etapa</th>' +
-            '<th>Máquina</th>' +
-            '<th style="text-align:right; width:80px;">Kg Recib.</th>' +
-            '<th style="text-align:right; width:80px;">Kg Aprobado</th>' +
-            '<th style="text-align:right; width:80px;">Saldo Kg</th>' +
-            '<th style="text-align:center; width:180px;">Estado</th>' +
-            '</tr></thead><tbody>' +
-            '<tr style="background:' + colorHeader + ';">' +
-            '<td style="font-weight:bold;">#' + e.opdet_id + '</td>' +
-            '<td style="text-align:center;">' + e.etapa_orden + '</td>' +
-            '<td><strong>' + e.etapa_nombre + '</strong></td>' +
-            '<td>' + e.maquina_nombre + '</td>' +
-            '<td style="text-align:right;">' + MASKLA(e.opdet_kgrec, 2) + '</td>' +
-            '<td style="text-align:right; color:#00a65a;">' + MASKLA(e.kgprod_aprobado, 2) + '</td>' +
-            '<td style="text-align:right; color:#f39c12;">' + MASKLA(e.opdet_saldokg, 2) + '</td>' +
-            '<td style="text-align:center;">' + estado + '</td>' +
-            '</tr></tbody></table>';
-
-        // ── Sub-tabla de registros individuales ────────────────────────
-        var tieneRegistros = (e.registros_temp && e.registros_temp.length > 0) ||
-                             (e.registros_aprobados && e.registros_aprobados.length > 0);
-
-        if (tieneRegistros) {
-            html += '<table class="table table-condensed" style="font-size:11px; width:95%; margin-left:20px; margin-bottom:12px;">' +
-                '<thead><tr style="background:#e8e8e8;">' +
-                '<th>ID</th><th>Operario</th><th>Usuario</th>' +
-                '<th style="text-align:right;">Kg Prod</th>' +
-                '<th style="text-align:right;">Kg Scrap</th>' +
-                '<th style="text-align:right;">Cant Prod</th>' +
-                '<th>Fecha</th><th style="text-align:center;">Estado</th>' +
-                '<th>Obs rechazo</th>' +
-                '</tr></thead><tbody>';
-
-            // Registros pendientes (opdetregprodtemp con aprobstatus 0/1/3)
-            if (e.registros_temp && e.registros_temp.length > 0) {
-                e.registros_temp.forEach(function (r) {
-                    html += '<tr>' +
-                        '<td><small class="text-muted">tmp</small> ' + r.id + '</td>' +
-                        '<td>' + r.operario_nombre + '</td>' +
-                        '<td>' + r.usuario_nombre  + '</td>' +
-                        '<td style="text-align:right;">' + MASKLA(r.kgprod, 2)  + '</td>' +
-                        '<td style="text-align:right;">' + MASKLA(r.kgscrap, 2) + '</td>' +
-                        '<td style="text-align:right;">' + MASKLA(r.cantprod, 0) + '</td>' +
-                        '<td style="white-space:nowrap;">' + fechaHoraStr(r.created_at) + '</td>' +
-                        '<td style="text-align:center;">' + labelEstadoTemp(r.aprobstatus) + '</td>' +
-                        '<td style="font-size:10px; color:#dd4b39;">' + (r.aprobobs || '') + '</td>' +
-                        '</tr>';
-                });
-            }
-
-            // Registros aprobados (opdetregprod)
-            if (e.registros_aprobados && e.registros_aprobados.length > 0) {
-                e.registros_aprobados.forEach(function (r) {
-                    // El id es clickable → abre modal con etiqueta de etapa
-                    var idCell = '<a href="javascript:void(0)" ' +
-                                 'onclick="verEtiquetaEtapa(' + r.id + ')" ' +
-                                 'title="Clic para ver/imprimir etiqueta" ' +
-                                 'style="font-weight:bold; color:#3c8dbc;">' +
-                                 '<i class="fa fa-tag"></i> apr ' + r.id + '</a>';
-                    html += '<tr style="background:#f0fff0;">' +
-                        '<td>' + idCell + '</td>' +
-                        '<td>' + r.operario_nombre + '</td>' +
-                        '<td>' + r.usuario_nombre  + '</td>' +
-                        '<td style="text-align:right; color:#00a65a;">' + MASKLA(r.kgprod, 2)  + '</td>' +
-                        '<td style="text-align:right;">' + MASKLA(r.kgscrap, 2) + '</td>' +
-                        '<td style="text-align:right;">' + MASKLA(r.cantprod, 0) + '</td>' +
-                        '<td style="white-space:nowrap;">' + fechaHoraStr(r.created_at) + '</td>' +
-                        '<td style="text-align:center;"><span style="color:#00a65a;"><i class="fa fa-check-circle"></i> Aprobado</span></td>' +
-                        '<td></td>' +
-                        '</tr>';
-                });
-            }
-
-            html += '</tbody></table>';
-        } else {
-            html += '<p style="margin-left:20px; font-size:11px; color:#aaa; margin-bottom:12px;">Sin registros de producción aún.</p>';
-        }
-    });
-
-    html += '</div>';
-    return html;
-}
-
-/**
- * Abre el modal con la etiqueta de etapa para el opdetregprod indicado.
- * Carga la vista existente (/opdetregprodtempaprobsup/etiqueta-etapa/{id}) en el iframe.
- */
+// ── Modal etiqueta ─────────────────────────────────────────────────────────────
 function verEtiquetaEtapa(opdetregprod_id) {
     $('#modalEtiquetaId').text('#' + opdetregprod_id);
     $('#ifrEtiquetaEtapa').attr('src', '/opdetregprodtempaprobsup/etiqueta-etapa/' + opdetregprod_id);
     $('#modalEtiquetaEtapa').modal('show');
 }
 
-/**
- * Imprime solo el contenido del iframe (la etiqueta), sin el modal ni la página principal.
- * La vista etiqueta-etapa ya tiene @media print que oculta su botón interno.
- */
 function imprimirEtiquetaEtapa() {
     var iframe = document.getElementById('ifrEtiquetaEtapa');
     if (iframe && iframe.contentWindow) {
@@ -342,7 +325,6 @@ function imprimirEtiquetaEtapa() {
     }
 }
 
-// Limpiar el iframe al cerrar el modal para evitar que siga cargando en background
 $(document).on('hidden.bs.modal', '#modalEtiquetaEtapa', function () {
     $('#ifrEtiquetaEtapa').attr('src', 'about:blank');
 });
