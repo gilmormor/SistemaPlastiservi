@@ -101,13 +101,24 @@ function construirTabla(url) {
             $('td', row).eq(7).css('text-align', 'right').html(MASKLA(data.op_kgprod, 2));
 
             // Col Etapas (badge progreso)
-            var pct = data.num_etapas > 0
-                ? Math.round((data.etapas_completadas / data.num_etapas) * 100) : 0;
-            var color = pct === 100 ? '#00a65a' : (pct > 0 ? '#f39c12' : '#aaa');
+            // etapas_completadas = saldokg<=0 con producción aprobada
+            // etapas_parciales   = saldokg>0 con algo de producción aprobada
+            var numEtapas   = parseInt(data.num_etapas)        || 0;
+            var completadas = parseInt(data.etapas_completadas) || 0;
+            var parciales   = parseInt(data.etapas_parciales)   || 0;
+            var pct = numEtapas > 0
+                ? Math.round((completadas / numEtapas) * 10000) / 100  // 2 decimales
+                : 0;
+            var color = completadas === numEtapas && numEtapas > 0
+                ? '#00a65a'                          // todo completo
+                : (completadas > 0 || parciales > 0 ? '#f39c12' : '#aaa'); // parcial o sin iniciar
+            var etiquetaEtapas = completadas + '/' + numEtapas;
+            if (parciales > 0) {
+                etiquetaEtapas += ' <small style="color:#f39c12;">+' + parciales + ' parc.</small>';
+            }
             $('td', row).eq(8).css('text-align', 'center').html(
-                '<span style="color:' + color + '; font-weight:bold;">' +
-                data.etapas_completadas + '/' + data.num_etapas + '</span>' +
-                ' <small>(' + pct + '%)</small>'
+                '<span style="color:' + color + '; font-weight:bold;">' + etiquetaEtapas + '</span>' +
+                ' <small>(' + pct.toFixed(2).replace('.', ',') + '%)</small>'
             );
 
             // Col Pendientes

@@ -69,9 +69,15 @@ class OpSeguimientoController extends Controller
                 IFNULL(PEND_OP.cnt_rechazados,  0) AS pend_rechazados,
 
                 -- Número de etapas de la OP
-                COUNT(DISTINCT opdet.id)            AS num_etapas,
-                -- Etapas completadas (tienen al menos un opdetregprod aprobado)
-                COUNT(DISTINCT ETAPAS_OK.opdet_id)  AS etapas_completadas,
+                COUNT(DISTINCT opdet.id) AS num_etapas,
+                -- Etapas verdaderamente completadas: saldokg <= 0 Y tiene producción aprobada
+                COUNT(DISTINCT CASE
+                    WHEN IFNULL(SUM_PROD.total_kgprod, 0) > 0 AND opdet.saldokg <= 0
+                    THEN opdet.id ELSE NULL END)     AS etapas_completadas,
+                -- Etapas parciales: tienen producción aprobada pero aún queda saldo
+                COUNT(DISTINCT CASE
+                    WHEN IFNULL(SUM_PROD.total_kgprod, 0) > 0 AND opdet.saldokg > 0
+                    THEN opdet.id ELSE NULL END)     AS etapas_parciales,
 
                 UNIX_TIMESTAMP(op.updated_at)       AS updatednum_at
 
@@ -108,13 +114,6 @@ class OpSeguimientoController extends Controller
                   AND  t.aprobstatus != 2
                 GROUP  BY opd2.op_id
             ) PEND_OP ON PEND_OP.op_id = op.id
-
-            -- Etapas con al menos un registro aprobado
-            LEFT JOIN (
-                SELECT DISTINCT odrp2.opdet_id
-                FROM   opdetregprod odrp2
-                WHERE  ISNULL(odrp2.deleted_at)
-            ) ETAPAS_OK ON ETAPAS_OK.opdet_id = opdet.id
 
             WHERE ot.sucursal_id IN ($sucurcadena)
               AND ISNULL(op.deleted_at)
