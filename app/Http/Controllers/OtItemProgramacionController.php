@@ -277,10 +277,11 @@ class OtItemProgramacionController extends Controller
 
                 return response()->json([
                     'mensaje' => 'Registro guardado con éxito.',
-                    'status' => '0',
-                    'id' => $request->otdet_id,
-                    'nfila' => $request->otdet_id,
-                    'dte_id' => $request->otdet_id,
+                    'status'  => '0',
+                    'id'      => $request->otdet_id,
+                    'nfila'   => $request->otdet_id,
+                    'dte_id'  => $request->otdet_id,
+                    'op_id'   => $op->id, // número de OP generada para mostrar al programador
                 ]);
             } catch (\Exception $e) {
                 DB::rollBack();

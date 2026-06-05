@@ -3297,12 +3297,18 @@ function ajaxRequestGeneral(datatemp,url,funcion) {
 						}
 					}
                     $("#fila"+respuesta.dte_id).remove();
-					/* aux_text = 
+					/* aux_text =
 							`<a id="bntaproord${respuesta.dte_id}" name="bntaproord${respuesta.dte_id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${respuesta.dte_id})" title="Enviar a procesados">
 								<span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
 							</a>`;
 					$("#accion" + respuesta.dte_id).html(aux_text); */
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+					// Si la respuesta incluye op_id (viene de programación de producción),
+					// mostrar el número de OP generada para que el programador lo comunique al operario.
+					var msgExito = 'El registro fue procesado con exito';
+					if (respuesta.op_id) {
+						msgExito = 'Enviado a Producción. OP generada: #' + respuesta.op_id;
+					}
+					Biblioteca.notificaciones(msgExito, 'Plastiservi', 'success');
 				} else {
 					// Reemplaza \n con <br> para el salto de línea
 					//console.log(respuesta.mensaje);

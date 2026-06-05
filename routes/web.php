@@ -1664,6 +1664,11 @@ Route::post('otitemprogramacion/aprobar', 'OtItemProgramacionController@aprobar'
 Route::post('otitemprogramacion/rechazar', 'OtItemProgramacionController@rechazar')->name('rechazar_otitemprogramacion');
 Route::post('otitemprogramacion/cerraropdet', 'OtItemProgramacionController@cerraropdet')->name('cerraropdet_otitemprogramacion');
 
+// Seguimiento de Órdenes de Producción (para el programador)
+Route::get('op/seguimiento',                  'OpSeguimientoController@index')->name('op_seguimiento');
+Route::get('op/seguimientopage',              'OpSeguimientoController@page')->name('op_seguimiento_page');
+Route::get('op/{op_id}/etapas-detalle',       'OpSeguimientoController@etapasDetalle')->name('op_etapas_detalle');
+
 /*RUTAS MAQUINAGRUPO*/
 Route::get('maquinagrupo', 'MaquinaGrupoController@index')->name('maquinagrupo');
 Route::get('maquinagrupopage', 'MaquinaGrupoController@maquinagrupopage')->name('maquinagrupopage');

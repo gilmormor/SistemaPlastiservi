@@ -24,6 +24,9 @@ Programación de Producción
             <div class="box-header with-border">
                 <h3 class="box-title">Programación de Producción</h3>
                 <div class="box-tools pull-right">
+                    <a href="{{route('op_seguimiento')}}" class="btn btn-sm btn-default" title="Ver seguimiento de OPs generadas">
+                        <i class="fa fa-bar-chart"></i> Seguimiento OPs
+                    </a>
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
             </div>
