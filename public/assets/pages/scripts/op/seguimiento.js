@@ -155,6 +155,23 @@ function cargarEtapasDetalle(op_id, row) {
 }
 
 /**
+ * Formatea una fecha+hora desde string "YYYY-MM-DD HH:MM:SS" a "DD/MM/YYYY HH:MM".
+ * Evita problemas de zona horaria que tiene new Date() con strings sin 'Z'.
+ */
+function fechaHoraStr(val) {
+    if (!val) return '—';
+    var s = val.toString().replace('T', ' ');
+    var partes = s.split(' ');
+    if (partes.length < 2) return s;
+    var fecha = partes[0].split('-');
+    var hora  = partes[1].substring(0, 5); // HH:MM
+    if (fecha.length === 3) {
+        return fecha[2] + '/' + fecha[1] + '/' + fecha[0] + ' ' + hora;
+    }
+    return s;
+}
+
+/**
  * Etiqueta de estado para aprobstatus de opdetregprodtemp.
  */
 function labelEstadoTemp(s) {
@@ -239,7 +256,6 @@ function renderEtapas(op_id, etapas) {
             // Registros pendientes (opdetregprodtemp con aprobstatus 0/1/3)
             if (e.registros_temp && e.registros_temp.length > 0) {
                 e.registros_temp.forEach(function (r) {
-                    var f = new Date(r.created_at);
                     html += '<tr>' +
                         '<td><small class="text-muted">tmp</small> ' + r.id + '</td>' +
                         '<td>' + r.operario_nombre + '</td>' +
@@ -247,7 +263,7 @@ function renderEtapas(op_id, etapas) {
                         '<td style="text-align:right;">' + MASKLA(r.kgprod, 2)  + '</td>' +
                         '<td style="text-align:right;">' + MASKLA(r.kgscrap, 2) + '</td>' +
                         '<td style="text-align:right;">' + MASKLA(r.cantprod, 0) + '</td>' +
-                        '<td>' + fechaddmmaaaa(f) + '</td>' +
+                        '<td style="white-space:nowrap;">' + fechaHoraStr(r.created_at) + '</td>' +
                         '<td style="text-align:center;">' + labelEstadoTemp(r.aprobstatus) + '</td>' +
                         '<td style="font-size:10px; color:#dd4b39;">' + (r.aprobobs || '') + '</td>' +
                         '</tr>';
@@ -257,7 +273,6 @@ function renderEtapas(op_id, etapas) {
             // Registros aprobados (opdetregprod)
             if (e.registros_aprobados && e.registros_aprobados.length > 0) {
                 e.registros_aprobados.forEach(function (r) {
-                    var f = new Date(r.created_at);
                     // El id es clickable → abre modal con etiqueta de etapa
                     var idCell = '<a href="javascript:void(0)" ' +
                                  'onclick="verEtiquetaEtapa(' + r.id + ')" ' +
@@ -271,7 +286,7 @@ function renderEtapas(op_id, etapas) {
                         '<td style="text-align:right; color:#00a65a;">' + MASKLA(r.kgprod, 2)  + '</td>' +
                         '<td style="text-align:right;">' + MASKLA(r.kgscrap, 2) + '</td>' +
                         '<td style="text-align:right;">' + MASKLA(r.cantprod, 0) + '</td>' +
-                        '<td>' + fechaddmmaaaa(f) + '</td>' +
+                        '<td style="white-space:nowrap;">' + fechaHoraStr(r.created_at) + '</td>' +
                         '<td style="text-align:center;"><span style="color:#00a65a;"><i class="fa fa-check-circle"></i> Aprobado</span></td>' +
                         '<td></td>' +
                         '</tr>';
