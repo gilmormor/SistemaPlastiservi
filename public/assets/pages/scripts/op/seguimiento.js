@@ -258,8 +258,14 @@ function renderEtapas(op_id, etapas) {
             if (e.registros_aprobados && e.registros_aprobados.length > 0) {
                 e.registros_aprobados.forEach(function (r) {
                     var f = new Date(r.created_at);
+                    // El id es clickable → abre modal con etiqueta de etapa
+                    var idCell = '<a href="javascript:void(0)" ' +
+                                 'onclick="verEtiquetaEtapa(' + r.id + ')" ' +
+                                 'title="Clic para ver/imprimir etiqueta" ' +
+                                 'style="font-weight:bold; color:#3c8dbc;">' +
+                                 '<i class="fa fa-tag"></i> apr ' + r.id + '</a>';
                     html += '<tr style="background:#f0fff0;">' +
-                        '<td><small class="text-muted">apr</small> ' + r.id + '</td>' +
+                        '<td>' + idCell + '</td>' +
                         '<td>' + r.operario_nombre + '</td>' +
                         '<td>' + r.usuario_nombre  + '</td>' +
                         '<td style="text-align:right; color:#00a65a;">' + MASKLA(r.kgprod, 2)  + '</td>' +
@@ -281,3 +287,30 @@ function renderEtapas(op_id, etapas) {
     html += '</div>';
     return html;
 }
+
+/**
+ * Abre el modal con la etiqueta de etapa para el opdetregprod indicado.
+ * Carga la vista existente (/opdetregprodtempaprobsup/etiqueta-etapa/{id}) en el iframe.
+ */
+function verEtiquetaEtapa(opdetregprod_id) {
+    $('#modalEtiquetaId').text('#' + opdetregprod_id);
+    $('#ifrEtiquetaEtapa').attr('src', '/opdetregprodtempaprobsup/etiqueta-etapa/' + opdetregprod_id);
+    $('#modalEtiquetaEtapa').modal('show');
+}
+
+/**
+ * Imprime solo el contenido del iframe (la etiqueta), sin el modal ni la página principal.
+ * La vista etiqueta-etapa ya tiene @media print que oculta su botón interno.
+ */
+function imprimirEtiquetaEtapa() {
+    var iframe = document.getElementById('ifrEtiquetaEtapa');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+
+// Limpiar el iframe al cerrar el modal para evitar que siga cargando en background
+$(document).on('hidden.bs.modal', '#modalEtiquetaEtapa', function () {
+    $('#ifrEtiquetaEtapa').attr('src', 'about:blank');
+});

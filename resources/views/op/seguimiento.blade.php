@@ -83,4 +83,33 @@
         </div>
     </div>
 </div>
+
+{{-- Modal para ver e imprimir etiqueta de etapa de producción --}}
+<div class="modal fade" id="modalEtiquetaEtapa" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:440px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">
+                    <i class="fa fa-tag"></i> Etiqueta de etapa — Reg. <span id="modalEtiquetaId"></span>
+                </h4>
+            </div>
+            <div class="modal-body" style="padding:0; height:340px;">
+                {{-- Iframe que carga la vista existente opdetregprodtempaprobsup/etiqueta-etapa/{id} --}}
+                <iframe id="ifrEtiquetaEtapa"
+                        name="ifrEtiquetaEtapa"
+                        src="about:blank"
+                        style="width:100%; height:340px; border:none;"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-modals">
+                </iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="imprimirEtiquetaEtapa()">
+                    <i class="fa fa-print"></i> Imprimir etiqueta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
