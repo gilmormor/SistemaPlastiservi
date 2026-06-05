@@ -1726,7 +1726,13 @@ Route::get('acuerdotecnicoetapaprod/{id}/editar', 'AcuerdoTecnicoEtapaProdContro
 Route::put('acuerdotecnicoetapaprod/{id}', 'AcuerdoTecnicoEtapaProdController@actualizar')->name('actualizar_acuerdotecnicoetapaprod');
 // Endpoints AJAX usados por el modal de edición de etapas en otitemprogramacion
 Route::get('acuerdotecnicoetapaprod/{id}/modal-data', 'AcuerdoTecnicoEtapaProdController@modalData')->name('acuerdotecnicoetapaprod_modal_data');
-Route::post('acuerdotecnicoetapaprod/{id}/actualizar-ajax', 'AcuerdoTecnicoEtapaProdController@actualizarAjax')->name('acuerdotecnicoetapaprod_actualizar_ajax');
+Route::post('acuerdotecnicoetapaprod/{id}/actualizar-ajax', 'AcuerdoTecnicoEtapaProdController@actualizarAjax')->name('acuerdotecnicoetapabrod_actualizar_ajax');
+
+// CRUD AJAX para campos adicionales por etapa de producción (EtapaProdCampo)
+Route::get('etapaprodcampo/{apsucetapaprod_id}/listar', 'EtapaProdCampoController@listar')->name('etapaprodcampo_listar');
+Route::post('etapaprodcampo',                           'EtapaProdCampoController@guardar')->name('etapaprodcampo_guardar');
+Route::put('etapaprodcampo/{id}',                       'EtapaProdCampoController@actualizar')->name('etapaprodcampo_actualizar');
+Route::delete('etapaprodcampo/{id}',                    'EtapaProdCampoController@eliminar')->name('etapaprodcampo_eliminar');
 
 /*RUTAS PRODUCCION MOVIMIENTO ANTES DE PRODUCCION FINAL*/
 Route::get('opdetregprodtemp/etapaprod', 'OpDetRegProdTempController@etapaprod')->name('opdetregprodtemp_etapaprod');

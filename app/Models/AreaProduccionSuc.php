@@ -39,6 +39,13 @@ class AreaProduccionSuc extends Model
         return $this->belongsToMany(EtapaProd::class, 'areaproduccionsucetapaprod','areaproduccionsuc_id','etapaprod_id')->withTimestamps();
     }
 
+    // Relación directa a los registros individuales de etapa (para acceder a campos adicionales)
+    public function areaproduccionsucetapaprods()
+    {
+        return $this->hasMany(AreaProduccionSucEtapaProd::class, 'areaproduccionsuc_id')
+                    ->orderBy('orden');
+    }
+
     public static function report($request){
         if(!isset($request->areaproduccion_id) or empty($request->areaproduccion_id)){
             $aux_condareaproduccion_id = " true";
