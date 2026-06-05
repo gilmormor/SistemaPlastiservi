@@ -8,7 +8,7 @@ $(document).ready(function () {
         'info'        : true,
         'autoWidth'   : false,
         'processing'  : true,
-        'serverSide'  : true,
+        'serverSide'  : false,
         'ajax'        : RUTA_AJAX,
         'order'       : [[ 4, "asc" ]],
         'columns'     : [

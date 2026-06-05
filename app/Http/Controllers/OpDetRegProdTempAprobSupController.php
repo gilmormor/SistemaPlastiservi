@@ -343,7 +343,8 @@ class OpDetRegProdTempAprobSupController extends Controller
                         OpDetRegProdCampoVal::create([
                             'opdetregprod_id'    => $opdetregprod->id,
                             'etapaprod_campo_id' => $tempVal->etapaprod_campo_id,
-                            'valor'              => $tempVal->valor,
+                            // Normalizar decimal a "." al copiar a registro aprobado
+                            'valor'              => str_replace(',', '.', $tempVal->valor),
                         ]);
                     }
 

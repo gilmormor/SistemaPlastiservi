@@ -26,6 +26,7 @@ class EtapaProdCampo extends Model
         'decimales',
         'requerido',
         'orden',
+        'mapea_campo', // campo estándar de opdetregprodtemp que recibe este valor (nullable)
     ];
 
     protected $casts = [

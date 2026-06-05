@@ -47,6 +47,26 @@ public function etapaprod()
         session(['etapaprod_id' => $id]);
         return redirect()->route('opdetregprodtemp_index01');
     }
+
+    /**
+     * Resuelve etapaprod_id desde sesión o lo reconstruye automáticamente.
+     * Si la sesión expiró y el usuario tiene una sola etapa, la guarda de nuevo
+     * y retorna el id. Si tiene más de una, retorna null (el caller redirige).
+     * Así el F5 es transparente para usuarios con una sola etapa asignada.
+     */
+    private function resolverEtapaprodId()
+    {
+        $id = session('etapaprod_id');
+        if ($id) {
+            return $id;
+        }
+        $etapas = EtapaProd::etapasProdxPersona();
+        if (count($etapas) == 1) {
+            session(['etapaprod_id' => $etapas[0]->etapaprod_id]);
+            return $etapas[0]->etapaprod_id;
+        }
+        return null;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -74,9 +94,16 @@ public function etapaprod()
     public function index01()
     {
         can('listar-registro-produccion');
-        //dd(session('etapaprod_id'));
-        //$datas = FormaPago::orderBy('id')->get();
-        $tablas["etapaprod"] = EtapaProd::findOrFail(session('etapaprod_id'));
+        $etapaprod_id = $this->resolverEtapaprodId();
+        if (!$etapaprod_id) {
+            // Sin sesión y más de una etapa: el usuario debe elegir
+            $etapas = EtapaProd::etapasProdxPersona();
+            if (count($etapas) == 0) {
+                return redirect()->route('inicio')->with('mensaje', 'No tiene etapas de producción asignadas, consulte con el administrador del sistema.');
+            }
+            return redirect()->route('opdetregprodtemp_selecetapaprod');
+        }
+        $tablas["etapaprod"] = EtapaProd::findOrFail($etapaprod_id);
         return view('opdetregprodtemp.index', compact('tablas'));
     }
 
@@ -84,7 +111,11 @@ public function etapaprod()
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray();
         $sucurcadena = implode(",", $sucurArray);
-        $aux_etapaprod_id = session('etapaprod_id');
+        // Resuelve etapaprod_id aunque la sesión haya expirado (un usuario con una sola etapa)
+        $aux_etapaprod_id = $this->resolverEtapaprodId();
+        if (!$aux_etapaprod_id) {
+            return datatables([])->toJson();
+        }
         //dd($aux_etapaprod_id);
 
         $aux_statusaprob = "(opdetregprodtemp.aprobstatus in (0,3) or ISNULL(opdetregprodtemp.aprobstatus))";
@@ -173,11 +204,19 @@ public function etapaprod()
 
     public function listaropdet()
     {
+        $etapaprod_id = $this->resolverEtapaprodId();
+        if (!$etapaprod_id) {
+            $etapas = EtapaProd::etapasProdxPersona();
+            if (count($etapas) == 0) {
+                return redirect()->route('inicio')->with('mensaje', 'No tiene etapas de producción asignadas, consulte con el administrador del sistema.');
+            }
+            return redirect()->route('opdetregprodtemp_selecetapaprod');
+        }
         $fechaAct = date("d/m/Y");
         $user = Usuario::findOrFail(auth()->id());
-        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray();
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
-        $tablashtml["etapaprod"] = EtapaProd::findOrFail(session('etapaprod_id'));
+        $tablashtml["etapaprod"] = EtapaProd::findOrFail($etapaprod_id);
         return view('opdetregprodtemp.listaropdet', compact('fechaAct','tablashtml'));
     }
     public function listaropdetpage(Request $request){
@@ -205,9 +244,15 @@ public function etapaprod()
     public function crear()
     {
         can('crear-registro-produccion');
-        //dd(session('opdet_id'));
         $opdet_id = session('opdet_id');
         $updatednum_at = session('opdet_updatednum_at');
+        // Si la sesión expiró (F5 u otro), redirigir con mensaje en vez de dar 404
+        if (!$opdet_id) {
+            return redirect()->route('opdetregprodtemp_listaropdet')->with([
+                'mensaje'    => 'La sesión expiró. Por favor seleccione nuevamente el ítem de producción.',
+                'tipo_alert' => 'alert-warning'
+            ]);
+        }
         $opdet = OpDet::findOrFail($opdet_id);
         //dd($opdet->areaproduccionsucetapaprod->etapaprod->nombre);
         //dd($opdet->op->otdet->producto->categoriaprod->unidadmedida_id);
@@ -263,16 +308,28 @@ public function etapaprod()
             $opdet->save();
             $opdetregprodtemp = OpDetRegProdTemp::create($request->all());
 
-            // Guardar campos adicionales si la etapa tiene alguno configurado
-            // Los valores llegan en $request->campo_val[etapaprod_campo_id] = valor
+            // Guardar campos adicionales si la etapa tiene alguno configurado.
+            // Los valores llegan en $request->campo_val[etapaprod_campo_id] = valor.
+            // Se normaliza el separador decimal a "." para evitar problemas al convertir.
+            // Si el campo tiene mapea_campo definido, también actualiza el campo estándar
+            // del registro (ej: total_unidades → cantprod).
+            $camposEstandarPermitidos = ['cantprod', 'kgprod', 'kgscrap'];
             if ($request->has('campo_val') && is_array($request->campo_val)) {
                 foreach ($request->campo_val as $campoId => $valor) {
+                    $valorLimpio = str_replace(',', '.', $valor);
                     OpDetRegProdTempCampoVal::updateOrCreate(
                         ['opdetregprodtemp_id' => $opdetregprodtemp->id,
                          'etapaprod_campo_id'  => (int)$campoId],
-                        ['valor' => $valor]
+                        ['valor' => $valorLimpio]
                     );
+                    // Si el campo mapea a un campo estándar, actualizarlo también
+                    $campoConfig = EtapaProdCampo::find((int)$campoId);
+                    if ($campoConfig && $campoConfig->mapea_campo
+                        && in_array($campoConfig->mapea_campo, $camposEstandarPermitidos)) {
+                        $opdetregprodtemp->{$campoConfig->mapea_campo} = (float)$valorLimpio;
+                    }
                 }
+                $opdetregprodtemp->save();
             }
 
             DB::commit();
@@ -389,15 +446,25 @@ public function etapaprod()
 
             $opdetregprodtemp->update($request->all());
 
-            // Actualizar campos adicionales (reemplazar los existentes)
+            // Actualizar campos adicionales (reemplazar los existentes).
+            // Se normaliza el separador decimal a "." para evitar problemas al convertir.
+            // Si el campo tiene mapea_campo definido, también actualiza el campo estándar.
+            $camposEstandarPermitidos = ['cantprod', 'kgprod', 'kgscrap'];
             if ($request->has('campo_val') && is_array($request->campo_val)) {
                 foreach ($request->campo_val as $campoId => $valor) {
+                    $valorLimpio = str_replace(',', '.', $valor);
                     OpDetRegProdTempCampoVal::updateOrCreate(
                         ['opdetregprodtemp_id' => $opdetregprodtemp->id,
                          'etapaprod_campo_id'  => (int)$campoId],
-                        ['valor' => $valor]
+                        ['valor' => $valorLimpio]
                     );
+                    $campoConfig = EtapaProdCampo::find((int)$campoId);
+                    if ($campoConfig && $campoConfig->mapea_campo
+                        && in_array($campoConfig->mapea_campo, $camposEstandarPermitidos)) {
+                        $opdetregprodtemp->{$campoConfig->mapea_campo} = (float)$valorLimpio;
+                    }
                 }
+                $opdetregprodtemp->save();
             }
 
             DB::commit();

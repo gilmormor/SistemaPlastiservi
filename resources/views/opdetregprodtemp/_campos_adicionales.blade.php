@@ -69,70 +69,61 @@
     @endforeach
 </div>
 
-{{-- Script de fórmulas: evalúa campos calculados cuando cambia un campo numérico --}}
+{{-- Script de fórmulas: evalúa campos calculados cuando cambia un campo numérico.
+     Se usa window.addEventListener('load') para garantizar que jQuery ya cargó,
+     ya que este partial está en @section('contenido') y jQuery carga al final. --}}
 <script>
-(function () {
-    // Mapa nombre -> id del campo para resolver fórmulas
-    var campoNombreAId = {};
-    @foreach($tablas['campos'] as $campo)
-    campoNombreAId['{{$campo->nombre}}'] = '{{$campo->id}}';
-    @endforeach
+// Datos de campos para las fórmulas (se leen aquí donde Blade puede renderizarlos)
+window._etapaCampos = window._etapaCampos || {};
+@foreach($tablas['campos'] as $campo)
+window._etapaCampos['{{$campo->nombre}}'] = '{{$campo->id}}';
+@endforeach
 
-    /**
-     * Obtiene el valor numérico actual de un campo por su nombre.
-     */
+// Inicialización diferida: 'load' se dispara cuando todos los scripts están listos
+window.addEventListener('load', function () {
+    var $ = window.jQuery;
+    if (!$) return; // jQuery no disponible (no debería ocurrir)
+
+    var campoNombreAId = window._etapaCampos || {};
+
     function valorCampo(nombre) {
         var id = campoNombreAId[nombre];
         if (!id) return 0;
         var $input = $('#campo_val_' + id);
-        // 'valor' guarda el número limpio; value puede tener formato con comas
         var v = $input.attr('valor') || $input.val() || '0';
         return parseFloat(v.toString().replace(',', '.')) || 0;
     }
 
-    /**
-     * Evalúa todos los campos calculados (tipo=calculated).
-     * La fórmula usa nombres de campos (ej. "cantidad_sacos * unidades_por_saco").
-     * Se reemplaza cada nombre por su valor numérico antes de evaluar.
-     */
     function evaluarCalculados() {
         $('.campo-calculado').each(function () {
             var formula = $(this).data('formula');
             var decimales = parseInt($(this).data('decimales')) || 2;
             if (!formula) return;
 
-            // Reemplazar cada nombre de campo conocido por su valor
             var expr = formula;
             $.each(campoNombreAId, function (nombre) {
-                // reemplaza todas las ocurrencias del nombre por el valor numérico
                 expr = expr.replace(new RegExp('\\b' + nombre + '\\b', 'g'), valorCampo(nombre));
             });
 
             try {
-                // eslint-disable-next-line no-new-func
                 var resultado = (new Function('return (' + expr + ')'))();
                 if (!isFinite(resultado)) resultado = 0;
                 resultado = Math.round(resultado * Math.pow(10, decimales)) / Math.pow(10, decimales);
                 $(this).val(resultado.toFixed(decimales).replace('.', ','));
                 $(this).attr('valor', resultado);
-            } catch (e) {
-                // fórmula inválida: dejar en blanco
-            }
+            } catch (e) { /* fórmula inválida */ }
         });
     }
 
-    // Recalcular al cambiar cualquier campo numérico del bloque de campos adicionales
+    // Recalcular al cambiar cualquier campo numérico
     $(document).on('keyup change', '.campo-numerico', function () {
-        // Actualizar 'valor' con el valor limpio (sin comas de formato)
         var v = $(this).val().replace(',', '.') || '0';
         $(this).attr('valor', parseFloat(v) || 0);
         evaluarCalculados();
     });
 
-    // Calcular al cargar la página (en modo editar pueden haber valores previos)
-    $(document).ready(function () {
-        evaluarCalculados();
-    });
-})();
+    // Calcular valores iniciales (modo editar)
+    evaluarCalculados();
+});
 </script>
 @endif
