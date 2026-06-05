@@ -70,13 +70,13 @@ class OpSeguimientoController extends Controller
 
                 -- Número de etapas de la OP
                 COUNT(DISTINCT opdet.id) AS num_etapas,
-                -- Etapas verdaderamente completadas: saldokg <= 0 Y tiene producción aprobada
+                -- Etapa completa: opdet.kgprod >= op.kgprod (procesó todos los kg de la OP)
                 COUNT(DISTINCT CASE
-                    WHEN IFNULL(SUM_PROD.total_kgprod, 0) > 0 AND opdet.saldokg <= 0
+                    WHEN opdet.kgprod >= op.kgprod AND op.kgprod > 0
                     THEN opdet.id ELSE NULL END)     AS etapas_completadas,
-                -- Etapas parciales: tienen producción aprobada pero aún queda saldo
+                -- Etapa parcial: tiene algo producido pero aún no alcanza op.kgprod
                 COUNT(DISTINCT CASE
-                    WHEN IFNULL(SUM_PROD.total_kgprod, 0) > 0 AND opdet.saldokg > 0
+                    WHEN opdet.kgprod > 0 AND opdet.kgprod < op.kgprod
                     THEN opdet.id ELSE NULL END)     AS etapas_parciales,
 
                 UNIX_TIMESTAMP(op.updated_at)       AS updatednum_at
@@ -155,7 +155,9 @@ class OpSeguimientoController extends Controller
                 areaproduccionsucetapaprod.orden        AS etapa_orden,
                 IFNULL(maquina.nombre, '—')             AS maquina_nombre,
                 opdet.kgrec                             AS opdet_kgrec,
+                opdet.kgprod                            AS opdet_kgprod,
                 opdet.saldokg                           AS opdet_saldokg,
+                op.kgprod                               AS op_kgprod,
                 IFNULL(PROD.total_kgprod,  0)           AS kgprod_aprobado,
                 IFNULL(PROD.total_kgscrap, 0)           AS kgscrap_aprobado,
                 IFNULL(PROD.cnt,           0)           AS cnt_aprobados,
@@ -163,6 +165,7 @@ class OpSeguimientoController extends Controller
                 IFNULL(TEMP.cnt_esperando, 0)           AS temp_esperando_sup,
                 IFNULL(TEMP.cnt_rechazados,0)           AS temp_rechazados
             FROM opdet
+            INNER JOIN op ON op.id = opdet.op_id
             INNER JOIN areaproduccionsucetapaprod
                    ON areaproduccionsucetapaprod.id = opdet.apsucetapaprod_id
             INNER JOIN etapaprod

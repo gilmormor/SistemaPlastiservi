@@ -206,8 +206,13 @@ function renderEtapas(op_id, etapas) {
     etapas.forEach(function (e) {
         // ── Determinar color y estado general de la etapa ──────────────
         var estado = '', colorHeader = '#f4f4f4';
+        var kgAprobado = parseFloat(e.kgprod_aprobado) || 0;
+        var opKgprod   = parseFloat(e.op_kgprod)       || 0;
+        // Completa: opdet.kgprod acumulado alcanzó el total de kg de la OP
+        var esCompleta = opKgprod > 0 && kgAprobado >= opKgprod;
+        var esParcial  = kgAprobado > 0 && !esCompleta;
 
-        if (parseFloat(e.kgprod_aprobado) > 0 && parseFloat(e.opdet_saldokg) <= 0) {
+        if (esCompleta) {
             estado = '<span style="color:#00a65a;"><i class="fa fa-check-circle"></i> Completa</span>';
             colorHeader = '#eaffea';
         } else if (parseInt(e.temp_esperando_sup) > 0) {
@@ -219,7 +224,7 @@ function renderEtapas(op_id, etapas) {
         } else if (parseInt(e.temp_rechazados) > 0) {
             estado = '<span style="color:#dd4b39;"><i class="fa fa-times-circle"></i> Rechazado</span>';
             colorHeader = '#fff0f0';
-        } else if (parseFloat(e.kgprod_aprobado) > 0) {
+        } else if (esParcial) {
             estado = '<span style="color:#f39c12;"><i class="fa fa-spinner"></i> Parcial</span>';
             colorHeader = '#fffbee';
         } else {
