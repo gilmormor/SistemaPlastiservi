@@ -416,7 +416,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
 
     // Configura DataTable con `serverSide` dinámico
     tabla = $(nombreTabla).DataTable({
-        'paging'      : true, 
+        'paging'      : true,
         'lengthChange': true,
         'searching'   : true,
         'ordering'    : true,
@@ -425,6 +425,9 @@ function configurarTabla(nombreTabla,url,serverSide) {
         'processing'  : true,
         'serverSide'  : serverSide, // Se define dinámicamente
         'ajax'        : url, // Se define dinámicamente
+        'scrollX'     : true,
+        'scrollY'     : 'calc(100vh - 320px)',
+        'scrollCollapse': true,
         'order'       : [[ 1, "desc" ]],
         'columns'     : [
             {
@@ -451,7 +454,8 @@ function configurarTabla(nombreTabla,url,serverSide) {
             {data: 'clientebloqueado_descripcion',className:"ocultar"}, //16
             {data: 'oc_file',className:"ocultar"}, //17
             {data: 'oc_file',className:"ocultar"}, //18
-            {data: 'updated_at',className:"ocultar"}, //19
+            {data: null, defaultContent: '', className:"ocultar"}, //19 nombrepdf (no viene del servidor)
+            {data: 'updated_at',className:"ocultar"}, //20
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 
                 "<a href='/ot/enviaraprobarinventsal' class='btn-accion-tabla btn-sm btnaprobar' title='Aprobar'>" +
@@ -575,9 +579,9 @@ function configurarTabla(nombreTabla,url,serverSide) {
                  data-cant="${data.cant}" data-cantenvprog="${parseFloat(data.cantenvprog)||0}"/>`;
             $('td', row).eq(14).html(aux_text);    
 
-            $('td', row).eq(19).addClass('updated_at');
-            $('td', row).eq(19).attr('id','updated_at' + data.id);
-            $('td', row).eq(19).attr('name','updated_at' + data.id);
+            $('td', row).eq(20).addClass('updated_at');
+            $('td', row).eq(20).attr('id','updated_at' + data.id);
+            $('td', row).eq(20).attr('name','updated_at' + data.id);
 
             aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
             aux_displaybtnac = ``;
@@ -600,7 +604,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
                     </a>
                 </div>`;
             //$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
-            $('td', row).eq(20).html(aux_text);
+            $('td', row).eq(21).html(aux_text);
 
         }
     });

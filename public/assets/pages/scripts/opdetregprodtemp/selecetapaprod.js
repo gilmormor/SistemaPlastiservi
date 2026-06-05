@@ -10,13 +10,13 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : false,
         'ajax'        : RUTA_AJAX,
-        'order'       : [[ 4, "asc" ]],
+        'order'       : [[ 0, "asc" ]],
         'columns'     : [
+            {data: 'orden'},
             {data: 'areaproduccionsucetapaprod_id'},
             {data: 'etapaprod_nombre'},
             {data: 'sucursal_nombre'},
-            {defaultContent : ``},
-            {data: 'orden',className:"ocultar"},
+            {defaultContent : ``}
         ],
 		"language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -26,7 +26,7 @@ $(document).ready(function () {
             aux_text = `<a href='set/${data.etapaprod_id}' class='btn-accion-tabla tooltipsC btnIndex' title='Ingresar Registro Produccion'>
                             <i class='fa fa-fw fa-sign-in'></i>
                         </a>`;
-            $('td', row).eq(3).html(aux_text);
+            $('td', row).eq(4).html(aux_text);
         }
       });
 

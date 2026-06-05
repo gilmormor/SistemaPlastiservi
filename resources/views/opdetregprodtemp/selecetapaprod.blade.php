@@ -23,10 +23,11 @@ Etapa Produccion
                 <table class="table table-striped table-bordered table-hover" id="tabla-data">
                     <thead>
                         <tr>
-                            <th class="width70" title="Id Etata Produccion">ID</th>
+                            <th class="width10" title="Orden">Orden</th>
+                            <th class="width10" title="Id Etata Produccion">ID</th>
                             <th class="width70">Etapa Produccion</th>
                             <th class="width70">Sucursal</th>
-                            <th class="width70">Accion</th>
+                            <th class="width20">Accion</th>
                         </tr>
                     </thead>
                 </table>

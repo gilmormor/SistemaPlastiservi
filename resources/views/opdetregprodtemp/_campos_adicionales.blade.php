@@ -30,7 +30,9 @@
         </label>
 
         @if($campo->tipo === 'calculated')
-            {{-- Campo calculado: readonly, se llena por JS --}}
+            {{-- Campo calculado: readonly, se llena por JS.
+                 data-mapea-campo: si está definido, el JS también actualiza
+                 el input estándar del formulario (ej: aux_cantprod). --}}
             <input type="text"
                    id="campo_val_{{$campo->id}}"
                    name="campo_val[{{$campo->id}}]"
@@ -39,10 +41,13 @@
                    data-campo-nombre="{{$campo->nombre}}"
                    data-formula="{{$campo->formula}}"
                    data-decimales="{{$campo->decimales}}"
+                   data-mapea-campo="{{$campo->mapea_campo ?? ''}}"
                    value="{{old('campo_val.'.$campo->id, $tablas['campovals'][$campo->id] ?? '')}}"
                    style="text-align:right; background:#f5f5f5;"
                    readonly/>
         @elseif($campo->tipo === 'number')
+            {{-- Campo numérico: data-mapea-campo propaga el valor al input estándar
+                 cuando el usuario escribe. --}}
             <input type="text"
                    id="campo_val_{{$campo->id}}"
                    name="campo_val[{{$campo->id}}]"
@@ -50,6 +55,7 @@
                    data-campo-id="{{$campo->id}}"
                    data-campo-nombre="{{$campo->nombre}}"
                    data-decimales="{{$campo->decimales}}"
+                   data-mapea-campo="{{$campo->mapea_campo ?? ''}}"
                    valor="{{old('campo_val.'.$campo->id, $tablas['campovals'][$campo->id] ?? '0')}}"
                    value="{{old('campo_val.'.$campo->id, $tablas['campovals'][$campo->id] ?? '')}}"
                    style="text-align:right;"
@@ -82,9 +88,38 @@ window._etapaCampos['{{$campo->nombre}}'] = '{{$campo->id}}';
 // Inicialización diferida: 'load' se dispara cuando todos los scripts están listos
 window.addEventListener('load', function () {
     var $ = window.jQuery;
-    if (!$) return; // jQuery no disponible (no debería ocurrir)
+    if (!$) return;
 
     var campoNombreAId = window._etapaCampos || {};
+
+    // Mapa de campo estándar → inputs del formulario principal que deben actualizarse.
+    // visible: input que ve el usuario; hidden: input oculto que envía el valor al servidor.
+    // El trigger keyup en el visible activa las validaciones existentes (validarsaldokg, etc.)
+    var mapaStandard = {
+        cantprod : { visible: '#aux_cantprod', hidden: '#cantprod' },
+        kgprod   : { visible: '#aux_kgprod',   hidden: null },
+        kgscrap  : { visible: '#aux_kgscrap',  hidden: null }
+    };
+
+    /**
+     * Propaga un valor numérico al input estándar del formulario
+     * de forma silenciosa (sin trigger de eventos) para no robar el foco.
+     * Actualiza: valor attr + value visible + hidden si existe.
+     * El backend maneja la escritura real via mapea_campo en el controlador.
+     */
+    function propagarAlCampoEstandar(mapea, valor) {
+        if (!mapea || !mapaStandard[mapea]) return;
+        var mapa = mapaStandard[mapea];
+        var $visible = $(mapa.visible);
+        if ($visible.length) {
+            $visible.attr('valor', valor);
+            $visible.val(valor);
+            // Sin trigger('keyup') — evita que el plugin numerico robe el foco
+        }
+        if (mapa.hidden) {
+            $(mapa.hidden).val(valor);
+        }
+    }
 
     function valorCampo(nombre) {
         var id = campoNombreAId[nombre];
@@ -96,8 +131,9 @@ window.addEventListener('load', function () {
 
     function evaluarCalculados() {
         $('.campo-calculado').each(function () {
-            var formula = $(this).data('formula');
+            var formula   = $(this).data('formula');
             var decimales = parseInt($(this).data('decimales')) || 2;
+            var mapea     = $(this).data('mapea-campo') || '';
             if (!formula) return;
 
             var expr = formula;
@@ -111,18 +147,32 @@ window.addEventListener('load', function () {
                 resultado = Math.round(resultado * Math.pow(10, decimales)) / Math.pow(10, decimales);
                 $(this).val(resultado.toFixed(decimales).replace('.', ','));
                 $(this).attr('valor', resultado);
+
+                // Si el campo calculado mapea a un campo estándar, propagarlo
+                if (mapea) {
+                    propagarAlCampoEstandar(mapea, resultado);
+                }
             } catch (e) { /* fórmula inválida */ }
         });
     }
 
-    // Recalcular al cambiar cualquier campo numérico
+    // Al cambiar un campo numérico: actualizar valor, recalcular fórmulas
+    // y propagar si tiene mapeo directo (campos number con mapea_campo)
     $(document).on('keyup change', '.campo-numerico', function () {
         var v = $(this).val().replace(',', '.') || '0';
-        $(this).attr('valor', parseFloat(v) || 0);
+        var num = parseFloat(v) || 0;
+        $(this).attr('valor', num);
+
+        // Propagación directa para campos number con mapea_campo
+        var mapea = $(this).data('mapea-campo') || '';
+        if (mapea) {
+            propagarAlCampoEstandar(mapea, num);
+        }
+
         evaluarCalculados();
     });
 
-    // Calcular valores iniciales (modo editar)
+    // Calcular valores iniciales (modo editar con valores previos)
     evaluarCalculados();
 });
 </script>
