@@ -206,11 +206,12 @@ function renderEtapas(op_id, etapas) {
     etapas.forEach(function (e) {
         // ── Determinar color y estado general de la etapa ──────────────
         var estado = '', colorHeader = '#f4f4f4';
-        var kgAprobado = parseFloat(e.kgprod_aprobado) || 0;
-        var opKgprod   = parseFloat(e.op_kgprod)       || 0;
-        // Completa: opdet.kgprod acumulado alcanzó el total de kg de la OP
-        var esCompleta = opKgprod > 0 && kgAprobado >= opKgprod;
-        var esParcial  = kgAprobado > 0 && !esCompleta;
+        // kgprod + kgscrap = kgent total procesado en la etapa
+        var opdetKgent = (parseFloat(e.opdet_kgprod) || 0) + (parseFloat(e.opdet_kgscrap) || 0);
+        var opKgprod   = parseFloat(e.op_kgprod)     || 0;
+        // Completa: material procesado (kgprod + kgscrap) >= kg total de la OP
+        var esCompleta = opKgprod > 0 && opdetKgent >= opKgprod;
+        var esParcial  = opdetKgent > 0 && !esCompleta;
 
         if (esCompleta) {
             estado = '<span style="color:#00a65a;"><i class="fa fa-check-circle"></i> Completa</span>';

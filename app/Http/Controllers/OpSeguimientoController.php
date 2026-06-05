@@ -70,13 +70,15 @@ class OpSeguimientoController extends Controller
 
                 -- Número de etapas de la OP
                 COUNT(DISTINCT opdet.id) AS num_etapas,
-                -- Etapa completa: opdet.kgprod >= op.kgprod (procesó todos los kg de la OP)
+                -- Etapa completa: (opdet.kgprod + opdet.kgscrap) >= op.kgprod
+                -- kgprod + kgscrap = kgent total procesado (material bueno + scrap)
                 COUNT(DISTINCT CASE
-                    WHEN opdet.kgprod >= op.kgprod AND op.kgprod > 0
+                    WHEN (opdet.kgprod + opdet.kgscrap) >= op.kgprod AND op.kgprod > 0
                     THEN opdet.id ELSE NULL END)     AS etapas_completadas,
-                -- Etapa parcial: tiene algo producido pero aún no alcanza op.kgprod
+                -- Etapa parcial: procesó algo pero aún no alcanza op.kgprod
                 COUNT(DISTINCT CASE
-                    WHEN opdet.kgprod > 0 AND opdet.kgprod < op.kgprod
+                    WHEN (opdet.kgprod + opdet.kgscrap) > 0
+                     AND (opdet.kgprod + opdet.kgscrap) < op.kgprod
                     THEN opdet.id ELSE NULL END)     AS etapas_parciales,
 
                 UNIX_TIMESTAMP(op.updated_at)       AS updatednum_at
@@ -156,6 +158,7 @@ class OpSeguimientoController extends Controller
                 IFNULL(maquina.nombre, '—')             AS maquina_nombre,
                 opdet.kgrec                             AS opdet_kgrec,
                 opdet.kgprod                            AS opdet_kgprod,
+                opdet.kgscrap                           AS opdet_kgscrap,
                 opdet.saldokg                           AS opdet_saldokg,
                 op.kgprod                               AS op_kgprod,
                 IFNULL(PROD.total_kgprod,  0)           AS kgprod_aprobado,
