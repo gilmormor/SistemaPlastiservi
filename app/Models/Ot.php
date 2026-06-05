@@ -289,7 +289,7 @@ class Ot extends Model
         LEFT JOIN vista_datacobranza
         ON vista_datacobranza.cliente_id = ot.cliente_id
         LEFT JOIN clientedesbloqueado
-        ON clientedesbloqueado.cliente_id = ot.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+        ON clientedesbloqueado.cliente_id = ot.cliente_id and isnull(clientedesbloqueado.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo
         ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = $aux_modulo_id
         LEFT JOIN modulo
@@ -610,6 +610,7 @@ class Ot extends Model
         IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+        IFNULL(clientedesbloqueado.obs,'') AS clientedesbloqueado_obs,
         otdet.producto_id, otdet.cant, otdet.cantprod, otdet.cantenvprog, otdet.kgenvprog, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod,
         otdet.obs as otdet_obs,otdet.kgprog,
         if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id) as acuerdotecnico_id,
@@ -644,16 +645,16 @@ class Ot extends Model
         ON clientebloqueado.cliente_id = ot.cliente_id AND ISNULL(clientebloqueado.deleted_at)
         LEFT JOIN vista_datacobranza
         ON vista_datacobranza.cliente_id = ot.cliente_id
+        LEFT JOIN otnotaventa
+        ON otnotaventa.ot_id = ot.id
         LEFT JOIN clientedesbloqueado
-        ON clientedesbloqueado.cliente_id = ot.cliente_id and isnull(clientedesbloqueado.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
+        ON clientedesbloqueado.cliente_id = ot.cliente_id and if(isnull(clientedesbloqueado.notaventa_id),true,clientedesbloqueado.notaventa_id = otnotaventa.notaventa_id) and isnull(clientedesbloqueado.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo
         ON clientedesbloqueadomodulo.clientedesbloqueado_id = clientedesbloqueado.id and clientedesbloqueadomodulo.modulo_id = $aux_modulo_id
         LEFT JOIN modulo
         ON modulo.id = clientedesbloqueadomodulo.modulo_id
         LEFT JOIN clientedesbloqueadopro
         ON clientedesbloqueadopro.cliente_id = ot.cliente_id  and isnull(clientedesbloqueadopro.deleted_at)
-        LEFT JOIN otnotaventa
-        ON otnotaventa.ot_id = ot.id
         LEFT JOIN notaventa
         ON notaventa.id = otnotaventa.notaventa_id
         LEFT JOIN otoc

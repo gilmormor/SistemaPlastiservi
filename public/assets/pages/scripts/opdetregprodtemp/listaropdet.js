@@ -17,7 +17,10 @@ $(document).ready(function () {
 
     data = datosopdet();
     let table =$('#tabla-data-consulta').DataTable({
-        'paging'      : true, 
+        'paging'      : true,
+        'scrollX'     : true,
+        'scrollY'     : 'calc(100vh - 320px)',
+        'scrollCollapse': true,
         'lengthChange': true,
         'ordering'    : true,
         'info'        : true,

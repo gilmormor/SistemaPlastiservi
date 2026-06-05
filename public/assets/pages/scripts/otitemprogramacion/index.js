@@ -442,7 +442,9 @@ function configurarTabla(nombreTabla,url,serverSide) {
     // Configura DataTable con `serverSide` dinámico
     tabla = $(nombreTabla).DataTable({
         'paging'      : true,
-        'scrollx'     : true,
+        'scrollX'     : true,
+        'scrollY'     : 'calc(100vh - 320px)',
+        'scrollCollapse': true,
         'lengthChange': true,
         'searching'   : true,
         'ordering'    : true,
@@ -480,9 +482,10 @@ function configurarTabla(nombreTabla,url,serverSide) {
             {data: 'otdet_obs'}, // 19
             {data: 'otdet_obs'}, // 20
             {data: 'clientebloqueado_descripcion',className:"ocultar"}, //21
-            {data: 'oc_file',className:"ocultar"}, //22
-            {data: 'oc_file',className:"ocultar"}, //23
-            {data: 'updated_at',className:"ocultar"}, //24
+            {data: 'oc_file',className:"ocultar"}, //22 — oc_folder
+            {data: 'oc_file',className:"ocultar"}, //23 — oc_file
+            {data: null, defaultContent:'', className:"ocultar"}, //24 — nombrepdf (sin dato en servidor)
+            {data: 'updated_at',className:"ocultar"}, //25
 /*             {defaultContent : 
                 "<a href='/ot/enviaraprobarinventsal' class='btn-accion-tabla btn-sm btnaprobar' title='Aprobar'>" +
                     "<span class='glyphicon glyphicon-floppy-save' style='bottom: 0px;top: 2px;'></span>"+

@@ -46,6 +46,10 @@ class OtAprobarController extends Controller
             $request1->request->set('modulo_id', 33);
             $request1->merge(['deldesbloqueo' => 0]);
             $request1->request->set('deldesbloqueo', 0);
+            if(isset($ot->otnotaventa)){
+                $request1->merge(['notaventa_id' => $ot->otnotaventa->notaventa_id]);
+                $request1->request->set('notaventa_id', $ot->otnotaventa->notaventa_id);
+            }
             $clibloq = clienteBloqueado($ot->cliente_id,0,$request1);
             if(!is_null($clibloq["bloqueo"])){
                 return redirect('ot')->with([

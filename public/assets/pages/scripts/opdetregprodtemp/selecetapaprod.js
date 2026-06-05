@@ -10,11 +10,13 @@ $(document).ready(function () {
         'processing'  : true,
         'serverSide'  : true,
         'ajax'        : RUTA_AJAX,
+        'order'       : [[ 4, "asc" ]],
         'columns'     : [
             {data: 'areaproduccionsucetapaprod_id'},
             {data: 'etapaprod_nombre'},
             {data: 'sucursal_nombre'},
-            {defaultContent : ``}
+            {defaultContent : ``},
+            {data: 'orden',className:"ocultar"},
         ],
 		"language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
