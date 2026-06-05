@@ -50,7 +50,9 @@ class OpSeguimientoController extends Controller
                 ot.id                           AS ot_id,
                 otdet.id                        AS otdet_id,
                 otdet.producto_id,
-                IFNULL(acuerdotecnico.nombre_producto, CONCAT('Prod. ', otdet.producto_id))
+                -- Usa producto.glosa (campo pre-calculado del merge con rama producción).
+                -- IFNULL garantiza compatibilidad si glosa aún está vacío en este entorno.
+                IFNULL(producto.glosa, CONCAT('Prod. ', otdet.producto_id))
                                                 AS producto_nombre,
                 cliente.razonsocial,
                 IFNULL(otnotaventa.notaventa_id, '') AS notaventa_id,
@@ -81,8 +83,8 @@ class OpSeguimientoController extends Controller
             INNER JOIN opdet          ON opdet.op_id       = op.id
             LEFT  JOIN otnotaventa    ON otnotaventa.ot_id = ot.id
                                      AND ISNULL(otnotaventa.deleted_at)
-            LEFT  JOIN acuerdotecnico ON acuerdotecnico.producto_id = otdet.producto_id
-                                     AND ISNULL(acuerdotecnico.deleted_at)
+            -- producto.glosa: nombre pre-calculado (rama producción master_20260513-01)
+            LEFT  JOIN producto       ON producto.id = otdet.producto_id
 
             -- Suma de producción aprobada para esta OP
             LEFT JOIN (
@@ -126,7 +128,7 @@ class OpSeguimientoController extends Controller
               AND $condProd
 
             GROUP BY op.id, otdet.id, cliente.id, otnotaventa.notaventa_id,
-                     acuerdotecnico.nombre_producto
+                     producto.glosa
             ORDER BY op.id DESC
         ";
 
