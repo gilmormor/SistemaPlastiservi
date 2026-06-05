@@ -138,36 +138,31 @@ class OpSeguimientoController extends Controller
 
     /**
      * Detalle por etapa de una OP (para el child row del DataTable).
+     * Devuelve cada opdet con sus registros individuales de producción:
+     *   - opdetregprodtemp: pendientes (aprobstatus 0/1/3)
+     *   - opdetregprod: aprobados (aprobstatus 2)
      * GET /op/{op_id}/etapas-detalle
      */
     public function etapasDetalle($op_id)
     {
         can('listar-registro-produccion');
+        $op_id = intval($op_id);
 
-        $sql = "
+        // 1. Resumen por etapa (opdet)
+        $etapas = DB::select("
             SELECT
                 opdet.id                                AS opdet_id,
                 etapaprod.nombre                        AS etapa_nombre,
                 areaproduccionsucetapaprod.orden        AS etapa_orden,
                 IFNULL(maquina.nombre, '—')             AS maquina_nombre,
-                opdet.kg                                AS opdet_kg,
                 opdet.kgrec                             AS opdet_kgrec,
-                opdet.kgprod                            AS opdet_kgprod,
-                opdet.kgscrap                           AS opdet_kgscrap,
                 opdet.saldokg                           AS opdet_saldokg,
-
-                -- Producción aprobada en esta etapa
-                IFNULL(PROD.total_kgprod,   0)          AS kgprod_aprobado,
-                IFNULL(PROD.total_cantprod, 0)          AS cantprod_aprobado,
-                IFNULL(PROD.total_kgscrap,  0)          AS kgscrap_aprobado,
-                IFNULL(PROD.cnt_registros,  0)          AS registros_aprobados,
-
-                -- Pendientes en temp
-                IFNULL(TEMP.cnt_noenviados, 0)          AS temp_no_enviados,
-                IFNULL(TEMP.cnt_esperando,  0)          AS temp_esperando_sup,
-                IFNULL(TEMP.cnt_rechazados, 0)          AS temp_rechazados,
-                IFNULL(TEMP.kg_pendiente,   0)          AS temp_kg_pendiente
-
+                IFNULL(PROD.total_kgprod,  0)           AS kgprod_aprobado,
+                IFNULL(PROD.total_kgscrap, 0)           AS kgscrap_aprobado,
+                IFNULL(PROD.cnt,           0)           AS cnt_aprobados,
+                IFNULL(TEMP.cnt_noenviados,0)           AS temp_no_enviados,
+                IFNULL(TEMP.cnt_esperando, 0)           AS temp_esperando_sup,
+                IFNULL(TEMP.cnt_rechazados,0)           AS temp_rechazados
             FROM opdet
             INNER JOIN areaproduccionsucetapaprod
                    ON areaproduccionsucetapaprod.id = opdet.apsucetapaprod_id
@@ -175,35 +170,87 @@ class OpSeguimientoController extends Controller
                    ON etapaprod.id = areaproduccionsucetapaprod.etapaprod_id
             LEFT  JOIN opdetmaquina ON opdetmaquina.opdet_id = opdet.id
             LEFT  JOIN maquina      ON maquina.id = opdetmaquina.maquina_id
-
-            LEFT JOIN (
+            LEFT  JOIN (
                 SELECT opdet_id,
-                       SUM(kgprod)   AS total_kgprod,
-                       SUM(cantprod) AS total_cantprod,
-                       SUM(kgscrap)  AS total_kgscrap,
-                       COUNT(*)      AS cnt_registros
-                FROM   opdetregprod
-                WHERE  ISNULL(deleted_at)
-                GROUP  BY opdet_id
+                       SUM(kgprod)  AS total_kgprod,
+                       SUM(kgscrap) AS total_kgscrap,
+                       COUNT(*)     AS cnt
+                FROM   opdetregprod WHERE ISNULL(deleted_at) GROUP BY opdet_id
             ) PROD ON PROD.opdet_id = opdet.id
-
-            LEFT JOIN (
+            LEFT  JOIN (
                 SELECT opdet_id,
-                       SUM(CASE WHEN ISNULL(aprobstatus) OR aprobstatus = 0 THEN 1 ELSE 0 END) AS cnt_noenviados,
-                       SUM(CASE WHEN aprobstatus = 1 THEN 1 ELSE 0 END)                        AS cnt_esperando,
-                       SUM(CASE WHEN aprobstatus = 3 THEN 1 ELSE 0 END)                        AS cnt_rechazados,
-                       SUM(CASE WHEN aprobstatus != 2 THEN kgprod ELSE 0 END)                  AS kg_pendiente
+                       SUM(CASE WHEN ISNULL(aprobstatus) OR aprobstatus=0 THEN 1 ELSE 0 END) AS cnt_noenviados,
+                       SUM(CASE WHEN aprobstatus=1 THEN 1 ELSE 0 END)                        AS cnt_esperando,
+                       SUM(CASE WHEN aprobstatus=3 THEN 1 ELSE 0 END)                        AS cnt_rechazados
                 FROM   opdetregprodtemp
-                WHERE  ISNULL(deleted_at)
-                  AND  (aprobstatus IS NULL OR aprobstatus != 2)
+                WHERE  ISNULL(deleted_at) AND (aprobstatus IS NULL OR aprobstatus != 2)
                 GROUP  BY opdet_id
             ) TEMP ON TEMP.opdet_id = opdet.id
-
-            WHERE opdet.op_id = " . intval($op_id) . "
-              AND ISNULL(opdet.deleted_at)
+            WHERE opdet.op_id = $op_id AND ISNULL(opdet.deleted_at)
             ORDER BY areaproduccionsucetapaprod.orden ASC
-        ";
+        ");
 
-        return response()->json(DB::select($sql));
+        // 2. Registros individuales en temp (pendientes: aprobstatus 0/NULL/1/3)
+        $temps = DB::select("
+            SELECT
+                t.id,
+                t.opdet_id,
+                t.aprobstatus,
+                t.kgprod,
+                t.kgscrap,
+                t.kgent,
+                t.cantprod,
+                t.aprobobs,
+                t.created_at,
+                IFNULL(operario.nombre, '—') AS operario_nombre,
+                IFNULL(usuario.nombre, '—')  AS usuario_nombre
+            FROM opdetregprodtemp t
+            INNER JOIN opdet od ON od.id = t.opdet_id
+            LEFT  JOIN operario ON operario.id = t.operario_id
+            LEFT  JOIN usuario  ON usuario.id  = t.usuario_id
+            WHERE od.op_id = $op_id
+              AND ISNULL(t.deleted_at)
+              AND (t.aprobstatus IS NULL OR t.aprobstatus != 2)
+            ORDER BY t.opdet_id ASC, t.id ASC
+        ");
+
+        // 3. Registros aprobados en opdetregprod
+        $aprobados = DB::select("
+            SELECT
+                r.id,
+                r.opdet_id,
+                r.kgprod,
+                r.kgscrap,
+                r.kgent,
+                r.cantprod,
+                r.created_at,
+                IFNULL(operario.nombre, '—') AS operario_nombre,
+                IFNULL(usuario.nombre, '—')  AS usuario_nombre
+            FROM opdetregprod r
+            INNER JOIN opdet od ON od.id = r.opdet_id
+            LEFT  JOIN operario ON operario.id = r.operario_id
+            LEFT  JOIN usuario  ON usuario.id  = r.usuario_id
+            WHERE od.op_id = $op_id
+              AND ISNULL(r.deleted_at)
+            ORDER BY r.opdet_id ASC, r.id ASC
+        ");
+
+        // Indexar registros por opdet_id para adjuntarlos en el response
+        $tempsXOpdet = [];
+        foreach ($temps as $t) {
+            $tempsXOpdet[$t->opdet_id][] = $t;
+        }
+        $aprobXOpdet = [];
+        foreach ($aprobados as $a) {
+            $aprobXOpdet[$a->opdet_id][] = $a;
+        }
+
+        // Adjuntar registros a cada etapa
+        foreach ($etapas as &$etapa) {
+            $etapa->registros_temp    = $tempsXOpdet[$etapa->opdet_id]   ?? [];
+            $etapa->registros_aprobados = $aprobXOpdet[$etapa->opdet_id] ?? [];
+        }
+
+        return response()->json($etapas);
     }
 }

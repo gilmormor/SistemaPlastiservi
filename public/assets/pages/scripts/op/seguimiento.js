@@ -155,60 +155,129 @@ function cargarEtapasDetalle(op_id, row) {
 }
 
 /**
+ * Etiqueta de estado para aprobstatus de opdetregprodtemp.
+ */
+function labelEstadoTemp(s) {
+    s = parseInt(s);
+    if (s === 1)  return '<span style="color:#3c8dbc;"><i class="fa fa-clock-o"></i> Esperando sup.</span>';
+    if (s === 3)  return '<span style="color:#dd4b39;"><i class="fa fa-times-circle"></i> Rechazado</span>';
+    return '<span style="color:#f39c12;"><i class="fa fa-pencil"></i> Sin enviar</span>';
+}
+
+/**
  * Genera el HTML del detalle de etapas para el child row.
+ * Incluye opdet_id, resumen por etapa y sub-tabla de registros individuales.
  */
 function renderEtapas(op_id, etapas) {
     if (!etapas || etapas.length === 0) {
         return '<p class="text-muted" style="padding:10px;">Sin etapas registradas para esta OP.</p>';
     }
 
-    var html = '<div style="margin-left:30px; margin-bottom:10px;">' +
-               '<table class="table table-condensed table-bordered" style="font-size:12px; width:90%;">' +
-               '<thead><tr style="background:#f4f4f4;">' +
-               '<th>Ord</th><th>Etapa</th><th>Máquina</th>' +
-               '<th style="text-align:right;">Kg Total</th>' +
-               '<th style="text-align:right;">Kg Aprobado</th>' +
-               '<th style="text-align:right;">Kg Pendiente</th>' +
-               '<th style="text-align:center;">Estado</th>' +
-               '</tr></thead><tbody>';
+    var html = '<div style="margin-left:30px; margin-bottom:10px;">';
 
     etapas.forEach(function (e) {
-        var estado = '';
-        var colorFila = '';
+        // ── Determinar color y estado general de la etapa ──────────────
+        var estado = '', colorHeader = '#f4f4f4';
 
         if (parseFloat(e.kgprod_aprobado) > 0 && parseFloat(e.opdet_saldokg) <= 0) {
-            // Etapa completada
             estado = '<span style="color:#00a65a;"><i class="fa fa-check-circle"></i> Completa</span>';
-            colorFila = 'background:#f0fff0;';
-        } else if (parseFloat(e.temp_esperando) > 0) {
-            estado = '<span style="color:#3c8dbc;"><i class="fa fa-clock-o"></i> Esperando aprobación (' + e.temp_esperando_sup + ')</span>';
-            colorFila = 'background:#eef4ff;';
-        } else if (parseFloat(e.temp_no_enviados) > 0) {
-            estado = '<span style="color:#f39c12;"><i class="fa fa-pencil"></i> En proceso (' + e.temp_no_enviados + ' sin enviar)</span>';
-            colorFila = 'background:#fff8ee;';
-        } else if (parseFloat(e.temp_rechazados) > 0) {
-            estado = '<span style="color:#dd4b39;"><i class="fa fa-times-circle"></i> Rechazado (' + e.temp_rechazados + ')</span>';
-            colorFila = 'background:#fff0f0;';
+            colorHeader = '#eaffea';
+        } else if (parseInt(e.temp_esperando_sup) > 0) {
+            estado = '<span style="color:#3c8dbc;"><i class="fa fa-clock-o"></i> Esperando aprobación</span>';
+            colorHeader = '#eef4ff';
+        } else if (parseInt(e.temp_no_enviados) > 0) {
+            estado = '<span style="color:#f39c12;"><i class="fa fa-pencil"></i> En proceso</span>';
+            colorHeader = '#fff8ee';
+        } else if (parseInt(e.temp_rechazados) > 0) {
+            estado = '<span style="color:#dd4b39;"><i class="fa fa-times-circle"></i> Rechazado</span>';
+            colorHeader = '#fff0f0';
         } else if (parseFloat(e.kgprod_aprobado) > 0) {
             estado = '<span style="color:#f39c12;"><i class="fa fa-spinner"></i> Parcial</span>';
-            colorFila = 'background:#fffbee;';
+            colorHeader = '#fffbee';
         } else {
             estado = '<span style="color:#aaa;"><i class="fa fa-circle-o"></i> Sin iniciar</span>';
         }
 
-        var kgPend = parseFloat(e.opdet_saldokg) || 0;
-
-        html += '<tr style="' + colorFila + '">' +
+        // ── Encabezado de la etapa ──────────────────────────────────────
+        html += '<table class="table table-condensed table-bordered" style="font-size:12px; width:95%; margin-bottom:4px;">' +
+            '<thead><tr style="background:' + colorHeader + ';">' +
+            '<th style="width:60px;">OpDet</th>' +
+            '<th style="width:40px;">Ord</th>' +
+            '<th>Etapa</th>' +
+            '<th>Máquina</th>' +
+            '<th style="text-align:right; width:80px;">Kg Recib.</th>' +
+            '<th style="text-align:right; width:80px;">Kg Aprobado</th>' +
+            '<th style="text-align:right; width:80px;">Saldo Kg</th>' +
+            '<th style="text-align:center; width:180px;">Estado</th>' +
+            '</tr></thead><tbody>' +
+            '<tr style="background:' + colorHeader + ';">' +
+            '<td style="font-weight:bold;">#' + e.opdet_id + '</td>' +
             '<td style="text-align:center;">' + e.etapa_orden + '</td>' +
             '<td><strong>' + e.etapa_nombre + '</strong></td>' +
             '<td>' + e.maquina_nombre + '</td>' +
             '<td style="text-align:right;">' + MASKLA(e.opdet_kgrec, 2) + '</td>' +
             '<td style="text-align:right; color:#00a65a;">' + MASKLA(e.kgprod_aprobado, 2) + '</td>' +
-            '<td style="text-align:right; color:#f39c12;">' + MASKLA(kgPend, 2) + '</td>' +
+            '<td style="text-align:right; color:#f39c12;">' + MASKLA(e.opdet_saldokg, 2) + '</td>' +
             '<td style="text-align:center;">' + estado + '</td>' +
-            '</tr>';
+            '</tr></tbody></table>';
+
+        // ── Sub-tabla de registros individuales ────────────────────────
+        var tieneRegistros = (e.registros_temp && e.registros_temp.length > 0) ||
+                             (e.registros_aprobados && e.registros_aprobados.length > 0);
+
+        if (tieneRegistros) {
+            html += '<table class="table table-condensed" style="font-size:11px; width:95%; margin-left:20px; margin-bottom:12px;">' +
+                '<thead><tr style="background:#e8e8e8;">' +
+                '<th>ID</th><th>Operario</th><th>Usuario</th>' +
+                '<th style="text-align:right;">Kg Prod</th>' +
+                '<th style="text-align:right;">Kg Scrap</th>' +
+                '<th style="text-align:right;">Cant Prod</th>' +
+                '<th>Fecha</th><th style="text-align:center;">Estado</th>' +
+                '<th>Obs rechazo</th>' +
+                '</tr></thead><tbody>';
+
+            // Registros pendientes (opdetregprodtemp con aprobstatus 0/1/3)
+            if (e.registros_temp && e.registros_temp.length > 0) {
+                e.registros_temp.forEach(function (r) {
+                    var f = new Date(r.created_at);
+                    html += '<tr>' +
+                        '<td><small class="text-muted">tmp</small> ' + r.id + '</td>' +
+                        '<td>' + r.operario_nombre + '</td>' +
+                        '<td>' + r.usuario_nombre  + '</td>' +
+                        '<td style="text-align:right;">' + MASKLA(r.kgprod, 2)  + '</td>' +
+                        '<td style="text-align:right;">' + MASKLA(r.kgscrap, 2) + '</td>' +
+                        '<td style="text-align:right;">' + MASKLA(r.cantprod, 0) + '</td>' +
+                        '<td>' + fechaddmmaaaa(f) + '</td>' +
+                        '<td style="text-align:center;">' + labelEstadoTemp(r.aprobstatus) + '</td>' +
+                        '<td style="font-size:10px; color:#dd4b39;">' + (r.aprobobs || '') + '</td>' +
+                        '</tr>';
+                });
+            }
+
+            // Registros aprobados (opdetregprod)
+            if (e.registros_aprobados && e.registros_aprobados.length > 0) {
+                e.registros_aprobados.forEach(function (r) {
+                    var f = new Date(r.created_at);
+                    html += '<tr style="background:#f0fff0;">' +
+                        '<td><small class="text-muted">apr</small> ' + r.id + '</td>' +
+                        '<td>' + r.operario_nombre + '</td>' +
+                        '<td>' + r.usuario_nombre  + '</td>' +
+                        '<td style="text-align:right; color:#00a65a;">' + MASKLA(r.kgprod, 2)  + '</td>' +
+                        '<td style="text-align:right;">' + MASKLA(r.kgscrap, 2) + '</td>' +
+                        '<td style="text-align:right;">' + MASKLA(r.cantprod, 0) + '</td>' +
+                        '<td>' + fechaddmmaaaa(f) + '</td>' +
+                        '<td style="text-align:center;"><span style="color:#00a65a;"><i class="fa fa-check-circle"></i> Aprobado</span></td>' +
+                        '<td></td>' +
+                        '</tr>';
+                });
+            }
+
+            html += '</tbody></table>';
+        } else {
+            html += '<p style="margin-left:20px; font-size:11px; color:#aaa; margin-bottom:12px;">Sin registros de producción aún.</p>';
+        }
     });
 
-    html += '</tbody></table></div>';
+    html += '</div>';
     return html;
 }
