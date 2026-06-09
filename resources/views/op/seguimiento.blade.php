@@ -381,4 +381,6 @@
     </div>
 </div>
 
+@include('generales.modalpdf')
+
 @endsection

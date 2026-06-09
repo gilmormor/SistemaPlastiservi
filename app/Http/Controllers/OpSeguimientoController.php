@@ -219,7 +219,12 @@ class OpSeguimientoController extends Controller
             ORDER BY t.opdet_id ASC, t.id ASC
         ");
 
-        // 3. Registros aprobados en opdetregprod
+        // 3. Registros aprobados en opdetregprod.
+        // JOIN hacia inventario para invmov_id (solo última etapa lo tendrá).
+        // JOIN hacia módulo de despacho vía notaventadetalle_id para trazabilidad:
+        //   invmovdet_opdetregprod → despachosoldet → despachoorddet
+        //   → dtedet_despachoorddet → dtedet → dte (guía/factura)
+        // GROUP_CONCAT agrega múltiples documentos (despacho parcial) en un solo campo CSV.
         $aprobados = DB::select("
             SELECT
                 r.id,
@@ -230,13 +235,37 @@ class OpSeguimientoController extends Controller
                 r.cantprod,
                 r.created_at,
                 IFNULL(operario.nombre, '—') AS operario_nombre,
-                IFNULL(usuario.nombre, '—')  AS usuario_nombre
+                IFNULL(usuario.nombre, '—')  AS usuario_nombre,
+                imd.invmov_id                AS invmov_id,
+                GROUP_CONCAT(DISTINCT dsd.despachosol_id
+                             ORDER BY dsd.despachosol_id SEPARATOR ',') AS sol_ids,
+                GROUP_CONCAT(DISTINCT dod.despachoord_id
+                             ORDER BY dod.despachoord_id SEPARATOR ',') AS ord_ids,
+                GROUP_CONCAT(DISTINCT CASE WHEN dte.foliocontrol_id = 2
+                                 THEN CONCAT(dte.id, '|', IFNULL(dte.nrodocto, '')) END
+                             ORDER BY dte.id SEPARATOR ',')             AS guia_data,
+                GROUP_CONCAT(DISTINCT CASE WHEN dte.foliocontrol_id = 1
+                                 THEN CONCAT(dte.id, '|', IFNULL(dte.nrodocto, '')) END
+                             ORDER BY dte.id SEPARATOR ',')             AS fac_data
             FROM opdetregprod r
             INNER JOIN opdet od ON od.id = r.opdet_id
             LEFT  JOIN operario ON operario.id = r.operario_id
             LEFT  JOIN usuario  ON usuario.id  = r.usuario_id
+            LEFT  JOIN invmovdet_opdetregprod iodr ON iodr.opdetregprod_id = r.id
+            LEFT  JOIN invmovdet imd              ON imd.id = iodr.invmovdet_id
+            LEFT  JOIN despachosoldet dsd  ON dsd.notaventadetalle_id = iodr.notaventadetalle_id
+                                          AND ISNULL(dsd.deleted_at)
+            LEFT  JOIN despachoorddet dod  ON dod.despachosoldet_id = dsd.id
+                                          AND ISNULL(dod.deleted_at)
+            LEFT  JOIN dtedet_despachoorddet ddod ON ddod.despachoorddet_id = dod.id
+                                               AND ISNULL(ddod.deleted_at)
+            LEFT  JOIN dtedet dd ON dd.id  = ddod.dtedet_id
+                                AND ISNULL(dd.deleted_at)
+            LEFT  JOIN dte       ON dte.id = dd.dte_id
+                                AND ISNULL(dte.deleted_at)
             WHERE od.op_id = $op_id
               AND ISNULL(r.deleted_at)
+            GROUP BY r.id
             ORDER BY r.opdet_id ASC, r.id ASC
         ");
 

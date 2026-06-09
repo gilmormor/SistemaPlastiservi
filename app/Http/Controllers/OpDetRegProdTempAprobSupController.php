@@ -418,7 +418,7 @@ class OpDetRegProdTempAprobSupController extends Controller
                         $invmov = InvMov::create([
                             'fechahora'       => date('Y-m-d H:i:s'),
                             'annomes'         => $annomes,
-                            'desc'            => 'Ingreso produccion - OT: ' . $opdetregprod->opdet->op->otdet->ot_id . ' OP: ' . $opdetregprod->opdet->op_id . 'RegProdId: ' . $opdetregprod->id,
+                            'desc'            => 'Ingreso produccion - OT: ' . $opdetregprod->opdet->op->otdet->ot_id . ' OP: ' . $opdetregprod->opdet->op_id . ' RegProdId: ' . $opdetregprod->id,
                             'obs'             => 'OP: ' . $opdetregprod->opdet->op_id,
                             'invmovmodulo_id' => 9,               // Producción
                             'idmovmod'        => $opdetregprod->id, // Trazabilidad → opdetregprod

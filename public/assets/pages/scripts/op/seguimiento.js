@@ -76,10 +76,15 @@ function construirTabla(url) {
         createdRow: function (row, data) {
             $(row).attr('id', 'fila-op-' + data.op_id);
 
-            // Col OP — negrita con badge de prioridad
+            // Col OP — enlace al reporte PDF + badge de prioridad
             var prioColor = data.prioridad == 1 ? '#e74c3c' : (data.prioridad == 2 ? '#f39c12' : '#95a5a6');
             $('td', row).eq(1).html(
-                '<strong style="font-size:13px; color:#1a3a5c;">' + data.op_id + '</strong>' +
+                '<a class="btn-accion-tabla btn-sm tooltipsC" ' +
+                    'onclick=\'genpdf(' + data.op_id + ',"","ver-pdf-op","/op/exportPdf/' + data.op_id + '")\' ' +
+                    'style="padding-left:0; font-size:13px; font-weight:bold; color:#1a3a5c; cursor:pointer;" ' +
+                    'data-original-title="Ver Orden de Producción">' +
+                    data.op_id +
+                '</a>' +
                 (data.prioridad ? ' <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:' + prioColor + '; margin-left:3px;" title="Prioridad ' + data.prioridad + '"></span>' : '')
             );
 
@@ -88,11 +93,29 @@ function construirTabla(url) {
                 '<span style="font-size:11px; color:#5a6a7e;">' + fechaHoraStr(data.op_fecha).split(' ')[0] + '</span>'
             );
 
-            // Col OT
-            $('td', row).eq(3).html('<span style="color:#5a6a7e; font-size:12px;">' + (data.ot_id || '—') + '</span>');
+            // Col OT — enlace al reporte PDF de la OT
+            $('td', row).eq(3).html(
+                data.ot_id
+                    ? '<a class="btn-accion-tabla btn-sm tooltipsC" ' +
+                          'onclick=\'genpdf(' + data.ot_id + ',"","ver-pdf-ot","/ot/exportPdf/' + data.ot_id + '")\' ' +
+                          'style="padding-left:0; font-size:12px; color:#5a6a7e; cursor:pointer;" ' +
+                          'data-original-title="Orden de Trabajo">' +
+                          data.ot_id +
+                      '</a>'
+                    : '<span style="color:#5a6a7e; font-size:12px;">—</span>'
+            );
 
-            // Col NV
-            $('td', row).eq(4).html('<span style="color:#5a6a7e; font-size:12px;">' + (data.notaventa_id || '—') + '</span>');
+            // Col NV — enlace al reporte PDF de la NV (si existe)
+            $('td', row).eq(4).html(
+                data.notaventa_id
+                    ? '<a class="btn-accion-tabla btn-sm tooltipsC" ' +
+                          'onclick=\'genpdfNV(' + data.notaventa_id + ',1)\' ' +
+                          'style="padding-left:0; font-size:12px; color:#5a6a7e; cursor:pointer;" ' +
+                          'data-original-title="Nota de Venta">' +
+                          data.notaventa_id +
+                      '</a>'
+                    : '<span style="color:#5a6a7e; font-size:12px;">—</span>'
+            );
 
             // Col Kg
             $('td', row).eq(7).css('text-align', 'right').html(
@@ -128,16 +151,37 @@ function construirTabla(url) {
         }
     });
 
-    // Click expand
-    $('#tabla-seguimiento').on('click', 'td.dt-control', function (e) {
-        var tr  = e.target.closest('tr');
+    // .off() primero para evitar handlers duplicados si construirTabla() se llama más de una vez
+    $('#tabla-seguimiento').off('click', 'td.dt-control').on('click', 'td.dt-control', function () {
+        var tr  = $(this).closest('tr')[0];
         var row = tabla.row(tr);
+
         if (row.child.isShown()) {
+            // Cerrar
             row.child.hide();
-            $(this).html('<i class="fa fa-plus-circle" style="color:#3498db; font-size:14px; cursor:pointer;"></i>');
+            $(row.node()).find('td.dt-control').html(
+                '<i class="fa fa-plus-circle" style="color:#3498db; font-size:14px; cursor:pointer;" title="Ver etapas"></i>'
+            );
         } else {
-            $(this).html('<i class="fa fa-minus-circle" style="color:#e67e22; font-size:14px; cursor:pointer;"></i>');
+            // Acordeón: cerrar los demás
+            $('#tabla-seguimiento tbody td.dt-control').each(function () {
+                var otherRow = tabla.row($(this).closest('tr')[0]);
+                if (otherRow.child && otherRow.child.isShown()) {
+                    otherRow.child.hide();
+                    $(otherRow.node()).find('td.dt-control').html(
+                        '<i class="fa fa-plus-circle" style="color:#3498db; font-size:14px; cursor:pointer;" title="Ver etapas"></i>'
+                    );
+                }
+            });
+            // Mostrar child; cambiar ícono con setTimeout(0) para que se ejecute DESPUÉS
+            // de cualquier redraw sincrónico que DataTables dispare con .show()
             row.child(loadingHtml()).show();
+            var rowNode = row.node();
+            setTimeout(function () {
+                $(rowNode).find('td.dt-control').html(
+                    '<i class="fa fa-minus-circle" style="color:#e67e22; font-size:14px; cursor:pointer;" title="Ocultar etapas"></i>'
+                );
+            }, 0);
             cargarEtapasDetalle(row.data().op_id, row);
         }
     });
@@ -273,9 +317,21 @@ function renderEtapas(op_id, etapas) {
                         '<span style="text-align:right; font-weight:600; color:#27ae60;">' + MASKLA(r.kgprod, 2)  + '</span>' +
                         '<span style="text-align:right; color:#e74c3c;">'                 + MASKLA(r.kgscrap, 2) + '</span>' +
                         '<span style="text-align:right;">'                                + MASKLA(r.cantprod, 0) + '</span>' +
-                        '<span><span class="seg-chip green"><i class="fa fa-check-circle"></i> Aprobado</span></span>' +
+                        '<span>' +
+                            '<span class="seg-chip green"><i class="fa fa-check-circle"></i> Aprobado</span>' +
+                            (r.invmov_id
+                                ? ' <a class="btn-accion-tabla btn-sm tooltipsC" ' +
+                                      'onclick=\'genpdfINVMOV(' + r.invmov_id + ',1)\' ' +
+                                      'style="padding-left:2px; font-size:11px; color:#8e44ad; cursor:pointer;" ' +
+                                      'data-original-title="Movimiento de Inv.">' +
+                                      '<i class="fa fa-archive"></i> ' + r.invmov_id +
+                                  '</a>'
+                                : '') +
+                        '</span>' +
                         '<span></span>' +
-                        '</li>';
+                        '</li>' +
+                        // Fila de trazabilidad despacho (solo última etapa, justo debajo del registro)
+                        renderTrazDespacho(r);
                 });
             }
 
@@ -290,6 +346,71 @@ function renderEtapas(op_id, etapas) {
 
     wrap += '</div>';
     return wrap;
+}
+
+// ── Trazabilidad despacho (última etapa) ───────────────────────────────────────
+// Recibe un registro aprobado y devuelve HTML con chips de la cadena de despacho.
+// Solo se muestra cuando r.invmov_id existe (última etapa generó movimiento de inventario).
+function renderTrazDespacho(r) {
+    if (!r.invmov_id) return '';
+
+    var chips = '';
+
+    if (!r.sol_ids) {
+        chips += '<span class="seg-chip gray" style="font-size:10px;">' +
+                 '<i class="fa fa-truck"></i> Sin solicitud de despacho</span>';
+    } else {
+        // Solicitudes de despacho
+        r.sol_ids.split(',').forEach(function (id) {
+            chips += '<a class="seg-chip orange" style="font-size:10px; cursor:pointer;" ' +
+                     'onclick="genpdfSD(' + id + ',1)" ' +
+                     'title="Solicitud de Despacho #' + id + '">' +
+                     '<i class="fa fa-file-text-o"></i> Sol #' + id + '</a> ';
+        });
+
+        // Órdenes de despacho
+        if (r.ord_ids) {
+            r.ord_ids.split(',').forEach(function (id) {
+                chips += '<a class="seg-chip blue" style="font-size:10px; cursor:pointer;" ' +
+                         'onclick="genpdfOD(' + id + ',1)" ' +
+                         'title="Orden de Despacho #' + id + '">' +
+                         '<i class="fa fa-truck"></i> Ord #' + id + '</a> ';
+            });
+        }
+
+        // Guías de despacho (foliocontrol_id=2)
+        if (r.guia_data) {
+            r.guia_data.split(',').forEach(function (pair) {
+                if (!pair) return;
+                var p       = pair.split('|');
+                var dteId   = p[0];
+                var nro     = p[1] ? String(parseInt(p[1])).padStart(8, '0') : '';
+                var label   = p[1] ? 'N°' + parseInt(p[1]) : '#' + dteId;
+                var onclick = nro ? 'genpdfGD("' + nro + '","")' : '';
+                chips += '<' + (onclick ? 'a onclick="' + onclick + '" style="cursor:pointer;"' : 'span') +
+                         ' class="seg-chip green" style="font-size:10px;" title="Guía de Despacho ' + label + '">' +
+                         '<i class="fa fa-file-pdf-o"></i> Guía ' + label +
+                         '</' + (onclick ? 'a' : 'span') + '> ';
+            });
+        }
+
+        // Facturas (foliocontrol_id=1)
+        if (r.fac_data) {
+            r.fac_data.split(',').forEach(function (pair) {
+                if (!pair) return;
+                var p     = pair.split('|');
+                var label = p[1] ? 'N°' + parseInt(p[1]) : '#' + p[0];
+                chips += '<span class="seg-chip" ' +
+                         'style="background:#8e44ad; color:#fff; font-size:10px;" ' +
+                         'title="Factura ' + label + '">' +
+                         '<i class="fa fa-file-pdf-o"></i> Fac ' + label + '</span> ';
+            });
+        }
+    }
+
+    return '<li style="grid-column:1 / -1; background:#f0f7ff; border-top:1px dashed #d0e4f7; padding:4px 8px;">' +
+           '<span style="font-size:10px; color:#5a6a7e; margin-right:6px;">' +
+           '<i class="fa fa-exchange"></i> Despacho:</span>' + chips + '</li>';
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────

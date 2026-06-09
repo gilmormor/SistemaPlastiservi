@@ -41,7 +41,9 @@
       "Bash(git commit -m ' *)",
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "mcp__Claude_in_Chrome__navigate",
-      "mcp__Claude_in_Chrome__browser_batch"
+      "mcp__Claude_in_Chrome__browser_batch",
+      "Bash(Get-ChildItem -Path \"C:\\\\laragon\\\\www\\\\plastiservi\\\\public\\\\assets\\\\pages\\\\scripts\" -Filter \"*.js\" -Recurse)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }
