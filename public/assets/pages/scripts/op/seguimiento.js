@@ -349,68 +349,107 @@ function renderEtapas(op_id, etapas) {
 }
 
 // ── Trazabilidad despacho (última etapa) ───────────────────────────────────────
-// Recibe un registro aprobado y devuelve HTML con chips de la cadena de despacho.
-// Solo se muestra cuando r.invmov_id existe (última etapa generó movimiento de inventario).
+// Dibuja el árbol jerárquico: Sol → Ord → Guía → Factura → NC/ND
+// Solo se muestra cuando r.invmov_id existe (última etapa).
 function renderTrazDespacho(r) {
     if (!r.invmov_id) return '';
 
-    var chips = '';
+    var traza = r.traza_despacho;
+    var inner = '';
 
-    if (!r.sol_ids) {
-        chips += '<span class="seg-chip gray" style="font-size:10px;">' +
-                 '<i class="fa fa-truck"></i> Sin solicitud de despacho</span>';
+    if (!traza || traza.length === 0) {
+        inner = '<span class="seg-chip gray" style="font-size:10px;">' +
+                '<i class="fa fa-truck"></i> Sin solicitud de despacho</span>';
     } else {
-        // Solicitudes de despacho
-        r.sol_ids.split(',').forEach(function (id) {
-            chips += '<a class="seg-chip orange" style="font-size:10px; cursor:pointer;" ' +
-                     'onclick="genpdfSD(' + id + ',1)" ' +
-                     'title="Solicitud de Despacho #' + id + '">' +
-                     '<i class="fa fa-file-text-o"></i> Sol #' + id + '</a> ';
+        traza.forEach(function (sol) {
+            // ── Sol ──────────────────────────────────────────────────────────
+            inner += '<div style="margin-bottom:3px;">' +
+                     '<a class="seg-chip orange" style="font-size:10px; cursor:pointer;" ' +
+                        'onclick="genpdfSD(' + sol.id + ',1)" ' +
+                        'title="Solicitud de Despacho #' + sol.id + '">' +
+                        '<i class="fa fa-file-text-o"></i> Sol #' + sol.id + '</a>';
+
+            if (!sol.ords || sol.ords.length === 0) {
+                inner += ' <span style="font-size:10px; color:#aaa; font-style:italic;">Sin órdenes</span>';
+            } else {
+                sol.ords.forEach(function (ord) {
+                    // ── Ord ──────────────────────────────────────────────────
+                    var ordColor = ord.anulada ? 'red' : 'blue';
+                    var ordIcon  = ord.anulada ? 'ban' : 'truck';
+                    var ordLabel = 'Ord #' + ord.id + (ord.anulada ? ' <em>[Anulada]</em>' : '');
+                    inner += '<div style="margin-left:14px; margin-top:2px;">' +
+                             '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
+                             '<a class="seg-chip ' + ordColor + '" style="font-size:10px; cursor:pointer;" ' +
+                                'onclick="genpdfOD(' + ord.id + ',1)" ' +
+                                'title="Orden de Despacho #' + ord.id + '">' +
+                                '<i class="fa fa-' + ordIcon + '"></i> ' + ordLabel + '</a>';
+
+                    if (!ord.guias || ord.guias.length === 0) {
+                        inner += ' <span style="font-size:10px; color:#aaa; font-style:italic;">Sin guía</span>';
+                    } else {
+                        ord.guias.forEach(function (guia) {
+                            // ── Guía ─────────────────────────────────────────
+                            var guiaColor = guia.anulada ? 'red' : 'green';
+                            var guiaIcon  = guia.anulada ? 'ban' : 'file-pdf-o';
+                            var guiaNro   = guia.nrodocto ? 'N°' + parseInt(guia.nrodocto) : '#' + guia.id;
+                            var guiaPad   = guia.nrodocto ? String(parseInt(guia.nrodocto)).padStart(8, '0') : '';
+                            var guiaOnClick = (guiaPad && !guia.anulada)
+                                ? 'onclick="genpdfGD(\'' + guiaPad + '\',\'\')"'
+                                : '';
+                            var guiaTag = guiaOnClick ? 'a' : 'span';
+                            inner += '<div style="margin-left:14px; margin-top:2px;">' +
+                                     '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
+                                     '<' + guiaTag + ' class="seg-chip ' + guiaColor + '" ' +
+                                        'style="font-size:10px;' + (guiaOnClick ? ' cursor:pointer;' : '') + '" ' +
+                                        guiaOnClick + ' title="Guía ' + guiaNro + '">' +
+                                        '<i class="fa fa-' + guiaIcon + '"></i> Guía ' + guiaNro +
+                                        (guia.anulada ? ' <em>[Anulada]</em>' : '') +
+                                     '</' + guiaTag + '>';
+
+                            if (!guia.facturas || guia.facturas.length === 0) {
+                                inner += ' <span style="font-size:10px; color:#aaa; font-style:italic;">Sin factura</span>';
+                            } else {
+                                guia.facturas.forEach(function (fac) {
+                                    // ── Factura ───────────────────────────────
+                                    var facNro = fac.nrodocto ? 'N°' + parseInt(fac.nrodocto) : '#' + fac.id;
+                                    inner += '<div style="margin-left:14px; margin-top:2px;">' +
+                                             '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
+                                             '<span class="seg-chip" ' +
+                                                'style="background:#8e44ad; color:#fff; font-size:10px;" ' +
+                                                'title="Factura ' + facNro + '">' +
+                                                '<i class="fa fa-file-pdf-o"></i> Fac ' + facNro + '</span>';
+
+                                    // ── NC / ND ───────────────────────────────
+                                    if (fac.ncnd && fac.ncnd.length > 0) {
+                                        fac.ncnd.forEach(function (n) {
+                                            var esNC  = parseInt(n.foliocontrol_id) === 5;
+                                            var nNro  = n.nrodocto ? 'N°' + parseInt(n.nrodocto) : '#' + n.id;
+                                            var nIcon = esNC ? 'minus-circle' : 'plus-circle';
+                                            var nTipo = esNC ? 'NC' : 'ND';
+                                            var nColor = esNC ? 'red' : 'blue';
+                                            inner += ' <span class="seg-chip ' + nColor + '" ' +
+                                                     'style="font-size:10px;" title="' + nTipo + ' ' + nNro + '">' +
+                                                     '<i class="fa fa-' + nIcon + '"></i> ' + nTipo + ' ' + nNro + '</span>';
+                                        });
+                                    }
+                                    inner += '</div>'; // factura
+                                });
+                            }
+                            inner += '</div>'; // guía
+                        });
+                    }
+                    inner += '</div>'; // ord
+                });
+            }
+            inner += '</div>'; // sol
         });
-
-        // Órdenes de despacho
-        if (r.ord_ids) {
-            r.ord_ids.split(',').forEach(function (id) {
-                chips += '<a class="seg-chip blue" style="font-size:10px; cursor:pointer;" ' +
-                         'onclick="genpdfOD(' + id + ',1)" ' +
-                         'title="Orden de Despacho #' + id + '">' +
-                         '<i class="fa fa-truck"></i> Ord #' + id + '</a> ';
-            });
-        }
-
-        // Guías de despacho (foliocontrol_id=2)
-        if (r.guia_data) {
-            r.guia_data.split(',').forEach(function (pair) {
-                if (!pair) return;
-                var p       = pair.split('|');
-                var dteId   = p[0];
-                var nro     = p[1] ? String(parseInt(p[1])).padStart(8, '0') : '';
-                var label   = p[1] ? 'N°' + parseInt(p[1]) : '#' + dteId;
-                var onclick = nro ? 'genpdfGD("' + nro + '","")' : '';
-                chips += '<' + (onclick ? 'a onclick="' + onclick + '" style="cursor:pointer;"' : 'span') +
-                         ' class="seg-chip green" style="font-size:10px;" title="Guía de Despacho ' + label + '">' +
-                         '<i class="fa fa-file-pdf-o"></i> Guía ' + label +
-                         '</' + (onclick ? 'a' : 'span') + '> ';
-            });
-        }
-
-        // Facturas (foliocontrol_id=1)
-        if (r.fac_data) {
-            r.fac_data.split(',').forEach(function (pair) {
-                if (!pair) return;
-                var p     = pair.split('|');
-                var label = p[1] ? 'N°' + parseInt(p[1]) : '#' + p[0];
-                chips += '<span class="seg-chip" ' +
-                         'style="background:#8e44ad; color:#fff; font-size:10px;" ' +
-                         'title="Factura ' + label + '">' +
-                         '<i class="fa fa-file-pdf-o"></i> Fac ' + label + '</span> ';
-            });
-        }
     }
 
-    return '<li style="grid-column:1 / -1; background:#f0f7ff; border-top:1px dashed #d0e4f7; padding:4px 8px;">' +
-           '<span style="font-size:10px; color:#5a6a7e; margin-right:6px;">' +
-           '<i class="fa fa-exchange"></i> Despacho:</span>' + chips + '</li>';
+    return '<li style="grid-column:1 / -1; background:#f0f8ff; border-top:1px dashed #c8dff5; ' +
+           'padding:6px 12px; list-style:none;">' +
+           '<div style="font-size:10px; color:#2c5f8a; font-weight:bold; margin-bottom:4px;">' +
+           '<i class="fa fa-exchange"></i> Trazabilidad Despacho</div>' +
+           inner + '</li>';
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────

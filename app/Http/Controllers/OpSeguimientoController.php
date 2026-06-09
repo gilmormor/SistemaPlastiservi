@@ -220,11 +220,7 @@ class OpSeguimientoController extends Controller
         ");
 
         // 3. Registros aprobados en opdetregprod.
-        // JOIN hacia inventario para invmov_id (solo última etapa lo tendrá).
-        // JOIN hacia módulo de despacho vía notaventadetalle_id para trazabilidad:
-        //   invmovdet_opdetregprod → despachosoldet → despachoorddet
-        //   → dtedet_despachoorddet → dtedet → dte (guía/factura)
-        // GROUP_CONCAT agrega múltiples documentos (despacho parcial) en un solo campo CSV.
+        // Se obtiene invmov_id (última etapa) y nvdet_id (para trazabilidad despacho).
         $aprobados = DB::select("
             SELECT
                 r.id,
@@ -237,37 +233,26 @@ class OpSeguimientoController extends Controller
                 IFNULL(operario.nombre, '—') AS operario_nombre,
                 IFNULL(usuario.nombre, '—')  AS usuario_nombre,
                 imd.invmov_id                AS invmov_id,
-                GROUP_CONCAT(DISTINCT dsd.despachosol_id
-                             ORDER BY dsd.despachosol_id SEPARATOR ',') AS sol_ids,
-                GROUP_CONCAT(DISTINCT dod.despachoord_id
-                             ORDER BY dod.despachoord_id SEPARATOR ',') AS ord_ids,
-                GROUP_CONCAT(DISTINCT CASE WHEN dte.foliocontrol_id = 2
-                                 THEN CONCAT(dte.id, '|', IFNULL(dte.nrodocto, '')) END
-                             ORDER BY dte.id SEPARATOR ',')             AS guia_data,
-                GROUP_CONCAT(DISTINCT CASE WHEN dte.foliocontrol_id = 1
-                                 THEN CONCAT(dte.id, '|', IFNULL(dte.nrodocto, '')) END
-                             ORDER BY dte.id SEPARATOR ',')             AS fac_data
+                iodr.notaventadetalle_id     AS nvdet_id
             FROM opdetregprod r
             INNER JOIN opdet od ON od.id = r.opdet_id
             LEFT  JOIN operario ON operario.id = r.operario_id
             LEFT  JOIN usuario  ON usuario.id  = r.usuario_id
             LEFT  JOIN invmovdet_opdetregprod iodr ON iodr.opdetregprod_id = r.id
             LEFT  JOIN invmovdet imd              ON imd.id = iodr.invmovdet_id
-            LEFT  JOIN despachosoldet dsd  ON dsd.notaventadetalle_id = iodr.notaventadetalle_id
-                                          AND ISNULL(dsd.deleted_at)
-            LEFT  JOIN despachoorddet dod  ON dod.despachosoldet_id = dsd.id
-                                          AND ISNULL(dod.deleted_at)
-            LEFT  JOIN dtedet_despachoorddet ddod ON ddod.despachoorddet_id = dod.id
-                                               AND ISNULL(ddod.deleted_at)
-            LEFT  JOIN dtedet dd ON dd.id  = ddod.dtedet_id
-                                AND ISNULL(dd.deleted_at)
-            LEFT  JOIN dte       ON dte.id = dd.dte_id
-                                AND ISNULL(dte.deleted_at)
             WHERE od.op_id = $op_id
               AND ISNULL(r.deleted_at)
-            GROUP BY r.id
             ORDER BY r.opdet_id ASC, r.id ASC
         ");
+
+        // Enriquecer registros de última etapa con árbol de trazabilidad de despacho.
+        // Para etapas intermedias (sin invmov_id) traza_despacho queda null.
+        foreach ($aprobados as &$aprobado) {
+            $aprobado->traza_despacho = ($aprobado->invmov_id && $aprobado->nvdet_id)
+                ? $this->buildTrazaDespacho($aprobado->nvdet_id)
+                : null;
+        }
+        unset($aprobado);
 
         // Indexar registros por opdet_id para adjuntarlos en el response
         $tempsXOpdet = [];
@@ -281,10 +266,174 @@ class OpSeguimientoController extends Controller
 
         // Adjuntar registros a cada etapa
         foreach ($etapas as &$etapa) {
-            $etapa->registros_temp    = $tempsXOpdet[$etapa->opdet_id]   ?? [];
+            $etapa->registros_temp      = $tempsXOpdet[$etapa->opdet_id] ?? [];
             $etapa->registros_aprobados = $aprobXOpdet[$etapa->opdet_id] ?? [];
         }
 
         return response()->json($etapas);
+    }
+
+    /**
+     * Construye el árbol jerárquico de trazabilidad de despacho para una línea NV.
+     *
+     * Estructura devuelta:
+     *   Sol → Ord (+ anulada) → Guía (+ anulada) → Factura → NC/ND
+     *
+     * El nvdet_id es el notaventadetalle_id guardado en invmovdet_opdetregprod
+     * al aprobar el registro de la última etapa.
+     */
+    private function buildTrazaDespacho($nvdet_id)
+    {
+        $nvdet_id = intval($nvdet_id);
+        if (!$nvdet_id) return [];
+
+        // ── 1. Solicitudes de despacho ────────────────────────────────────────
+        $sols = DB::select("
+            SELECT DISTINCT despachosol_id AS id
+            FROM   despachosoldet
+            WHERE  notaventadetalle_id = ?
+              AND  ISNULL(deleted_at)
+            ORDER  BY despachosol_id
+        ", [$nvdet_id]);
+
+        if (empty($sols)) return [];
+
+        // ── 2. Órdenes de despacho (con flag anulada) ─────────────────────────
+        $ords = DB::select("
+            SELECT DISTINCT
+                dod.despachoord_id                                          AS id,
+                dsd.despachosol_id                                          AS sol_id,
+                (SELECT COUNT(*) FROM despachoordanul
+                 WHERE  despachoord_id = dod.despachoord_id)               AS anulada
+            FROM   despachoorddet dod
+            INNER  JOIN despachosoldet dsd ON dsd.id = dod.despachosoldet_id
+            WHERE  dsd.notaventadetalle_id = ?
+              AND  ISNULL(dsd.deleted_at)
+              AND  ISNULL(dod.deleted_at)
+            ORDER  BY dod.despachoord_id
+        ", [$nvdet_id]);
+
+        if (empty($ords)) {
+            // Sols sin órdenes aún
+            return array_map(function ($s) {
+                return ['id' => $s->id, 'ords' => []];
+            }, $sols);
+        }
+
+        $ordIds = array_unique(array_column($ords, 'id'));
+        $ordIdsStr = implode(',', $ordIds);
+
+        // ── 3. Guías de despacho por orden (con flag anulada) ─────────────────
+        // La relación es despachoord → dteguiadesp → dte (foliocontrol_id=2)
+        $guias = DB::select("
+            SELECT
+                dtg.dte_id          AS id,
+                dtg.despachoord_id  AS ord_id,
+                dt.nrodocto,
+                (SELECT COUNT(*) FROM dteanul
+                 WHERE  dte_id = dtg.dte_id)  AS anulada
+            FROM   dteguiadesp dtg
+            INNER  JOIN dte dt ON dt.id = dtg.dte_id
+            WHERE  dtg.despachoord_id IN ($ordIdsStr)
+              AND  ISNULL(dt.deleted_at)
+            ORDER  BY dtg.dte_id
+        ");
+
+        $guiaIds = array_column($guias, 'id');
+
+        // ── 4. Facturas vinculadas a cada guía ────────────────────────────────
+        // Vínculo: dtedte.dter_id = guia.id → dtedte.dte_id = factura.id
+        $facturas = [];
+        if (!empty($guiaIds)) {
+            $guiaIdsStr = implode(',', $guiaIds);
+            $facturas = DB::select("
+                SELECT
+                    dd.dte_id   AS id,
+                    dd.dter_id  AS guia_id,
+                    dt.nrodocto
+                FROM   dtedte dd
+                INNER  JOIN dte dt ON dt.id = dd.dte_id
+                WHERE  dd.dter_id IN ($guiaIdsStr)
+                  AND  dt.foliocontrol_id = 1
+                  AND  ISNULL(dt.deleted_at)
+                  AND  ISNULL(dd.deleted_at)
+                ORDER  BY dd.dte_id
+            ");
+        }
+
+        // ── 5. NC / ND por factura ────────────────────────────────────────────
+        // Vínculo: dtedte.dte_id = factura.id → dtedte.dter_id = NC/ND.id
+        $ncnd = [];
+        if (!empty($facturas)) {
+            $facIds    = array_column($facturas, 'id');
+            $facIdsStr = implode(',', $facIds);
+            $ncnd = DB::select("
+                SELECT
+                    dd.dter_id          AS id,
+                    dd.dte_id           AS factura_id,
+                    dt.nrodocto,
+                    dt.foliocontrol_id
+                FROM   dtedte dd
+                INNER  JOIN dte dt ON dt.id = dd.dter_id
+                WHERE  dd.dte_id IN ($facIdsStr)
+                  AND  dt.foliocontrol_id IN (5, 6)
+                  AND  ISNULL(dt.deleted_at)
+                  AND  ISNULL(dd.deleted_at)
+                ORDER  BY dd.dter_id
+            ");
+        }
+
+        // ── Construir árbol ───────────────────────────────────────────────────
+        // NC/ND indexadas por factura_id
+        $ncndXFac = [];
+        foreach ($ncnd as $n) {
+            $ncndXFac[$n->factura_id][] = [
+                'id'              => $n->id,
+                'nrodocto'        => $n->nrodocto,
+                'foliocontrol_id' => $n->foliocontrol_id,
+            ];
+        }
+
+        // Facturas indexadas por guia_id
+        $facXGuia = [];
+        foreach ($facturas as $f) {
+            $facXGuia[$f->guia_id][] = [
+                'id'      => $f->id,
+                'nrodocto'=> $f->nrodocto,
+                'ncnd'    => $ncndXFac[$f->id] ?? [],
+            ];
+        }
+
+        // Guías indexadas por ord_id
+        $guiasXOrd = [];
+        foreach ($guias as $g) {
+            $guiasXOrd[$g->ord_id][] = [
+                'id'       => $g->id,
+                'nrodocto' => $g->nrodocto,
+                'anulada'  => (int)$g->anulada > 0,
+                'facturas' => $facXGuia[$g->id] ?? [],
+            ];
+        }
+
+        // Órdenes indexadas por sol_id
+        $ordsXSol = [];
+        foreach ($ords as $o) {
+            $ordsXSol[$o->sol_id][] = [
+                'id'      => $o->id,
+                'anulada' => (int)$o->anulada > 0,
+                'guias'   => $guiasXOrd[$o->id] ?? [],
+            ];
+        }
+
+        // Árbol final: sols con ords anidadas
+        $tree = [];
+        foreach ($sols as $s) {
+            $tree[] = [
+                'id'   => $s->id,
+                'ords' => $ordsXSol[$s->id] ?? [],
+            ];
+        }
+
+        return $tree;
     }
 }

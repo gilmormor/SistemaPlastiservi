@@ -340,12 +340,12 @@ class DteFacturaController extends Controller
 
         //HASTA AQUI LA VALIDACION 
 
-        $respuesta = Dte::dteSolicitarFolio($dte);
+        //$respuesta = Dte::dteSolicitarFolio($dte);
         //dd($respuesta["aux_folio"]);
-        /* $respuesta = [
+        $respuesta = [
                     'id' => 1,
                     'aux_folio' => '1234'
-        ]; */
+        ];
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
             $dte->fchemisgen = date("Y-m-d H:i:s");
@@ -439,11 +439,11 @@ class DteFacturaController extends Controller
             }
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             $dte = Dte::findOrFail($dteNew->id);
-            $respuesta = Dte::subirDteSii($dte);
+            /* $respuesta = Dte::subirDteSii($dte);
             if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             }
-            Dte::subirSisCobranza($dte);
+            Dte::subirSisCobranza($dte); */
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";
                 $aux_tipo_alert = 'alert-error';
