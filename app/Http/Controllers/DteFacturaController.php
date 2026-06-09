@@ -43,6 +43,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class DteFacturaController extends Controller
 {
@@ -1205,6 +1206,50 @@ class DteFacturaController extends Controller
         $dte = Dte::findOrFail($request->dte_id);
         $respuesta = Dte::subirSisCobranza($dte);
         return $respuesta;
+    }
+
+    /**
+     * Entrega el PDF de una factura/guía directamente desde BES (sin archivo local).
+     * Copiado desde rama master_20260513-01_anterior_20260506-01.
+     * GET /dtefactura/{id}/{cedible}/Pdfdin
+     * $cedible: 0=normal, 1=cedible
+     */
+    public function Pdfdin($id, $cedible)
+    {
+        if ($id == "null" || $id == null || $id == "" || $id == 0) {
+            return response('Id no valido.', 500);
+        }
+        $dte = Dte::findOrFail($id);
+        $aux_permiso = 'ver-pdf-factura';
+        if ($dte->foliocontrol->tipodocto == 52) {
+            $aux_permiso = 'ver-pdf-guia-despacho';
+        }
+        if (can($aux_permiso, false)) {
+            $repuesta = Dte::consultarpdfdteBes($dte);
+            if ($repuesta["id"] == 0) {
+                return response($repuesta["mensaje"], 500);
+            }
+            $aux_cedible = "";
+            if ($cedible == 0) {
+                $base64 = $repuesta["consulta_TXTDTE"]->PDF;
+            } else {
+                $base64 = $repuesta["consulta_TXTDTE"]->PDFCedible;
+                $aux_cedible = "_cedible";
+            }
+            if (strpos($base64, '%PDF') === 0) {
+                $nombreArchPDF = $dte->foliocontrol->nombrepdf
+                    . str_pad($dte->nrodocto, 8, "0", STR_PAD_LEFT)
+                    . $aux_cedible . ".pdf";
+                return response($base64)
+                    ->header('Content-Type', 'application/pdf')
+                    ->header('Content-Disposition', 'inline; filename="' . $nombreArchPDF . '"');
+            } else {
+                return response('Contenido no válido de PDF', 500);
+            }
+        } else {
+            $pdf = PDF::loadView('generales.pdfmensajesinacceso');
+            return $pdf->stream("mensajesinacceso.pdf");
+        }
     }
 }
 

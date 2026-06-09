@@ -389,12 +389,12 @@ function renderTrazDespacho(r) {
                     } else {
                         ord.guias.forEach(function (guia) {
                             // ── Guía ─────────────────────────────────────────
-                            var guiaColor = guia.anulada ? 'red' : 'green';
-                            var guiaIcon  = guia.anulada ? 'ban' : 'file-pdf-o';
-                            var guiaNro   = guia.nrodocto ? 'N°' + parseInt(guia.nrodocto) : '#' + guia.id;
-                            var guiaPad   = guia.nrodocto ? String(parseInt(guia.nrodocto)).padStart(8, '0') : '';
-                            var guiaOnClick = (guiaPad && !guia.anulada)
-                                ? 'onclick="genpdfGD(\'' + guiaPad + '\',\'\')"'
+                            var guiaColor   = guia.anulada ? 'red' : 'green';
+                            var guiaIcon    = guia.anulada ? 'ban' : 'file-pdf-o';
+                            var guiaNro     = guia.nrodocto ? 'N°' + parseInt(guia.nrodocto) : '#' + guia.id;
+                            // genpdfFACDin(dte.id, 0) — PDF directo desde BES usando id del dte
+                            var guiaOnClick = !guia.anulada
+                                ? 'onclick="genpdfFACDin(' + guia.id + ',0)"'
                                 : '';
                             var guiaTag = guiaOnClick ? 'a' : 'span';
                             inner += '<div style="margin-left:14px; margin-top:2px;">' +
@@ -410,14 +410,15 @@ function renderTrazDespacho(r) {
                                 inner += ' <span style="font-size:10px; color:#aaa; font-style:italic;">Sin factura</span>';
                             } else {
                                 guia.facturas.forEach(function (fac) {
-                                    // ── Factura ───────────────────────────────
+                                    // ── Factura — genpdfFACDin(dte.id, 0) ────────
                                     var facNro = fac.nrodocto ? 'N°' + parseInt(fac.nrodocto) : '#' + fac.id;
                                     inner += '<div style="margin-left:14px; margin-top:2px;">' +
                                              '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
-                                             '<span class="seg-chip" ' +
-                                                'style="background:#8e44ad; color:#fff; font-size:10px;" ' +
+                                             '<a class="seg-chip" ' +
+                                                'onclick="genpdfFACDin(' + fac.id + ',0)" ' +
+                                                'style="background:#8e44ad; color:#fff; font-size:10px; cursor:pointer;" ' +
                                                 'title="Factura ' + facNro + '">' +
-                                                '<i class="fa fa-file-pdf-o"></i> Fac ' + facNro + '</span>';
+                                                '<i class="fa fa-file-pdf-o"></i> Fac ' + facNro + '</a>';
 
                                     // ── NC / ND ───────────────────────────────
                                     if (fac.ncnd && fac.ncnd.length > 0) {

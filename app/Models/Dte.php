@@ -3278,11 +3278,48 @@ class Dte extends Model
                 "NroFacDeu" => implode(",", $ArrayNroFacDeuda),
                 "datosFacDeuda" => $datosFacDeuda,
                 "datosTodasFacDeuda" => $datosTodasFacDeuda
-            ];   
+            ];
             $aux_cont++;
         }
         //dd($ArrayFact);
         return $ArrayFact;
+    }
+
+    /**
+     * Consulta el PDF de un DTE directamente desde BES (servicio SOAP externo).
+     * Retorna array con 'id'=>1 y 'consulta_TXTDTE' si OK, o 'id'=>0 y 'mensaje' si error.
+     * Copiado desde rama master_20260513-01_anterior_20260506-01.
+     */
+    public static function consultarpdfdteBes($dte)
+    {
+        $TipoDocto = $dte->foliocontrol->tipodocto;
+        $empresa   = Empresa::findOrFail(1);
+
+        $soap = new SoapController();
+
+        $consulta_TXTDTE = $soap->consulta_TXTDTE($empresa->rut, $TipoDocto, $dte->nrodocto);
+        if (isset($consulta_TXTDTE->Estatus)) {
+            if ($consulta_TXTDTE->Estatus == 0) {
+                return [
+                    'id'               => 1,
+                    'consulta_TXTDTE'  => $consulta_TXTDTE,
+                ];
+            } else {
+                Dte::ErrorSubirDte($dte, "Documento: " . $dte->nrodocto, $consulta_TXTDTE->Estatus . " " . $consulta_TXTDTE->MsgEstatus, 1);
+                return [
+                    'id'         => 0,
+                    'mensaje'    => $consulta_TXTDTE->MsgEstatus,
+                    'tipo_alert' => 'error',
+                ];
+            }
+        } else {
+            Dte::ErrorSubirDte($dte, "Documento: " . $dte->nrodocto, $consulta_TXTDTE, 1);
+            return [
+                'id'         => 0,
+                'mensaje'    => nl2br("Error: Ocurrio un error al intentar Generar el PDF. \n\n") . $consulta_TXTDTE,
+                'tipo_alert' => 'error',
+            ];
+        }
     }
 }
 

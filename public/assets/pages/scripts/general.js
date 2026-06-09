@@ -4630,3 +4630,23 @@ function updateRF(notaventadetalle_id, chkRF){
 		}
 	});
 }
+
+// Copiada desde rama master_20260513-01_anterior_20260506-01.
+// Abre el PDF de una factura directamente desde BES (ruta /dtefactura/{id}/{cedible}/Pdfdin).
+// cedible: 0=normal, 1=cedible. aux_slug controla el permiso de vista.
+function genpdfFACDin(id, cedible, aux_venmodant, aux_slug) { //GENERAR PDF Factura Din (BES)
+	aux_venmodant = aux_venmodant || "";
+	aux_slug      = aux_slug      || "ver-pdf-factura";
+	var data = {
+		slug:   aux_slug,
+		_token: $('input[name=_token]').val()
+	};
+	$("#venmodant").val("");
+	if (aux_venmodant !== "") {
+		$("#" + aux_venmodant).modal('hide');
+		$("#venmodant").val(aux_venmodant);
+	}
+	let queryString = '?timestamp=' + new Date().getTime();
+	$('#contpdf').attr('src', '/dtefactura/' + id + '/' + cedible + '/Pdfdin' + queryString);
+	$("#myModalpdf").modal('show');
+}
