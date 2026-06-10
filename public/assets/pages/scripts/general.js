@@ -2453,6 +2453,31 @@ function llenarselectbodega(respuesta){
 	}	
 }
 
+// Distribuye FIFO la cantidad ingresada en la fila de bodega (ibpId) entre los lotes de producción.
+// Se llama desde onkeyup del input de bodega cuando requiere_fabricacion=1.
+function distribuirLotesFIFO(ibpId) {
+    // Buscar el input de invcant que corresponde a esta bodega (su id termina en "-{ibpId}")
+    var $bodInput = $('input.invcant[id$="-' + ibpId + '"]');
+    var total = parseFloat($bodInput.val()) || 0;
+    var resto = total;
+
+    // Recorrer los inputs de lotes FIFO (orden de aparición = orden por opdetregprod_id ASC)
+    $('.lote-cant-input[data-ibp="' + ibpId + '"]').each(function() {
+        var max       = parseFloat($(this).data('max'))         || 0;
+        var cantKgTot = parseFloat($(this).data('cantkg-total'))|| 0;
+
+        var asignar = Math.min(resto, max);
+        if (asignar < 0) { asignar = 0; }
+        $(this).val(asignar);
+
+        // Calcular kg proporcional al porcentaje de unidades asignadas sobre el total del lote
+        var kgAsignar = (max > 0) ? (asignar / max) * cantKgTot : 0;
+        $(this).next('input[type=hidden]').val(kgAsignar.toFixed(2));
+
+        resto -= asignar;
+    });
+}
+
 function sumbod(i,y,aux_orig,requiere_fabricacion = 0){
 	//console.log("sumbod",i,y,aux_orig,requiere_fabricacion);
 	aux_stockcant = parseFloat($("#stockcantTD" + y).html());

@@ -23,6 +23,7 @@ use App\Models\DespachoSol_InvMov;
 use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
 use App\Models\DespachoSolDet_InvBodegaProducto;
+use App\Models\DespachoSolDet_OpDetRegProd; // Trazabilidad de lotes de producción por despacho
 use App\Models\DespachoSolDTE;
 use App\Models\DespachoSolEnvOrdDesp;
 use App\Models\Dte;
@@ -408,7 +409,27 @@ class DespachoSolController extends Controller
                                 $notaventadetalle->cantsoldes   p = $request->cantsoldesp[$i];
                                 $notaventadetalle->save();
                                 */
-                                //$despacho_id = $despachosol->id;    
+                                //$despacho_id = $despachosol->id;
+
+                                // Guardar lotes de producción asociados a este despachosoldet (trazabilidad granular)
+                                // Los lotes se identifican por opdetregprod_nvdet_id[] que debe coincidir con el NVdet actual
+                                if (!empty($request->opdetregprod_id)) {
+                                    foreach ($request->opdetregprod_id as $k => $opdetregprod_id_val) {
+                                        $nvdetLote = $request->opdetregprod_nvdet_id[$k] ?? null;
+                                        if ($nvdetLote == $request->NVdet_id[$i]) {
+                                            $cantLote   = floatval($request->opdetregprod_cant[$k]   ?? 0);
+                                            $cantKgLote = floatval($request->opdetregprod_cantkg[$k] ?? 0);
+                                            if ($cantLote > 0) {
+                                                DespachoSolDet_OpDetRegProd::create([
+                                                    'despachosoldet_id' => $despachosoldet->id,
+                                                    'opdetregprod_id'   => $opdetregprod_id_val,
+                                                    'cant'              => $cantLote,
+                                                    'cantkg'            => $cantKgLote,
+                                                ]);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -698,7 +719,31 @@ class DespachoSolController extends Controller
                                     $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
                                     $notaventadetalle->save();
                                     */
-                                    //$despacho_id = $despachosol->id;    
+                                    //$despacho_id = $despachosol->id;
+
+                                    // Actualizar lotes de producción para este despachosoldet (trazabilidad granular)
+                                    // Se elimina y re-inserta para simplificar (no hay lógica encadenada en esta tabla)
+                                    if (!empty($request->opdetregprod_id)) {
+                                        $despachosoldet_id_actual = $request->NVdet_id[$i]; // en update, NVdet_id = despachosoldet_id
+                                        // Borrar asignaciones previas de lotes para este despachosoldet
+                                        DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet_id_actual)->delete();
+                                        // Re-insertar desde el formulario
+                                        foreach ($request->opdetregprod_id as $k => $opdetregprod_id_val) {
+                                            $nvdetLote = $request->opdetregprod_nvdet_id[$k] ?? null;
+                                            if ($nvdetLote == $despachosoldet_id_actual) {
+                                                $cantLote   = floatval($request->opdetregprod_cant[$k]   ?? 0);
+                                                $cantKgLote = floatval($request->opdetregprod_cantkg[$k] ?? 0);
+                                                if ($cantLote > 0) {
+                                                    DespachoSolDet_OpDetRegProd::create([
+                                                        'despachosoldet_id' => $despachosoldet_id_actual,
+                                                        'opdetregprod_id'   => $opdetregprod_id_val,
+                                                        'cant'              => $cantLote,
+                                                        'cantkg'            => $cantKgLote,
+                                                    ]);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

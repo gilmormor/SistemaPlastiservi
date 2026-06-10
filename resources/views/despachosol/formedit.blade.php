@@ -688,6 +688,29 @@
                                                             case 3:  $colorSucProd = '#00c3ff'; break;
                                                             default: $colorSucProd = '#ff8c00'; break;
                                                         }
+
+                                                        // Consultar lotes individuales de producción para esta bodega (FIFO por opdetregprod_id)
+                                                        $lotesRow = DB::table('invmovdetnvdet as imdnv')
+                                                            ->join('invmovdet as imd',              'imd.id',              '=', 'imdnv.invmovdet_id')
+                                                            ->join('invmovdet_opdetregprod as imop', 'imop.invmovdet_id',  '=', 'imd.id')
+                                                            ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle_id)
+                                                            ->where('imd.invbodegaproducto_id', $invbodegaproducto->id)
+                                                            ->whereNull('imd.deleted_at')
+                                                            ->select(
+                                                                'imop.opdetregprod_id',
+                                                                DB::raw('SUM(imd.cant)   as cant_lote'),
+                                                                DB::raw('SUM(imd.cantkg) as cantkg_lote')
+                                                            )
+                                                            ->groupBy('imop.opdetregprod_id')
+                                                            ->having(DB::raw('SUM(imd.cant)'), '>', 0)
+                                                            ->orderBy('imop.opdetregprod_id', 'asc')
+                                                            ->get();
+
+                                                        // Pre-cargar asignaciones de lotes ya guardadas para este despachosoldet
+                                                        $existingLoteAsig = DB::table('despachosoldet_opdetregprod')
+                                                            ->where('despachosoldet_id', $detalle->id)
+                                                            ->get()
+                                                            ->keyBy('opdetregprod_id');
                                                     ?>
                                                     {{-- <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$spRow->bodega_sucursal_id}}"> --}}
                                                     <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}">
@@ -731,7 +754,8 @@
                                                         </td> --}}
                                                         <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !important;vertical-align:middle;" title='Cant a despachar'>
                                                             <div style='display:none;'>
-                                                                <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD',{{$detalle->notaventadetalle->requiere_fabricacion}})" style="text-align:right;" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}" value="{{$detalle->cantsoldesp}}"/>
+                                                                {{-- Al cambiar la cantidad en la bodega, también distribuye FIFO entre lotes de producción --}}
+                                                                <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD',{{$detalle->notaventadetalle->requiere_fabricacion}}); distribuirLotesFIFO('{{$invbodegaproducto->id}}')" style="text-align:right;" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}" value="{{$detalle->cantsoldesp}}"/>
                                                             </div>
                                                             <label style="margin:0;">{{$detalle->cantsoldesp}}</label>
                                                         </td>
@@ -764,6 +788,46 @@
                                                             </div>
                                                         </td>
                                                     </tr>
+                                                    {{-- Sub-filas de lotes de producción para trazabilidad granular --}}
+                                                    @foreach($lotesRow as $loteRow)
+                                                    <?php
+                                                        // Pre-cargar cantidad ya asignada a este lote (si existe en despachosoldet_opdetregprod)
+                                                        $loteAsigExist = $existingLoteAsig->get($loteRow->opdetregprod_id);
+                                                        $cantPreFill   = $loteAsigExist ? $loteAsigExist->cant   : 0;
+                                                        $cantKgPreFill = $loteAsigExist ? $loteAsigExist->cantkg : 0;
+                                                    ?>
+                                                    <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:#f5f5f5;">
+                                                        <td style="display:none;">
+                                                            {{-- Inputs ocultos: identifican el lote, la bodega y el NVdet al que pertenece --}}
+                                                            <input type="hidden" name="opdetregprod_id[]"       value="{{$loteRow->opdetregprod_id}}"/>
+                                                            <input type="hidden" name="opdetregprod_invbp[]"    value="{{$invbodegaproducto->id}}"/>
+                                                            {{-- En edición, NVdet_id[] = despachosoldet_id, por eso usamos $detalle->id aquí --}}
+                                                            <input type="hidden" name="opdetregprod_nvdet_id[]" value="{{$detalle->id}}"/>
+                                                        </td>
+                                                        <td colspan="2" style="padding:1px 6px;font-size:10px;color:#888;text-align:left;vertical-align:middle;">
+                                                            ↳ Lote #{{$loteRow->opdetregprod_id}}
+                                                            <span style="color:#bbb;">(máx {{$loteRow->cant_lote}} un)</span>
+                                                        </td>
+                                                        <td style="padding:1px 2px;vertical-align:middle;">
+                                                            {{-- Cantidad asignada a este lote; pre-cargada si ya fue guardada antes --}}
+                                                            <input type="text"
+                                                                   name="opdetregprod_cant[]"
+                                                                   id="opdetregprod_cant_{{$invbodegaproducto->id}}_{{$loteRow->opdetregprod_id}}"
+                                                                   class="form-control dismpadding lote-cant-input"
+                                                                   data-ibp="{{$invbodegaproducto->id}}"
+                                                                   data-max="{{$loteRow->cant_lote}}"
+                                                                   data-cantkg-total="{{$loteRow->cantkg_lote}}"
+                                                                   value="{{$cantPreFill}}"
+                                                                   style="text-align:right;font-size:11px;"/>
+                                                            {{-- Kg proporcionales calculados por JS al distribuir --}}
+                                                            <input type="hidden"
+                                                                   name="opdetregprod_cantkg[]"
+                                                                   id="opdetregprod_cantkg_{{$invbodegaproducto->id}}_{{$loteRow->opdetregprod_id}}"
+                                                                   value="{{$cantKgPreFill}}"/>
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                    @endforeach
                                                 @endforeach
                                                 </tbody>
                                             </table>

@@ -246,10 +246,11 @@ class OpSeguimientoController extends Controller
         ");
 
         // Enriquecer registros de última etapa con árbol de trazabilidad de despacho.
+        // Se usa opdetregprod_id como clave de búsqueda (trazabilidad granular por lote).
         // Para etapas intermedias (sin invmov_id) traza_despacho queda null.
         foreach ($aprobados as &$aprobado) {
-            $aprobado->traza_despacho = ($aprobado->invmov_id && $aprobado->nvdet_id)
-                ? $this->buildTrazaDespacho($aprobado->nvdet_id)
+            $aprobado->traza_despacho = $aprobado->invmov_id
+                ? $this->buildTrazaDespacho($aprobado->id)
                 : null;
         }
         unset($aprobado);
@@ -274,27 +275,30 @@ class OpSeguimientoController extends Controller
     }
 
     /**
-     * Construye el árbol jerárquico de trazabilidad de despacho para una línea NV.
+     * Construye el árbol jerárquico de trazabilidad de despacho para un lote de producción.
      *
      * Estructura devuelta:
      *   Sol → Ord (+ anulada) → Guía (+ anulada) → Factura → NC/ND
      *
-     * El nvdet_id es el notaventadetalle_id guardado en invmovdet_opdetregprod
-     * al aprobar el registro de la última etapa.
+     * El $opdetregprod_id es el id del registro en opdetregprod (lote específico).
+     * Se busca a través de despachosoldet_opdetregprod para trazabilidad granular.
+     * Si no existe registro en esa tabla (datos históricos), retorna array vacío.
      */
-    private function buildTrazaDespacho($nvdet_id)
+    private function buildTrazaDespacho($opdetregprod_id)
     {
-        $nvdet_id = intval($nvdet_id);
-        if (!$nvdet_id) return [];
+        $opdetregprod_id = intval($opdetregprod_id);
+        if (!$opdetregprod_id) return [];
 
-        // ── 1. Solicitudes de despacho ────────────────────────────────────────
+        // ── 1. Solicitudes de despacho vía tabla de lotes (trazabilidad granular) ──
+        // Busca despachosoldet vinculados a este lote específico (no al NVdet genérico)
         $sols = DB::select("
-            SELECT DISTINCT despachosol_id AS id
-            FROM   despachosoldet
-            WHERE  notaventadetalle_id = ?
-              AND  ISNULL(deleted_at)
-            ORDER  BY despachosol_id
-        ", [$nvdet_id]);
+            SELECT DISTINCT dsd.despachosol_id AS id
+            FROM   despachosoldet_opdetregprod dsop
+            INNER  JOIN despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+            WHERE  dsop.opdetregprod_id = ?
+              AND  ISNULL(dsd.deleted_at)
+            ORDER  BY dsd.despachosol_id
+        ", [$opdetregprod_id]);
 
         if (empty($sols)) return [];
 
@@ -305,13 +309,14 @@ class OpSeguimientoController extends Controller
                 dsd.despachosol_id                                          AS sol_id,
                 (SELECT COUNT(*) FROM despachoordanul
                  WHERE  despachoord_id = dod.despachoord_id)               AS anulada
-            FROM   despachoorddet dod
-            INNER  JOIN despachosoldet dsd ON dsd.id = dod.despachosoldet_id
-            WHERE  dsd.notaventadetalle_id = ?
+            FROM   despachosoldet_opdetregprod dsop
+            INNER  JOIN despachosoldet dsd   ON dsd.id  = dsop.despachosoldet_id
+            INNER  JOIN despachoorddet dod   ON dod.despachosoldet_id = dsd.id
+            WHERE  dsop.opdetregprod_id = ?
               AND  ISNULL(dsd.deleted_at)
               AND  ISNULL(dod.deleted_at)
             ORDER  BY dod.despachoord_id
-        ", [$nvdet_id]);
+        ", [$opdetregprod_id]);
 
         if (empty($ords)) {
             // Sols sin órdenes aún
