@@ -684,23 +684,41 @@
                                                             default: $colorSucProd = '#ff8c00'; break;
                                                         }
 
-                                                        // Consultar lotes individuales de producción para esta bodega (FIFO por opdetregprod_id)
-                                                        // Cada lote corresponde a un opdetregprod aprobado que ingresó a esta bodega para este NV det
-                                                        $lotesRow = DB::table('invmovdetnvdet as imdnv')
-                                                            ->join('invmovdet as imd',              'imd.id',              '=', 'imdnv.invmovdet_id')
-                                                            ->join('invmovdet_opdetregprod as imop', 'imop.invmovdet_id',  '=', 'imd.id')
-                                                            ->where('imdnv.notaventadetalle_id', $detalle->id)
-                                                            ->where('imd.invbodegaproducto_id', $invbodegaproducto->id)
-                                                            ->whereNull('imd.deleted_at')
-                                                            ->select(
-                                                                'imop.opdetregprod_id',
-                                                                DB::raw('SUM(imd.cant)   as cant_lote'),
-                                                                DB::raw('SUM(imd.cantkg) as cantkg_lote')
-                                                            )
-                                                            ->groupBy('imop.opdetregprod_id')
-                                                            ->having(DB::raw('SUM(imd.cant)'), '>', 0)
-                                                            ->orderBy('imop.opdetregprod_id', 'asc')
-                                                            ->get();
+                                                        // Consultar lotes individuales de producción para esta bodega (FIFO por opdetregprod_id).
+                                                        // cant_despachada = total ya asignado en solicitudes de despacho anteriores.
+                                                        // cant_disponible  = cant_lote - cant_despachada (lo que realmente queda por despachar).
+                                                        // Solo se muestran lotes con cant_disponible > 0.
+                                                        $lotesRow = collect(DB::select("
+                                                            SELECT
+                                                                imop.opdetregprod_id,
+                                                                SUM(imd.cant)   AS cant_lote,
+                                                                SUM(imd.cantkg) AS cantkg_lote,
+                                                                IFNULL(
+                                                                    (SELECT SUM(dsop.cant)
+                                                                     FROM   despachosoldet_opdetregprod dsop
+                                                                     WHERE  dsop.opdetregprod_id = imop.opdetregprod_id),
+                                                                    0
+                                                                ) AS cant_despachada
+                                                            FROM  invmovdetnvdet imdnv
+                                                            JOIN  invmovdet imd               ON imd.id  = imdnv.invmovdet_id
+                                                            JOIN  invmovdet_opdetregprod imop  ON imop.invmovdet_id = imd.id
+                                                            WHERE imdnv.notaventadetalle_id = ?
+                                                              AND imd.invbodegaproducto_id   = ?
+                                                              AND imd.deleted_at IS NULL
+                                                            GROUP BY imop.opdetregprod_id
+                                                            ORDER BY imop.opdetregprod_id ASC
+                                                        ", [$detalle->id, $invbodegaproducto->id]))
+                                                        ->map(function($lr) {
+                                                            // Calcular disponible y kg proporcional
+                                                            $lr->cant_disponible   = max(0, $lr->cant_lote - $lr->cant_despachada);
+                                                            $lr->cantkg_disponible = $lr->cant_lote > 0
+                                                                ? ($lr->cant_disponible / $lr->cant_lote) * $lr->cantkg_lote
+                                                                : 0;
+                                                            return $lr;
+                                                        })
+                                                        ->filter(function($lr) {
+                                                            return $lr->cant_disponible > 0; // ocultar lotes agotados
+                                                        });
                                                     ?>
                                                     {{-- <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$spRow->bodega_sucursal_id}}"> --}}
                                                     <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}">
@@ -742,9 +760,9 @@
                                                         {{-- <td  class="width90 tooltipsC" style="text-align:right;width:40% !important" title="Cant a despachar">
                                                             <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD')" style="text-align:right;" sucursal_id="{{$spRow->bodega_sucursal_id}}"/>
                                                         </td> --}}
-                                                        <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !important" title='Cant a despachar'>
-                                                            {{-- Al cambiar la cantidad en la bodega, también distribuye FIFO entre lotes de producción --}}
-                                                            <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','SD',{{$detalle->requiere_fabricacion}}); distribuirLotesFIFO('{{$invbodegaproducto->id}}')" style="text-align:right;" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}"/>
+                                                        <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !important" title='Total lotes (calculado automáticamente)'>
+                                                            {{-- Readonly: su valor es la suma de los lotes de producción ingresados abajo --}}
+                                                            <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bod{{$aux_nfila}} dismpadding invcant" style="text-align:right;background:#f0f0f0;" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}" readonly tabindex="-1"/>
                                                         </td>
 
                                                         {{-- <td class="tooltipsC" style="text-align:center;padding-left:0px;padding-right:0px;width:10% !important;" title="Marcar para no usar Stock">
@@ -786,20 +804,22 @@
                                                         </td>
                                                         <td colspan="2" style="padding:1px 6px;font-size:10px;color:#888;text-align:left;vertical-align:middle;">
                                                             ↳ Lote #{{$loteRow->opdetregprod_id}}
-                                                            <span style="color:#bbb;">(máx {{$loteRow->cant_lote}} un)</span>
+                                                            <span style="color:#bbb;" title="Total producido: {{$loteRow->cant_lote}} | Ya despachado: {{$loteRow->cant_despachada}}">(disp. {{$loteRow->cant_disponible}} un)</span>
                                                         </td>
                                                         <td style="padding:1px 2px;vertical-align:middle;">
-                                                            {{-- Cantidad asignada a este lote; se distribuye automáticamente FIFO desde el input de bodega --}}
+                                                            {{-- El usuario ingresa cuánto de este lote incluye en la solicitud.
+                                                                 JS valida que no exceda cant_disponible y suma al input de bodega (readonly). --}}
                                                             <input type="text"
                                                                    name="opdetregprod_cant[]"
                                                                    id="opdetregprod_cant_{{$invbodegaproducto->id}}_{{$loteRow->opdetregprod_id}}"
                                                                    class="form-control dismpadding lote-cant-input"
                                                                    data-ibp="{{$invbodegaproducto->id}}"
-                                                                   data-max="{{$loteRow->cant_lote}}"
-                                                                   data-cantkg-total="{{$loteRow->cantkg_lote}}"
+                                                                   data-nfila="{{$aux_nfila}}"
+                                                                   data-max="{{$loteRow->cant_disponible}}"
+                                                                   data-cantkg-total="{{$loteRow->cantkg_disponible}}"
                                                                    value="0"
                                                                    style="text-align:right;font-size:11px;"/>
-                                                            {{-- Kg proporcionales calculados por JS al distribuir --}}
+                                                            {{-- Kg proporcionales calculados por JS --}}
                                                             <input type="hidden"
                                                                    name="opdetregprod_cantkg[]"
                                                                    id="opdetregprod_cantkg_{{$invbodegaproducto->id}}_{{$loteRow->opdetregprod_id}}"

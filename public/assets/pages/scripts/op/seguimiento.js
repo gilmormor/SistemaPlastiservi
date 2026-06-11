@@ -351,6 +351,48 @@ function renderEtapas(op_id, etapas) {
 // ── Trazabilidad despacho (última etapa) ───────────────────────────────────────
 // Dibuja el árbol jerárquico: Sol → Ord → Guía → Factura → NC/ND
 // Solo se muestra cuando r.invmov_id existe (última etapa).
+// ── Helpers trazabilidad despacho ─────────────────────────────────────────────
+// Convierte "YYYY-MM-DD HH:MM:SS" → "DD/MM/YYYY HH:MM"
+function _trazFecha(fh) {
+    if (!fh) return '';
+    var s = String(fh).substring(0, 16);
+    if (s.length < 10) return s;
+    return s.substring(8,10) + '/' + s.substring(5,7) + '/' + s.substring(0,4) +
+           (s.length > 10 ? ' ' + s.substring(11,16) : '');
+}
+// Chip "Creado" — mismo estilo que chip Enviado pero color gris azulado
+function _trazInfo(nombre, fechahora) {
+    if (!nombre && !fechahora) return '';
+    var fh    = _trazFecha(fechahora);
+    var title = 'Creado por: ' + (nombre || '—') + (fh ? ' ' + fh : '');
+    var texto = (nombre || '—') + (fh ? ' &nbsp;|&nbsp; ' + fh : '');
+    return ' <span class="seg-chip" style="font-size:10px; background:#eaf0f6; color:#5d6d7e; border:1px solid #aab7c4;" title="' + title + '">' +
+           '<i class="fa fa-user-circle-o"></i> Creado &nbsp;' + texto +
+           '</span>';
+}
+// Chip estado Sol/Ord: aprXXX=0 → En bandeja; =1 → Enviado + fecha
+function _trazEstadoSolOrd(aprobado, fechaEnvio) {
+    if (parseInt(aprobado) === 1) {
+        return ' <span class="seg-chip" style="font-size:10px;background:#eafaf1;color:#27ae60;border:1px solid #82e0aa;">' +
+               '<i class="fa fa-check-circle"></i> Enviado ' + _trazFecha(fechaEnvio) + '</span>';
+    }
+    return ' <span class="seg-chip" style="font-size:10px;background:#fef9e7;color:#d4ac0d;border:1px solid #f9d489;">' +
+           '<i class="fa fa-clock-o"></i> En bandeja</span>';
+}
+// Chip estado DTE: aprobstatus=0 → En módulo; >0 → Enviado por nombre | fecha
+function _trazEstadoDte(aprobstatus, aprobador, aprobfechahora) {
+    if (parseInt(aprobstatus) > 0) {
+        var p = [];
+        if (aprobador)      p.push('<i class="fa fa-user-o"></i> ' + aprobador);
+        if (aprobfechahora) p.push(_trazFecha(aprobfechahora));
+        var det = p.length ? ' &nbsp;' + p.join(' | ') : '';
+        return ' <span class="seg-chip" style="font-size:10px;background:#eafaf1;color:#27ae60;border:1px solid #82e0aa;">' +
+               '<i class="fa fa-check-circle"></i> Enviado' + det + '</span>';
+    }
+    return ' <span class="seg-chip" style="font-size:10px;background:#fef9e7;color:#d4ac0d;border:1px solid #f9d489;">' +
+           '<i class="fa fa-clock-o"></i> En módulo</span>';
+}
+
 function renderTrazDespacho(r) {
     if (!r.invmov_id) return '';
 
@@ -363,74 +405,107 @@ function renderTrazDespacho(r) {
     } else {
         traza.forEach(function (sol) {
             // ── Sol ──────────────────────────────────────────────────────────
-            inner += '<div style="margin-bottom:3px;">' +
-                     '<a class="seg-chip orange" style="font-size:10px; cursor:pointer;" ' +
+            var cSol = 's' + sol.id; // chain id acumulado
+            inner += '<div style="margin-bottom:5px;">' +
+                     '<a class="seg-chip" data-chain="' + cSol + '" ' +
+                        'style="font-size:12px;cursor:pointer;background:#e8920a;color:#fff;" ' +
                         'onclick="genpdfSD(' + sol.id + ',1)" ' +
                         'title="Solicitud de Despacho #' + sol.id + '">' +
-                        '<i class="fa fa-file-text-o"></i> Sol #' + sol.id + '</a>';
+                        '<i class="fa fa-file-text-o"></i> Sol #' + sol.id + '</a>' +
+                     '<div style="margin-left:12px; margin-top:2px;">' +
+                     _trazInfo(sol.usuario_nombre, sol.fechahora) +
+                     _trazEstadoSolOrd(sol.aprorddesp, sol.aprorddespfh) +
+                     '</div>';
 
             if (!sol.ords || sol.ords.length === 0) {
-                inner += ' <span style="font-size:10px; color:#aaa; font-style:italic;">Sin órdenes</span>';
+                inner += '<span style="font-size:10px; color:#aaa; font-style:italic; margin-left:12px;">Sin órdenes</span>';
             } else {
                 sol.ords.forEach(function (ord) {
                     // ── Ord ──────────────────────────────────────────────────
-                    var ordColor = ord.anulada ? 'red' : 'blue';
+                    var cOrd  = cSol + '-o' + ord.id; // chain acumulado
                     var ordIcon  = ord.anulada ? 'ban' : 'truck';
                     var ordLabel = 'Ord #' + ord.id + (ord.anulada ? ' <em>[Anulada]</em>' : '');
-                    inner += '<div style="margin-left:14px; margin-top:2px;">' +
+                    var ordStyle = ord.anulada
+                        ? 'font-size:12px;cursor:pointer;background:#c0392b;color:#fff;'
+                        : 'font-size:12px;cursor:pointer;background:#2471a3;color:#fff;';
+                    inner += '<div style="margin-left:14px; margin-top:3px;">' +
                              '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
-                             '<a class="seg-chip ' + ordColor + '" style="font-size:10px; cursor:pointer;" ' +
+                             '<a class="seg-chip" data-chain="' + cOrd + '" style="' + ordStyle + '" ' +
                                 'onclick="genpdfOD(' + ord.id + ',1)" ' +
                                 'title="Orden de Despacho #' + ord.id + '">' +
-                                '<i class="fa fa-' + ordIcon + '"></i> ' + ordLabel + '</a>';
+                                '<i class="fa fa-' + ordIcon + '"></i> ' + ordLabel + '</a>' +
+                             '<div style="margin-left:12px; margin-top:2px;">' +
+                             _trazInfo(ord.usuario_nombre, ord.fechahora) +
+                             (!ord.anulada ? _trazEstadoSolOrd(ord.aprguiadesp, ord.aprguiadespfh) : '') +
+                             '</div>';
 
                     if (!ord.guias || ord.guias.length === 0) {
-                        inner += ' <span style="font-size:10px; color:#aaa; font-style:italic;">Sin guía</span>';
+                        inner += '<span style="font-size:10px; color:#aaa; font-style:italic; margin-left:12px;">Sin guía</span>';
                     } else {
                         ord.guias.forEach(function (guia) {
                             // ── Guía ─────────────────────────────────────────
-                            var guiaColor   = guia.anulada ? 'red' : 'green';
+                            var cGuia   = cOrd + '-g' + guia.id; // chain acumulado
                             var guiaIcon    = guia.anulada ? 'ban' : 'file-pdf-o';
                             var guiaNro     = guia.nrodocto ? 'N°' + parseInt(guia.nrodocto) : '#' + guia.id;
-                            // genpdfFACDin(dte.id, 0) — PDF directo desde BES usando id del dte
-                            var guiaOnClick = !guia.anulada
-                                ? 'onclick="genpdfFACDin(' + guia.id + ',0)"'
-                                : '';
-                            var guiaTag = guiaOnClick ? 'a' : 'span';
-                            inner += '<div style="margin-left:14px; margin-top:2px;">' +
+                            var guiaOnClick = !guia.anulada ? 'onclick="genpdfFACDin(' + guia.id + ',0)"' : '';
+                            var guiaTag     = guiaOnClick ? 'a' : 'span';
+                            var guiaStyle   = guia.anulada
+                                ? 'font-size:12px;background:#c0392b;color:#fff;'
+                                : 'font-size:12px;background:#2e86c1;color:#fff;' + (guiaOnClick ? 'cursor:pointer;' : '');
+                            inner += '<div style="margin-left:14px; margin-top:3px;">' +
                                      '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
-                                     '<' + guiaTag + ' class="seg-chip ' + guiaColor + '" ' +
-                                        'style="font-size:10px;' + (guiaOnClick ? ' cursor:pointer;' : '') + '" ' +
+                                     '<' + guiaTag + ' class="seg-chip" data-chain="' + cGuia + '" ' +
+                                        'style="' + guiaStyle + '" ' +
                                         guiaOnClick + ' title="Guía ' + guiaNro + '">' +
                                         '<i class="fa fa-' + guiaIcon + '"></i> Guía ' + guiaNro +
                                         (guia.anulada ? ' <em>[Anulada]</em>' : '') +
-                                     '</' + guiaTag + '>';
+                                     '</' + guiaTag + '>' +
+                                     '<div style="margin-left:12px; margin-top:2px;">' +
+                                     _trazInfo(guia.usuario_nombre, guia.fechahora) +
+                                     (!guia.anulada ? _trazEstadoDte(guia.aprobstatus, guia.aprobador_nombre, guia.aprobfechahora) : '') +
+                                     '</div>';
 
                             if (!guia.facturas || guia.facturas.length === 0) {
-                                inner += ' <span style="font-size:10px; color:#aaa; font-style:italic;">Sin factura</span>';
+                                inner += '<span style="font-size:10px; color:#aaa; font-style:italic; margin-left:12px;">Sin factura</span>';
                             } else {
                                 guia.facturas.forEach(function (fac) {
                                     // ── Factura — genpdfFACDin(dte.id, 0) ────────
+                                    var cFac = cGuia + '-f' + fac.id; // chain acumulado
                                     var facNro = fac.nrodocto ? 'N°' + parseInt(fac.nrodocto) : '#' + fac.id;
-                                    inner += '<div style="margin-left:14px; margin-top:2px;">' +
+                                    inner += '<div style="margin-left:14px; margin-top:3px;">' +
                                              '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
-                                             '<a class="seg-chip" ' +
+                                             '<a class="seg-chip" data-chain="' + cFac + '" ' +
                                                 'onclick="genpdfFACDin(' + fac.id + ',0)" ' +
-                                                'style="background:#8e44ad; color:#fff; font-size:10px; cursor:pointer;" ' +
+                                                'style="font-size:12px;cursor:pointer;background:#7d3c98;color:#fff;" ' +
                                                 'title="Factura ' + facNro + '">' +
-                                                '<i class="fa fa-file-pdf-o"></i> Fac ' + facNro + '</a>';
+                                                '<i class="fa fa-file-pdf-o"></i> Fac ' + facNro + '</a>' +
+                                             '<div style="margin-left:12px; margin-top:2px;">' +
+                                             _trazInfo(fac.usuario_nombre, fac.fechahora) +
+                                             _trazEstadoDte(fac.aprobstatus, fac.aprobador_nombre, fac.aprobfechahora) +
+                                             '</div>';
 
                                     // ── NC / ND ───────────────────────────────
                                     if (fac.ncnd && fac.ncnd.length > 0) {
                                         fac.ncnd.forEach(function (n) {
-                                            var esNC  = parseInt(n.foliocontrol_id) === 5;
-                                            var nNro  = n.nrodocto ? 'N°' + parseInt(n.nrodocto) : '#' + n.id;
-                                            var nIcon = esNC ? 'minus-circle' : 'plus-circle';
-                                            var nTipo = esNC ? 'NC' : 'ND';
-                                            var nColor = esNC ? 'red' : 'blue';
-                                            inner += ' <span class="seg-chip ' + nColor + '" ' +
-                                                     'style="font-size:10px;" title="' + nTipo + ' ' + nNro + '">' +
-                                                     '<i class="fa fa-' + nIcon + '"></i> ' + nTipo + ' ' + nNro + '</span>';
+                                            var esNC    = parseInt(n.foliocontrol_id) === 5;
+                                            var cN      = cFac + '-n' + n.id; // chain acumulado
+                                            var nNro    = n.nrodocto ? 'N°' + parseInt(n.nrodocto) : '#' + n.id;
+                                            var nIcon   = esNC ? 'minus-circle' : 'plus-circle';
+                                            var nTipo   = esNC ? 'NC' : 'ND';
+                                            var nStyle  = esNC
+                                                ? 'font-size:12px;background:#922b21;color:#fff;'
+                                                : 'font-size:12px;background:#1f618d;color:#fff;';
+                                            inner += '<div style="margin-left:14px; margin-top:3px;">' +
+                                                     '<span style="color:#bdc3c7; margin-right:2px;">↳</span>' +
+                                                     '<span class="seg-chip" data-chain="' + cN + '" style="' + nStyle + '" ' +
+                                                           'title="' + nTipo + ' ' + nNro + '">' +
+                                                           '<i class="fa fa-' + nIcon + '"></i> ' + nTipo + ' ' + nNro +
+                                                     '</span>' +
+                                                     '<div style="margin-left:12px; margin-top:2px;">' +
+                                                     _trazInfo(n.usuario_nombre, n.fechahora) +
+                                                     _trazEstadoDte(n.aprobstatus, n.aprobador_nombre, n.aprobfechahora) +
+                                                     '</div>' +
+                                                     '</div>'; // nc/nd
                                         });
                                     }
                                     inner += '</div>'; // factura
@@ -446,12 +521,33 @@ function renderTrazDespacho(r) {
         });
     }
 
-    return '<li style="grid-column:1 / -1; background:#f0f8ff; border-top:1px dashed #c8dff5; ' +
+    // display:block anula el "display:grid" que .seg-timeline li hereda del CSS,
+    // evitando que los divs de cada Sol queden en columnas adyacentes en vez de apilarse.
+    return '<li style="grid-column:1 / -1; display:block; background:#f0f8ff; border-top:1px dashed #c8dff5; ' +
            'padding:6px 12px; list-style:none;">' +
            '<div style="font-size:10px; color:#2c5f8a; font-weight:bold; margin-bottom:4px;">' +
            '<i class="fa fa-exchange"></i> Trazabilidad Despacho</div>' +
            inner + '</li>';
 }
+
+// ── Efecto cadena: spotlight al hacer hover (activa cadena, atenúa el resto) ───
+$(document).on('mouseenter', '.seg-chip[data-chain]', function () {
+    var chain = String($(this).data('chain'));
+    $('.seg-chip[data-chain]').each(function () {
+        var c = String($(this).data('chain'));
+        // En la cadena: mismo chip, ancestro (c es prefijo de chain) o descendiente (chain es prefijo de c)
+        var enCadena = (c === chain) ||
+                       (chain.indexOf(c + '-') === 0) ||
+                       (c.indexOf(chain + '-') === 0);
+        if (enCadena) {
+            $(this).addClass('traz-activo').removeClass('traz-inactivo');
+        } else {
+            $(this).addClass('traz-inactivo').removeClass('traz-activo');
+        }
+    });
+}).on('mouseleave', '.seg-chip[data-chain]', function () {
+    $('.seg-chip[data-chain]').removeClass('traz-activo traz-inactivo');
+});
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function labelEstadoTemp(s) {

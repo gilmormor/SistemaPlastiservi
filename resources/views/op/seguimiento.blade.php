@@ -175,12 +175,34 @@
     font-size: 10px; font-weight: 600;
     border-radius: 12px; padding: 2px 8px;
     white-space: nowrap;
+    transition: box-shadow 0.15s ease, filter 0.15s ease, transform 0.15s ease;
 }
 .seg-chip.green  { background: #e8f8ee; color: #1e8449; }
 .seg-chip.orange { background: #fef3e2; color: #b7600a; }
 .seg-chip.blue   { background: #eaf3fb; color: #1a5e9a; }
 .seg-chip.red    { background: #fde8e8; color: #a93226; }
 .seg-chip.gray   { background: #f0f4f8; color: #6b7a8d; }
+
+/* ── Efecto cadena al hacer hover sobre un chip de trazabilidad ── */
+/* Chip directamente hovered */
+.seg-chip[data-chain]:hover {
+    filter: brightness(1.18);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.28);
+    z-index: 2; position: relative;
+}
+/* Chips de la cadena activa (antecesores y sucesores) */
+.seg-chip[data-chain].traz-activo {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 2.5px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 1; position: relative;
+}
+/* Chips fuera de la cadena — se atenúan (efecto spotlight) */
+.seg-chip[data-chain].traz-inactivo {
+    opacity: 0.28;
+    filter: grayscale(0.5);
+}
 
 /* ── Detalle expandido por etapa ── */
 .seg-etapa-card {

@@ -28,17 +28,23 @@ class OpSeguimientoController extends Controller
         $sucurcadena = implode(',', $sucurArray);
 
         // Filtros
+        $condOp   = !empty($request->op_id)       ? "op.id = "                        . intval($request->op_id)       : 'true';
+        $condOt   = !empty($request->ot_id)       ? "ot.id = "                        . intval($request->ot_id)       : 'true';
+        $condNv   = !empty($request->nv_id)       ? "otnotaventa.notaventa_id = "     . intval($request->nv_id)       : 'true';
+        $condProd = !empty($request->producto_id) ? "otdet.producto_id = "            . intval($request->producto_id) : 'true';
+
+        // Si se busca por Op, OT o NV, ignorar el rango de fechas —
+        // el usuario quiere encontrar un registro específico sin importar cuándo fue creado.
+        // Producto NO omite la fecha porque puede haber muchos registros del mismo producto.
+        $busquedaEspecifica = !empty($request->op_id) || !empty($request->ot_id)
+                           || !empty($request->nv_id);
+
         $condFecha = 'true';
-        if (!empty($request->fechad) && !empty($request->fechah)) {
+        if (!$busquedaEspecifica && !empty($request->fechad) && !empty($request->fechah)) {
             $fd = date_format(date_create_from_format('d/m/Y', $request->fechad), 'Y-m-d') . ' 00:00:00';
             $fh = date_format(date_create_from_format('d/m/Y', $request->fechah), 'Y-m-d') . ' 23:59:59';
             $condFecha = "op.created_at >= '$fd' AND op.created_at <= '$fh'";
         }
-
-        $condOp     = !empty($request->op_id)      ? "op.id = " . intval($request->op_id)                    : 'true';
-        $condOt     = !empty($request->ot_id)      ? "ot.id = " . intval($request->ot_id)                    : 'true';
-        $condNv     = !empty($request->nv_id)      ? "otnotaventa.notaventa_id = " . intval($request->nv_id) : 'true';
-        $condProd   = !empty($request->producto_id) ? "otdet.producto_id = " . intval($request->producto_id)  : 'true';
 
         $sql = "
             SELECT
@@ -290,11 +296,18 @@ class OpSeguimientoController extends Controller
         if (!$opdetregprod_id) return [];
 
         // ── 1. Solicitudes de despacho vía tabla de lotes (trazabilidad granular) ──
-        // Busca despachosoldet vinculados a este lote específico (no al NVdet genérico)
+        // Incluye estado (aprorddesp/aprorddespfh) y usuario creador
         $sols = DB::select("
-            SELECT DISTINCT dsd.despachosol_id AS id
+            SELECT DISTINCT
+                dsd.despachosol_id   AS id,
+                ds.fechahora,
+                ds.aprorddesp,
+                ds.aprorddespfh,
+                u.nombre             AS usuario_nombre
             FROM   despachosoldet_opdetregprod dsop
-            INNER  JOIN despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+            INNER  JOIN despachosoldet dsd ON dsd.id  = dsop.despachosoldet_id
+            INNER  JOIN despachosol    ds  ON ds.id   = dsd.despachosol_id
+            LEFT   JOIN usuario        u   ON u.id    = ds.usuario_id
             WHERE  dsop.opdetregprod_id = ?
               AND  ISNULL(dsd.deleted_at)
             ORDER  BY dsd.despachosol_id
@@ -303,15 +316,22 @@ class OpSeguimientoController extends Controller
         if (empty($sols)) return [];
 
         // ── 2. Órdenes de despacho (con flag anulada) ─────────────────────────
+        // Incluye estado (aprguiadesp/aprguiadespfh) y usuario creador
         $ords = DB::select("
             SELECT DISTINCT
-                dod.despachoord_id                                          AS id,
-                dsd.despachosol_id                                          AS sol_id,
+                dod.despachoord_id                                           AS id,
+                dsd.despachosol_id                                           AS sol_id,
                 (SELECT COUNT(*) FROM despachoordanul
-                 WHERE  despachoord_id = dod.despachoord_id)               AS anulada
+                 WHERE  despachoord_id = dod.despachoord_id)                AS anulada,
+                dor.fechahora,
+                dor.aprguiadesp,
+                dor.aprguiadespfh,
+                u.nombre                                                     AS usuario_nombre
             FROM   despachosoldet_opdetregprod dsop
-            INNER  JOIN despachosoldet dsd   ON dsd.id  = dsop.despachosoldet_id
-            INNER  JOIN despachoorddet dod   ON dod.despachosoldet_id = dsd.id
+            INNER  JOIN despachosoldet dsd ON dsd.id         = dsop.despachosoldet_id
+            INNER  JOIN despachoorddet dod ON dod.despachosoldet_id = dsd.id
+            INNER  JOIN despachoord    dor ON dor.id         = dod.despachoord_id
+            LEFT   JOIN usuario        u   ON u.id           = dor.usuario_id
             WHERE  dsop.opdetregprod_id = ?
               AND  ISNULL(dsd.deleted_at)
               AND  ISNULL(dod.deleted_at)
@@ -319,9 +339,16 @@ class OpSeguimientoController extends Controller
         ", [$opdetregprod_id]);
 
         if (empty($ords)) {
-            // Sols sin órdenes aún
+            // Sols sin órdenes aún — incluir campos de estado
             return array_map(function ($s) {
-                return ['id' => $s->id, 'ords' => []];
+                return [
+                    'id'             => $s->id,
+                    'fechahora'      => $s->fechahora,
+                    'aprorddesp'     => $s->aprorddesp,
+                    'aprorddespfh'   => $s->aprorddespfh,
+                    'usuario_nombre' => $s->usuario_nombre,
+                    'ords'           => [],
+                ];
             }, $sols);
         }
 
@@ -329,16 +356,23 @@ class OpSeguimientoController extends Controller
         $ordIdsStr = implode(',', $ordIds);
 
         // ── 3. Guías de despacho por orden (con flag anulada) ─────────────────
-        // La relación es despachoord → dteguiadesp → dte (foliocontrol_id=2)
+        // Incluye estado (aprobstatus/aprobfechahora), creador y aprobador
         $guias = DB::select("
             SELECT
-                dtg.dte_id          AS id,
-                dtg.despachoord_id  AS ord_id,
+                dtg.dte_id              AS id,
+                dtg.despachoord_id      AS ord_id,
                 dt.nrodocto,
+                dt.fechahora,
+                dt.aprobstatus,
+                dt.aprobfechahora,
                 (SELECT COUNT(*) FROM dteanul
-                 WHERE  dte_id = dtg.dte_id)  AS anulada
+                 WHERE  dte_id = dtg.dte_id)  AS anulada,
+                ucrea.nombre            AS usuario_nombre,
+                uapro.nombre            AS aprobador_nombre
             FROM   dteguiadesp dtg
-            INNER  JOIN dte dt ON dt.id = dtg.dte_id
+            INNER  JOIN dte     dt    ON dt.id    = dtg.dte_id
+            LEFT   JOIN usuario ucrea ON ucrea.id = dt.usuario_id
+            LEFT   JOIN usuario uapro ON uapro.id = dt.aprobusu_id
             WHERE  dtg.despachoord_id IN ($ordIdsStr)
               AND  ISNULL(dt.deleted_at)
             ORDER  BY dtg.dte_id
@@ -347,17 +381,24 @@ class OpSeguimientoController extends Controller
         $guiaIds = array_column($guias, 'id');
 
         // ── 4. Facturas vinculadas a cada guía ────────────────────────────────
-        // Vínculo: dtedte.dter_id = guia.id → dtedte.dte_id = factura.id
+        // Incluye estado (aprobstatus/aprobfechahora), creador y aprobador
         $facturas = [];
         if (!empty($guiaIds)) {
             $guiaIdsStr = implode(',', $guiaIds);
             $facturas = DB::select("
                 SELECT
-                    dd.dte_id   AS id,
-                    dd.dter_id  AS guia_id,
-                    dt.nrodocto
+                    dd.dte_id           AS id,
+                    dd.dter_id          AS guia_id,
+                    dt.nrodocto,
+                    dt.fechahora,
+                    dt.aprobstatus,
+                    dt.aprobfechahora,
+                    ucrea.nombre        AS usuario_nombre,
+                    uapro.nombre        AS aprobador_nombre
                 FROM   dtedte dd
-                INNER  JOIN dte dt ON dt.id = dd.dte_id
+                INNER  JOIN dte     dt    ON dt.id    = dd.dte_id
+                LEFT   JOIN usuario ucrea ON ucrea.id = dt.usuario_id
+                LEFT   JOIN usuario uapro ON uapro.id = dt.aprobusu_id
                 WHERE  dd.dter_id IN ($guiaIdsStr)
                   AND  dt.foliocontrol_id = 1
                   AND  ISNULL(dt.deleted_at)
@@ -367,7 +408,7 @@ class OpSeguimientoController extends Controller
         }
 
         // ── 5. NC / ND por factura ────────────────────────────────────────────
-        // Vínculo: dtedte.dte_id = factura.id → dtedte.dter_id = NC/ND.id
+        // Incluye estado (aprobstatus/aprobfechahora), creador y aprobador
         $ncnd = [];
         if (!empty($facturas)) {
             $facIds    = array_column($facturas, 'id');
@@ -377,9 +418,16 @@ class OpSeguimientoController extends Controller
                     dd.dter_id          AS id,
                     dd.dte_id           AS factura_id,
                     dt.nrodocto,
-                    dt.foliocontrol_id
+                    dt.foliocontrol_id,
+                    dt.fechahora,
+                    dt.aprobstatus,
+                    dt.aprobfechahora,
+                    ucrea.nombre        AS usuario_nombre,
+                    uapro.nombre        AS aprobador_nombre
                 FROM   dtedte dd
-                INNER  JOIN dte dt ON dt.id = dd.dter_id
+                INNER  JOIN dte     dt    ON dt.id    = dd.dter_id
+                LEFT   JOIN usuario ucrea ON ucrea.id = dt.usuario_id
+                LEFT   JOIN usuario uapro ON uapro.id = dt.aprobusu_id
                 WHERE  dd.dte_id IN ($facIdsStr)
                   AND  dt.foliocontrol_id IN (5, 6)
                   AND  ISNULL(dt.deleted_at)
@@ -393,9 +441,14 @@ class OpSeguimientoController extends Controller
         $ncndXFac = [];
         foreach ($ncnd as $n) {
             $ncndXFac[$n->factura_id][] = [
-                'id'              => $n->id,
-                'nrodocto'        => $n->nrodocto,
-                'foliocontrol_id' => $n->foliocontrol_id,
+                'id'               => $n->id,
+                'nrodocto'         => $n->nrodocto,
+                'foliocontrol_id'  => $n->foliocontrol_id,
+                'fechahora'        => $n->fechahora,
+                'aprobstatus'      => $n->aprobstatus,
+                'aprobfechahora'   => $n->aprobfechahora,
+                'usuario_nombre'   => $n->usuario_nombre,
+                'aprobador_nombre' => $n->aprobador_nombre,
             ];
         }
 
@@ -403,9 +456,14 @@ class OpSeguimientoController extends Controller
         $facXGuia = [];
         foreach ($facturas as $f) {
             $facXGuia[$f->guia_id][] = [
-                'id'      => $f->id,
-                'nrodocto'=> $f->nrodocto,
-                'ncnd'    => $ncndXFac[$f->id] ?? [],
+                'id'               => $f->id,
+                'nrodocto'         => $f->nrodocto,
+                'fechahora'        => $f->fechahora,
+                'aprobstatus'      => $f->aprobstatus,
+                'aprobfechahora'   => $f->aprobfechahora,
+                'usuario_nombre'   => $f->usuario_nombre,
+                'aprobador_nombre' => $f->aprobador_nombre,
+                'ncnd'             => $ncndXFac[$f->id] ?? [],
             ];
         }
 
@@ -413,10 +471,15 @@ class OpSeguimientoController extends Controller
         $guiasXOrd = [];
         foreach ($guias as $g) {
             $guiasXOrd[$g->ord_id][] = [
-                'id'       => $g->id,
-                'nrodocto' => $g->nrodocto,
-                'anulada'  => (int)$g->anulada > 0,
-                'facturas' => $facXGuia[$g->id] ?? [],
+                'id'               => $g->id,
+                'nrodocto'         => $g->nrodocto,
+                'anulada'          => (int)$g->anulada > 0,
+                'fechahora'        => $g->fechahora,
+                'aprobstatus'      => $g->aprobstatus,
+                'aprobfechahora'   => $g->aprobfechahora,
+                'usuario_nombre'   => $g->usuario_nombre,
+                'aprobador_nombre' => $g->aprobador_nombre,
+                'facturas'         => $facXGuia[$g->id] ?? [],
             ];
         }
 
@@ -424,9 +487,13 @@ class OpSeguimientoController extends Controller
         $ordsXSol = [];
         foreach ($ords as $o) {
             $ordsXSol[$o->sol_id][] = [
-                'id'      => $o->id,
-                'anulada' => (int)$o->anulada > 0,
-                'guias'   => $guiasXOrd[$o->id] ?? [],
+                'id'             => $o->id,
+                'anulada'        => (int)$o->anulada > 0,
+                'fechahora'      => $o->fechahora,
+                'aprguiadesp'    => $o->aprguiadesp,
+                'aprguiadespfh'  => $o->aprguiadespfh,
+                'usuario_nombre' => $o->usuario_nombre,
+                'guias'          => $guiasXOrd[$o->id] ?? [],
             ];
         }
 
@@ -434,8 +501,12 @@ class OpSeguimientoController extends Controller
         $tree = [];
         foreach ($sols as $s) {
             $tree[] = [
-                'id'   => $s->id,
-                'ords' => $ordsXSol[$s->id] ?? [],
+                'id'             => $s->id,
+                'fechahora'      => $s->fechahora,
+                'aprorddesp'     => $s->aprorddesp,
+                'aprorddespfh'   => $s->aprorddespfh,
+                'usuario_nombre' => $s->usuario_nombre,
+                'ords'           => $ordsXSol[$s->id] ?? [],
             ];
         }
 

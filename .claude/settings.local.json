@@ -45,7 +45,11 @@
       "Bash(Get-ChildItem -Path \"C:\\\\laragon\\\\www\\\\plastiservi\\\\public\\\\assets\\\\pages\\\\scripts\" -Filter \"*.js\" -Recurse)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe -u root plxrevisarcierregd -e \"SHOW TABLES;\")",
-      "Bash(grep -n \"use App\\\\\\\\\\\\Models\\\\\\\\\\\\DespachoSolDet_Inv\\\\|use App\\\\\\\\\\\\Models\\\\\\\\\\\\DespachoSol_Inv\" /c/laragon/www/plastiservi/app/Http/Controllers/DespachoSolController.php)"
+      "Bash(grep -n \"use App\\\\\\\\\\\\Models\\\\\\\\\\\\DespachoSolDet_Inv\\\\|use App\\\\\\\\\\\\Models\\\\\\\\\\\\DespachoSol_Inv\" /c/laragon/www/plastiservi/app/Http/Controllers/DespachoSolController.php)",
+      "mcp__Claude_in_Chrome__javascript_tool",
+      "Bash(dir \"C:\\\\\\\\laragon\\\\\\\\bin\\\\\\\\php\")",
+      "Bash(where composer *)",
+      "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" \"C:/laragon/bin/composer/composer.phar\" install --no-interaction)"
     ]
   }
 }
