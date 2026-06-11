@@ -330,6 +330,8 @@ function renderEtapas(op_id, etapas) {
                         '</span>' +
                         '<span></span>' +
                         '</li>' +
+                        // Fila de trazabilidad entre etapas (de qué lote viene / a cuál alimenta)
+                        renderTrazEtapas(r) +
                         // Fila de trazabilidad despacho (solo última etapa, justo debajo del registro)
                         renderTrazDespacho(r);
                 });
@@ -346,6 +348,52 @@ function renderEtapas(op_id, etapas) {
 
     wrap += '</div>';
     return wrap;
+}
+
+// ── Trazabilidad entre etapas (opdetregprod_origen) ────────────────────────────
+// Muestra para cada lote aprobado: de qué lotes de la etapa anterior vino
+// ("Viene de") y qué registros de la etapa siguiente consumieron de él
+// ("Alimenta a"). Colapsado por defecto; reutiliza el toggle .btn-traz-toggle.
+function renderTrazEtapas(r) {
+    var tieneOrig = r.origenes && r.origenes.length > 0;
+    var tieneDest = r.destinos && r.destinos.length > 0;
+    if (!tieneOrig && !tieneDest) return ''; // sin trazabilidad (histórico o primera/última etapa)
+
+    var inner = '';
+    if (tieneOrig) {
+        inner += '<div style="margin-bottom:3px;">' +
+                 '<span style="font-size:10px; color:#5d6d7e; font-weight:600;">' +
+                 '<i class="fa fa-sign-in"></i> Viene de:</span>';
+        r.origenes.forEach(function (o) {
+            inner += ' <span class="seg-chip" style="font-size:10px; background:#eaf0f6; color:#34495e; border:1px solid #aab7c4;" ' +
+                     'title="Lote apr-' + o.lote_id + ' — Etapa: ' + (o.etapa_nombre || '—') + '">' +
+                     '<i class="fa fa-tag"></i> apr-' + o.lote_id +
+                     ' &nbsp;' + MASKLA(o.kg, 2) + ' kg</span>';
+        });
+        inner += '</div>';
+    }
+    if (tieneDest) {
+        inner += '<div>' +
+                 '<span style="font-size:10px; color:#5d6d7e; font-weight:600;">' +
+                 '<i class="fa fa-sign-out"></i> Alimenta a:</span>';
+        r.destinos.forEach(function (d) {
+            inner += ' <span class="seg-chip" style="font-size:10px; background:#eafaf1; color:#1e8449; border:1px solid #82e0aa;" ' +
+                     'title="Registro apr-' + d.hijo_id + ' — Etapa: ' + (d.etapa_nombre || '—') + '">' +
+                     '<i class="fa fa-tag"></i> apr-' + d.hijo_id +
+                     ' &nbsp;' + MASKLA(d.kg, 2) + ' kg</span>';
+        });
+        inner += '</div>';
+    }
+
+    // Mismo patrón colapsable que Trazabilidad Despacho (display:block anula el grid del li)
+    return '<li style="grid-column:1 / -1; display:block; background:#fbf7f0; border-top:1px dashed #e8d9bd; ' +
+           'padding:6px 12px; list-style:none;">' +
+           '<div style="font-size:10px; color:#8a6d2f; font-weight:bold; margin-bottom:4px; cursor:pointer;" ' +
+                'class="btn-traz-toggle">' +
+           '<i class="fa fa-plus-circle" style="color:#3498db; font-size:14px; cursor:pointer;" title="Ver trazabilidad etapas"></i> ' +
+           '<i class="fa fa-random"></i> Trazabilidad Etapas</div>' +
+           '<div class="traz-content" style="display:none; margin-top:4px;">' + inner + '</div>' +
+           '</li>';
 }
 
 // ── Trazabilidad despacho (última etapa) ───────────────────────────────────────

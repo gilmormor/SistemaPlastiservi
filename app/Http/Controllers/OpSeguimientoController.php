@@ -261,6 +261,54 @@ class OpSeguimientoController extends Controller
         }
         unset($aprobado);
 
+        // Trazabilidad entre etapas (opdetregprod_origen): para cada registro aprobado,
+        // de qué lotes de la etapa anterior vino (origenes) y qué registros de la
+        // etapa siguiente consumieron de él (destinos). Consultas masivas indexadas.
+        $aprobIds = array_map(function ($a) { return $a->id; }, $aprobados);
+        $origXReg = [];
+        $destXReg = [];
+        if (!empty($aprobIds)) {
+            $idsStr = implode(',', array_map('intval', $aprobIds));
+
+            // Orígenes: el padre es opdetregprod_origen_id (lote de la etapa anterior)
+            $rowsOrig = DB::select("
+                SELECT o.opdetregprod_id        AS reg_id,
+                       o.opdetregprod_origen_id AS lote_id,
+                       o.kg, o.cant,
+                       ep.nombre                AS etapa_nombre
+                FROM   opdetregprod_origen o
+                INNER  JOIN opdetregprod rp ON rp.id = o.opdetregprod_origen_id
+                LEFT   JOIN etapaprod    ep ON ep.id = rp.etapaprod_id
+                WHERE  o.opdetregprod_id IN ($idsStr)
+                ORDER  BY o.opdetregprod_origen_id
+            ");
+            foreach ($rowsOrig as $row) {
+                $origXReg[$row->reg_id][] = $row;
+            }
+
+            // Destinos: el hijo es opdetregprod_id (registro de la etapa siguiente)
+            $rowsDest = DB::select("
+                SELECT o.opdetregprod_origen_id AS reg_id,
+                       o.opdetregprod_id        AS hijo_id,
+                       o.kg, o.cant,
+                       ep.nombre                AS etapa_nombre
+                FROM   opdetregprod_origen o
+                INNER  JOIN opdetregprod rh ON rh.id = o.opdetregprod_id
+                LEFT   JOIN etapaprod    ep ON ep.id = rh.etapaprod_id
+                WHERE  o.opdetregprod_origen_id IN ($idsStr)
+                  AND  ISNULL(rh.deleted_at)
+                ORDER  BY o.opdetregprod_id
+            ");
+            foreach ($rowsDest as $row) {
+                $destXReg[$row->reg_id][] = $row;
+            }
+        }
+        foreach ($aprobados as &$aprobado) {
+            $aprobado->origenes = $origXReg[$aprobado->id] ?? [];
+            $aprobado->destinos = $destXReg[$aprobado->id] ?? [];
+        }
+        unset($aprobado);
+
         // Indexar registros por opdet_id para adjuntarlos en el response
         $tempsXOpdet = [];
         foreach ($temps as $t) {

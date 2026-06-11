@@ -9,6 +9,7 @@ use App\Models\EtapaProdCampo;
 use App\Models\OpDet;
 use App\Models\OpDetRegProdTemp;
 use App\Models\OpDetRegProdTempCampoVal;
+use App\Models\OpDetRegProdTempOrigen;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\UnidadMedida;
@@ -332,6 +333,10 @@ public function etapaprod()
                 $opdetregprodtemp->save();
             }
 
+            // Trazabilidad entre etapas: reservar por FIFO los lotes aprobados de la
+            // etapa anterior que este registro consume. No bloquea si no hay lotes.
+            OpDetRegProdTempOrigen::asignarFifo($opdetregprodtemp);
+
             DB::commit();
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de Produccion creado con exito');
         } catch (\Exception $e) {
@@ -466,6 +471,10 @@ public function etapaprod()
                 }
                 $opdetregprodtemp->save();
             }
+
+            // Trazabilidad entre etapas: reasignar reserva FIFO con los kg actualizados
+            // (borra las filas previas del temp y las recrea).
+            OpDetRegProdTempOrigen::asignarFifo($opdetregprodtemp);
 
             DB::commit();
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de produccion actualizado con exito');

@@ -62,6 +62,12 @@ class OpDetRegProdTemp extends Model
         return $this->hasMany(OpDetRegProdTempCampoVal::class, 'opdetregprodtemp_id');
     }
 
+    // Trazabilidad entre etapas: lotes de la etapa anterior reservados por este temp (FIFO)
+    public function origenes()
+    {
+        return $this->hasMany(OpDetRegProdTempOrigen::class, 'opdetregprodtemp_id');
+    }
+
     /**
      * Busca el primer registro bloqueante DENTRO DEL MISMO ROLLO del opdet_id dado.
      *

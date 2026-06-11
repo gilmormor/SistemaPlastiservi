@@ -74,4 +74,16 @@ class OpDetRegProd extends Model
     {
         return $this->hasMany(OpDetRegProdCampoVal::class, 'opdetregprod_id');
     }
+
+    // Trazabilidad entre etapas: lotes de la etapa ANTERIOR de los que vino este registro
+    public function origenes()
+    {
+        return $this->hasMany(OpDetRegProdOrigen::class, 'opdetregprod_id');
+    }
+
+    // Trazabilidad entre etapas: registros de la etapa SIGUIENTE que consumieron de este lote
+    public function destinos()
+    {
+        return $this->hasMany(OpDetRegProdOrigen::class, 'opdetregprod_origen_id');
+    }
 }

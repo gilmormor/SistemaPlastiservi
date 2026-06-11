@@ -15,6 +15,7 @@ use App\Models\InvMovDetOpDetRegProd;
 use App\Models\OpDet;
 use App\Models\OpDetRegProd;
 use App\Models\OpDetRegProdCampoVal;
+use App\Models\OpDetRegProdOrigen;
 use App\Models\OpDetRegProdTemp;
 use App\Models\OtDetNVDet;
 use App\Models\Produccion;
@@ -345,6 +346,19 @@ class OpDetRegProdTempAprobSupController extends Controller
                             'etapaprod_campo_id' => $tempVal->etapaprod_campo_id,
                             // Normalizar decimal a "." al copiar a registro aprobado
                             'valor'              => str_replace(',', '.', $tempVal->valor),
+                        ]);
+                    }
+
+                    // Trazabilidad entre etapas: consolidar la reserva FIFO del temp
+                    // (opdetregprodtemp_origen) como consumo definitivo del registro
+                    // aprobado (opdetregprod_origen). Al quedar el temp en status 2,
+                    // su reserva deja de contar en el cálculo de saldo (sin doble conteo).
+                    foreach ($opdetregprodtemp->origenes as $tempOrigen) {
+                        OpDetRegProdOrigen::create([
+                            'opdetregprod_id'        => $opdetregprod->id,
+                            'opdetregprod_origen_id' => $tempOrigen->opdetregprod_id,
+                            'kg'                     => $tempOrigen->kg,
+                            'cant'                   => $tempOrigen->cant,
                         ]);
                     }
 
