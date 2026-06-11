@@ -523,11 +523,15 @@ function renderTrazDespacho(r) {
 
     // display:block anula el "display:grid" que .seg-timeline li hereda del CSS,
     // evitando que los divs de cada Sol queden en columnas adyacentes en vez de apilarse.
+    // El contenido inicia oculto; el icono + / - lo colapsa/expande igual que el DataTable.
     return '<li style="grid-column:1 / -1; display:block; background:#f0f8ff; border-top:1px dashed #c8dff5; ' +
            'padding:6px 12px; list-style:none;">' +
-           '<div style="font-size:10px; color:#2c5f8a; font-weight:bold; margin-bottom:4px;">' +
+           '<div style="font-size:10px; color:#2c5f8a; font-weight:bold; margin-bottom:4px; cursor:pointer;" ' +
+                'class="btn-traz-toggle">' +
+           '<i class="fa fa-plus-circle" style="color:#3498db; font-size:14px; cursor:pointer;" title="Ver trazabilidad"></i> ' +
            '<i class="fa fa-exchange"></i> Trazabilidad Despacho</div>' +
-           inner + '</li>';
+           '<div class="traz-content" style="display:none; margin-top:4px;">' + inner + '</div>' +
+           '</li>';
 }
 
 // ── Efecto cadena: spotlight al hacer hover (activa cadena, atenúa el resto) ───
@@ -584,4 +588,19 @@ function imprimirEtiquetaEtapa() {
 
 $(document).on('hidden.bs.modal', '#modalEtiquetaEtapa', function () {
     $('#ifrEtiquetaEtapa').attr('src', 'about:blank');
+});
+
+// ── Toggle colapsar / expandir Trazabilidad Despacho ──────────────────────────
+$(document).on('click', '.btn-traz-toggle', function () {
+    var $icon    = $(this).find('i.fa-plus-circle, i.fa-minus-circle');
+    var $content = $(this).next('.traz-content');
+    if ($content.is(':visible')) {
+        $content.slideUp(150);
+        $icon.removeClass('fa-minus-circle').addClass('fa-plus-circle')
+             .css('color', '#3498db').attr('title', 'Ver trazabilidad');
+    } else {
+        $content.slideDown(150);
+        $icon.removeClass('fa-plus-circle').addClass('fa-minus-circle')
+             .css('color', '#e67e22').attr('title', 'Ocultar trazabilidad');
+    }
 });
