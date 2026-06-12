@@ -243,6 +243,10 @@ function renderEtapas(op_id, etapas) {
         return '<div style="padding:16px 24px; color:#8a99aa; font-size:12px;"><i class="fa fa-inbox"></i> Sin etapas registradas.</div>';
     }
 
+    // Reconstruir el grafo de trazabilidad entre etapas para el efecto spotlight.
+    // El acordeón solo mantiene una OP expandida, así que el grafo global es seguro.
+    _trazEtapasGrafoBuild(etapas);
+
     var wrap = '<div style="padding:10px 20px 14px; background:#f8fafd;">';
 
     etapas.forEach(function (e) {
@@ -307,7 +311,9 @@ function renderEtapas(op_id, etapas) {
             // Aprobados
             if (e.registros_aprobados) {
                 e.registros_aprobados.forEach(function (r) {
+                    // data-lote: el enlace del registro también participa del spotlight de cadena
                     var idLink = '<a href="javascript:void(0)" onclick="verEtiquetaEtapa(' + r.id + ')" ' +
+                        'data-lote="' + r.id + '" ' +
                         'title="Ver/imprimir etiqueta" style="color:#2980b9; font-weight:600;">' +
                         '<i class="fa fa-tag"></i> apr-' + r.id + '</a>';
                     wrap += '<li class="aprobado">' +
@@ -365,7 +371,9 @@ function renderTrazEtapas(r) {
                  '<span style="font-size:10px; color:#5d6d7e; font-weight:600;">' +
                  '<i class="fa fa-sign-in"></i> Viene de:</span>';
         r.origenes.forEach(function (o) {
-            inner += ' <span class="seg-chip" style="font-size:10px; background:#eaf0f6; color:#34495e; border:1px solid #aab7c4;" ' +
+            // data-lote habilita el efecto spotlight de cadena (hover)
+            inner += ' <span class="seg-chip" data-lote="' + o.lote_id + '" ' +
+                     'style="font-size:10px; background:#eaf0f6; color:#34495e; border:1px solid #aab7c4;" ' +
                      'title="Lote apr-' + o.lote_id + ' — Etapa: ' + (o.etapa_nombre || '—') + '">' +
                      '<i class="fa fa-tag"></i> apr-' + o.lote_id +
                      ' &nbsp;' + MASKLA(o.kg, 2) + ' kg</span>';
@@ -377,7 +385,9 @@ function renderTrazEtapas(r) {
                  '<span style="font-size:10px; color:#5d6d7e; font-weight:600;">' +
                  '<i class="fa fa-sign-out"></i> Alimenta a:</span>';
         r.destinos.forEach(function (d) {
-            inner += ' <span class="seg-chip" style="font-size:10px; background:#eafaf1; color:#1e8449; border:1px solid #82e0aa;" ' +
+            // data-lote habilita el efecto spotlight de cadena (hover)
+            inner += ' <span class="seg-chip" data-lote="' + d.hijo_id + '" ' +
+                     'style="font-size:10px; background:#eafaf1; color:#1e8449; border:1px solid #82e0aa;" ' +
                      'title="Registro apr-' + d.hijo_id + ' — Etapa: ' + (d.etapa_nombre || '—') + '">' +
                      '<i class="fa fa-tag"></i> apr-' + d.hijo_id +
                      ' &nbsp;' + MASKLA(d.kg, 2) + ' kg</span>';
@@ -599,6 +609,69 @@ $(document).on('mouseenter', '.seg-chip[data-chain]', function () {
     });
 }).on('mouseleave', '.seg-chip[data-chain]', function () {
     $('.seg-chip[data-chain]').removeClass('traz-activo traz-inactivo');
+});
+
+// ── Efecto cadena en Trazabilidad Etapas (grafo padre/hijo por lote) ───────────
+// A diferencia de despacho (árbol con prefijos), las etapas forman un grafo N:M:
+// un lote puede venir de varios y alimentar a varios. Se construye el grafo al
+// renderizar y al hacer hover se recorre hacia arriba (ancestros) y hacia abajo
+// (descendientes) para iluminar la cadena completa, atenuando el resto.
+var _trazEtapasPadres = {}; // hijo  → [padres]
+var _trazEtapasHijos  = {}; // padre → [hijos]
+
+function _trazEtapasGrafoBuild(etapas) {
+    _trazEtapasPadres = {};
+    _trazEtapasHijos  = {};
+    etapas.forEach(function (e) {
+        (e.registros_aprobados || []).forEach(function (r) {
+            (r.origenes || []).forEach(function (o) {
+                // arista: lote_id (padre, etapa anterior) → r.id (hijo, etapa actual)
+                (_trazEtapasPadres[r.id]      = _trazEtapasPadres[r.id]      || []).push(o.lote_id);
+                (_trazEtapasHijos[o.lote_id]  = _trazEtapasHijos[o.lote_id]  || []).push(r.id);
+            });
+            (r.destinos || []).forEach(function (d) {
+                // arista: r.id (padre) → hijo_id (hijo, etapa siguiente)
+                (_trazEtapasPadres[d.hijo_id] = _trazEtapasPadres[d.hijo_id] || []).push(r.id);
+                (_trazEtapasHijos[r.id]       = _trazEtapasHijos[r.id]       || []).push(d.hijo_id);
+            });
+        });
+    });
+}
+
+// Selector genérico [data-lote]: aplica a los chips Viene de/Alimenta a Y al
+// enlace apr-XX de cada registro aprobado (verEtiquetaEtapa).
+$(document).on('mouseenter', '[data-lote]', function () {
+    var id = String($(this).data('lote'));
+    var cadena = {};
+    cadena[id] = true;
+    // Recorrido hacia arriba (ancestros) con set de visitados (evita ciclos/duplicados)
+    var pila = [id];
+    while (pila.length) {
+        var n = pila.pop();
+        (_trazEtapasPadres[n] || []).forEach(function (p) {
+            p = String(p);
+            if (!cadena[p]) { cadena[p] = true; pila.push(p); }
+        });
+    }
+    // Recorrido hacia abajo (descendientes)
+    pila = [id];
+    while (pila.length) {
+        var m = pila.pop();
+        (_trazEtapasHijos[m] || []).forEach(function (h) {
+            h = String(h);
+            if (!cadena[h]) { cadena[h] = true; pila.push(h); }
+        });
+    }
+    // Iluminar todos los elementos de la cadena (chips y enlaces apr-XX), atenuar el resto
+    $('[data-lote]').each(function () {
+        if (cadena[String($(this).data('lote'))]) {
+            $(this).addClass('traz-activo').removeClass('traz-inactivo');
+        } else {
+            $(this).addClass('traz-inactivo').removeClass('traz-activo');
+        }
+    });
+}).on('mouseleave', '[data-lote]', function () {
+    $('[data-lote]').removeClass('traz-activo traz-inactivo');
 });
 
 // ── Helpers ────────────────────────────────────────────────────────────────────

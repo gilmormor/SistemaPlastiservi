@@ -185,23 +185,38 @@
 
 /* ── Efecto cadena al hacer hover sobre un chip de trazabilidad ── */
 /* Chip directamente hovered */
-.seg-chip[data-chain]:hover {
+/* data-chain: Trazabilidad Despacho | data-lote: Trazabilidad Etapas (mismo efecto).
+   [data-lote] cubre los chips Viene de/Alimenta a y el enlace apr-XX del registro. */
+/* Manita (pointer) en todos los elementos que participan del spotlight de cadena */
+[data-lote] { cursor: pointer; }
+.seg-chip[data-chain]:hover,
+[data-lote]:hover {
     filter: brightness(1.18);
     transform: translateY(-2px) scale(1.04);
     box-shadow: 0 4px 12px rgba(0,0,0,0.28);
     z-index: 2; position: relative;
 }
 /* Chips de la cadena activa (antecesores y sucesores) */
-.seg-chip[data-chain].traz-activo {
+.seg-chip[data-chain].traz-activo,
+[data-lote].traz-activo {
     filter: brightness(1.12);
     transform: translateY(-1px);
     box-shadow: 0 0 0 2.5px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.2);
     z-index: 1; position: relative;
 }
 /* Chips fuera de la cadena — se atenúan (efecto spotlight) */
-.seg-chip[data-chain].traz-inactivo {
+.seg-chip[data-chain].traz-inactivo,
+[data-lote].traz-inactivo {
     opacity: 0.28;
     filter: grayscale(0.5);
+}
+/* El enlace apr-XX (no es chip): redondeo y aire para que el anillo se vea bien */
+a[data-lote].traz-activo,
+a[data-lote]:hover {
+    border-radius: 10px;
+    padding: 1px 5px;
+    background: #fff;
+    display: inline-block;
 }
 
 /* ── Detalle expandido por etapa ── */
