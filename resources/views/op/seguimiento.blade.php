@@ -378,6 +378,12 @@ a[data-lote]:hover {
             <span class="seg-badge"><span class="seg-dot" style="background:#e74c3c;"></span>Rechazado</span>
             <span class="seg-badge"><span class="seg-dot" style="background:#bdc3c7;"></span>Sin iniciar</span>
         </div>
+        {{-- Check modo fijado del spotlight de trazabilidad (preferencia en localStorage) --}}
+        <label for="chk-fijar-traz" style="font-size:11px; color:#5a6a7e; font-weight:normal; cursor:pointer; margin:0 10px 0 0;"
+               title="Marcado: la iluminación de la cadena queda fija al quitar el mouse (clic en zona vacía para limpiar). Desmarcado: se limpia automáticamente al quitar el mouse.">
+            <input type="checkbox" id="chk-fijar-traz" style="cursor:pointer; vertical-align:middle; margin:0 3px 2px 0;">
+            <i class="fa fa-thumb-tack"></i> Fijar iluminación trazabilidad
+        </label>
         <small style="color:#aaa; font-size:11px;"><i class="fa fa-info-circle"></i> Clic en <i class="fa fa-plus-circle text-primary"></i> para ver etapas</small>
     </div>
     <div class="table-responsive" style="padding:0 4px 12px;">

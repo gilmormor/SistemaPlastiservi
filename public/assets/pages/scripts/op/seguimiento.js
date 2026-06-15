@@ -608,7 +608,11 @@ $(document).on('mouseenter', '.seg-chip[data-chain]', function () {
         }
     });
 }).on('mouseleave', '.seg-chip[data-chain]', function () {
-    $('.seg-chip[data-chain]').removeClass('traz-activo traz-inactivo');
+    // Modo automático (check desmarcado): limpiar al quitar el mouse.
+    // Modo fijado (check marcado): mantener; se limpia con clic en zona vacía.
+    if (!$('#chk-fijar-traz').is(':checked')) {
+        $('.seg-chip[data-chain]').removeClass('traz-activo traz-inactivo');
+    }
 });
 
 // ── Efecto cadena en Trazabilidad Etapas (grafo padre/hijo por lote) ───────────
@@ -671,7 +675,31 @@ $(document).on('mouseenter', '[data-lote]', function () {
         }
     });
 }).on('mouseleave', '[data-lote]', function () {
-    $('[data-lote]').removeClass('traz-activo traz-inactivo');
+    // Modo automático (check desmarcado): limpiar al quitar el mouse.
+    // Modo fijado (check marcado): mantener; se limpia con clic en zona vacía.
+    if (!$('#chk-fijar-traz').is(':checked')) {
+        $('[data-lote]').removeClass('traz-activo traz-inactivo');
+    }
+});
+
+// ── Limpiar spotlight (despacho + etapas) con clic en cualquier zona vacía ─────
+// Activo en ambos modos (en automático no estorba; en fijado es la forma de limpiar).
+// Si el clic cae sobre un chip/enlace de cadena NO se limpia, para no interferir
+// con sus clics existentes (abrir PDF de Sol/Ord/Guía/Fac, ver etiqueta apr-XX).
+$(document).on('click', function (e) {
+    if ($(e.target).closest('[data-lote], [data-chain]').length) return;
+    $('[data-lote], .seg-chip[data-chain]').removeClass('traz-activo traz-inactivo');
+});
+
+// ── Preferencia del modo fijado (localStorage, por navegador/usuario) ──────────
+$(document).ready(function () {
+    // Por defecto desmarcado; si el usuario lo cambió antes, restaurar su preferencia
+    $('#chk-fijar-traz').prop('checked', localStorage.getItem('seg_fijar_traz') === '1');
+    $('#chk-fijar-traz').on('change', function () {
+        localStorage.setItem('seg_fijar_traz', $(this).is(':checked') ? '1' : '0');
+        // Al cambiar de modo, limpiar cualquier iluminación pendiente
+        $('[data-lote], .seg-chip[data-chain]').removeClass('traz-activo traz-inactivo');
+    });
 });
 
 // ── Helpers ────────────────────────────────────────────────────────────────────

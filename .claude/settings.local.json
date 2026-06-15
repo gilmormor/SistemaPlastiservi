@@ -52,7 +52,9 @@
       "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" \"C:/laragon/bin/composer/composer.phar\" install --no-interaction)",
       "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" artisan *)",
       "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" -l app/Http/Controllers/OpSeguimientoController.php)",
-      "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" test_fifo_traz.php)"
+      "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" test_fifo_traz.php)",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "mcp__Claude_in_Chrome__tabs_create_mcp"
     ]
   }
 }
