@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(grep -A 5 \"protected $table\" \"c:/laragon/www/plastiservi/app/Models/Vendedor.php\" grep -A 5 \"persona_id\\\\|nombre\" \"c:/laragon/www/plastiservi/app/Models/Vendedor.php\")",
-      "Bash(findstr \".env\")"
+      "Bash(findstr \".env\")",
+      "Bash(mysql -u root plxrevisarcierregd -e \"DESCRIBE permiso;\")",
+      "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE '%menu%';\")",
+      "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE '%permiso%';\")"
     ]
   }
 }
