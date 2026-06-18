@@ -6,6 +6,7 @@
 @section('scripts')
     <script src="{{autoVer("assets/pages/scripts/areaproduccionsucetapaprod/crear.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/areaproduccionsucetapaprod/campos.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/areaproduccionsucetapaprod/ccparam.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -93,6 +94,138 @@
     </div>
 </div>
 
+{{-- ============================================================
+     Sección: Parámetros CC por etapa
+     Permite configurar qué parámetros de Control de Calidad
+     se miden en cada etapa, con sus rangos mín/máx.
+     ============================================================ --}}
+<div class="row" style="margin-top:20px;">
+    <div class="col-lg-12">
+        <div class="box box-warning">
+            <div class="box-header with-border">
+                <h3 class="box-title">
+                    <i class="fa fa-check-circle-o"></i> Parámetros Control de Calidad por etapa
+                </h3>
+                <small class="text-muted" style="margin-left:10px;">
+                    Define qué parámetros mide CC en cada etapa y sus rangos mín/máx
+                </small>
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-condensed table-hover" style="font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th>Etapa</th>
+                            <th>Orden</th>
+                            <th>Parámetros CC configurados</th>
+                            <th style="width:130px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($data->areaproduccionsucetapaprods as $apsuc)
+                        <tr>
+                            <td>{{ $apsuc->etapaprod->nombre ?? '—' }}</td>
+                            <td style="text-align:center;">{{ $apsuc->orden }}</td>
+                            <td id="resumen-ccparams-{{ $apsuc->id }}">
+                                @php $ccparams = $apsuc->ccparamApsucetapaprod()->whereNull('deleted_at')->with('ccparam')->orderBy('orden')->get(); @endphp
+                                @if($ccparams->isEmpty())
+                                    <span class="text-muted">Sin parámetros CC</span>
+                                @else
+                                    <span class="badge" style="background:#f39c12;">{{ $ccparams->count() }}</span>
+                                    {{ $ccparams->map(function($c){ return $c->ccparam->etiqueta ?? ''; })->implode(', ') }}
+                                @endif
+                            </td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-sm btn-warning"
+                                        onclick="abrirModalCcParams({{ $apsuc->id }}, '{{ addslashes($apsuc->etapaprod->nombre ?? '') }}')"
+                                        title="Gestionar parámetros CC de esta etapa">
+                                    <i class="fa fa-check-circle-o"></i> Params CC
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal gestión de parámetros CC por etapa --}}
+<div class="modal fade" id="modalCcParamsEtapa" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#f39c12; color:#fff;">
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff;"><span>&times;</span></button>
+                <h4 class="modal-title">
+                    <i class="fa fa-check-circle-o"></i>
+                    Parámetros CC — <span id="modalCcParamsEtapaNombre"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                {{-- Tabla de parámetros configurados --}}
+                <table class="table table-bordered table-condensed" style="font-size:12px;">
+                    <thead>
+                        <tr>
+                            <th>Ord</th>
+                            <th>Parámetro</th>
+                            <th>Tipo</th>
+                            <th>Unidad</th>
+                            <th>Mínimo</th>
+                            <th>Máximo</th>
+                            <th>Req</th>
+                            <th style="width:80px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaCcParamsBody">
+                        <tr><td colspan="8" class="text-center text-muted">Cargando...</td></tr>
+                    </tbody>
+                </table>
+                <hr>
+                {{-- Formulario agregar/editar --}}
+                <h5 id="formCcParamTitulo"><i class="fa fa-plus"></i> Agregar parámetro CC</h5>
+                <input type="hidden" id="ccparam_ap_id_editar" value="">
+                <input type="hidden" id="ccparam_apsucetapaprod_id" value="">
+                <div class="row">
+                    <div class="form-group col-sm-5">
+                        <label>Parámetro <span class="text-danger">*</span></label>
+                        <select id="ccparam_ccparam_id" class="form-control">
+                            <option value="">-- Seleccione --</option>
+                        </select>
+                        <small class="text-muted">Si no aparece el parámetro, créalo primero en
+                            <a href="/ccparam" target="_blank">Parámetros CC</a>.
+                        </small>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label>Valor mínimo</label>
+                        <input type="number" step="any" id="ccparam_valor_min" class="form-control" placeholder="Ej: 80"/>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label>Valor máximo</label>
+                        <input type="number" step="any" id="ccparam_valor_max" class="form-control" placeholder="Ej: 100"/>
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <label>Orden</label>
+                        <input type="number" id="ccparam_orden" class="form-control" value="0" min="0"/>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label>Requerido</label>
+                        <div style="margin-top:8px;">
+                            <input type="checkbox" id="ccparam_requerido" checked> Sí
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="cancelarEdicionCcParam()">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="guardarCcParam()">
+                    <i class="fa fa-save"></i> Guardar parámetro CC
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Modal gestión de campos adicionales --}}
 <div class="modal fade" id="modalCamposEtapa" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -132,8 +265,9 @@
                     </div>
                     <div class="form-group col-sm-3">
                         <label>Nombre interno <span class="text-danger">*</span></label>
-                        <input type="text" id="campo_nombre" class="form-control" maxlength="50" placeholder="Ej: peso_neto_pallet"/>
-                        <small class="text-muted">Minúsculas, sin espacios</small>
+                        <input type="text" id="campo_nombre" class="form-control" maxlength="50" placeholder="Ej: peso_neto_pallet"
+                               oninput="this.value=this.value.toLowerCase()"/>
+                        <small class="text-muted">Minúsculas, sin espacios (ej: <code>peso_neto</code>)</small>
                     </div>
                     <div class="form-group col-sm-3">
                         <label>Tipo <span class="text-danger">*</span></label>

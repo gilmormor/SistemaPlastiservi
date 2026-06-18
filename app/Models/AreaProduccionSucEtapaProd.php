@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+// Importaciones para relaciones CC y Campos adicionales
+use App\Models\CcParamApsucetapaprod;
+use App\Models\EtapaProdCampo;
+
 class AreaProduccionSucEtapaProd extends Model
 {
     protected $table = "areaproduccionsucetapaprod";
@@ -64,6 +68,13 @@ class AreaProduccionSucEtapaProd extends Model
     public function campos()
     {
         return $this->hasMany(EtapaProdCampo::class, 'apsucetapaprod_id')
+                    ->orderBy('orden');
+    }
+
+    // Parámetros CC configurados para esta etapa
+    public function ccparamApsucetapaprod()
+    {
+        return $this->hasMany(CcParamApsucetapaprod::class, 'apsucetapaprod_id')
                     ->orderBy('orden');
     }
 

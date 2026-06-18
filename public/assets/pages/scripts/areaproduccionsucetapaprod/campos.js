@@ -167,8 +167,29 @@ function guardarCampo() {
                 Biblioteca.notificaciones(resp.mensaje, 'Campos', 'error');
             }
         },
-        error: function () {
-            Biblioteca.notificaciones('Error de conexión al guardar.', 'Campos', 'error');
+        error: function (xhr) {
+            // Errores de validación Laravel (HTTP 422) — mostrar primer mensaje con label legible
+            if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                var labelMap = {
+                    nombre           : 'Nombre interno',
+                    etiqueta         : 'Etiqueta',
+                    tipo             : 'Tipo',
+                    formula          : 'Fórmula',
+                    unidad           : 'Unidad',
+                    decimales        : 'Decimales',
+                    requerido        : 'Requerido',
+                    orden            : 'Orden',
+                    mapea_campo      : 'Mapea campo',
+                    apsucetapaprod_id: 'Etapa'
+                };
+                var errores = xhr.responseJSON.errors;
+                var primerCampo = Object.keys(errores)[0];
+                var label   = labelMap[primerCampo] || primerCampo;
+                var mensaje = errores[primerCampo][0];
+                Biblioteca.notificaciones(label + ': ' + mensaje, 'Campos', 'error');
+            } else {
+                Biblioteca.notificaciones('Error de conexión al guardar.', 'Campos', 'error');
+            }
         }
     });
 }

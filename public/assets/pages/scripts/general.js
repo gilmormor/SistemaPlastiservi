@@ -1532,6 +1532,80 @@ function genpdfPESAJE(id,stareport){ //GENERAR PDF PESAJE
 	//console.log($('#contpdf'));
 	$("#myModalpdf").modal('show')
 }
+function genpdfCC(id, aux_venmodant, aux_slug) { // GENERAR PDF Muestra Control de Calidad
+    aux_venmodant = aux_venmodant || "";
+    aux_slug      = aux_slug      || "ver-pdf-muestra-cc";
+    var data = {
+        slug:   aux_slug,
+        _token: $('meta[name="csrf-token"]').attr('content') || $('input[name=_token]').first().val()
+    };
+    $.ajax({
+        url:  '/generales_valpermiso',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            if (respuesta.resp) {
+                $("#venmodant").val("");
+                if (aux_venmodant !== "") {
+                    $("#" + aux_venmodant).modal('hide');
+                    $("#venmodant").val(aux_venmodant);
+                }
+                var queryString = '?timestamp=' + new Date().getTime();
+                $('#contpdf').attr('src', '/ccregistmuestra/' + id + '/exportPdf' + queryString);
+                $("#myModalpdf").modal('show');
+            } else {
+                swal({
+                    title: respuesta.mensaje,
+                    text:  respuesta.mensaje2,
+                    icon:  'error',
+                    buttons: { confirm: "Cerrar" }
+                });
+            }
+        }
+    });
+}
+
+// Ver etiqueta de etapa de producción (Reg. Prod.) en modal, con validación de permiso
+function verEtiquetaEtapaConPermiso(opdetregprod_id, aux_slug) {
+    aux_slug = aux_slug || "ver-etiqueta-regprod";
+    var csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name=_token]').first().val();
+    $.ajax({
+        url:  '/generales_valpermiso',
+        type: 'POST',
+        data: { slug: aux_slug, _token: csrf },
+        success: function (respuesta) {
+            if (respuesta.resp) {
+                $('#modalEtiquetaId').text('#' + opdetregprod_id);
+                $('#ifrEtiquetaEtapa').attr('src', '/opdetregprodtempaprobsup/etiqueta-etapa/' + opdetregprod_id);
+                $('#modalEtiquetaEtapa').modal('show');
+            } else {
+                swal({
+                    title: respuesta.mensaje,
+                    text:  respuesta.mensaje2,
+                    icon:  'error',
+                    buttons: { confirm: "Cerrar" }
+                });
+            }
+        }
+    });
+}
+
+// Imprimir etiqueta de etapa desde el iframe del modal (disponible globalmente)
+if (typeof imprimirEtiquetaEtapa === 'undefined') {
+    function imprimirEtiquetaEtapa() {
+        var iframe = document.getElementById('ifrEtiquetaEtapa');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        }
+    }
+}
+
+// Limpiar iframe al cerrar el modal de etiqueta (handler global, no inline)
+$(document).on('hidden.bs.modal', '#modalEtiquetaEtapa', function () {
+    $('#ifrEtiquetaEtapa').attr('src', 'about:blank');
+});
+
 function genpdfGD(id,nombre,aux_venmodant = "",aux_slug = "ver-pdf-guia-despacho"){ //GENERAR PDF Guia Despacho
 	var data = {
 		slug: aux_slug,

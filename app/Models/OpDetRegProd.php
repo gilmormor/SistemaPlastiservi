@@ -75,6 +75,12 @@ class OpDetRegProd extends Model
         return $this->hasMany(OpDetRegProdCampoVal::class, 'opdetregprod_id');
     }
 
+    // Muestras de Control de Calidad asociadas a este registro de producción
+    public function ccregistmuestras()
+    {
+        return $this->hasMany(CcRegistMuestra::class, 'opdetregprod_id');
+    }
+
     // Trazabilidad entre etapas: lotes de la etapa ANTERIOR de los que vino este registro
     public function origenes()
     {

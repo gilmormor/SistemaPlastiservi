@@ -719,6 +719,41 @@
                                                         ->filter(function($lr) {
                                                             return $lr->cant_disponible > 0; // ocultar lotes agotados
                                                         });
+
+                                                        // CC: estado de calidad por lote para bloqueo/advertencia en solicitud de despacho
+                                                        $ccStatusPorLote = [];
+                                                        if ($lotesRow->isNotEmpty()) {
+                                                            $loteIds      = $lotesRow->pluck('opdetregprod_id')->toArray();
+                                                            $placeholders = implode(',', array_fill(0, count($loteIds), '?'));
+                                                            $ccRows = DB::select("
+                                                                SELECT
+                                                                    ccm.opdetregprod_id,
+                                                                    SUM(IF(ccm.status = 3 AND desb.id IS NULL, 1, 0))     AS rechazados_bloqueados,
+                                                                    SUM(IF(ccm.status = 3 AND desb.id IS NOT NULL, 1, 0)) AS rechazados_desbloqueados,
+                                                                    SUM(IF(ccm.status = 2, 1, 0))                         AS con_obs,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NULL, ccm.id, NULL)
+                                                                                 ORDER BY ccm.id SEPARATOR ', ')           AS ids_bloqueados,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NOT NULL, ccm.id, NULL)
+                                                                                 ORDER BY ccm.id SEPARATOR ', ')           AS ids_desbloqueados,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 2, ccm.id, NULL)
+                                                                                 ORDER BY ccm.id SEPARATOR ', ')           AS ids_con_obs,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NOT NULL,
+                                                                                 CONCAT(udesb.nombre, ' — ', DATE_FORMAT(desb.created_at,'%d/%m/%Y %H:%i'),
+                                                                                        IF(desb.observacion IS NOT NULL AND desb.observacion != '', CONCAT(': ', desb.observacion), '')),
+                                                                                 NULL)
+                                                                                 ORDER BY desb.id SEPARATOR ' | ')         AS desbloqueo_info
+                                                                FROM   ccregistmuestra ccm
+                                                                LEFT JOIN ccregistmuestra_desbloqueo desb ON desb.ccregistmuestra_id = ccm.id
+                                                                LEFT JOIN usuario udesb                  ON udesb.id = desb.usuario_id
+                                                                WHERE  ccm.opdetregprod_id IN ($placeholders)
+                                                                  AND  ccm.deleted_at IS NULL
+                                                                  AND  ccm.sta_env = 2
+                                                                GROUP BY ccm.opdetregprod_id
+                                                            ", $loteIds);
+                                                            foreach ($ccRows as $ccRow) {
+                                                                $ccStatusPorLote[$ccRow->opdetregprod_id] = $ccRow;
+                                                            }
+                                                        }
                                                     ?>
                                                     {{-- <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$spRow->bodega_sucursal_id}}"> --}}
                                                     <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}">
@@ -795,20 +830,70 @@
                                                     </tr>
                                                     {{-- Sub-filas de lotes de producción para trazabilidad granular --}}
                                                     @foreach($lotesRow as $loteRow)
-                                                    <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:#f5f5f5;">
+                                                    <?php
+                                                        // Estado CC del lote
+                                                        $ccInfoLote          = $ccStatusPorLote[$loteRow->opdetregprod_id] ?? null;
+                                                        $loteBlocked         = $ccInfoLote && $ccInfoLote->rechazados_bloqueados > 0;
+                                                        $loteDesbloqueado    = !$loteBlocked && $ccInfoLote && $ccInfoLote->rechazados_desbloqueados > 0;
+                                                        $loteConObs          = !$loteBlocked && !$loteDesbloqueado && $ccInfoLote && $ccInfoLote->con_obs > 0;
+                                                        $rowBg               = $loteBlocked ? '#fff0f0' : ($loteDesbloqueado ? '#f0f8ff' : ($loteConObs ? '#fffbe6' : '#f5f5f5'));
+                                                    ?>
+                                                    <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:{{$rowBg}};">
                                                         <td style="display:none;">
                                                             {{-- Inputs ocultos: identifican el lote, la bodega y el NVdet al que pertenece --}}
                                                             <input type="hidden" name="opdetregprod_id[]"      value="{{$loteRow->opdetregprod_id}}"/>
                                                             <input type="hidden" name="opdetregprod_invbp[]"   value="{{$invbodegaproducto->id}}"/>
                                                             <input type="hidden" name="opdetregprod_nvdet_id[]" value="{{$detalle->id}}"/>
                                                         </td>
-                                                        <td colspan="2" style="padding:1px 6px;font-size:10px;color:#888;text-align:left;vertical-align:middle;">
-                                                            ↳ Lote #{{$loteRow->opdetregprod_id}}
+                                                        <td colspan="2" style="padding:1px 6px;font-size:10px;text-align:left;vertical-align:middle;">
+                                                            <span style="color:#888;">↳ Lote #{{$loteRow->opdetregprod_id}}</span>
                                                             <span style="color:#bbb;" title="Total producido: {{$loteRow->cant_lote}} | Ya despachado: {{$loteRow->cant_despachada}}">(disp. {{$loteRow->cant_disponible}} un)</span>
+                                                            @if($loteBlocked)
+                                                                @php $idsBlq = explode(', ', $ccInfoLote->ids_bloqueados); @endphp
+                                                                <br><span class="label label-danger tooltipsC"
+                                                                    title="Vaya a CC → Muestras para desbloquear.">
+                                                                    <i class="fa fa-ban"></i> Rechazado CC — Muestra(s):
+                                                                    @foreach($idsBlq as $mId)
+                                                                        <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
+                                                                           style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
+                                                                    @endforeach
+                                                                    — Reg. Prod.
+                                                                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
+                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                </span>
+                                                            @elseif($loteDesbloqueado)
+                                                                @php $idsDesb = explode(', ', $ccInfoLote->ids_desbloqueados); @endphp
+                                                                <br><span class="label tooltipsC"
+                                                                    style="background:#00c0ef;"
+                                                                    title="Rechazado CC y desbloqueado para despacho. {{$ccInfoLote->desbloqueo_info ?? ''}}">
+                                                                    <i class="fa fa-unlock"></i> Desbloqueado CC — Muestra(s):
+                                                                    @foreach($idsDesb as $mId)
+                                                                        <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
+                                                                           style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
+                                                                    @endforeach
+                                                                    — Reg. Prod.
+                                                                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
+                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                </span>
+                                                            @elseif($loteConObs)
+                                                                @php $idsObs = explode(', ', $ccInfoLote->ids_con_obs); @endphp
+                                                                <br><span class="label label-warning tooltipsC"
+                                                                    title="Aprobado con observaciones — puede despachar.">
+                                                                    <i class="fa fa-exclamation-triangle"></i> CC con observaciones — Muestra(s):
+                                                                    @foreach($idsObs as $mId)
+                                                                        <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
+                                                                           style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
+                                                                    @endforeach
+                                                                    — Reg. Prod.
+                                                                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
+                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                </span>
+                                                            @endif
                                                         </td>
                                                         <td style="padding:1px 2px;vertical-align:middle;">
                                                             {{-- El usuario ingresa cuánto de este lote incluye en la solicitud.
-                                                                 JS valida que no exceda cant_disponible y suma al input de bodega (readonly). --}}
+                                                                 JS valida que no exceda cant_disponible y suma al input de bodega (readonly).
+                                                                 Si el lote tiene rechazo CC sin desbloquear, el input queda deshabilitado. --}}
                                                             <input type="text"
                                                                    name="opdetregprod_cant[]"
                                                                    id="opdetregprod_cant_{{$invbodegaproducto->id}}_{{$loteRow->opdetregprod_id}}"
@@ -818,7 +903,8 @@
                                                                    data-max="{{$loteRow->cant_disponible}}"
                                                                    data-cantkg-total="{{$loteRow->cantkg_disponible}}"
                                                                    value="0"
-                                                                   style="text-align:right;font-size:11px;"/>
+                                                                   style="text-align:right;font-size:11px;{{$loteBlocked ? 'background:#ffcccc;cursor:not-allowed;' : ''}}"
+                                                                   @if($loteBlocked) disabled title="Bloqueado por rechazo CC — Muestra(s) #{{$ccInfoLote->ids_bloqueados}}" @endif />
                                                             {{-- Kg proporcionales calculados por JS --}}
                                                             <input type="hidden"
                                                                    name="opdetregprod_cantkg[]"
@@ -1037,3 +1123,31 @@
 -->
 
 @include('generales.modalpdf')
+
+{{-- Modal etiqueta de etapa (Reg. Prod.) — usado desde el label de rechazo CC --}}
+<div class="modal fade modal-etiqueta" id="modalEtiquetaEtapa" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:440px;">
+        <div class="modal-content" style="border-radius:6px; overflow:hidden;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" style="font-size:14px;">
+                    <i class="fa fa-tag"></i>&nbsp; Etiqueta de etapa &mdash; Reg. <span id="modalEtiquetaId"></span>
+                </h4>
+            </div>
+            <div class="modal-body" style="padding:0; height:340px;">
+                <iframe id="ifrEtiquetaEtapa" name="ifrEtiquetaEtapa" src="about:blank"
+                        style="width:100%; height:340px; border:none;"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-modals">
+                </iframe>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e8edf3; padding:10px 16px;">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="imprimirEtiquetaEtapa()">
+                    <i class="fa fa-print"></i> Imprimir etiqueta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -54,7 +54,29 @@
       "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" -l app/Http/Controllers/OpSeguimientoController.php)",
       "Bash(\"C:/laragon/bin/php/php-7.2.19-Win32-VC15-x64/php.exe\" test_fifo_traz.php)",
       "mcp__Claude_in_Chrome__list_connected_browsers",
-      "mcp__Claude_in_Chrome__tabs_create_mcp"
+      "mcp__Claude_in_Chrome__tabs_create_mcp",
+      "Bash(findstr DB_DATABASE)",
+      "Bash(C:\\\\laragon\\\\bin\\\\php\\\\php-7.4.33-Win32-VC15-x64\\\\php.exe artisan *)",
+      "mcp__Claude_in_Chrome__read_console_messages",
+      "mcp__Claude_in_Chrome__find",
+      "Bash(mysql -u root biblioteca -e \"SHOW TABLES LIKE '%ot%';\")",
+      "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE '%ot%';\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE maquina;\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE opdetregprod;\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE opdetregprodtemp;\")",
+      "Bash(mysql -u root biblioteca -e \"SHOW COLUMNS FROM maquina;\")",
+      "Bash(mysql -u root biblioteca -e \"SELECT m.id, m.nombre, mg.nombre as grupo, ep.nombre as etapa FROM maquina m LEFT JOIN maquinagrupo mg ON mg.id = m.maquinagrupo_id LEFT JOIN etapaprod ep ON ep.id = mg.etapaprod_id LIMIT 5;\")",
+      "Bash(mysql -u root biblioteca -e \"SHOW TABLES LIKE '%maquina%';\")",
+      "Bash(mysql -u root biblioteca -e \"SELECT * FROM maquina LIMIT 3;\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE maquinaetapaprod;\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE opdetmaquina;\")",
+      "Bash(mysql -u root biblioteca -e \"SELECT od.id as opdetmaquina_id, od.opdet_id, od.maquina_id, m.nombre as maquina FROM opdetmaquina od JOIN maquina m ON m.id = od.maquina_id LIMIT 5;\")",
+      "Bash(mysql -u root biblioteca -e \"SELECT odrp.id, odrp.opdet_id, odrp.etapaprod_id FROM opdetregprod odrp LIMIT 5;\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE despachosol;\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE despachosoldet;\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE otdet;\")",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget"
     ]
   }
 }

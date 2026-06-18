@@ -600,7 +600,7 @@ class DespachoSolController extends Controller
                 ]);
             }
             */
-            if(true or $despachosol->updated_at == $request->updated_at){
+            if($despachosol->updated_at == $request->updated_at){
                 $despachosol->updated_at = date("Y-m-d H:i:s");
                 $despachosol->comunaentrega_id = $request->comunaentrega_id;
                 $despachosol->tipoentrega_id = $request->tipoentrega_id;
@@ -1560,6 +1560,40 @@ class DespachoSolController extends Controller
                     if(count($invmodulo) == 0){
                         return response()->json([
                             'mensaje' => 'No existe modulo SOLDESP'
+                        ]);
+                    }
+
+                    // VALIDACIÓN CC: bloquear si algún lote tiene rechazo sin desbloquear
+                    $ccBloqueados = DB::select("
+                        SELECT
+                            dsop.opdetregprod_id,
+                            SUM(IF(ccm.status = 3 AND desb.id IS NULL, 1, 0))     AS rechazados_bloqueados,
+                            GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NULL, ccm.id, NULL)
+                                         ORDER BY ccm.id SEPARATOR ', ')           AS ids_bloqueados
+                        FROM   despachosoldet_opdetregprod dsop
+                        JOIN   despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+                                                  AND ISNULL(dsd.deleted_at)
+                        LEFT JOIN ccregistmuestra ccm ON ccm.opdetregprod_id = dsop.opdetregprod_id
+                                                      AND ISNULL(ccm.deleted_at)
+                                                      AND ccm.sta_env = 2
+                        LEFT JOIN ccregistmuestra_desbloqueo desb ON desb.ccregistmuestra_id = ccm.id
+                        WHERE  dsd.despachosol_id = ?
+                        GROUP BY dsop.opdetregprod_id
+                        HAVING rechazados_bloqueados > 0
+                    ", [$despachosol->id]);
+
+                    if (count($ccBloqueados) > 0) {
+                        $detalles = [];
+                        foreach ($ccBloqueados as $cb) {
+                            $detalles[] = 'Reg. Prod. #' . $cb->opdetregprod_id
+                                        . ' — Muestra(s) CC: #' . $cb->ids_bloqueados;
+                        }
+                        return response()->json([
+                            'error'      => 1,
+                            'mensaje'    => "No se puede crear la Orden de Despacho. Los siguientes lotes tienen rechazo CC sin desbloquear:\n"
+                                          . implode("\n", $detalles)
+                                          . "\n\nVaya a CC → Muestras y desbloquee las muestras rechazadas antes de proceder.",
+                            'tipo_alert' => 'error',
                         ]);
                     }
 

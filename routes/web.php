@@ -1737,6 +1737,47 @@ Route::post('acuerdotecnicoetapaprod/{id}/actualizar-ajax', 'AcuerdoTecnicoEtapa
 
 // CRUD AJAX para campos adicionales por etapa de producción (EtapaProdCampo)
 Route::get('etapaprodcampo/{apsucetapaprod_id}/listar', 'EtapaProdCampoController@listar')->name('etapaprodcampo_listar');
+
+/*RUTAS CONTROL DE CALIDAD — Catálogo de parámetros CC*/
+Route::get('ccparam_apsucetapaprod/{apsucetapaprod_id}/listar',     'CcParamApsucetapaprodController@listar')->name('ccparam_apsucetapaprod_listar');
+Route::get('ccparam_apsucetapaprod/{apsucetapaprod_id}/disponibles','CcParamApsucetapaprodController@listarDisponibles')->name('ccparam_apsucetapaprod_disponibles');
+Route::post('ccparam_apsucetapaprod',                               'CcParamApsucetapaprodController@guardar')->name('ccparam_apsucetapaprod_guardar');
+Route::put('ccparam_apsucetapaprod/{id}',                           'CcParamApsucetapaprodController@actualizar')->name('ccparam_apsucetapaprod_actualizar');
+Route::delete('ccparam_apsucetapaprod/{id}',                        'CcParamApsucetapaprodController@eliminar')->name('ccparam_apsucetapaprod_eliminar');
+
+Route::get('ccparam',              'CcParamController@index')->name('ccparam');
+Route::get('ccparampage',          'CcParamController@ccparampage')->name('ccparampage');
+Route::get('ccparam/crear',        'CcParamController@crear')->name('crear_ccparam');
+Route::post('ccparam',             'CcParamController@guardar')->name('guardar_ccparam');
+Route::get('ccparam/{id}/editar',  'CcParamController@editar')->name('editar_ccparam');
+Route::put('ccparam/{id}',         'CcParamController@actualizar')->name('actualizar_ccparam');
+Route::delete('ccparam/{id}',      'CcParamController@eliminar')->name('eliminar_ccparam');
+
+/*RUTAS CONTROL DE CALIDAD — REGISTRO DE MUESTRAS*/
+Route::get('ccregistmuestra',                              'CcRegistMuestraController@index')->name('ccregistmuestra');
+Route::get('ccregistmuestrapage',                          'CcRegistMuestraController@ccregistmuestrapage')->name('ccregistmuestrapage');
+Route::get('ccregistmuestra/listaropdetregprod',           'CcRegistMuestraController@listaropdetregprod')->name('listaropdetregprod_ccregistmuestra');
+Route::get('listaropdetregprodpage_ccregistmuestra',       'CcRegistMuestraController@listaropdetregprodpage')->name('listaropdetregprodpage_ccregistmuestra');
+Route::get('ccregistmuestra/crear/{opdetregprod_id}',      'CcRegistMuestraController@crear')->name('crear_ccregistmuestra');
+// Rutas del supervisor CC — controlador separado, prefijo independiente para evitar conflictos de menú
+Route::get('ccmuestrasuper',                               'CcRegistMuestraSupervisarController@index')->name('supervisar_ccregistmuestra');
+Route::get('ccmuestrasuperpage',                           'CcRegistMuestraSupervisarController@page')->name('supervisarpage_ccregistmuestra');
+Route::post('ccregistmuestra',                             'CcRegistMuestraController@guardar')->name('guardar_ccregistmuestra');
+Route::get('ccregistmuestra/{id}/ver',                     'CcRegistMuestraController@ver')->name('ver_ccregistmuestra');
+Route::get('ccregistmuestra/verxopdetregprod/{id}',        'CcRegistMuestraController@verxopdetregprod')->name('verxopdetregprod_ccregistmuestra');
+Route::post('ccregistmuestra/{id}/aprobar',                'CcRegistMuestraController@aprobar')->name('aprobar_ccregistmuestra');
+Route::get('ccregistmuestra/{id}/editar',                  'CcRegistMuestraController@editar')->name('editar_ccregistmuestra');
+Route::put('ccregistmuestra/{id}',                         'CcRegistMuestraController@actualizar')->name('actualizar_ccregistmuestra');
+Route::post('ccregistmuestra/{id}/anular',                 'CcRegistMuestraController@anular')->name('anular_ccregistmuestra');
+Route::post('ccregistmuestra/{id}/desbloquear',            'CcRegistMuestraController@desbloquear')->name('desbloquear_ccregistmuestra');
+Route::get('ccregistmuestra/{id}/exportPdf',               'CcRegistMuestraController@exportPdf')->name('exportPdf_ccregistmuestra');
+Route::post('ccmuestrasuper/{id}/actuar',                  'CcRegistMuestraSupervisarController@actuar')->name('supervisarActuar_ccregistmuestra');
+
+// CC — Desbloqueo de muestras rechazadas
+Route::get('ccdesbloqueo',                   'CcDesbloqueoController@index')->name('ccdesbloqueo');
+Route::get('ccdesbloqueopage',               'CcDesbloqueoController@page')->name('ccdesbloqueopage');
+Route::post('ccdesbloqueo/{id}/desbloquear', 'CcDesbloqueoController@desbloquear')->name('desbloquear_ccdesbloqueo');
+
 Route::post('etapaprodcampo',                           'EtapaProdCampoController@guardar')->name('etapaprodcampo_guardar');
 Route::put('etapaprodcampo/{id}',                       'EtapaProdCampoController@actualizar')->name('etapaprodcampo_actualizar');
 Route::delete('etapaprodcampo/{id}',                    'EtapaProdCampoController@eliminar')->name('etapaprodcampo_eliminar');
