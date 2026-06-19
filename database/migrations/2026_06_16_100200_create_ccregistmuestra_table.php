@@ -22,7 +22,7 @@ class CreateCcregistmuestraTable extends Migration
                   ->onDelete('restrict')->onUpdate('restrict');
             $table->tinyInteger('status')->default(1)->comment('1=Aprobado (verde), 2=Aprobado con observaciones (amarillo), 3=Rechazado (rojo). Calculado automáticamente.');
             $table->text('observacion')->nullable()->comment('Observación general libre');
-            $table->boolean('sta_env')->default(0)->comment('0=Sin enviar/liberar, 1=Enviado/Liberado al siguiente módulo');
+            $table->boolean('sta_env')->default(0)->comment('0 o Null=Sin enviar, 1=Enviado al siguiente módulo, 2=Aprobado por supervisor, 3=Rechazado por supervisor');
             $table->dateTime('fechahora_env')->nullable()->comment('Fecha y hora cuando fue liberado/enviado al siguiente módulo');
             $table->unsignedBigInteger('usuario_env_id')->nullable()->comment('Usuario que liberó/envió al siguiente módulo');
             $table->foreign('usuario_env_id', 'fk_ccregistmuestra_usuarioenv')
