@@ -131,7 +131,23 @@
         <script src="{{asset("assets/$theme/bower_components/select2/dist/js/select2.full.min.js")}}"></script>
         <!-- bootstrap-select Gilmer -->
         <script src="{{asset("assets/$theme/bower_components/bootstrap-select/js/bootstrap-select.min.js")}}"></script>
-
+        <script>
+            $.fn.selectpicker.defaults.noneSelectedText = 'Seleccione...';
+            $.fn.selectpicker.defaults.noneResultsText = 'No se encontraron resultados para "{0}"';
+            $.fn.selectpicker.defaults.countSelectedText = function(numSelected, numTotal) {
+                return numSelected + ' de ' + numTotal + ' seleccionados';
+            };
+            $.fn.selectpicker.defaults.maxOptionsText = function(numAll, numGroup) {
+                return [
+                    'Se alcanzó el límite ({n} {var} máximo)',
+                    'Se alcanzó el límite del grupo ({n} {var} máximo)',
+                    ['elementos', 'elemento']
+                ];
+            };
+            $.fn.selectpicker.defaults.selectAllText = 'Selec todo';
+            $.fn.selectpicker.defaults.deselectAllText = 'Borrar todo';
+            $.fn.selectpicker.defaults.doneButtonText = 'Cerrar';
+        </script>        
         <!-- InputMask -->
         <script src="{{asset("assets/$theme/plugins/input-mask/jquery.inputmask.js")}}"></script>
         <script src="{{asset("assets/$theme/plugins/input-mask/jquery.inputmask.date.extensions.js")}}"></script>
