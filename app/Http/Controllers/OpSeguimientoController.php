@@ -344,14 +344,16 @@ class OpSeguimientoController extends Controller
         if (!$opdetregprod_id) return [];
 
         // ── 1. Solicitudes de despacho vía tabla de lotes (trazabilidad granular) ──
-        // Incluye estado (aprorddesp/aprorddespfh) y usuario creador
+        // Incluye estado (aprorddesp/aprorddespfh), usuario creador y flag anulada
         $sols = DB::select("
             SELECT DISTINCT
                 dsd.despachosol_id   AS id,
                 ds.fechahora,
                 ds.aprorddesp,
                 ds.aprorddespfh,
-                u.nombre             AS usuario_nombre
+                u.nombre             AS usuario_nombre,
+                (SELECT COUNT(*) FROM despachosolanul
+                 WHERE  despachosol_id = ds.id)       AS anulada
             FROM   despachosoldet_opdetregprod dsop
             INNER  JOIN despachosoldet dsd ON dsd.id  = dsop.despachosoldet_id
             INNER  JOIN despachosol    ds  ON ds.id   = dsd.despachosol_id
@@ -387,7 +389,7 @@ class OpSeguimientoController extends Controller
         ", [$opdetregprod_id]);
 
         if (empty($ords)) {
-            // Sols sin órdenes aún — incluir campos de estado
+            // Sols sin órdenes aún — incluir campos de estado y flag anulada
             return array_map(function ($s) {
                 return [
                     'id'             => $s->id,
@@ -395,6 +397,7 @@ class OpSeguimientoController extends Controller
                     'aprorddesp'     => $s->aprorddesp,
                     'aprorddespfh'   => $s->aprorddespfh,
                     'usuario_nombre' => $s->usuario_nombre,
+                    'anulada'        => $s->anulada,
                     'ords'           => [],
                 ];
             }, $sols);
@@ -554,6 +557,7 @@ class OpSeguimientoController extends Controller
                 'aprorddesp'     => $s->aprorddesp,
                 'aprorddespfh'   => $s->aprorddespfh,
                 'usuario_nombre' => $s->usuario_nombre,
+                'anulada'        => (int)$s->anulada > 0,
                 'ords'           => $ordsXSol[$s->id] ?? [],
             ];
         }

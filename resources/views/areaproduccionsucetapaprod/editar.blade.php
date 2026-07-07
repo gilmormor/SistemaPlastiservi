@@ -7,6 +7,7 @@
     <script src="{{autoVer("assets/pages/scripts/areaproduccionsucetapaprod/crear.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/areaproduccionsucetapaprod/campos.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/areaproduccionsucetapaprod/ccparam.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/areaproduccionsucetapaprod/bodegas.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -146,6 +147,110 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ============================================================
+     Sección: Bodegas de inventario por etapa
+     Permite configurar qué bodegas tiene disponible cada etapa
+     para generar movimientos de inventario al aprobar producción.
+     ============================================================ --}}
+<div class="row" style="margin-top:20px;">
+    <div class="col-lg-12">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">
+                    <i class="fa fa-archive"></i> Bodegas de inventario por etapa
+                </h3>
+                <small class="text-muted" style="margin-left:10px;">
+                    Al aprobar un registro de producción, el sistema generará un movimiento en la bodega asignada
+                </small>
+            </div>
+            <div class="box-body">
+                <table class="table table-bordered table-condensed table-hover" style="font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th>Etapa</th>
+                            <th>Orden</th>
+                            <th>Bodegas asignadas</th>
+                            <th style="width:120px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($data->areaproduccionsucetapaprods as $apsuc)
+                        <tr>
+                            <td>{{ $apsuc->etapaprod->nombre ?? '—' }}</td>
+                            <td style="text-align:center;">{{ $apsuc->orden }}</td>
+                            <td id="resumen-bodegas-{{ $apsuc->id }}">
+                                @if($apsuc->bodegas->isEmpty())
+                                    <span class="text-muted">Sin bodegas (no genera movimiento de inv.)</span>
+                                @else
+                                    <span class="badge" style="background:#3c8dbc;">{{ $apsuc->bodegas->count() }}</span>
+                                    {{ $apsuc->bodegas->map(function($b){ return $b->invbodega->nombre ?? '?'; })->implode(', ') }}
+                                @endif
+                            </td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-sm btn-primary"
+                                        onclick="abrirModalBodegas({{ $apsuc->id }}, '{{ addslashes($apsuc->etapaprod->nombre ?? '') }}')"
+                                        title="Gestionar bodegas de inventario de esta etapa">
+                                    <i class="fa fa-archive"></i> Bodegas
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal gestión de bodegas por etapa --}}
+<div class="modal fade" id="modalBodegasEtapa" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#3c8dbc; color:#fff;">
+                <button type="button" class="close" data-dismiss="modal" style="color:#fff;"><span>&times;</span></button>
+                <h4 class="modal-title">
+                    <i class="fa fa-archive"></i>
+                    Bodegas — <span id="modalBodegasEtapaNombre"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                {{-- Tabla de bodegas asignadas --}}
+                <table class="table table-bordered table-condensed" style="font-size:12px;">
+                    <thead>
+                        <tr>
+                            <th>Bodega</th>
+                            <th style="width:60px;">Quitar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBodegasBody">
+                        <tr><td colspan="2" class="text-center text-muted">Cargando...</td></tr>
+                    </tbody>
+                </table>
+                <hr>
+                <h5><i class="fa fa-plus"></i> Agregar bodega</h5>
+                <input type="hidden" id="bodega_apsucetapaprod_id" value="">
+                <div class="row">
+                    <div class="form-group col-sm-9">
+                        <label>Bodega disponible <span class="text-danger">*</span></label>
+                        <select id="bodega_invbodega_id" class="form-control">
+                            <option value="">-- Seleccione --</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-3" style="padding-top:25px;">
+                        <button type="button" class="btn btn-primary btn-block" onclick="guardarBodegaEtapa()">
+                            <i class="fa fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>

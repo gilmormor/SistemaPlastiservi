@@ -32,6 +32,7 @@ use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
+use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
@@ -938,6 +939,19 @@ class DespachoSolController extends Controller
                     'mensaje' => 'Registro fue modificado previamente.'
                 ]);
             }
+            // Validar que el período de inventario esté aperturado antes de crear movimientos
+            $annomesHoy = date('Ym');
+            if (!InvControl::where('annomes', $annomesHoy)
+                    ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
+                    ->where('status', 0)
+                    ->exists()) {
+                return response()->json([
+                    'status'     => 0,
+                    'tipmen'     => 'error',
+                    'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
             $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
             foreach ($despachosol->despachosoldets as $despachoorddet) {
@@ -1215,6 +1229,19 @@ class DespachoSolController extends Controller
             $despachosol = DespachoSol::findOrFail($request->id);
             if($despachosol->aprorddesp != 1){
                 return response()->json(['mensaje' => 'Registro fue modificado previamente.']);
+            }
+            // Validar que el período de inventario esté aperturado antes de crear movimientos
+            $annomesHoy = date('Ym');
+            if (!InvControl::where('annomes', $annomesHoy)
+                    ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
+                    ->where('status', 0)
+                    ->exists()) {
+                return response()->json([
+                    'error'      => 1,
+                    'tipmen'     => 'error',
+                    'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                    'tipo_alert' => 'error'
+                ]);
             }
             $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
@@ -1620,6 +1647,20 @@ class DespachoSolController extends Controller
                     }
                     //ANTES DE PROCESAR SOLICITUD VALIDO QUE LOS PRODUCTOS INVOLUCRADOS TENGAS BODEGA DE PICKING CORRESPONDIENTE A LA SUCURSAL DE CADA PRODUCTO
                     //ESTO DEBE IR EL EL PROYECTO FINAL
+
+                    // Validar que el período de inventario esté aperturado antes de crear movimientos
+                    $annomesHoy = date('Ym');
+                    if (!InvControl::where('annomes', $annomesHoy)
+                            ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
+                            ->where('status', 0)
+                            ->exists()) {
+                        return response()->json([
+                            'status'     => 0,
+                            'tipmen'     => 'error',
+                            'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                            'tipo_alert' => 'error'
+                        ]);
+                    }
 
                     //$despachosol = DespachoSol::findOrFail($request->id);
                     $aux_bandera = true;

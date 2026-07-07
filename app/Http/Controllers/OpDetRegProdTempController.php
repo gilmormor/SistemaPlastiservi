@@ -9,6 +9,7 @@ use App\Models\EtapaProdCampo;
 use App\Models\OpDet;
 use App\Models\OpDetRegProdTemp;
 use App\Models\OpDetRegProdTempCampoVal;
+use App\Models\OpDetRegProdTempMaq;
 use App\Models\OpDetRegProdTempOrigen;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -337,6 +338,15 @@ public function etapaprod()
             // etapa anterior que este registro consume. No bloquea si no hay lotes.
             OpDetRegProdTempOrigen::asignarFifo($opdetregprodtemp);
 
+            // Guardar máquina asociada al opdet (si la etapa usa máquina).
+            $opdetMaq = DB::table('opdetmaquina')->where('opdet_id', $opdetregprodtemp->opdet_id)->first();
+            if ($opdetMaq) {
+                OpDetRegProdTempMaq::create([
+                    'opdetregprodtemp_id' => $opdetregprodtemp->id,
+                    'maquina_id'          => $opdetMaq->maquina_id,
+                ]);
+            }
+
             DB::commit();
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de Produccion creado con exito');
         } catch (\Exception $e) {
@@ -475,6 +485,16 @@ public function etapaprod()
             // Trazabilidad entre etapas: reasignar reserva FIFO con los kg actualizados
             // (borra las filas previas del temp y las recrea).
             OpDetRegProdTempOrigen::asignarFifo($opdetregprodtemp);
+
+            // Actualizar máquina: reemplazar el registro previo con el actual del opdet.
+            $opdetMaq = DB::table('opdetmaquina')->where('opdet_id', $opdetregprodtemp->opdet_id)->first();
+            OpDetRegProdTempMaq::where('opdetregprodtemp_id', $opdetregprodtemp->id)->delete();
+            if ($opdetMaq) {
+                OpDetRegProdTempMaq::create([
+                    'opdetregprodtemp_id' => $opdetregprodtemp->id,
+                    'maquina_id'          => $opdetMaq->maquina_id,
+                ]);
+            }
 
             DB::commit();
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de produccion actualizado con exito');

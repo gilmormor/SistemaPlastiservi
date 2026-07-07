@@ -76,7 +76,29 @@
       "Bash(mysql -u root biblioteca -e \"DESCRIBE despachosoldet;\")",
       "Bash(mysql -u root biblioteca -e \"DESCRIBE otdet;\")",
       "mcp__visualize__read_me",
-      "mcp__visualize__show_widget"
+      "mcp__visualize__show_widget",
+      "Bash(php -l \"app/Http/Controllers/OpDetRegProdTempController.php\")",
+      "Bash(php -l \"app/Http/Controllers/OpDetRegProdTempAprobSupController.php\")",
+      "Bash(php -l \"app/Http/Controllers/ReportccMuestraController.php\")",
+      "Bash(\"C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe\" -l \"C:/laragon/www/plastiservi/app/Http/Controllers/AreaProduccionSucEtapaProdController.php\")",
+      "Bash(\"C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe\" -l \"C:/laragon/www/plastiservi/app/Models/ApsucEtapaProdBodega.php\")",
+      "Bash(\"C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe\" -l \"C:/laragon/www/plastiservi/app/Models/AreaProduccionSucEtapaProd.php\")",
+      "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe -l \"C:/laragon/www/plastiservi/app/Http/Controllers/OpDetRegProdTempAprobSupController.php\")",
+      "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe -l \"C:/laragon/www/plastiservi/routes/web.php\")",
+      "PowerShell(git -C C:\\\\laragon\\\\www\\\\ccscmed status --short)",
+      "PowerShell(git -C C:\\\\laragon\\\\www\\\\ccscmed log --oneline -8)",
+      "PowerShell(git -C C:\\\\laragon\\\\www\\\\ccscmed ls-files \"public/assets/lte/dist/img/LOGO-PLASTISERVI5.png\" \"public/assets/lte/dist/img/logoShor1.png\"; Write-Host \"---\"; git -C C:\\\\laragon\\\\www\\\\ccscmed ls-files --others --exclude-standard public/ | Where-Object { $_ -match '\\\\.\\(png|jpg|jpeg|gif|svg|ico\\)$' })",
+      "PowerShell(git -C C:\\\\laragon\\\\www\\\\ccscmed ls-files public/ | Where-Object { $_ -match '\\\\.\\(png|jpg|jpeg|gif|svg|ico\\)$' } | Where-Object { $_ -notmatch 'bower_components|ckeditor|bootstrap|font|dist3' })",
+      "PowerShell(git -C C:\\\\laragon\\\\www\\\\ccscmed ls-files public/assets/lte/dist/img/)",
+      "mcp__claude-in-chrome__navigate",
+      "Bash(mysql -u root -e \"SELECT annomes, sucursal_id, status FROM biblioteca.invcontrol WHERE annomes >= 202505 ORDER BY annomes DESC LIMIT 10;\")",
+      "mcp__claude-in-chrome__list_connected_browsers",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__claude-in-chrome__browser_batch",
+      "Bash(mysql -u root -e ' *)",
+      "Bash(mysql -u root biblioteca -e ' *)",
+      "Bash(mysql -u root biblioteca)",
+      "mcp__claude-in-chrome__find"
     ]
   }
 }

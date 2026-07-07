@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// Importaciones para relaciones CC y Campos adicionales
+// Importaciones para relaciones CC, Campos adicionales y Bodegas de inventario
+use App\Models\ApsucEtapaProdBodega;
 use App\Models\CcParamApsucetapaprod;
 use App\Models\EtapaProdCampo;
 
@@ -76,6 +77,12 @@ class AreaProduccionSucEtapaProd extends Model
     {
         return $this->hasMany(CcParamApsucetapaprod::class, 'apsucetapaprod_id')
                     ->orderBy('orden');
+    }
+
+    // Bodegas de inventario asignadas a esta etapa (para generar movimientos al aprobar)
+    public function bodegas()
+    {
+        return $this->hasMany(ApsucEtapaProdBodega::class, 'apsucetapaprod_id');
     }
 
 }

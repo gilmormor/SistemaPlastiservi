@@ -1725,6 +1725,10 @@ Route::get('areaproduccionsucetapaprod/{id}/editar', 'AreaProduccionSucEtapaProd
 Route::put('areaproduccionsucetapaprod/{id}', 'AreaProduccionSucEtapaProdController@actualizar')->name('actualizar_areaproduccionsucetapaprod');
 Route::get('areaproduccionsucetapaprod/sucetapaprodpage', 'AreaProduccionSucEtapaProdController@sucetapaprodpage')->name('sucetapaprodpage');
 Route::post('areaproduccionsucetapaprod/guardarordenetapaprod', 'AreaProduccionSucEtapaProdController@guardarordenetapaprod')->name('guardarordenetapaprod_areaproduccionsucetapaprod');
+// Bodegas de inventario por etapa de producción
+Route::get('areaproduccionsucetapaprod/{id}/bodegas', 'AreaProduccionSucEtapaProdController@listarBodegas')->name('listar_bodegas_apsucetapaprod');
+Route::post('areaproduccionsucetapaprod/{id}/bodegas', 'AreaProduccionSucEtapaProdController@guardarBodega')->name('guardar_bodega_apsucetapaprod');
+Route::delete('areaproduccionsucetapaprod/bodega/{id}', 'AreaProduccionSucEtapaProdController@eliminarBodega')->name('eliminar_bodega_apsucetapaprod');
 
 /*RUTAS ACUERDO TECNICO ETAPAS DE PRODUCCION*/
 Route::get('acuerdotecnicoetapaprod', 'AcuerdoTecnicoEtapaProdController@index')->name('acuerdotecnicoetapaprod');
@@ -1778,6 +1782,12 @@ Route::get('ccdesbloqueo',                   'CcDesbloqueoController@index')->na
 Route::get('ccdesbloqueopage',               'CcDesbloqueoController@page')->name('ccdesbloqueopage');
 Route::post('ccdesbloqueo/{id}/desbloquear', 'CcDesbloqueoController@desbloquear')->name('desbloquear_ccdesbloqueo');
 
+/*RUTAS REPORTE MUESTRAS CC*/
+Route::get('reportccmuestra',                'ReportccMuestraController@index')->name('reportccmuestra');
+Route::get('reportccmuestrapage',            'ReportccMuestraController@page')->name('reportccmuestrapage');
+Route::get('reportccmuestra/exportPdf',      'ReportccMuestraController@exportPdf')->name('reportccmuestra_exportPdf');
+Route::get('reportccmuestra/totalizarindex', 'ReportccMuestraController@totalizarindex')->name('reportccmuestra_totalizarindex');
+
 Route::post('etapaprodcampo',                           'EtapaProdCampoController@guardar')->name('etapaprodcampo_guardar');
 Route::put('etapaprodcampo/{id}',                       'EtapaProdCampoController@actualizar')->name('etapaprodcampo_actualizar');
 Route::delete('etapaprodcampo/{id}',                    'EtapaProdCampoController@eliminar')->name('etapaprodcampo_eliminar');
@@ -1828,5 +1838,6 @@ Route::delete('opdetregprodtempaprobsup/{id}', 'OpDetRegProdTempAprobSupControll
 Route::get('opdetregprodtempaprobsup/listaropdet', 'OpDetRegProdTempAprobSupController@listaropdet')->name('opdetregprodtempaprobsup_listaropdet');
 Route::get('opdetregprodtempaprobsup/listaropdetpage', 'OpDetRegProdTempAprobSupController@listaropdetpage')->name('opdetregprodtempaprobsup_listaropdetpage');
 Route::post('opdetregprodtempaprobsup/aprob/{id}', 'OpDetRegProdTempAprobSupController@aprob')->name('opdetregprodtempaprobsup_aprob');
+Route::get('opdetregprodtempaprobsup/{id}/bodegas', 'OpDetRegProdTempAprobSupController@getBodegasParaTemp')->name('opdetregprodtempaprobsup_bodegas');
 Route::get('opdetregprodtempaprobsup/etiqueta-bodega/{opdetregprod_id}', 'OpDetRegProdTempAprobSupController@etiquetaBodega')->name('opdetregprodtempaprobsup_etiqueta_bodega');
 Route::get('opdetregprodtempaprobsup/etiqueta-etapa/{opdetregprod_id}', 'OpDetRegProdTempAprobSupController@etiquetaEtapa')->name('opdetregprodtempaprobsup_etiqueta_etapa');

@@ -37,6 +37,21 @@
                     </div>
                 </div>
             </div>
+                {{-- Select de bodega destino: visible solo cuando la etapa tiene múltiples bodegas.
+                     El JS de opdetregprodtempaprobsup/index.js lo muestra/oculta dinámicamente. --}}
+                <div id="divBodegaAprobSup" class="row" style="display:none; margin-top:5px;">
+                    <div class="form-group col-xs-12">
+                        <label class="control-label">
+                            <i class="fa fa-archive"></i> Bodega de producción destino
+                        </label>
+                        <select id="invbodega_id_aprob" class="form-control">
+                            <option value="">-- Seleccione --</option>
+                        </select>
+                        <span class="help-block text-muted" style="font-size:11px;">
+                            Esta etapa tiene múltiples bodegas. Seleccione dónde se registrará la producción.
+                        </span>
+                    </div>
+                </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                 <button type="button" id="btnaprobarM" name="btnaprobarM" class="btn btn-primary">Aprobar</button>

@@ -464,15 +464,24 @@ function renderTrazDespacho(r) {
         traza.forEach(function (sol) {
             // ── Sol ──────────────────────────────────────────────────────────
             var cSol = 's' + sol.id; // chain id acumulado
+            var solStyle = sol.anulada
+                ? 'font-size:12px;cursor:pointer;background:#c0392b;color:#fff;'
+                : 'font-size:12px;cursor:pointer;background:#e8920a;color:#fff;';
+            var solLabel = '<i class="fa fa-file-text-o"></i> Sol #' + sol.id +
+                           (sol.anulada ? ' <em>[Anulada]</em>' : '');
+            var solEstado = sol.anulada
+                ? '<span class="seg-chip" style="font-size:10px;background:#fadbd8;color:#c0392b;border:1px solid #e74c3c;">' +
+                  '<i class="fa fa-ban"></i> Anulada</span>'
+                : _trazEstadoSolOrd(sol.aprorddesp, sol.aprorddespfh);
             inner += '<div style="margin-bottom:5px;">' +
                      '<a class="seg-chip" data-chain="' + cSol + '" ' +
-                        'style="font-size:12px;cursor:pointer;background:#e8920a;color:#fff;" ' +
+                        'style="' + solStyle + '" ' +
                         'onclick="genpdfSD(' + sol.id + ',1)" ' +
                         'title="Solicitud de Despacho #' + sol.id + '">' +
-                        '<i class="fa fa-file-text-o"></i> Sol #' + sol.id + '</a>' +
+                        solLabel + '</a>' +
                      '<div style="margin-left:12px; margin-top:2px;">' +
                      _trazInfo(sol.usuario_nombre, sol.fechahora) +
-                     _trazEstadoSolOrd(sol.aprorddesp, sol.aprorddespfh) +
+                     solEstado +
                      '</div>';
 
             if (!sol.ords || sol.ords.length === 0) {

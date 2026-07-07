@@ -7,7 +7,9 @@ use App\Http\Requests\ValidarAreaProduccionSucLinea;
 use App\Http\Requests\ValidarEtapaProd;
 use App\Models\AreaProduccionSuc;
 use App\Models\AreaProduccionSucEtapaProd;
+use App\Models\ApsucEtapaProdBodega;
 use App\Models\EtapaProd;
+use App\Models\InvBodega;
 use App\Models\PersonaEtapaProd;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
@@ -179,5 +181,80 @@ class AreaProduccionSucEtapaProdController extends Controller
                 'tipo_alert' => 'error'
             ]);
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // Gestión de bodegas de inventario por etapa (apsucetapaprod_bodega)
+    // ─────────────────────────────────────────────────────────────
+
+    /**
+     * Lista las bodegas asignadas a la etapa y las bodegas disponibles de la sucursal.
+     */
+    public function listarBodegas($id)
+    {
+        can('editar-area-produccion-suc-etapa-prod');
+        $apsuc = AreaProduccionSucEtapaProd::with(['bodegas.invbodega'])->findOrFail($id);
+
+        // Bodegas ya asignadas a esta etapa
+        $asignadas = $apsuc->bodegas->map(function($b) {
+            return [
+                'id'            => $b->id,
+                'invbodega_id'  => $b->invbodega_id,
+                'bodega_nombre' => $b->invbodega ? $b->invbodega->nombre : '—',
+            ];
+        });
+
+        // Bodegas disponibles de la sucursal (excluyendo las ya asignadas)
+        $sucursal_id = $apsuc->areaproduccionsuc->sucursal_id ?? null;
+        $asignadasIds = $apsuc->bodegas->pluck('invbodega_id')->toArray();
+
+        $disponibles = InvBodega::where('sucursal_id', $sucursal_id)
+            ->whereNotIn('id', $asignadasIds)
+            ->whereNull('deleted_at')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre']);
+
+        return response()->json([
+            'asignadas'   => $asignadas,
+            'disponibles' => $disponibles,
+        ]);
+    }
+
+    /**
+     * Agrega una bodega a la etapa.
+     */
+    public function guardarBodega(Request $request, $id)
+    {
+        can('editar-area-produccion-suc-etapa-prod');
+        $invbodega_id = (int) $request->invbodega_id;
+        if (!$invbodega_id) {
+            return response()->json(['resp' => 0, 'mensaje' => 'Debe seleccionar una bodega.']);
+        }
+
+        // Verificar duplicado
+        $existe = ApsucEtapaProdBodega::where('apsucetapaprod_id', $id)
+            ->where('invbodega_id', $invbodega_id)
+            ->exists();
+        if ($existe) {
+            return response()->json(['resp' => 0, 'mensaje' => 'La bodega ya está asignada a esta etapa.']);
+        }
+
+        ApsucEtapaProdBodega::create([
+            'apsucetapaprod_id' => $id,
+            'invbodega_id'      => $invbodega_id,
+        ]);
+
+        return response()->json(['resp' => 1, 'mensaje' => 'Bodega asignada con éxito.']);
+    }
+
+    /**
+     * Elimina la asignación de una bodega a la etapa.
+     */
+    public function eliminarBodega(Request $request, $id)
+    {
+        can('editar-area-produccion-suc-etapa-prod');
+        $bodega = ApsucEtapaProdBodega::findOrFail($id);
+        $bodega->delete();
+        return response()->json(['resp' => 1, 'mensaje' => 'Bodega eliminada con éxito.']);
     }
 }

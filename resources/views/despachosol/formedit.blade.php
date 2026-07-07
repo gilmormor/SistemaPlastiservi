@@ -700,8 +700,17 @@
                                                                 IFNULL(
                                                                     (SELECT SUM(dsop.cant)
                                                                      FROM   despachosoldet_opdetregprod dsop
+                                                                     JOIN   despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+                                                                                               AND dsd.deleted_at IS NULL
+                                                                     JOIN   despachosol ds    ON ds.id  = dsd.despachosol_id
+                                                                                               AND ds.deleted_at IS NULL
                                                                      WHERE  dsop.opdetregprod_id = imop.opdetregprod_id
-                                                                       AND  dsop.despachosoldet_id != ?),
+                                                                       AND  dsop.despachosoldet_id != ?
+                                                                       AND  ds.id NOT IN (
+                                                                                SELECT despachosolanul.despachosol_id
+                                                                                FROM   despachosolanul
+                                                                                WHERE  despachosolanul.deleted_at IS NULL
+                                                                           )),
                                                                     0
                                                                 ) AS cant_despachada
                                                             FROM  invmovdetnvdet imdnv
@@ -729,6 +738,41 @@
                                                             ->where('despachosoldet_id', $detalle->id)
                                                             ->get()
                                                             ->keyBy('opdetregprod_id');
+
+                                                        // CC: estado de calidad por lote para bloqueo/advertencia (igual que en crearsol)
+                                                        $ccStatusPorLote = [];
+                                                        if ($lotesRow->isNotEmpty()) {
+                                                            $loteIds      = $lotesRow->pluck('opdetregprod_id')->toArray();
+                                                            $placeholders = implode(',', array_fill(0, count($loteIds), '?'));
+                                                            $ccRows = DB::select("
+                                                                SELECT
+                                                                    ccm.opdetregprod_id,
+                                                                    SUM(IF(ccm.status = 3 AND desb.id IS NULL, 1, 0))     AS rechazados_bloqueados,
+                                                                    SUM(IF(ccm.status = 3 AND desb.id IS NOT NULL, 1, 0)) AS rechazados_desbloqueados,
+                                                                    SUM(IF(ccm.status = 2, 1, 0))                         AS con_obs,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NULL, ccm.id, NULL)
+                                                                                 ORDER BY ccm.id SEPARATOR ', ')           AS ids_bloqueados,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NOT NULL, ccm.id, NULL)
+                                                                                 ORDER BY ccm.id SEPARATOR ', ')           AS ids_desbloqueados,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 2, ccm.id, NULL)
+                                                                                 ORDER BY ccm.id SEPARATOR ', ')           AS ids_con_obs,
+                                                                    GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NOT NULL,
+                                                                                 CONCAT(udesb.nombre, ' — ', DATE_FORMAT(desb.created_at,'%d/%m/%Y %H:%i'),
+                                                                                        IF(desb.observacion IS NOT NULL AND desb.observacion != '', CONCAT(': ', desb.observacion), '')),
+                                                                                 NULL)
+                                                                                 ORDER BY desb.id SEPARATOR ' | ')         AS desbloqueo_info
+                                                                FROM   ccregistmuestra ccm
+                                                                LEFT JOIN ccregistmuestra_desbloqueo desb ON desb.ccregistmuestra_id = ccm.id
+                                                                LEFT JOIN usuario udesb                  ON udesb.id = desb.usuario_id
+                                                                WHERE  ccm.opdetregprod_id IN ($placeholders)
+                                                                  AND  ccm.deleted_at IS NULL
+                                                                  AND  ccm.sta_env = 2
+                                                                GROUP BY ccm.opdetregprod_id
+                                                            ", $loteIds);
+                                                            foreach ($ccRows as $ccRow) {
+                                                                $ccStatusPorLote[$ccRow->opdetregprod_id] = $ccRow;
+                                                            }
+                                                        }
                                                     ?>
                                                     {{-- <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$spRow->bodega_sucursal_id}}"> --}}
                                                     <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}">
@@ -813,8 +857,14 @@
                                                         $loteAsigExist = $existingLoteAsig->get($loteRow->opdetregprod_id);
                                                         $cantPreFill   = $loteAsigExist ? $loteAsigExist->cant   : 0;
                                                         $cantKgPreFill = $loteAsigExist ? $loteAsigExist->cantkg : 0;
+                                                        // Estado CC del lote
+                                                        $ccInfoLote       = $ccStatusPorLote[$loteRow->opdetregprod_id] ?? null;
+                                                        $loteBlocked      = $ccInfoLote && $ccInfoLote->rechazados_bloqueados > 0;
+                                                        $loteDesbloqueado = !$loteBlocked && $ccInfoLote && $ccInfoLote->rechazados_desbloqueados > 0;
+                                                        $loteConObs       = !$loteBlocked && !$loteDesbloqueado && $ccInfoLote && $ccInfoLote->con_obs > 0;
+                                                        $rowBg            = $loteBlocked ? '#fff0f0' : ($loteDesbloqueado ? '#f0f8ff' : ($loteConObs ? '#fffbe6' : '#f5f5f5'));
                                                     ?>
-                                                    <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:#f5f5f5;">
+                                                    <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:{{$rowBg}};">
                                                         <td style="display:none;">
                                                             {{-- Inputs ocultos: identifican el lote, la bodega y el NVdet al que pertenece --}}
                                                             <input type="hidden" name="opdetregprod_id[]"       value="{{$loteRow->opdetregprod_id}}"/>
@@ -822,9 +872,50 @@
                                                             {{-- En edición, NVdet_id[] = despachosoldet_id, por eso usamos $detalle->id aquí --}}
                                                             <input type="hidden" name="opdetregprod_nvdet_id[]" value="{{$detalle->id}}"/>
                                                         </td>
-                                                        <td colspan="2" style="padding:1px 6px;font-size:10px;color:#888;text-align:left;vertical-align:middle;">
-                                                            ↳ Lote #{{$loteRow->opdetregprod_id}}
+                                                        <td colspan="2" style="padding:1px 6px;font-size:10px;text-align:left;vertical-align:middle;">
+                                                            <span style="color:#888;">↳ Lote #{{$loteRow->opdetregprod_id}}</span>
                                                             <span style="color:#bbb;" title="Total producido: {{$loteRow->cant_lote}} | Ya despachado: {{$loteRow->cant_despachada}}">(disp. {{$loteRow->cant_disponible}} un)</span>
+                                                            @if($loteBlocked)
+                                                                @php $idsBlq = explode(', ', $ccInfoLote->ids_bloqueados); @endphp
+                                                                <br><span class="label label-danger tooltipsC"
+                                                                    title="Vaya a CC → Muestras para desbloquear.">
+                                                                    <i class="fa fa-ban"></i> Rechazado CC — Muestra(s):
+                                                                    @foreach($idsBlq as $mId)
+                                                                        <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
+                                                                           style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
+                                                                    @endforeach
+                                                                    — Reg. Prod.
+                                                                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
+                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                </span>
+                                                            @elseif($loteDesbloqueado)
+                                                                @php $idsDesb = explode(', ', $ccInfoLote->ids_desbloqueados); @endphp
+                                                                <br><span class="label tooltipsC"
+                                                                    style="background:#00c0ef;"
+                                                                    title="Rechazado CC y desbloqueado para despacho. {{$ccInfoLote->desbloqueo_info ?? ''}}">
+                                                                    <i class="fa fa-unlock"></i> Desbloqueado CC — Muestra(s):
+                                                                    @foreach($idsDesb as $mId)
+                                                                        <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
+                                                                           style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
+                                                                    @endforeach
+                                                                    — Reg. Prod.
+                                                                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
+                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                </span>
+                                                            @elseif($loteConObs)
+                                                                @php $idsObs = explode(', ', $ccInfoLote->ids_con_obs); @endphp
+                                                                <br><span class="label label-warning tooltipsC"
+                                                                    title="Aprobado con observaciones — puede despachar.">
+                                                                    <i class="fa fa-exclamation-triangle"></i> CC con observaciones — Muestra(s):
+                                                                    @foreach($idsObs as $mId)
+                                                                        <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
+                                                                           style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
+                                                                    @endforeach
+                                                                    — Reg. Prod.
+                                                                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
+                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                </span>
+                                                            @endif
                                                         </td>
                                                         <td style="padding:1px 2px;vertical-align:middle;">
                                                             {{-- Cantidad asignada a este lote; pre-cargada si ya fue guardada antes --}}
@@ -837,7 +928,8 @@
                                                                    data-max="{{$loteRow->cant_disponible}}"
                                                                    data-cantkg-total="{{$loteRow->cantkg_disponible}}"
                                                                    value="{{$cantPreFill}}"
-                                                                   style="text-align:right;font-size:11px;"/>
+                                                                   style="text-align:right;font-size:11px;{{$loteBlocked ? 'background:#ffcccc;cursor:not-allowed;' : ''}}"
+                                                                   @if($loteBlocked) disabled title="Bloqueado por rechazo CC — Muestra(s) #{{$ccInfoLote->ids_bloqueados}}" @endif />
                                                             {{-- Kg proporcionales calculados por JS --}}
                                                             <input type="hidden"
                                                                    name="opdetregprod_cantkg[]"

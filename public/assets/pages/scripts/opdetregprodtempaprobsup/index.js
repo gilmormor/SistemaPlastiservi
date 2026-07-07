@@ -154,6 +154,10 @@ function aprobrecproducc(id,updatednum_at,puedeAprobar,puedeRechazar){
 	$("#id").val(id);
 	$("#aprobobs").val("");
 
+	// Resetear el select de bodega (oculto hasta que se carguen datos)
+	$('#divBodegaAprobSup').hide();
+	$('#invbodega_id_aprob').html('<option value="">-- Cargando... --</option>');
+
 	// Aplicar reglas de orden ASC/DESC sobre los botones del modal.
 	// Por defecto ambos botones visibles/habilitados.
 	$("#btnaprobarM").prop('disabled', false).show();
@@ -174,11 +178,41 @@ function aprobrecproducc(id,updatednum_at,puedeAprobar,puedeRechazar){
 		$("#aprobobs").before(html);
 	}
 
+	// Cargar bodegas configuradas para la etapa de este registro
+	$.get('/opdetregprodtempaprobsup/' + id + '/bodegas', function(resp) {
+		if (resp.count === 1) {
+			// Una sola bodega: preseleccionar silenciosamente sin mostrar el select
+			$('#invbodega_id_aprob')
+				.html('<option value="' + resp.bodegas[0].id + '">' + resp.bodegas[0].nombre + '</option>')
+				.val(resp.bodegas[0].id);
+		} else if (resp.count > 1) {
+			// Múltiples bodegas: mostrar select para que el usuario elija
+			var opts = '<option value="">-- Seleccione bodega --</option>';
+			resp.bodegas.forEach(function(b) {
+				opts += '<option value="' + b.id + '">' + b.nombre + '</option>';
+			});
+			$('#invbodega_id_aprob').html(opts);
+			$('#divBodegaAprobSup').show();
+		} else {
+			// Sin bodegas configuradas: limpiar select
+			$('#invbodega_id_aprob').html('');
+		}
+	}).fail(function() {
+		$('#invbodega_id_aprob').html('');
+	});
+
 	$("#myModalaprobcot").modal('show');
 }
 
 
 $("#btnaprobarM").click(function(event){
+	// Validar bodega si el select está visible (múltiples bodegas)
+	var invbodega_id_val = $('#invbodega_id_aprob').val();
+	if ($('#divBodegaAprobSup').is(':visible') && !invbodega_id_val) {
+		alertify.error('Debe seleccionar la bodega de producción destino.');
+		return;
+	}
+
 	var data = {
 		id       : $("#id").val(),
 		staaprob : 2,
@@ -186,6 +220,10 @@ $("#btnaprobarM").click(function(event){
         updated_at : $("#fila" + $("#id").val()).attr("updated_at"),
         _token: $('input[name=_token]').val()
 	};
+	// Incluir bodega si está disponible (1 bodega auto-seleccionada o elegida por el usuario)
+	if (invbodega_id_val) {
+		data['invbodega_id'] = invbodega_id_val;
+	}
 	var ruta = '/opdetregprodtempaprobsup/aprob/'+data['id'];
 	swal({
 		title: '¿ Seguro desea Aprobar ?',
@@ -243,10 +281,14 @@ function ajaxRequest(data,url,funcion) {
 		success: function (respuesta) {
 			if(funcion=='aprobarproducc'){
 				if(respuesta.resp == 2){
-					// Servidor pide seleccionar bodega de producción
+					// Fallback: el servidor solicitó bodega pero no llegó en el request.
+					// Cerrar el modal Bootstrap antes de mostrar el swal para evitar que quede oculto.
 					_lastAprobData = data;
 					_lastAprobUrl  = url;
-					mostrarModalBodega(respuesta.bodegas);
+					$("#myModalaprobcot").modal('hide');
+					setTimeout(function(){
+						mostrarModalBodega(respuesta.bodegas);
+					}, 400);
 					return;
 				}
 

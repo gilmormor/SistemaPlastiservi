@@ -31,6 +31,7 @@ use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
+use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
@@ -1163,8 +1164,20 @@ class DespachoOrdController extends Controller
 
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
             $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
-            validarSiExisteBodega($despachoord,$invmoduloBod);   
+            validarSiExisteBodega($despachoord,$invmoduloBod);
+            // Validar que el período de inventario esté aperturado antes de crear movimientos
             $annomes = date("Ym");
+            if (!InvControl::where('annomes', $annomes)
+                    ->where('sucursal_id', $despachoord->notaventa->sucursal_id)
+                    ->where('status', 0)
+                    ->exists()) {
+                return response()->json([
+                    'status'     => 0,
+                    'tipmen'     => 'error',
+                    'mensaje'    => 'El período de inventario ' . $annomes . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
             $invmov_array = array();
             $invmov_array["fechahora"] = date("Y-m-d H:i:s");
             $invmov_array["annomes"] = $annomes;

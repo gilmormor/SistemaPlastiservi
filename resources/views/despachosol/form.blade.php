@@ -696,7 +696,16 @@
                                                                 IFNULL(
                                                                     (SELECT SUM(dsop.cant)
                                                                      FROM   despachosoldet_opdetregprod dsop
-                                                                     WHERE  dsop.opdetregprod_id = imop.opdetregprod_id),
+                                                                     JOIN   despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+                                                                                               AND dsd.deleted_at IS NULL
+                                                                     JOIN   despachosol ds    ON ds.id  = dsd.despachosol_id
+                                                                                               AND ds.deleted_at IS NULL
+                                                                     WHERE  dsop.opdetregprod_id = imop.opdetregprod_id
+                                                                       AND  ds.id NOT IN (
+                                                                                SELECT despachosolanul.despachosol_id
+                                                                                FROM   despachosolanul
+                                                                                WHERE  despachosolanul.deleted_at IS NULL
+                                                                           )),
                                                                     0
                                                                 ) AS cant_despachada
                                                             FROM  invmovdetnvdet imdnv

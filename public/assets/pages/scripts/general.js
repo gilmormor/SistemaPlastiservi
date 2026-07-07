@@ -2558,6 +2558,8 @@ $(document).on('input', '.lote-cant-input', function() {
     });
     var $bodInput = $('input.invcant[id$="-' + ibpId + '"]');
     $bodInput.val(totalLotes > 0 ? totalLotes : '');
+    // Actualizar label visible en formedit (cantorddespF muestra <label> en vez de input)
+    $('#cantorddespF' + ibpId + ' label').text(totalLotes > 0 ? totalLotes : 0);
 
     // Llamar sumbod() para actualizar cantsolTotal y subtotales del ítem
     if (nfila) {
