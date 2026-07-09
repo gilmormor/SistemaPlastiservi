@@ -452,7 +452,7 @@
                                 </td>
                                 <td style="text-align:right;"> 
                                     <div class="form-group">
-                                        @if ($detalle->notaventadetalle->categoriaprod->stadespsinstock == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
+                                        @if ($detalle->notaventadetalle->categoriaprod->stakgguiadesp == 1) <!--ESTO SE MUESTRA SOLO A LOS PRODUCTOS QUE PERMITE STOCK <= 0 -->
                                             <a id="aux_kilos{{$aux_nfila}}" name="aux_kilos{{$aux_nfila}}" class="btn-accion-tabla btn-sm editarcampoNum" title="Editar Kilos" data-toggle="tooltip" valor={{isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos}} fila="{{$aux_nfila}}" tipocampo="numerico" nomcampo="aux_kilos">
                                                 {{number_format(isset($dteguiadesp) ? $detalle->itemkg : $aux_kilos, 2, ',', '.')}}
                                             </a>                                        
