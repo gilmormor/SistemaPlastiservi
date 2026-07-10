@@ -33,11 +33,11 @@
 					<th style='text-align:left;white-space:nowrap'>IdDet</th>
 					<th style='text-align:left;white-space:nowrap'>Fecha</th>
 					<th style='text-align:left'>Descripcion</th>
-					<th style='text-align:left;white-space:nowrap'>CodProd</th>
+					<th style='text-align:center;white-space:nowrap'>CodProd</th>
 					<th style='text-align:left'>Producto</th>
 					<th style='text-align:left'>Modulo</th>
 					<th style='text-align:left'>Bodega</th>
-					<th style='text-align:center;white-space:nowrap'>Cant</th>
+					<th style='text-align:right;white-space:nowrap'>Cant</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -50,11 +50,11 @@
 						<td style='text-align:left;white-space:nowrap'>{{$data->invmovdet_id}}</td>
 						<td style='text-align:left;white-space:nowrap'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
 						<td>{{$data->desc}}</td>
-						<td style='text-align:left;white-space:nowrap'>{{$data->producto_id}}</td>
+						<td style='text-align:center;white-space:nowrap'>{{$data->producto_id}}</td>
 						<td style='text-align:left'>{{$data->producto_nombre}}</td>
 						<td style='text-align:left'>{{$data->invmovmodulo_nombre}}</td>
 						<td style='text-align:left'>{{$data->invbodega_nombre}}</td>
-						<td style='text-align:center;white-space:nowrap'>{{$data->cant}}</td>
+						<td style='text-align:right;white-space:nowrap'>{{$data->cant}}&nbsp;&nbsp;</td>
 					</tr>
 					<?php 
 						$aux_total += $data->cant;
@@ -65,7 +65,7 @@
 			<tfoot id="detalle_totales">
 				<tr>
 					<th colspan='8' style='text-align:right'>TOTAL</th>
-					<th style='text-align:center'>{{number_format($aux_total, 0, ",", ".")}}</th>
+					<th style='text-align:right'>{{number_format($aux_total, 0, ",", ".")}}&nbsp;&nbsp;</th>
 				</tr>
 			</tfoot>
 		</table>
