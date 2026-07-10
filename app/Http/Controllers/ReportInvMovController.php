@@ -74,6 +74,7 @@ class ReportInvMovController extends Controller
             //return view('notaventaconsulta.listado', compact('notaventas','empresa','usuario','aux_fdesde','aux_fhasta','nomvendedor','nombreAreaproduccion','nombreGiro','nombreTipoEntrega'));
             
             $pdf = PDF::loadView('reportinvmov.listado', compact('datas','empresa','usuario','request'));
+            $pdf->setPaper('a4', 'landscape'); // Horizontal para que entren todas las columnas
             //return $pdf->download('cotizacion.pdf');
             //return $pdf->stream(str_pad($notaventa->id, 5, "0", STR_PAD_LEFT) .' - '. $notaventa->cliente->razonsocial . '.pdf');
             return $pdf->stream("ReporteMovInv.pdf");

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
+﻿<link rel="stylesheet" href="{{asset("assets/css/factura.css")}}">
 
 <!--<img class="anulada" src="img/anulado.png" alt="Anulada">-->
 <br>
@@ -26,18 +26,29 @@
 	</table>
 
 	<div class="round">
-		<table id="factura_detalle">
+		<table id="factura_detalle" style='table-layout:fixed;'>
+			<colgroup>
+				<col style='width:4%'>
+				<col style='width:5%'>
+				<col style='width:9%'>
+				<col style='width:22%'>
+				<col style='width:7%'>
+				<col style='width:26%'>
+				<col style='width:8%'>
+				<col style='width:14%'>
+				<col style='width:5%'>
+			</colgroup>
 			<thead>
 				<tr>
-					<th style='text-align:left' class='width10'>Id</th>
-					<th style='text-align:left' class='width10'>IdDet</th>
-					<th style='text-align:left' class='width90'>Fecha</th>
-					<th style='text-align:left' class='width90'>Descripcion</th>
-					<th style='text-align:left' class='width30'>CodProd</th>
-					<th style='text-align:left' class='width40'>Producto</th>
-					<th style='text-align:left' class='width10'>Modulo</th>
-					<th style='text-align:left' class='width90'>Bodega</th>
-					<th style='text-align:center' class='width40'>Cant</th>
+					<th style='text-align:left'>Id</th>
+					<th style='text-align:left'>IdDet</th>
+					<th style='text-align:left'>Fecha</th>
+					<th style='text-align:left'>Descripcion</th>
+					<th style='text-align:left'>CodProd</th>
+					<th style='text-align:left'>Producto</th>
+					<th style='text-align:left'>Modulo</th>
+					<th style='text-align:left'>Bodega</th>
+					<th style='text-align:center'>Cant</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -50,7 +61,7 @@
 						<td style='text-align:center'>{{$data->invmovdet_id}}</td>
 						<td style='text-align:center'>{{date('d/m/Y', strtotime($data->fechahora))}}</td>
 						<td>{{$data->desc}}</td>
-						<td style='text-align:center'>{{$data->producto_id}}</td>
+						<td style='text-align:left'>{{$data->producto_id}}</td>
 						<td style='text-align:left'>{{$data->producto_nombre}}</td>
 						<td style='text-align:left'>{{$data->invmovmodulo_nombre}}</td>
 						<td style='text-align:left'>{{$data->invbodega_nombre}}</td>
