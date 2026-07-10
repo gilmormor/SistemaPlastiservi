@@ -5,7 +5,12 @@
       "Bash(findstr \".env\")",
       "Bash(mysql -u root plxrevisarcierregd -e \"DESCRIBE permiso;\")",
       "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE '%menu%';\")",
-      "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE '%permiso%';\")"
+      "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE '%permiso%';\")",
+      "mcp__claude-in-chrome__navigate",
+      "mcp__claude-in-chrome__computer",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__claude-in-chrome__list_connected_browsers",
+      "mcp__claude-in-chrome__select_browser"
     ]
   }
 }
