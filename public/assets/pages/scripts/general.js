@@ -1847,6 +1847,19 @@ $("#producto_idM").blur(function(){
 				if(respuesta['cont']>0){
 					$("#producto_idM").attr("acuerdotecnico_id",respuesta.acuerdotecnico_id ? respuesta.acuerdotecnico_id : 0);
 					if(respuesta['estado'] == 0){
+						// Si la pantalla permite inactivos (ej: inventsal), muestra advertencia y deja continuar
+						if(typeof permitirProductoInactivo !== 'undefined' && permitirProductoInactivo){
+							swal({
+								title: 'Advertencia',
+								text: "Producto existe pero está Inactivo. Puede continuar el registro.",
+								icon: 'warning',
+								buttons: { confirm: "Aceptar" },
+							});
+							aux_datosproducto = respuesta;
+							llenarPantallaProductoNew(respuesta);
+							return 0;
+						}
+						// En el resto del sistema bloquea el ingreso (comportamiento original)
 						swal({
 							title: 'Producto inactivo.',
 							text: "Producto existe pero está Inactivo.",
@@ -1860,7 +1873,7 @@ $("#producto_idM").blur(function(){
 								$("#producto_idM").focus();
 							}
 						});
-						return 0;	
+						return 0;
 					}
 					//console.log(respuesta['nombre']);
 					//console.log(respuesta);
@@ -3097,18 +3110,29 @@ async function buscarDatosProd(producto_id){
 				//console.log(respuesta);
 				if(respuesta['cont']>0){
 					if(respuesta['estado'] == 0){
-						swal({
-							title: 'Producto inactivo.',
-							text: "Producto existe pero está Inactivo.",
-							icon: 'error',
-							buttons: {
-								confirm: "Aceptar"
-							},
-						}).then((value) => {
-							if (value) {
-								$("#producto_idM").focus();
-							}
-						});
+						// Si la pantalla permite inactivos (ej: inventsal), muestra advertencia y deja continuar
+						if(typeof permitirProductoInactivo !== 'undefined' && permitirProductoInactivo){
+							swal({
+								title: 'Advertencia',
+								text: "Producto existe pero está Inactivo. Puede continuar el registro.",
+								icon: 'warning',
+								buttons: { confirm: "Aceptar" },
+							});
+						} else {
+							// En el resto del sistema bloquea el ingreso (comportamiento original)
+							swal({
+								title: 'Producto inactivo.',
+								text: "Producto existe pero está Inactivo.",
+								icon: 'error',
+								buttons: {
+									confirm: "Aceptar"
+								},
+							}).then((value) => {
+								if (value) {
+									$("#producto_idM").focus();
+								}
+							});
+						}
 					}
 				}else{
 					producto_id.val("");

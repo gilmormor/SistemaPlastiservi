@@ -4,6 +4,8 @@
 @endsection
 
 @section("scripts")
+    {{-- Permite ingresar productos inactivos en movimientos de inventario (solo advertencia, no bloquea) --}}
+    <script>var permitirProductoInactivo = true;</script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/inventsal/crear.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/producto/buscarnew.js")}}" type="text/javascript"></script>
