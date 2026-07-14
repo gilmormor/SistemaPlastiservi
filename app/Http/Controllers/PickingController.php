@@ -301,6 +301,20 @@ class PickingController extends Controller
                     'tipo_alert' => 'alert-error'
                 ]);    
             }
+            $aux_sucursal_id_producto = $invbodegaproducto->invbodega->sucursal_id; 
+            $aux_bodega_idPesaje = 0;
+            foreach($invmoduloBodPesaje->invmovmodulobodents as $invmovmodulobodent){
+                //BUSCAR BODEGA PESAJE CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
+                if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
+                    $aux_bodega_idPesaje = $invmovmodulobodent->id;
+                }
+            }
+            if($aux_bodega_idPesaje == 0){
+                return redirect('/')->with([
+                    'mensaje'=> "Picking: No ha sido asignada la bodega de pesaje al modulo en la ruta invmovmodulo, sucursal: " . $despachosol->notaventa->sucursal->nombre . ", Bodega: " . $invbodegaproducto->invbodega->nombre . ". Id: " . $invbodegaproducto->producto_id . ", Nombre: " . $invbodegaproducto->producto->nombre,
+                    'tipo_alert' => 'alert-error'
+                ]);    
+            }
         }
         //HASTA AQUI LA VALIDACION: EN EL CASO QUE EXISTAN 2 PRODUCTOS IGUALES EN LA NV 
 
