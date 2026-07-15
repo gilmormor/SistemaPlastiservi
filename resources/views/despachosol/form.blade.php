@@ -866,9 +866,8 @@
                                                                         <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
                                                                            style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
                                                                     @endforeach
-                                                                    — Reg. Prod.
                                                                     <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
-                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                       style="color:#fff;font-weight:600;cursor:pointer;" title="Ver etiqueta — Lote de producción #{{$loteRow->opdetregprod_id}}"><i class="fa fa-tag"></i> Lote-{{$loteRow->opdetregprod_id}}</a>
                                                                 </span>
                                                             @elseif($loteDesbloqueado)
                                                                 @php $idsDesb = explode(', ', $ccInfoLote->ids_desbloqueados); @endphp
@@ -880,9 +879,8 @@
                                                                         <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
                                                                            style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
                                                                     @endforeach
-                                                                    — Reg. Prod.
                                                                     <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
-                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                       style="color:#fff;font-weight:600;cursor:pointer;" title="Ver etiqueta — Lote de producción #{{$loteRow->opdetregprod_id}}"><i class="fa fa-tag"></i> Lote-{{$loteRow->opdetregprod_id}}</a>
                                                                 </span>
                                                             @elseif($loteConObs)
                                                                 @php $idsObs = explode(', ', $ccInfoLote->ids_con_obs); @endphp
@@ -893,9 +891,8 @@
                                                                         <a href="javascript:void(0);" onclick="genpdfCC({{trim($mId)}})"
                                                                            style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver PDF muestra CC #{{trim($mId)}}">#{{trim($mId)}}</a>{{ !$loop->last ? ',' : '' }}
                                                                     @endforeach
-                                                                    — Reg. Prod.
                                                                     <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow->opdetregprod_id}})"
-                                                                       style="color:#fff;text-decoration:underline;cursor:pointer;" title="Ver etiqueta Reg. Prod. #{{$loteRow->opdetregprod_id}}">#{{$loteRow->opdetregprod_id}}</a>
+                                                                       style="color:#fff;font-weight:600;cursor:pointer;" title="Ver etiqueta — Lote de producción #{{$loteRow->opdetregprod_id}}"><i class="fa fa-tag"></i> Lote-{{$loteRow->opdetregprod_id}}</a>
                                                                 </span>
                                                             @endif
                                                         </td>

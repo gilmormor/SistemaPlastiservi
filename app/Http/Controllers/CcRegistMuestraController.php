@@ -171,6 +171,36 @@ class CcRegistMuestraController extends Controller
     {
         can('crear-ccregistmuestra');
 
+        // R2: Muestra sin parámetros — se registra que no se pudo tomar la muestra
+        if ($request->input('sin_parametros') == '1') {
+            $request->validate([
+                'opdetregprod_id' => 'required|integer|exists:opdetregprod,id',
+                'observacion'     => 'required|string|min:1|max:500',
+            ], [
+                'observacion.required' => 'El motivo es obligatorio al registrar sin parámetros.',
+            ]);
+
+            DB::beginTransaction();
+            try {
+                $muestra = CcRegistMuestra::create([
+                    'opdetregprod_id'  => $request->opdetregprod_id,
+                    'fechahora'        => now()->format('Y-m-d H:i:s'),
+                    'usuario_id'       => auth()->id(),
+                    'status'           => 5,   // Sin parámetros
+                    'observacion'      => $request->observacion,
+                    'sta_env'          => 2,   // Auto-aprobado: sin medición no requiere revisión
+                    'fechahora_env'    => now()->format('Y-m-d H:i:s'),
+                    'usuariostaenv_id' => auth()->id(),
+                ]);
+                DB::commit();
+                return redirect()->route('ver_ccregistmuestra', ['id' => $muestra->id])
+                    ->with('mensaje', 'Registrada como "Sin parámetros". No bloqueará el despacho.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->withInput()->with('mensaje', 'Error al guardar: ' . $e->getMessage());
+            }
+        }
+
         $forzarStatus2 = $request->input('forzar_status_2') == '1';
 
         $request->validate([
@@ -246,6 +276,74 @@ class CcRegistMuestraController extends Controller
         ", [$muestra->opdetregprod_id]);
         $reg = !empty($opdetregprod) ? $opdetregprod[0] : null;
         return view('ccregistmuestra.ver', compact('muestra', 'reg'));
+    }
+
+    /**
+     * Etiqueta compacta de muestra CC (térmica 10.4 x 5.08 cm).
+     * Sin tabla de parámetros — QR apunta a la muestra CC en el sistema.
+     */
+    public function etiquetaCompacta($id)
+    {
+        can('ver-ccregistmuestra');
+        $muestra = CcRegistMuestra::with(['usuario'])->findOrFail($id);
+        $reg = $this->_getDatosReg($muestra->opdetregprod_id);
+
+        $productoNombre = $reg ? $reg->producto_nombre : '—';
+        $etapaNombre    = $reg ? $reg->etapaprod_nombre : '—';
+        $usuarioCC      = $muestra->usuario->nombre ?? '—';
+        $op_id          = $reg ? $reg->op_id : '—';
+        $ot_id          = $reg ? $reg->ot_id : '—';
+
+        return view('ccregistmuestra.etiqueta-compacta',
+            compact('muestra', 'productoNombre', 'etapaNombre', 'usuarioCC', 'op_id', 'ot_id'));
+    }
+
+    /**
+     * Etiqueta completa de muestra CC (papel, incluye tabla de parámetros medidos).
+     */
+    public function etiquetaCompleta($id)
+    {
+        can('ver-ccregistmuestra');
+        $muestra = CcRegistMuestra::with(['dets.ccparamApsucetapaprod.ccparam', 'usuario'])->findOrFail($id);
+        $reg = $this->_getDatosReg($muestra->opdetregprod_id);
+
+        $productoNombre = $reg ? $reg->producto_nombre : '—';
+        $etapaNombre    = $reg ? $reg->etapaprod_nombre : '—';
+        $usuarioCC      = $muestra->usuario->nombre ?? '—';
+        $op_id          = $reg ? $reg->op_id : '—';
+        $ot_id          = $reg ? $reg->ot_id : '—';
+        $kgprod         = $reg ? $reg->kgprod : 0;
+        $cantprod       = $reg ? $reg->cantprod : null;
+        $unidadmedida   = $reg ? ($reg->unidadmedidasal_nombre ?? '') : '';
+
+        return view('ccregistmuestra.etiqueta-completa',
+            compact('muestra', 'productoNombre', 'etapaNombre', 'usuarioCC',
+                    'op_id', 'ot_id', 'kgprod', 'cantprod', 'unidadmedida'));
+    }
+
+    /**
+     * Helper privado: obtiene datos del registro de producción asociado.
+     */
+    private function _getDatosReg($opdetregprod_id)
+    {
+        $rows = DB::select("
+            SELECT odrp.id, odrp.kgprod, odrp.cantprod,
+                   ep.nombre   AS etapaprod_nombre,
+                   prod.nombre AS producto_nombre,
+                   op.id       AS op_id,
+                   ot.id       AS ot_id,
+                   um.nombre   AS unidadmedidasal_nombre
+            FROM opdetregprod odrp
+            INNER JOIN etapaprod ep   ON ep.id   = odrp.etapaprod_id
+            INNER JOIN producto prod  ON prod.id = odrp.producto_id
+            INNER JOIN opdet          ON opdet.id = odrp.opdet_id
+            INNER JOIN op             ON op.id    = opdet.op_id
+            INNER JOIN otdet          ON otdet.id = op.otdet_id
+            INNER JOIN ot             ON ot.id    = otdet.ot_id
+            LEFT  JOIN unidadmedida um ON um.id   = odrp.unidadmedidasal_id
+            WHERE odrp.id = ? LIMIT 1
+        ", [$opdetregprod_id]);
+        return !empty($rows) ? $rows[0] : null;
     }
 
     /**
@@ -482,6 +580,7 @@ class CcRegistMuestraController extends Controller
         $sql = "
             SELECT
                 odrp.id,
+                odrp.es_muestra,
                 odrp.created_at,
                 odrp.kgprod,
                 odrp.cantprod,
@@ -510,7 +609,7 @@ class CcRegistMuestraController extends Controller
             LEFT  JOIN ccregistmuestra ccm
                    ON ccm.opdetregprod_id = odrp.id AND ISNULL(ccm.deleted_at)
             {$where}
-            GROUP  BY odrp.id, odrp.created_at, odrp.kgprod, odrp.cantprod,
+            GROUP  BY odrp.id, odrp.es_muestra, odrp.created_at, odrp.kgprod, odrp.cantprod,
                       odrp.kgscrap, um.nombre, ep.nombre, prod.nombre, op.id, ot.id
             {$havingClause}
             ORDER  BY odrp.id DESC

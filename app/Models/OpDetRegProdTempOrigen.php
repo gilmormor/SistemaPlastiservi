@@ -52,6 +52,12 @@ class OpDetRegProdTempOrigen extends Model
      */
     public static function asignarFifo(OpDetRegProdTemp $temp)
     {
+        // R1: las muestras físicas no consumen lotes de la etapa anterior
+        if ($temp->es_muestra) {
+            self::where('opdetregprodtemp_id', $temp->id)->delete();
+            return;
+        }
+
         // Reasignación limpia: borrar reservas previas de este temp (si las hay)
         self::where('opdetregprodtemp_id', $temp->id)->delete();
 
@@ -74,8 +80,10 @@ class OpDetRegProdTempOrigen extends Model
         }
         if (!$opdetAnterior) return; // primera etapa: el origen vendrá del módulo MP (futuro)
 
-        // Lotes aprobados de la etapa anterior, FIFO (más antiguo primero)
+        // Lotes aprobados de la etapa anterior, FIFO (más antiguo primero).
+        // Se excluyen muestras físicas (es_muestra=1): no son producción disponible.
         $lotes = OpDetRegProd::where('opdet_id', $opdetAnterior->id)
+            ->where('es_muestra', 0)
             ->whereNull('deleted_at')
             ->orderBy('id', 'asc')
             ->get();

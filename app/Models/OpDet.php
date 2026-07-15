@@ -77,6 +77,7 @@ class OpDet extends Model
     {
         return $this->opdetregprodtemps()
             ->whereNull('deleted_at')
+            ->where('es_muestra', 0)  // R1: las muestras físicas no suman a producción
             ->where(function($q) {
                 $q->where('aprobstatus', '!=', 2)
                 ->orWhereNull('aprobstatus');

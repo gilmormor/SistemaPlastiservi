@@ -39,6 +39,15 @@ $(document).ready(function () {
             $(row).attr('name','fila' + data.id);
             $(row).attr('updated_at', data.updatednum_at);
 
+            // R1: resaltar filas de muestra física para CC
+            if (data.es_muestra == 1) {
+                $(row).css('background', '#fff3e0');
+                var idCell = $('td', row).eq(0);
+                idCell.html(idCell.text()
+                    + '<br><span class="label" style="background:#e65100;color:#fff;font-size:10px;padding:2px 5px;">'
+                    + '<i class="fa fa-flask"></i> MUESTRA CC</span>');
+            }
+
             /* aux_text = 
                 `<a id="otdet_id${data.id}" name="otdet_id${data.id}" class="btn-accion-tabla btn-sm" title="Ver OT: ${data.ot_id}" onclick='genpdf(${data.ot_id},"","ver-pdf-ot","/ot/exportPdf/${data.ot_id}")'>
                     ${data.ot_id}

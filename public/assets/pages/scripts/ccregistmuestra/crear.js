@@ -137,8 +137,58 @@ $(document).ready(function () {
         }
     });
 
+    // ── Toggle R2: "No se pudo tomar la muestra" ────────────────────────
+    $('#btn-sin-params').on('click', function () {
+        $('#sin_parametros').val('1');
+        $('#div-sin-params-banner').show();
+        $('#btn-sin-params').hide();
+        $('#btn-con-params').show();
+        // Ocultar sección de parámetros y semáforo
+        $('#div-params-normal').hide();
+        $('#alerta-sin-config').hide();
+        // Marcar observación como obligatoria (motivo)
+        $('#lbl-observacion').html('Motivo <span class="text-danger">*</span>:');
+        $('#campo-observacion').attr('placeholder', 'Ingrese el motivo por el que no se pudo tomar la muestra...');
+        $('#hint-observacion').hide();
+        // Quitar required de inputs de params para que no bloqueen el submit
+        $('.cc-param-input').removeAttr('required');
+    });
+
+    $('#btn-con-params').on('click', function () {
+        $('#sin_parametros').val('0');
+        $('#div-sin-params-banner').hide();
+        $('#btn-con-params').hide();
+        $('#btn-sin-params').show();
+        // Mostrar sección de parámetros
+        $('#div-params-normal').show();
+        $('#alerta-sin-config').show();
+        // Restaurar label observación
+        if ($('#chk-aprobado-obs').is(':checked')) {
+            $('#lbl-observacion').html('Observación <span class="text-danger">*</span>:');
+        } else {
+            $('#lbl-observacion').text('Observación:');
+        }
+        $('#campo-observacion').attr('placeholder', 'Observaciones opcionales sobre la muestra...');
+        // Restaurar required según data-original
+        $('.cc-param-input[data-param-id]').each(function () {
+            if ($(this).closest('tr').find('.label-danger').length) {
+                $(this).attr('required', 'required');
+            }
+        });
+    });
+
     // Validación antes de enviar
     $('#form-crear-muestra').on('submit', function (e) {
+        // R2: modo sin parámetros — solo requiere observación (motivo)
+        if ($('#sin_parametros').val() === '1') {
+            if (!$.trim($('#campo-observacion').val())) {
+                e.preventDefault();
+                $('#campo-observacion').focus();
+                Biblioteca.notificaciones('Debe ingresar el motivo por el que no se pudo tomar la muestra.', 'CC Muestra', 'error');
+            }
+            return;
+        }
+
         var vacio = false;
         $('.cc-param-input[required]').each(function () {
             if (!$(this).val()) {

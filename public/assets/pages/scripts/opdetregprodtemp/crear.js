@@ -11,14 +11,14 @@ $(document).ready(function () {
 
     $(".validarsaldokg").blur(function(e){
         let datos = sumarkg();
-        /* console.log("Valor this: " + $(this).attr("valor")); */
         let valorStr = $(this).attr("valor");
         let aux_valor = parseFloat(valorStr) || 0;
-        /* console.log(aux_valor);
-        console.log('UM Entrada:' + $("#unidadmedidaent_id").val());
-        console.log('Suma (kgprod+kgscrap=kgent):' + datos.aux_suma);
-        console.log('Saldo:' + datos.aux_saldo);
- */
+
+        // R1: si es muestra física no se valida el saldo — no consume producción
+        if($("#es_muestra").is(":checked")){
+            return;
+        }
+
         if(datos.aux_suma > datos.aux_saldo){
             swal({
                 title: '',

@@ -8,7 +8,8 @@ $(document).ready(function () {
     var statusLabel = {
         1: '<span class="label" style="background:#00a65a;">Aprobado</span>',
         2: '<span class="label label-warning">Aprobado c/obs</span>',
-        3: '<span class="label label-danger">Rechazado</span>'
+        3: '<span class="label label-danger">Rechazado</span>',
+        5: '<span class="label" style="background:#7f8c8d;color:#fff;">Sin parámetros</span>'
     };
 
     var tabla = $('#tabla-data-ccsupervisar').DataTable({
@@ -54,10 +55,13 @@ $(document).ready(function () {
                 $('td', row).eq(3).html('<span class="text-muted">—</span>');
             }
 
-            // Reg. Prod. — clickeable abre etiqueta de registro de producción
+            // Reg. Prod. — link con mismo estilo que reportccmuestra
             $('td', row).eq(4).html(
-                '<a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso(' + data.opdetregprod_id + ',\'ver-etiqueta-regprod\')" class="tooltipsC" title="Ver etiqueta Reg. Prod. #' + data.opdetregprod_id + '" style="text-decoration:underline;cursor:pointer;">'
-                + data.opdetregprod_id + '</a>'
+                '<a href="javascript:void(0)" onclick="verEtiquetaEtapaConPermiso(' + data.opdetregprod_id + ',\'ver-etiqueta-regprod\')"'
+                + ' data-lote="' + data.opdetregprod_id + '"'
+                + ' title="Ver etiqueta — Lote de producción #' + data.opdetregprod_id + '"'
+                + ' style="color:#2980b9;font-weight:600;">'
+                + '<i class="fa fa-tag"></i> Lote-' + data.opdetregprod_id + '</a>'
             );
 
             // CodProd — con acuerdo técnico si existe, igual que reportproducto

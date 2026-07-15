@@ -1162,6 +1162,40 @@ class DespachoOrdController extends Controller
                 ]);
             }
 
+            // VALIDACIÓN CC: bloquear si algún lote de la SD tiene rechazo sin desbloquear
+            $ccBloqueadosOD = DB::select("
+                SELECT
+                    dsop.opdetregprod_id,
+                    SUM(IF(ccm.status = 3 AND desb.id IS NULL, 1, 0))     AS rechazados_bloqueados,
+                    GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NULL, ccm.id, NULL)
+                                 ORDER BY ccm.id SEPARATOR ', ')           AS ids_bloqueados
+                FROM   despachosoldet_opdetregprod dsop
+                JOIN   despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+                                          AND ISNULL(dsd.deleted_at)
+                LEFT JOIN ccregistmuestra ccm ON ccm.opdetregprod_id = dsop.opdetregprod_id
+                                              AND ISNULL(ccm.deleted_at)
+                                              AND ccm.sta_env = 2
+                LEFT JOIN ccregistmuestra_desbloqueo desb ON desb.ccregistmuestra_id = ccm.id
+                WHERE  dsd.despachosol_id = ?
+                GROUP BY dsop.opdetregprod_id
+                HAVING rechazados_bloqueados > 0
+            ", [$despachoord->despachosol_id]);
+
+            if (count($ccBloqueadosOD) > 0) {
+                $detallesCC = [];
+                foreach ($ccBloqueadosOD as $cb) {
+                    $detallesCC[] = 'Reg. Prod. #' . $cb->opdetregprod_id
+                                  . ' — Muestra(s) CC: #' . $cb->ids_bloqueados;
+                }
+                return response()->json([
+                    'error'      => 1,
+                    'mensaje'    => "No se puede aprobar la Orden de Despacho. Los siguientes lotes tienen rechazo CC sin desbloquear:\n"
+                                  . implode("\n", $detallesCC)
+                                  . "\n\nVaya a CC → Muestras y desbloquee las muestras rechazadas antes de proceder.",
+                    'tipo_alert' => 'error',
+                ]);
+            }
+
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
             $aux_DespachoBodegaId = $invmoduloBod->invmovmodulobodents[0]->id; //Id Bodega Despacho (La bodega despacho debe ser unica)
             validarSiExisteBodega($despachoord,$invmoduloBod);

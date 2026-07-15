@@ -139,6 +139,22 @@
     </div>
 </div>
 
+{{-- R1: Checkbox muestra física.
+     El hidden value="0" va ANTES del checkbox para que cuando esté desmarcado
+     llegue 0, y cuando esté marcado el checkbox override con 1 (PHP toma el último). --}}
+<input type="hidden" name="es_muestra" value="0">
+<div class="form-group col-xs-12" id="div-es-muestra" style="margin-bottom:4px;">
+    <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:8px 14px;display:inline-block;">
+        <label style="margin:0;font-weight:normal;cursor:pointer;">
+            <input type="checkbox" name="es_muestra" id="es_muestra" value="1"
+                {{ old('es_muestra', $data->es_muestra ?? 0) ? 'checked' : '' }}
+                style="margin-right:6px;">
+            <strong>Este registro es <span style="color:#e65100;">MUESTRA FÍSICA</span></strong>
+            — no suma a producción, no genera entrada a bodega
+        </label>
+    </div>
+</div>
+
 {{-- Campos adicionales configurados para esta etapa (si los hay) --}}
 @include('opdetregprodtemp._campos_adicionales')
 

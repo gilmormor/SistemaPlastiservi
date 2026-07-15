@@ -101,7 +101,7 @@ class OpDetRegProdTempAprobSupController extends Controller
 
         $aux_statusaprob = "opdetregprodtemp.aprobstatus = 1";
         
-        $sql = "SELECT opdetregprodtemp.id,otdet.id as otdet_id,opdet.op_id,opdetregprodtemp.opdet_id,
+        $sql = "SELECT opdetregprodtemp.id,opdetregprodtemp.es_muestra,otdet.id as otdet_id,opdet.op_id,opdetregprodtemp.opdet_id,
                 sucursal.nombre AS sucursal_nombre,
                 cliente.razonsocial,ot.id as ot_id,producto.id as producto_id,
                 opdet.kg as opdet_kg,opdet.cant as opdet_cant,opdet.cantrec as opdet_cantrec,
@@ -330,6 +330,9 @@ class OpDetRegProdTempAprobSupController extends Controller
                 $esUltimaEtapa = false;
                 if($opdetregprodtemp->aprobstatus == 2){
                     // 1️⃣ Copiar todos los atributos del temp al registro definitivo
+                    // Muestras físicas (es_muestra=1) TAMBIÉN crean opdetregprod para
+                    // que CC pueda vincular su registro. El trigger de opdetregprod
+                    // respeta es_muestra=1 y no acumula kg en opdet.
                     $data = $opdetregprodtemp->toArray();
                     unset($data['id'], $data['created_at'], $data['updated_at'], $data['deleted_at']);
                     $data['opdetregprodtemp_id'] = $opdetregprodtemp->id;
@@ -371,6 +374,20 @@ class OpDetRegProdTempAprobSupController extends Controller
                         OpDetRegProdMaq::create([
                             'opdetregprod_id' => $opdetregprod->id,
                             'maquina_id'      => $tempMaq->maquina_id,
+                        ]);
+                    }
+
+                    // R1: las muestras físicas no transfieren kg ni generan inventario
+                    if ($opdetregprodtemp->es_muestra) {
+                        $opdet->save();
+                        $opdetregprodtemp->save();
+                        DB::commit();
+                        return response()->json([
+                            'resp'              => 1,
+                            'tipmen'            => 'success',
+                            'mensaje'           => 'Muestra física aprobada.',
+                            'opdetregprod_id'   => $opdetregprod->id,
+                            'es_ultima_etapa'   => 0,
                         ]);
                     }
 
@@ -567,17 +584,22 @@ class OpDetRegProdTempAprobSupController extends Controller
                             throw new \Exception('El período ' . $annomes . ' está cerrado. No se puede ingresar a bodega de producción.');
                         }
 
-                        // Buscar bodegas tipo=5 de la sucursal
+                        // Buscar bodega de producción final: tipo=5 que NO esté asignada como bodega de etapa intermedia.
+                        // Las bodegas "Prod Mezclado", "Prod Sellado", etc. tienen filas en apsucetapaprod_bodega
+                        // y son para etapas intermedias; la bodega "Producción" general no está en esa tabla.
                         $bodegasProduccion = InvBodega::where('tipo', 5)
                             ->where('sucursal_id', $opdetregprodtemp->sucursal_id)
                             ->whereNull('deleted_at')
+                            ->whereNotIn('id', function($q) {
+                                $q->select('invbodega_id')->from('apsucetapaprod_bodega');
+                            })
                             ->get();
 
                         if ($bodegasProduccion->isEmpty()) {
-                            throw new \Exception('No existe bodega de producción (tipo=5) configurada para esta sucursal.');
+                            throw new \Exception('No existe bodega de producción final (tipo=5 sin etapa asignada) configurada para esta sucursal.');
                         }
 
-                        // Si hay más de 1 bodega y el usuario aún no eligió, solicitar selección
+                        // Si hay más de 1 bodega general y el usuario aún no eligió, solicitar selección
                         if ($bodegasProduccion->count() > 1 && !$request->invbodega_id) {
                             DB::rollBack();
                             return response()->json([
@@ -590,7 +612,10 @@ class OpDetRegProdTempAprobSupController extends Controller
                             ]);
                         }
 
-                        $invbodega_id = $request->invbodega_id
+                        // Usar bodega del request solo si pertenece a las bodegas finales válidas
+                        // (previene que el JS envíe una bodega de etapa intermedia por error)
+                        $idsBodsValidas = $bodegasProduccion->pluck('id')->toArray();
+                        $invbodega_id = ($request->invbodega_id && in_array((int)$request->invbodega_id, $idsBodsValidas))
                             ? (int)$request->invbodega_id
                             : $bodegasProduccion->first()->id;
 

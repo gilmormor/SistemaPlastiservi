@@ -15,7 +15,8 @@ $(document).ready(function () {
     var statusLabel = {
         1: '<span class="label" style="background:#00a65a;">Aprobado</span>',
         2: '<span class="label label-warning">Aprobado c/obs</span>',
-        3: '<span class="label label-danger">Rechazado</span>'
+        3: '<span class="label label-danger">Rechazado</span>',
+        5: '<span class="label" style="background:#7f8c8d;color:#fff;">Sin parámetros</span>'
     };
 
     var staEnvLabel = {
@@ -40,20 +41,22 @@ $(document).ready(function () {
             order       : [[0, 'desc']],
             columns: [
                 { data: 'id' },               // 0
-                { data: 'fechahora' },         // 1
-                { defaultContent: '' },        // 2 OP/OT
-                { defaultContent: '' },        // 3 NV
-                { defaultContent: '' },        // 4 Cliente
-                { defaultContent: '' },        // 5 Cod
-                { data: 'producto_nombre' },   // 6
-                { data: 'etapaprod_nombre' },  // 7
-                { defaultContent: '' },        // 8 Kg
-                { defaultContent: '' },        // 9 Operario
-                { defaultContent: '' },        // 10 Máquina
-                { defaultContent: '' },        // 11 Status CC
-                { defaultContent: '' },        // 12 sta_env
-                { defaultContent: '' },        // 13 Anulado
-                { defaultContent: '' }         // 14 Desbloqueado
+                { defaultContent: '' },        // 1 Etiqueta Etapa
+                { defaultContent: '' },        // 2 Etiqueta Muestra CC
+                { data: 'fechahora' },         // 3
+                { defaultContent: '' },        // 4 OP/OT
+                { defaultContent: '' },        // 5 NV
+                { defaultContent: '' },        // 6 Cliente
+                { defaultContent: '' },        // 7 Cod
+                { data: 'producto_nombre' },   // 8
+                { data: 'etapaprod_nombre' },  // 9
+                { defaultContent: '' },        // 10 Kg
+                { defaultContent: '' },        // 11 Operario
+                { defaultContent: '' },        // 12 Máquina
+                { defaultContent: '' },        // 13 Status CC
+                { defaultContent: '' },        // 14 sta_env
+                { defaultContent: '' },        // 15 Anulado
+                { defaultContent: '' }         // 16 Desbloqueado
             ],
             createdRow: function (row, data) {
                 $(row).attr('id', 'fila' + data.id);
@@ -68,35 +71,56 @@ $(document).ready(function () {
                     + data.id + '</a>'
                 );
 
+                // Etiqueta Etapa — link igual que en op/seguimiento
+                if (data.opdetregprod_id) {
+                    $('td', row).eq(1).html(
+                        '<a href="javascript:void(0)" onclick="verEtiquetaEtapaConPermiso(' + data.opdetregprod_id + ',\'ver-etiqueta-regprod\')"'
+                        + ' data-lote="' + data.opdetregprod_id + '"'
+                        + ' title="Ver etiqueta — Lote de producción #' + data.opdetregprod_id + '"'
+                        + ' style="color:#2980b9;font-weight:600;">'
+                        + '<i class="fa fa-tag"></i> Lote-' + data.opdetregprod_id + '</a>'
+                    );
+                } else {
+                    $('td', row).eq(1).html('<span class="text-muted">—</span>');
+                }
+
+                // Etiqueta Muestra CC — abre modal con etiqueta compacta
+                $('td', row).eq(2).html(
+                    '<a href="javascript:void(0)" onclick="verEtiquetaMuestra(' + data.id + ')"'
+                    + ' title="Ver etiqueta — Muestra CC #' + data.id + '"'
+                    + ' style="color:#8e44ad;font-weight:600;">'
+                    + '<i class="fa fa-flask"></i> Muestra-' + data.id + '</a>'
+                );
+
                 // Fecha (solo dd/mm/aaaa hh:mm)
-                $('td', row).eq(1).html(data.fechahora ? data.fechahora.substring(0, 16) : '—');
+                $('td', row).eq(3).html(data.fechahora ? data.fechahora.substring(0, 16) : '—');
 
                 // OP / OT
-                $('td', row).eq(2).html('OP ' + data.op_id + ' / OT ' + data.ot_id);
+                $('td', row).eq(4).html('OP ' + data.op_id + ' / OT ' + data.ot_id);
 
                 // NV
                 if (data.notaventa_id) {
-                    $('td', row).eq(3).html(
+                    $('td', row).eq(5).html(
                         '<a href="javascript:void(0);" onclick="genpdfNV(' + data.notaventa_id + ',1)" class="tooltipsC"'
                         + ' title="Ver NV #' + data.notaventa_id + '" style="text-decoration:underline;cursor:pointer;">'
                         + data.notaventa_id + '</a>'
                     );
                 } else {
-                    $('td', row).eq(3).html('<span class="text-muted">—</span>');
+                    $('td', row).eq(5).html('<span class="text-muted">—</span>');
                 }
 
                 // Cliente
                 if (data.cliente_razonsocial) {
-                    $('td', row).eq(4).html(
+                    $('td', row).eq(6).html(
                         '<span class="tooltipsC" title="RUT: ' + (data.cliente_rut || '—') + '">'
                         + data.cliente_razonsocial + '</span>'
                     );
                 } else {
-                    $('td', row).eq(4).html('<span class="text-muted">—</span>');
+                    $('td', row).eq(6).html('<span class="text-muted">—</span>');
                 }
 
                 // Cod Producto — con link a Acuerdo Técnico e imagen si corresponde
-                $('td', row).eq(5).attr('style', 'text-align:center');
+                $('td', row).eq(7).attr('style', 'text-align:center');
                 if (data.acuerdotecnico_id != null) {
                     var codHtml = '<a class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick=\'genpdfAcuTec(' + data.acuerdotecnico_id + ',0,"")\'>'
                                 + data.producto_id + '</a>';
@@ -104,33 +128,33 @@ $(document).ready(function () {
                         codHtml += '<a class="btn-accion-tabla btn-sm tooltipsC" title="Ver Imagen" onclick=\'verpdf2("at/' + data.at_impresofoto + '",2,"","ver-arte-acuerdo-tecnico")\'>'
                                  + '<i class="fa fa-fw fa-photo"></i></a>';
                     }
-                    $('td', row).eq(5).html(codHtml);
+                    $('td', row).eq(7).html(codHtml);
                 } else {
-                    $('td', row).eq(5).html('<span class="text-muted">' + data.producto_id + '</span>');
+                    $('td', row).eq(7).html('<span class="text-muted">' + data.producto_id + '</span>');
                 }
 
                 // Kg
-                $('td', row).eq(8).attr('style', 'text-align:right');
-                $('td', row).eq(8).html(
+                $('td', row).eq(10).attr('style', 'text-align:right');
+                $('td', row).eq(10).html(
                     data.kgprod
                         ? parseFloat(data.kgprod).toLocaleString('es-CL', { minimumFractionDigits: 2 })
                         : '—'
                 );
 
                 // Operario
-                $('td', row).eq(9).html(data.operario_nombre || '<span class="text-muted">—</span>');
+                $('td', row).eq(11).html(data.operario_nombre || '<span class="text-muted">—</span>');
 
                 // Máquina
-                $('td', row).eq(10).html(data.maquina_nombre || '<span class="text-muted">—</span>');
+                $('td', row).eq(12).html(data.maquina_nombre || '<span class="text-muted">—</span>');
 
                 // Status CC
                 if (data.anulado == 1) {
                     var titleAnul = 'Anulado por: ' + (data.anulacion_usuario || '—')
                                   + ' | Fecha: ' + (data.anulacion_fecha ? data.anulacion_fecha.substring(0, 16) : '—')
                                   + (data.anulacion_motivo ? ' | ' + data.anulacion_motivo : '');
-                    $('td', row).eq(11).html('<span class="label label-default tooltipsC" title="' + titleAnul + '">Anulado</span>');
+                    $('td', row).eq(13).html('<span class="label label-default tooltipsC" title="' + titleAnul + '">Anulado</span>');
                 } else {
-                    $('td', row).eq(11).html(statusLabel[data.status] || '<span class="label label-default">—</span>');
+                    $('td', row).eq(13).html(statusLabel[data.status] || '<span class="label label-default">—</span>');
                 }
 
                 // sta_env
@@ -138,19 +162,19 @@ $(document).ready(function () {
                 if (data.sta_env == 3 && data.sta_env_obs) {
                     staNombre = '<span class="label label-danger tooltipsC" title="' + data.sta_env_obs + '">Rechazado</span>';
                 }
-                $('td', row).eq(12).html(staNombre);
+                $('td', row).eq(14).html(staNombre);
 
                 // Anulado
                 if (data.anulado == 1) {
                     var tAnul = (data.anulacion_usuario || '—') + ' — '
                               + (data.anulacion_fecha ? data.anulacion_fecha.substring(0, 16) : '—')
                               + (data.anulacion_motivo ? ': ' + data.anulacion_motivo : '');
-                    $('td', row).eq(13).html(
+                    $('td', row).eq(15).html(
                         '<span class="label label-default tooltipsC" title="' + tAnul + '">'
                         + '<i class="fa fa-ban"></i> Sí</span>'
                     );
                 } else {
-                    $('td', row).eq(13).html('<span class="text-muted">—</span>');
+                    $('td', row).eq(15).html('<span class="text-muted">—</span>');
                 }
 
                 // Desbloqueado
@@ -158,12 +182,12 @@ $(document).ready(function () {
                     var tDesb = (data.desbloqueo_usuario || '—') + ' — '
                               + (data.desbloqueo_fecha ? data.desbloqueo_fecha.substring(0, 16) : '—')
                               + (data.desbloqueo_obs ? ': ' + data.desbloqueo_obs : '');
-                    $('td', row).eq(14).html(
+                    $('td', row).eq(16).html(
                         '<span class="label tooltipsC" style="background:#00c0ef;" title="' + tDesb + '">'
                         + '<i class="fa fa-unlock"></i> Sí</span>'
                     );
                 } else {
-                    $('td', row).eq(14).html('<span class="text-muted">—</span>');
+                    $('td', row).eq(16).html('<span class="text-muted">—</span>');
                 }
             },
             language: {
@@ -211,6 +235,11 @@ $(document).ready(function () {
             $('#divprodselec').show();
         }
         $('#myModalBuscarProd').modal('show');
+    });
+
+    // Producto — solo dígitos y coma
+    $('#producto_idPxP').on('input', function () {
+        $(this).val($(this).val().replace(/[^0-9,]/g, ''));
     });
 
     // Validación RUT: solo números y K

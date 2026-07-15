@@ -6,7 +6,8 @@ $(document).ready(function () {
     var statusLabel = {
         1: '<span class="label" style="background:#00a65a;">Aprobado</span>',
         2: '<span class="label label-warning">Aprobado c/obs</span>',
-        3: '<span class="label label-danger">Rechazado</span>'
+        3: '<span class="label label-danger">Rechazado</span>',
+        5: '<span class="label" style="background:#7f8c8d;color:#fff;">Sin parámetros</span>'
     };
 
     var tabla = $('#tabla-data-ccregistmuestra').DataTable({

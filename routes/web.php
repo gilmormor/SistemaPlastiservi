@@ -1768,6 +1768,8 @@ Route::get('ccmuestrasuper',                               'CcRegistMuestraSuper
 Route::get('ccmuestrasuperpage',                           'CcRegistMuestraSupervisarController@page')->name('supervisarpage_ccregistmuestra');
 Route::post('ccregistmuestra',                             'CcRegistMuestraController@guardar')->name('guardar_ccregistmuestra');
 Route::get('ccregistmuestra/{id}/ver',                     'CcRegistMuestraController@ver')->name('ver_ccregistmuestra');
+Route::get('ccregistmuestra/{id}/etiqueta-compacta',       'CcRegistMuestraController@etiquetaCompacta')->name('etiqueta_compacta_ccregistmuestra');
+Route::get('ccregistmuestra/{id}/etiqueta-completa',       'CcRegistMuestraController@etiquetaCompleta')->name('etiqueta_completa_ccregistmuestra');
 Route::get('ccregistmuestra/verxopdetregprod/{id}',        'CcRegistMuestraController@verxopdetregprod')->name('verxopdetregprod_ccregistmuestra');
 Route::post('ccregistmuestra/{id}/aprobar',                'CcRegistMuestraController@aprobar')->name('aprobar_ccregistmuestra');
 Route::get('ccregistmuestra/{id}/editar',                  'CcRegistMuestraController@editar')->name('editar_ccregistmuestra');
@@ -1787,6 +1789,12 @@ Route::get('reportccmuestra',                'ReportccMuestraController@index')-
 Route::get('reportccmuestrapage',            'ReportccMuestraController@page')->name('reportccmuestrapage');
 Route::get('reportccmuestra/exportPdf',      'ReportccMuestraController@exportPdf')->name('reportccmuestra_exportPdf');
 Route::get('reportccmuestra/totalizarindex', 'ReportccMuestraController@totalizarindex')->name('reportccmuestra_totalizarindex');
+
+/*RUTAS REPORTE COBERTURA CC*/
+Route::get('reportcoberturacc',                'ReportCoberturaccController@index')->name('reportcoberturacc');
+Route::get('reportcoberturacc/page',           'ReportCoberturaccController@page')->name('reportcoberturacc_page');
+Route::get('reportcoberturacc/exportPdf',      'ReportCoberturaccController@exportPdf')->name('reportcoberturacc_exportPdf');
+Route::get('reportcoberturacc/totalizarindex', 'ReportCoberturaccController@totalizarindex')->name('reportcoberturacc_totalizarindex');
 
 Route::post('etapaprodcampo',                           'EtapaProdCampoController@guardar')->name('etapaprodcampo_guardar');
 Route::put('etapaprodcampo/{id}',                       'EtapaProdCampoController@actualizar')->name('etapaprodcampo_actualizar');

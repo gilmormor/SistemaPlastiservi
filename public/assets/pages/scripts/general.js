@@ -2575,7 +2575,12 @@ function sumbod(i,y,aux_orig,requiere_fabricacion = 0){
 		if($("#invcant" + y).attr("stadespsinstock") == "0"){
 			if ($("#invcant" + y).val() > aux_stockcant){
 				$("#invcant" + y).val(aux_stockcant);
-			}	
+			}
+		}
+		// CC Fase 8: cap adicional por lotes CC rechazados bloqueados
+		var ccMax = parseFloat($("#invcant" + y).attr("data-cc-max"));
+		if (!isNaN(ccMax) && parseFloat($("#invcant" + y).val()) > ccMax) {
+			$("#invcant" + y).val(ccMax > 0 ? ccMax : "");
 		}
 	}
 	if(aux_orig == "SD"){

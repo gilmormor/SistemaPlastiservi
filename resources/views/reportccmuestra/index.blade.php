@@ -114,6 +114,7 @@ Reporte Muestras CC
                                     <option value="1">Aprobado</option>
                                     <option value="2">Aprobado c/obs</option>
                                     <option value="3">Rechazado</option>
+                                    <option value="5">Sin parámetros</option>
                                 </select>
                             </div>
                             <div class="col-xs-12 col-md-3">
@@ -196,6 +197,8 @@ Reporte Muestras CC
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
+                            <th>Etiqueta Etapa</th>
+                            <th>Etiqueta Muestra</th>
                             <th>Fecha</th>
                             <th>OP/OT</th>
                             <th>NV</th>
@@ -223,4 +226,78 @@ Reporte Muestras CC
 @include('generales.buscarproductobd')
 @include('generales.modalpdf')
 @include('generales.verpdf')
+
+{{-- Modal etiqueta de muestra CC --}}
+<div class="modal fade modal-etiqueta" id="modalEtiquetaMuestra" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:460px;">
+        <div class="modal-content" style="border-radius:6px; overflow:hidden;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" style="font-size:14px;">
+                    <i class="fa fa-flask"></i>&nbsp; Etiqueta de muestra CC &mdash; Muestra <span id="modalEtiquetaMuestraId"></span>
+                </h4>
+            </div>
+            <div class="modal-body" style="padding:0; height:220px;">
+                <iframe id="ifrEtiquetaMuestra" name="ifrEtiquetaMuestra" src="about:blank"
+                        style="width:100%; height:220px; border:none;"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-modals">
+                </iframe>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e8edf3; padding:10px 16px;">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn btn-default btn-sm" onclick="window.open($('#ifrEtiquetaMuestra').attr('src').replace('etiqueta-compacta','etiqueta-completa'),'_blank')">
+                    <i class="fa fa-file-text-o"></i> Ver completa
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="imprimirEtiquetaMuestra()">
+                    <i class="fa fa-print"></i> Imprimir etiqueta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function verEtiquetaMuestra(id) {
+    $('#modalEtiquetaMuestraId').text('#' + id);
+    $('#ifrEtiquetaMuestra').attr('src', '/ccregistmuestra/' + id + '/etiqueta-compacta');
+    $('#modalEtiquetaMuestra').modal('show');
+}
+function imprimirEtiquetaMuestra() {
+    var ifrm = document.getElementById('ifrEtiquetaMuestra');
+    if (ifrm && ifrm.contentWindow) {
+        ifrm.contentWindow.focus();
+        ifrm.contentWindow.print();
+    }
+}
+</script>
+
+{{-- Modal etiqueta de etapa (Reg. Prod.) --}}
+<div class="modal fade modal-etiqueta" id="modalEtiquetaEtapa" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:440px;">
+        <div class="modal-content" style="border-radius:6px; overflow:hidden;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" style="font-size:14px;">
+                    <i class="fa fa-tag"></i>&nbsp; Etiqueta de etapa &mdash; Reg. <span id="modalEtiquetaId"></span>
+                </h4>
+            </div>
+            <div class="modal-body" style="padding:0; height:340px;">
+                <iframe id="ifrEtiquetaEtapa" name="ifrEtiquetaEtapa" src="about:blank"
+                        style="width:100%; height:340px; border:none;"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-modals">
+                </iframe>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e8edf3; padding:10px 16px;">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="imprimirEtiquetaEtapa()">
+                    <i class="fa fa-print"></i> Imprimir etiqueta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

@@ -122,7 +122,7 @@ public function etapaprod()
 
         $aux_statusaprob = "(opdetregprodtemp.aprobstatus in (0,3) or ISNULL(opdetregprodtemp.aprobstatus))";
         
-        $sql = "SELECT opdetregprodtemp.id,ot.id as ot_id,opdetregprodtemp.etapaprod_id,
+        $sql = "SELECT opdetregprodtemp.id,opdetregprodtemp.es_muestra,ot.id as ot_id,opdetregprodtemp.etapaprod_id,
                 opdet.op_id,opdetregprodtemp.opdet_id,
                 sucursal.nombre AS sucursal_nombre,
                 cliente.razonsocial,
@@ -291,16 +291,20 @@ public function etapaprod()
                 'tipo_alert' => 'alert-error'
             ]);
         }
-        $kgProduccion_temp = $opdet->totales_pendientes->total_kgprod + $opdet->totales_pendientes->total_kgscrap;
-        $saldokg_temp = $opdet->saldokg - $kgProduccion_temp;
         $kgprodReq  = (float) $request->kgprod;
         $kgscrapReq = (float) $request->kgscrap;
         $kgentReq   = $kgprodReq + $kgscrapReq;  // kgent = kgprod + kgscrap (invariante)
-        if($saldokg_temp < $kgentReq){
-            return redirect('opdetregprodtemp/listaropdet')->with([
-                'mensaje'=>'La cantidad de Kg a registrar excede el saldo disponible en la Orden de Producción Detalle. Kg Saldo Disponible: '.number_format($saldokg_temp, 2, ',', '.'),
-                'tipo_alert' => 'alert-error'
-            ]);
+
+        // R1: las muestras físicas no consumen saldo de la OP — saltar validación de kg
+        if (!$request->input('es_muestra')) {
+            $kgProduccion_temp = $opdet->totales_pendientes->total_kgprod + $opdet->totales_pendientes->total_kgscrap;
+            $saldokg_temp = $opdet->saldokg - $kgProduccion_temp;
+            if ($saldokg_temp < $kgentReq) {
+                return redirect('opdetregprodtemp/listaropdet')->with([
+                    'mensaje'=>'La cantidad de Kg a registrar excede el saldo disponible en la Orden de Producción Detalle. Kg Saldo Disponible: '.number_format($saldokg_temp, 2, ',', '.'),
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
         }
         // kgent = kgprod + kgscrap (invariante). El operario ingresa kgprod y kgscrap.
         $request->merge(['kgent' => $kgentReq]);

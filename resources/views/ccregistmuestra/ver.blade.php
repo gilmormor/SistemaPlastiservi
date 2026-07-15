@@ -29,7 +29,12 @@ CC — Ver Muestra #{{ $muestra->id }}
                 @endif
 
                 @php
-                    $statusLabel = [1 => ['Aprobado','success'], 2 => ['Aprobado c/obs','warning'], 3 => ['Rechazado','danger']];
+                    $statusLabel = [
+                        1 => ['Aprobado','success'],
+                        2 => ['Aprobado c/obs','warning'],
+                        3 => ['Rechazado','danger'],
+                        5 => ['Sin parámetros','default'],
+                    ];
                     $sl = $statusLabel[$muestra->status] ?? ['—','default'];
                     $anulada = $muestra->anulacion ? true : false;
                 @endphp
@@ -107,9 +112,27 @@ CC — Ver Muestra #{{ $muestra->id }}
                     </tbody>
                 </table>
 
+                {{-- Botones de etiqueta --}}
+                <div class="text-center" style="margin-top:16px; margin-bottom:4px;">
+                    <div class="btn-group">
+                        <a href="{{ route('etiqueta_compacta_ccregistmuestra', $muestra->id) }}"
+                           target="_blank"
+                           class="btn btn-default btn-sm tooltipsC"
+                           title="Etiqueta térmica compacta (10.4 x 5.08 cm) — para impresora Zebra">
+                            <i class="fa fa-tag"></i> Etiqueta compacta
+                        </a>
+                        <a href="{{ route('etiqueta_completa_ccregistmuestra', $muestra->id) }}"
+                           target="_blank"
+                           class="btn btn-default btn-sm tooltipsC"
+                           title="Etiqueta con tabla de parámetros medidos — para imprimir en papel">
+                            <i class="fa fa-file-text-o"></i> Etiqueta completa
+                        </a>
+                    </div>
+                </div>
+
                 {{-- Acciones --}}
                 @if(!$anulada)
-                <div class="text-center" style="margin-top:20px;">
+                <div class="text-center" style="margin-top:10px;">
                     {{-- Nueva muestra del mismo registro --}}
                     <a href="{{ route('crear_ccregistmuestra', ['opdetregprod_id' => $muestra->opdetregprod_id]) }}"
                         class="btn btn-primary" style="margin:4px;">

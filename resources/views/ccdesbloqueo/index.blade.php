@@ -4,7 +4,9 @@ CC — Desbloqueo de Muestras
 @endsection
 @section("scripts")
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/cliente/buscar.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/producto/buscar.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/ccdesbloqueo/index.js")}}" type="text/javascript"></script>
 @endsection
 
@@ -18,11 +20,112 @@ CC — Desbloqueo de Muestras
                     <i class="fa fa-unlock-alt"></i> Desbloqueo de Muestras CC Rechazadas
                 </h3>
                 <small class="text-muted" style="margin-left:10px;">
-                    Muestras con status <strong>Rechazado</strong> aprobadas por supervisor — pendientes o ya desbloqueadas
+                    Ingrese al menos un filtro y presione <strong>Consultar</strong>
                 </small>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                </div>
             </div>
             <div class="box-body">
-                <div class="table-responsive">
+
+                {{-- Panel de filtros (R5) --}}
+                <div class="row">
+                    <div class="col-xs-12 col-md-9 col-sm-12">
+
+                        {{-- Fila 1: Fechas + Status desbloqueo + Etapa --}}
+                        <div class="col-xs-12 col-md-12">
+                            <div class="col-xs-12 col-md-3">
+                                <label>Fecha registro desde:</label>
+                                <input type="text" id="fecha_desde" class="form-control date-picker" placeholder="dd/mm/aaaa" readonly>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <label>Fecha registro hasta:</label>
+                                <input type="text" id="fecha_hasta" class="form-control date-picker" placeholder="dd/mm/aaaa" readonly>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <label>Status desbloqueo:</label>
+                                <select id="sta_desbloqueo" class="selectpicker form-control">
+                                    <option value="">Todos</option>
+                                    <option value="0">Bloqueado (pendiente)</option>
+                                    <option value="1">Desbloqueado</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <label>Etapa producción:</label>
+                                <select id="etapaprod_id" class="selectpicker form-control" data-live-search="true">
+                                    <option value="">Todas</option>
+                                    @foreach($etapaprods as $ep)
+                                        <option value="{{$ep->id}}">{{$ep->nombre}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Fila 2: RUT cliente + Producto + Máquina --}}
+                        <div class="col-xs-12 col-md-12" style="margin-top:8px;">
+                            <div class="col-xs-12 col-md-4">
+                                <label>RUT cliente:</label>
+                                <div class="input-group">
+                                    <input type="text" name="rut1" id="rut1" class="form-control" value=""
+                                           placeholder="F2 Buscar" onkeyup="llevarMayus(this);" maxlength="12">
+                                    <p id="error-message" style="color:red; display:none;">RUT inválido</p>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" id="btnbuscarcliente" name="btnbuscarcliente">Buscar</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <label>Producto (código):</label>
+                                <div class="input-group">
+                                    <input type="text" name="producto_idPxP" id="producto_idPxP" class="form-control"
+                                           tipoval="numericootro" placeholder="ID(s) separados por coma">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto">Buscar</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <label>Máquina:</label>
+                                <select id="maquina_id" class="selectpicker form-control" data-live-search="true">
+                                    <option value="">Todas</option>
+                                    @foreach($maquinas as $mq)
+                                        <option value="{{$mq->id}}">{{$mq->nombre}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Fila 3: ID Lote + OT + OP + NV --}}
+                        <div class="col-xs-12 col-md-12" style="margin-top:8px;">
+                            <div class="col-xs-12 col-md-3">
+                                <label>ID Lote / Reg. Prod.:</label>
+                                <input type="text" id="opdetregprod_id" class="form-control" placeholder="Ej: 123" maxlength="10">
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <label>N° OT:</label>
+                                <input type="text" id="ot_id" class="form-control" placeholder="N° Orden de Trabajo" maxlength="10">
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <label>N° OP:</label>
+                                <input type="text" id="op_id" class="form-control" placeholder="N° Orden de Producción" maxlength="10">
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <label>N° Nota de Venta:</label>
+                                <input type="text" id="notaventa_id" class="form-control" placeholder="N° NV" maxlength="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Botón Consultar --}}
+                    <div class="col-xs-12 col-md-3 col-sm-12 text-center" style="padding-top:22px;">
+                        <button type="button" id="btnconsultar" class="btn btn-danger btn-block tooltipsC" title="Consultar muestras rechazadas">
+                            <i class="fa fa-search"></i> Consultar
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Tabla resultado (vacía al cargar; se llena al hacer click en Consultar) --}}
+                <div class="table-responsive" style="margin-top:16px;">
                     <table class="table table-striped table-bordered table-condensed table-hover" id="tabla-data-ccdesbloqueo">
                         <thead>
                             <tr>
@@ -50,6 +153,8 @@ CC — Desbloqueo de Muestras
     </div>
 </div>
 
+@include('generales.buscarclientebd')
+@include('generales.buscarproductobd')
 @include('generales.modalpdf')
 
 {{-- Modal desbloqueo --}}

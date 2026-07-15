@@ -36,6 +36,7 @@ class OpDetRegProdTemp extends Model
         'cantprod',
         'unidadmedidasal_id',
         'mtslineal',
+        'es_muestra',
         'obs',
         'operario_id',
         'aprobstatus',

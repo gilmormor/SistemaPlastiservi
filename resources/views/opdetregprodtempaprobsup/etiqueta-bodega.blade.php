@@ -83,6 +83,11 @@
 <button class="btn-imprimir" onclick="window.print()">Imprimir etiqueta</button>
 
 <div class="etiqueta">
+    @if($produccion->es_muestra)
+    <div style="background:#e65100;color:#fff;text-align:center;font-size:10pt;font-weight:bold;padding:3px 6px;margin-bottom:4px;letter-spacing:0.5px;">
+        🔬MUESTRA CC — NO ES PRODUCCIÓN
+    </div>
+    @endif
     <div class="etiqueta-titulo">Ingreso Bodega Producción</div>
     <div class="etiqueta-body">
         <div class="etiqueta-datos">
@@ -119,14 +124,14 @@
                 </tr>
                 @endif
                 <tr>
-                    <td>ID Prod.:</td>
+                    <td>Lote:</td>
                     <td style="font-size:7pt; color:#555;">{{ $produccion->id }}</td>
                 </tr>
             </table>
         </div>
         <div class="etiqueta-qr">
             <div id="qrcode"></div>
-            <small>ID: {{ $produccion->id }}</small>
+            <small>Lote: {{ $produccion->id }}</small>
         </div>
     </div>
     <div class="etiqueta-footer">

@@ -24,7 +24,7 @@
                     <p>Fecha: {{ date('d-m-Y', strtotime($muestra->fechahora)) }}</p>
                     <p>Hora: {{ date('H:i:s', strtotime($muestra->fechahora)) }}</p>
                     @if($reg)
-                    <p>Reg. Prod.: #{{ $reg->id }}</p>
+                    <p>Lote: #{{ $reg->id }}</p>
                     <p>OP {{ $reg->op_id }} / OT {{ $reg->ot_id }}</p>
                     @endif
                     <p>Registrado por: {{ $muestra->usuario->nombre ?? '—' }}</p>
@@ -56,7 +56,7 @@
         <tr>
             <td class="info_cliente">
                 <div class="round">
-                    <span class="h3">Lote de Producción</span>
+                    <span class="h3">Lote #{{ $reg->id }}</span>
                     <table class="datos_cliente">
                         <tr class="headt">
                             <td style="width:15%"><label>Producto:</label></td>
@@ -83,8 +83,8 @@
 
     {{-- Status y resultado general --}}
     @php
-        $statusLabel = [1 => 'APROBADO', 2 => 'APROBADO CON OBSERVACIONES', 3 => 'RECHAZADO'];
-        $statusColor = [1 => '#00a65a', 2 => '#f39c12', 3 => '#dd4b39'];
+        $statusLabel = [1 => 'APROBADO', 2 => 'APROBADO CON OBSERVACIONES', 3 => 'RECHAZADO', 5 => 'No se pudo tomar la muestra'];
+        $statusColor = [1 => '#00a65a', 2 => '#f39c12', 3 => '#dd4b39', 5 => '#999'];
         $statusText  = $statusLabel[$muestra->status] ?? '—';
         $statusBg    = $statusColor[$muestra->status]  ?? '#999';
     @endphp
@@ -134,7 +134,8 @@
     </table>
     @endif
 
-    {{-- Parámetros evaluados --}}
+    {{-- Parámetros evaluados (no aplica para status=5) --}}
+    @if($muestra->status != 5)
     <div>
         <table id="factura_detalle">
             <thead>
@@ -176,6 +177,7 @@
             </tbody>
         </table>
     </div>
+    @endif
 
     {{-- Pie: liberación al módulo de despacho --}}
     <table style="width:100%; margin-top:15px;">

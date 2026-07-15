@@ -314,8 +314,8 @@ function renderEtapas(op_id, etapas) {
                     // data-lote: el enlace del registro también participa del spotlight de cadena
                     var idLink = '<a href="javascript:void(0)" onclick="verEtiquetaEtapa(' + r.id + ')" ' +
                         'data-lote="' + r.id + '" ' +
-                        'title="Ver/imprimir etiqueta" style="color:#2980b9; font-weight:600;">' +
-                        '<i class="fa fa-tag"></i> apr-' + r.id + '</a>';
+                        'title="Ver etiqueta — Lote de producción #' + r.id + '" style="color:#2980b9; font-weight:600;">' +
+                        '<i class="fa fa-tag"></i> Lote-' + r.id + '</a>';
                     wrap += '<li class="aprobado">' +
                         '<span>' + idLink + '</span>' +
                         '<span style="font-weight:600;">' + r.operario_nombre + '</span>' +
@@ -374,8 +374,8 @@ function renderTrazEtapas(r) {
             // data-lote habilita el efecto spotlight de cadena (hover)
             inner += ' <span class="seg-chip" data-lote="' + o.lote_id + '" ' +
                      'style="font-size:10px; background:#eaf0f6; color:#34495e; border:1px solid #aab7c4;" ' +
-                     'title="Lote apr-' + o.lote_id + ' — Etapa: ' + (o.etapa_nombre || '—') + '">' +
-                     '<i class="fa fa-tag"></i> apr-' + o.lote_id +
+                     'title="Lote de producción #' + o.lote_id + ' — Etapa: ' + (o.etapa_nombre || '—') + '">' +
+                     '<i class="fa fa-tag"></i> Lote-' + o.lote_id +
                      ' &nbsp;' + MASKLA(o.kg, 2) + ' kg</span>';
         });
         inner += '</div>';
@@ -388,8 +388,8 @@ function renderTrazEtapas(r) {
             // data-lote habilita el efecto spotlight de cadena (hover)
             inner += ' <span class="seg-chip" data-lote="' + d.hijo_id + '" ' +
                      'style="font-size:10px; background:#eafaf1; color:#1e8449; border:1px solid #82e0aa;" ' +
-                     'title="Registro apr-' + d.hijo_id + ' — Etapa: ' + (d.etapa_nombre || '—') + '">' +
-                     '<i class="fa fa-tag"></i> apr-' + d.hijo_id +
+                     'title="Lote de producción #' + d.hijo_id + ' — Etapa: ' + (d.etapa_nombre || '—') + '">' +
+                     '<i class="fa fa-tag"></i> Lote-' + d.hijo_id +
                      ' &nbsp;' + MASKLA(d.kg, 2) + ' kg</span>';
         });
         inner += '</div>';

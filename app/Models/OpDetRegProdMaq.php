@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class OpDetRegProdMaq extends Model
 {
     protected $table = "opdetregprodmaq";
+    public $timestamps = false;
     protected $fillable = [
         'opdetregprod_id',
         'maquina_id'

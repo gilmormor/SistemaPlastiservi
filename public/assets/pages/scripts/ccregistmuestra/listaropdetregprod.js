@@ -123,7 +123,13 @@ function consultar() {
                 dataSrc: 'data'
             },
             columns: [
-                { data: 'id' },
+                { data: 'id', render: function(d, t, row) {
+                    var badge = row.es_muestra == 1
+                        ? '<br><span class="label" style="background:#e65100;color:#fff;font-size:10px;padding:2px 5px;">'
+                          + '<i class="fa fa-flask"></i> MUESTRA CC</span>'
+                        : '';
+                    return d + badge;
+                }},
                 { data: 'created_at', render: function(d){ return d ? d.substring(0,16).replace('T',' ') : '—'; } },
                 { data: null, render: function(d){ return 'OP ' + d.op_id + ' / OT ' + d.ot_id; } },
                 { data: 'producto_nombre' },
