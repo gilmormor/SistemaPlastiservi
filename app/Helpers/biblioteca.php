@@ -653,6 +653,33 @@ if (!function_exists('ordenarArrayxCampo')) {
 }
 
 // Funcion que me calcula el peso unitario de un producto en la tabla acuerdo tecnico
+if (!function_exists('pesoUnitAT')) {
+    function pesounitat($at) {
+        $aux_doble = 2;
+        if(isset($at->producto->categoriaprod_id) and $at->producto->categoriaprod_id == 13){
+            $aux_doble = 1;
+        }else{
+            if(isset($at->cotizaciondetalle->producto->categoriaprod_id) and $at->cotizaciondetalle->producto->categoriaprod_id == 13){
+                $aux_doble = 1;
+            }
+        }
+        if($at->at_formatofilm > 0 ){
+            return $at->at_formatofilm;
+        }
+        if($at->at_unidadmedida_id == 7 ){
+            return 1;
+        }
+        if($at->at_espesor == 0 or $at->at_peso > 0){
+            return $at->at_peso;
+        }
+        /* if($at->at_unidadmedida_id != 5 ){
+            return 0;
+        } */
+        return round((($at->at_ancho * $at->at_largo * $at->at_espesor * $at->materiaprima->pe) / 1000) * $aux_doble,10 );
+    }
+}
+
+// Funcion que me calcula el peso unitario de un producto en la tabla acuerdo tecnico
 if (!function_exists('pesounitattemp')) {
     function pesounitattemp($at) {
         $aux_doble = 2;
