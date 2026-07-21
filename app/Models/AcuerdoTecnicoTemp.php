@@ -80,6 +80,8 @@ class AcuerdoTecnicoTemp extends Model
         'at_otrocertificado',
         'at_aprobado',
         'at_formatofilm',
+        'at_peso',
+        'at_cantxunimed',
         'at_firmado',
         'at_stacorregirat',
         'usuariodel_id'
@@ -227,5 +229,21 @@ class AcuerdoTecnicoTemp extends Model
         }
     }
 
-    
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Calcula at_peso automáticamente al guardar si viene vacío o en 0.
+        // Cubre todos los flujos de creación (cotización, NV, etc.) sin tocar controladores.
+        // Si at_peso ya trae valor (ej: asignado por código de la rama de producción/módulo producción) no se pisa.
+        static::saving(function (AcuerdoTecnicoTemp $acuerdo) {
+            if (empty($acuerdo->at_peso) && function_exists('pesounitattemp')) {
+                try {
+                    $acuerdo->at_peso = pesounitattemp($acuerdo);
+                } catch (\Exception $e) {
+                    // Nunca bloquear el guardado por un fallo del cálculo de peso
+                }
+            }
+        });
+    }
 }

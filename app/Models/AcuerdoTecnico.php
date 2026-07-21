@@ -81,6 +81,8 @@ class AcuerdoTecnico extends Model
         'at_certificados',
         'at_otrocertificado',
         'at_formatofilm',
+        'at_peso',
+        'at_cantxunimed',
         'at_firmado',
         'usuariodel_id'
     ];    
@@ -320,6 +322,19 @@ class AcuerdoTecnico extends Model
     protected static function boot()
     {
         parent::boot();
+
+        // Calcula at_peso automáticamente al guardar si viene vacío o en 0.
+        // Cubre todos los flujos de creación (cotización, NV, etc.) sin tocar controladores.
+        // Si at_peso ya trae valor (ej: asignado por código de la rama de producción/módulo producción) no se pisa.
+        static::saving(function (AcuerdoTecnico $acuerdo) {
+            if (empty($acuerdo->at_peso) && function_exists('pesounitat')) {
+                try {
+                    $acuerdo->at_peso = pesounitat($acuerdo);
+                } catch (\Exception $e) {
+                    // Nunca bloquear el guardado por un fallo del cálculo de peso
+                }
+            }
+        });
 
         static::saved(function (AcuerdoTecnico $acuerdo) {
             if ($acuerdo->producto) {
