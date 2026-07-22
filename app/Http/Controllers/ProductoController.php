@@ -536,6 +536,7 @@ class ProductoController extends Controller
                     'categoriaprod.mostdatosad',
                     'categoriaprod.mostunimed',
                     'categoriaprod.stakilos',
+                    'categoriaprod.stakgguiadesp', // Flag para habilitar edición de kilos por ítem en guías de despacho (usado en dteguiadespdir)
                     'unidadmedida.nombre as unidadmedidanombre',
                     'acuerdotecnico.id as acuerdotecnico_id',
                     'acuerdotecnico.at_ancho',

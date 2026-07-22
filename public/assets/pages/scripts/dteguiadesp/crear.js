@@ -142,6 +142,11 @@ $("#btnaceptarMN").click(function(event){
 	{
 		id = $("#auxeditcampoN").attr('fila_id');
 		if($("#auxeditcampoN").attr('aux_nomcampon') == "aux_kilos"){
+			// Los kilos deben ser mayores a cero: no cierra el modal hasta ingresar un valor válido
+			if(!(parseFloat($("#auxeditcampoN").val()) > 0)){
+				alertify.error("Los kilos deben ser mayores a cero.");
+				return;
+			}
 			$("#aux_kilos" + id).html($("#auxeditcampoN").val());
 			$("#aux_kilos" + id).attr('valor', $("#auxeditcampoN").val());
 			$("#totalkilos" + id).val($("#auxeditcampoN").val());

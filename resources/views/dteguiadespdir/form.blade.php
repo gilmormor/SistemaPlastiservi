@@ -281,7 +281,8 @@
                             <th class="width70" style="text-align:right;">Cant</th>
                             <th class="width100 tooltipsC" title="Unidad de Medida">UniMed</th>
                             <th>Nombre</th>
-                            <th style="text-align:right;"></th>
+                            {{-- Columna Kilos visible: el despachador puede editar los kilos por ítem (según categoriaprod.stakgguiadesp) --}}
+                            <th class="width70 tooltipsC" title="Kilos por ítem" style="text-align:right;">Kilos</th>
                             <th style="display:none;">Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
@@ -305,9 +306,10 @@
                                 <th id="Tcant" name="Tcant" style="text-align:right">
                                     0
                                 </th>
-                                <th colspan="2" style="text-align:right;display:none;"><b>Total Kg</b></th>
-                                <th id="totalkg" name="totalkg" style="text-align:right;display:none;" valor="0">0</th>
-                                <th colspan="4" style="text-align:right"><b>Neto</b></th>
+                                {{-- Total Kg visible: suma de itemkg de todas las filas, actualizado por totalizarKilos() en crear.js --}}
+                                <th colspan="2" style="text-align:right;"><b>Total Kg</b></th>
+                                <th id="totalkg" name="totalkg" style="text-align:right;" valor="0">0</th>
+                                <th colspan="1" style="text-align:right"><b>Neto</b></th>
                                 <th id="tdneto" name="tdneto" style="text-align:right">0</th>
                             </tr>
                             <tr id="triva" name="triva">
@@ -330,3 +332,5 @@
 @include('generales.modalpdf')
 @include('generales.buscarclientebd')
 @include('generales.buscarproductobd')
+{{-- Modal compartido para editar kilos por ítem (mismo de dteguiadesp) --}}
+@include('generales.editarcamponum')

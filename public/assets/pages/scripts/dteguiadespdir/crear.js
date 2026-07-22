@@ -147,29 +147,124 @@ $(".requeridos").change(function(){
 });
 
 
-function editKilos(id){
-	let input = document.createElement("input");
-	aux_kilos = $("#aux_kilos" + id).html();
-	input.value = aux_kilos.trim();
-	input.type = 'text';
-	input.className = 'swal-content__input';
+// ===== Edición de kilos por ítem (mismo patrón de dteguiadesp, adaptado a filas dinámicas) =====
 
-	swal({
-		text: "Editar Kilos",
-		content: input,
-		buttons: {
-			cancel: "Cancelar",
-			confirm: "Aceptar"
-		},
-	}).then((value) => {
-		if (value) {
-			$("#aux_kilos" + id).html(input.value)
-			$("#totalkilos" + id).val(input.value)
-			$("#itemkg" + id).val(input.value)
+// Habilita o deshabilita el enlace de edición de kilos según categoriaprod.stakgguiadesp del producto seleccionado
+function configurarKilosFila(item){
+	let prodId = $("#producto_id" + item).val();
+	let enlace = $("#aux_kilos" + item);
+	let etiqueta = $("#aux_kiloslbl" + item);
+	if(prodId == "" || prodId == null){
+		// Producto no válido: ocultar enlace, limpiar kilos y quitar el campo requerido
+		enlace.hide();
+		etiqueta.show();
+		enlace.html("0,00").attr('valor','0');
+		etiqueta.html("0,00");
+		enlace.removeAttr('data-prodid');
+		$("#totalkilos" + item).val("").attr('valor','');
+		$("#itemkg" + item).val("");
+		$("#grupokilosreq" + item).remove();
+		totalizarKilos();
+		return;
+	}
+	// Si es el mismo producto ya configurado, conservar los kilos ingresados
+	if(enlace.attr('data-prodid') == prodId){
+		return;
+	}
+	enlace.attr('data-prodid', prodId);
+	// Producto nuevo o cambiado: reiniciar kilos a 0
+	enlace.html("0,00").attr('valor','0');
+	etiqueta.html("0,00");
+	$("#totalkilos" + item).val("").attr('valor','');
+	$("#itemkg" + item).val("");
+	// Quitar el campo requerido de una configuración anterior (si cambió el producto)
+	$("#grupokilosreq" + item).remove();
+	// arrayDatosProducto es la variable global que llena llenarDatosProd (general.js)
+	if(typeof arrayDatosProducto !== 'undefined' && arrayDatosProducto['cont'] > 0 && arrayDatosProducto['id'] == prodId && arrayDatosProducto['stakgguiadesp'] == 1){
+		enlace.show();
+		etiqueta.hide();
+		// Campo oculto requerido (mismo patrón de dteguiadesp): value vacío hasta que se ingresen kilos > 0,
+		// la validación del formulario (ignore:"") bloquea el guardar mientras esté vacío
+		enlace.after(
+			'<div class="form-group" id="grupokilosreq' + item + '" style="margin-bottom:0;">' +
+				'<label for="totalkilosreq' + item + '" class="control-label requerido" title="Kilos" style="display:none;">Kilos item ' + item + '</label>' +
+				'<input type="text" name="totalkilosreq' + item + '" id="totalkilosreq' + item + '" class="form-control" value="" valor="" fila="' + item + '" style="display:none;" required/>' +
+			'</div>'
+		);
+	}else{
+		enlace.hide();
+		etiqueta.show();
+	}
+	totalizarKilos();
+}
+
+// Suma los itemkg de todas las filas y actualiza el pie Total Kg
+function totalizarKilos(){
+	let total = 0;
+	$("input[name='itemkg[]']").each(function(){
+		let v = parseFloat($(this).val());
+		if(!isNaN(v)){
+			total += v;
 		}
 	});
-	
+	$("#totalkg").html(MASKLA(total,2));
+	$("#totalkg").attr('valor', total);
 }
+
+// Clic en el enlace de kilos: abre el modal compartido generales/editarcamponum
+// Binding delegado porque las filas se crean dinámicamente con agregarFila()
+$(document).on('click', '.editarcampoNum', function(){
+	quitarvalidacioneach();
+	id = $(this).attr('fila');
+	aux_valor = $(this).attr('valor');
+	$("#auxeditcampoN").attr('aux_nomcampon',$(this).attr('nomcampo'));
+	$("#auxeditcampoN").attr('fila_id',id);
+	$("#auxeditcampoN").val(aux_valor.trim());
+	$("#myModalEditarCampoNum").modal('show');
+});
+
+// Aceptar en el modal: valida y vuelca el valor a los campos de la fila (visible + ocultos que viajan al backend)
+$("#btnaceptarMN").click(function(event){
+	event.preventDefault();
+	if(verificarDato(".valorrequerido"))
+	{
+		id = $("#auxeditcampoN").attr('fila_id');
+		if($("#auxeditcampoN").attr('aux_nomcampon') == "aux_kilos"){
+			// Los kilos deben ser mayores a cero: no cierra el modal hasta ingresar un valor válido
+			if(!(parseFloat($("#auxeditcampoN").val()) > 0)){
+				alertify.error("Los kilos deben ser mayores a cero.");
+				return;
+			}
+			$("#aux_kilos" + id).html($("#auxeditcampoN").val());
+			$("#aux_kilos" + id).attr('valor', $("#auxeditcampoN").val());
+			$("#totalkilos" + id).val($("#auxeditcampoN").val());
+			$("#totalkilos" + id).attr('valor', $("#auxeditcampoN").val());
+			// Llenar el campo requerido y revalidarlo para limpiar el error del formulario
+			$("#totalkilosreq" + id).val($("#auxeditcampoN").val());
+			$("#totalkilosreq" + id).valid();
+			$("#itemkg" + id).val($("#auxeditcampoN").val());
+			totalizarKilos();
+		}
+		$("#myModalEditarCampoNum").modal('hide');
+	}else{
+		alertify.error("Falta incluir informacion");
+	}
+});
+
+// Validación del valor del modal (misma de dteguiadesp)
+function verificarDato(aux_nomclass)
+{
+	aux_resultado = true;
+	$(aux_nomclass).serializeArray().map(function(x){
+		aux_tipoval = $("#" + x.name).attr('tipoval');
+		if (validacion(x.name,aux_tipoval) == false)
+		{
+			aux_resultado = false;
+		}
+	});
+	return aux_resultado;
+}
+// ===== Fin edición de kilos por ítem =====
 
 $("#btnbuscarcliente").click(function(event){
     $("#rut").val("");
@@ -348,6 +443,7 @@ function blanquearDatos(){
 	$('.select2').trigger('change');
 	$('#tabla-data tbody').html("");
 	totalizar();
+	totalizarKilos(); // Recalcular Total Kg al limpiar la tabla
 }
 
 
@@ -382,6 +478,9 @@ function agregarFila() {
 			'<input type="text" name="dscitem[]" id="dscitem' + aux_nfila + '" class="form-control" value="" style="display:none;"/>' +
 		'</td>' +
 		'<td style="text-align:right;" class="subtotalkg" valor="0">' +
+			// Enlace editable de kilos (mismo patrón de dteguiadesp); se habilita en configurarKilosFila() si la categoría tiene stakgguiadesp=1
+			'<span id="aux_kiloslbl' + aux_nfila + '" style="display:none;">0,00</span>' +
+			'<a id="aux_kilos' + aux_nfila + '" name="aux_kilos' + aux_nfila + '" class="btn-accion-tabla btn-sm editarcampoNum tooltipsC" title="Editar Kilos" valor="0" fila="' + aux_nfila + '" tipocampo="numerico" nomcampo="aux_kilos" style="display:none;">0,00</a>' +
 			'<input type="text" name="totalkilos[]" id="totalkilos' + aux_nfila + '" class="form-control" value="" style="display:none;" valor="" fila="' + aux_nfila + '"/>' +
 			'<input type="text" name="itemkg[]" id="itemkg' + aux_nfila + '" class="form-control" value="" style="display:none;"/>' +
 		'</td>' +
@@ -486,7 +585,7 @@ function activarClases(){
 	validarItemVacios();
 }
 
-function copiar_codprod(id,codintprod){
+async function copiar_codprod(id,codintprod){
 	//$("#myModalBuscarProd").modal('hide');
 	//$("#myModal").modal('show');
 	$('#myModalBuscarProd').modal('hide');
@@ -496,14 +595,18 @@ function copiar_codprod(id,codintprod){
 	//$("#vlrcodigo" + itemAct).blur();
 	$("#qtyitem" + itemAct).focus();
 	$("#qtyitem" + itemAct).select();
-	llenarDatosProd($("#vlrcodigo" + itemAct));// buscarDatosProd($("#vlrcodigo" + itemAct));
+	// await: esperar la respuesta del producto para luego configurar la edición de kilos según stakgguiadesp
+	await llenarDatosProd($("#vlrcodigo" + itemAct));// buscarDatosProd($("#vlrcodigo" + itemAct));
+	configurarKilosFila(itemAct);
 	//console.log(arrayDatosProducto);
 	//$("#cantM").focus();
 }
 
-function onBlurProducto_id(vlrcodigo){
+async function onBlurProducto_id(vlrcodigo){
 	objvlrcodigo = $("#" + vlrcodigo["id"]);
-	llenarDatosProd(objvlrcodigo);
+	// await: esperar la respuesta del producto para luego configurar la edición de kilos según stakgguiadesp
+	await llenarDatosProd(objvlrcodigo);
+	configurarKilosFila(objvlrcodigo.attr("item"));
 	//console.log(vlrcodigo["id"]);
 }
 
@@ -636,7 +739,8 @@ function delitem(fila){
 				$(this).html(cont++);
 			});
 			validarItemVacios();
-			totalizar();	
+			totalizar();
+			totalizarKilos(); // Recalcular Total Kg al eliminar un ítem
 		}
 	});
 }
