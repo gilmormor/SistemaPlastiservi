@@ -114,47 +114,59 @@ class ClienteController extends Controller
         //dd($request);
         can('guardar-cliente');
         //DD($request);
-        $cliente = Cliente::create($request->all());
-        $cliente->vendedores()->sync($request->vendedor_id);
-        $cliente->sucursales()->sync($request->sucursalp_id);
-        $clienteid = $cliente->id;
-        if(isset($request->direcciondetalle)){
-            $cont_direc = count($request->direcciondetalle);
-            if($cont_direc>0){
-                for ($i=0; $i < $cont_direc ; $i++){
-                    if(is_null($request->direcciondetalle[$i])==false && is_null($request->region_id[$i])==false && is_null($request->provincia_id[$i])==false && is_null($request->comuna_id[$i])==false){
-                        $clienteDireccion = new ClienteDirec();
-                        $clienteDireccion->cliente_id = $clienteid;
-                        $clienteDireccion->direccion = $request->direcciondetalle[$i];
-                        $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
-                        $clienteDireccion->region_id = $request->region_id[$i];
-                        $clienteDireccion->provincia_id = $request->provincia_id[$i];
-                        $clienteDireccion->comuna_id = $request->comuna_id[$i];
-                        $clienteDireccion->save();
-    
-                        /* ESTO ES PARA INSERTAR O ELIMINAR SUCURSALES EN DIRECCIONES
-                        $idDireccion = $clienteDireccion->id;
-                        if($request->sucursal_id[$i] == NULL){
-                            $aux_arraySuc = [];
-                        }else{
-                            $aux_arraySuc = explode(",", $request->sucursal_id[$i]);
+        DB::beginTransaction();
+        try {
+            $cliente = Cliente::create($request->all());
+            $cliente->vendedores()->sync($request->vendedor_id);
+            $cliente->sucursales()->sync($request->sucursalp_id);
+            $clienteid = $cliente->id;
+            if(isset($request->direcciondetalle)){
+                $cont_direc = count($request->direcciondetalle);
+                if($cont_direc>0){
+                    for ($i=0; $i < $cont_direc ; $i++){
+                        if(is_null($request->direcciondetalle[$i])==false && is_null($request->region_id[$i])==false && is_null($request->provincia_id[$i])==false && is_null($request->comuna_id[$i])==false){
+                            $clienteDireccion = new ClienteDirec();
+                            $clienteDireccion->cliente_id = $clienteid;
+                            $clienteDireccion->direccion = $request->direcciondetalle[$i];
+                            $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
+                            $clienteDireccion->region_id = $request->region_id[$i];
+                            $clienteDireccion->provincia_id = $request->provincia_id[$i];
+                            $clienteDireccion->comuna_id = $request->comuna_id[$i];
+                            $clienteDireccion->save();
+        
+                            /* ESTO ES PARA INSERTAR O ELIMINAR SUCURSALES EN DIRECCIONES
+                            $idDireccion = $clienteDireccion->id;
+                            if($request->sucursal_id[$i] == NULL){
+                                $aux_arraySuc = [];
+                            }else{
+                                $aux_arraySuc = explode(",", $request->sucursal_id[$i]);
+                            }
+                            
+                            $clientedirec = ClienteDirec::findOrFail($idDireccion);
+                            $clientedirec->sucursals()->sync($aux_arraySuc);
+                            */
                         }
-                        
-                        $clientedirec = ClienteDirec::findOrFail($idDireccion);
-                        $clientedirec->sucursals()->sync($aux_arraySuc);
-                        */
                     }
-                }
-            }                
+                }                
+            }
+
+            
+            /*
+            if(isset($array_clientedirec)){
+                $cliente->clientedirecs()->createMany($array_clientedirec);
+            }
+            */
+            
+            DB::commit();
+            return redirect('cliente')->with('mensaje','Cliente creado con exito');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect('cliente/crear')->with([
+                'mensaje'=> 'Error: ' . $e->getMessage(),
+                'tipo_alert' => 'alert-error'
+            ]);
         }
 
-        
-        /*
-        if(isset($array_clientedirec)){
-            $cliente->clientedirecs()->createMany($array_clientedirec);
-        }
-        */
-        return redirect('cliente')->with('mensaje','Cliente creado con exito');
     }
 
     /**
@@ -278,64 +290,82 @@ class ClienteController extends Controller
         $permiso = 'guardar-cliente';
         dd(!in_array($permiso, $permisos));
         dd($permisos);*/
+        DB::beginTransaction();
+        try {
         
-        if(can('guardar-cliente',false) == true){
-            $cliente = Cliente::findOrFail($id);
-        
-            $cliente->update($request->all());
-            //dd($request);
-            //dd($request);
+            if(can('guardar-cliente',false) == true){
+                $cliente = Cliente::findOrFail($id);
+                $ClienteOriginal = clone $cliente; // clone: copia independiente; sin clone ambas variables apuntan al mismo objeto y el update() borra el estado original
+                //dd($ClienteOriginal);
             
-            $cliente->vendedores()->sync($request->vendedor_id);
-            $cliente->sucursales()->sync($request->sucursalp_id);
-            if(isset($request->direccion_id)){
-                $auxDirCli=ClienteDirec::where('cliente_id',$id)->whereNotIn('id', $request->direccion_id)->pluck('id')->toArray(); //->destroy();
-                for ($i=0; $i < count($auxDirCli) ; $i++){
-                    ClienteDirec::destroy($auxDirCli[$i]);
-                }
-                $cont_direc = count($request->direccion_id);
-                if($cont_direc>0){
-                    for ($i=0; $i < count($request->direccion_id) ; $i++){
-                        if( $request->direccion_id[$i] == '0' ){
-                            $clienteDireccion = new ClienteDirec;
-                            $clienteDireccion->cliente_id = $id;
-                            $clienteDireccion->direccion = $request->direcciondetalle[$i];
-                            $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
-                            $clienteDireccion->region_id = $request->region_id[$i];
-                            $clienteDireccion->provincia_id = $request->provincia_id[$i];
-                            $clienteDireccion->comuna_id = $request->comuna_id[$i];
-                            $clienteDireccion->save();
-                        }else{
-                            DB::table('clientedirec')->updateOrInsert(
-                                ['id' => $request->direccion_id[$i], 'cliente_id' => $id],
-                                [
-                                    'direccion' => $request->direcciondetalle[$i],
-                                    'direcciondetalle' => $request->direcciondetalle[$i],
-                                    'region_id' => $request->region_id[$i],
-                                    'provincia_id' => $request->provincia_id[$i],
-                                    'comuna_id' => $request->comuna_id[$i],
-                                ]
+                $cliente->update($request->all());
+                //dd($cliente);
+                $aux_resp = guardarLogCambioModelo(
+                                $cliente,
+                                [],
+                                $ClienteOriginal // <- se lo pasamos como estado original
                             );
-                        }
-                        /* ESTO ES PARA INSERTAR O ELIMINAR SUCURSALES EN DIRECCIONES
-                        $idDireccion = $request->direccion_id[$i]; 
-                        if($request->sucursal_id[$i] == NULL){
-                            $aux_arraySuc = [];
-                        }else{
-                            $aux_arraySuc = explode(",", $request->sucursal_id[$i]);
-                        }
-                        $clientedirec = ClienteDirec::findOrFail($idDireccion);
-                        $clientedirec->sucursals()->sync($aux_arraySuc);
-                        */
+                //dd($request);
+                //dd($request);
+                
+                $cliente->vendedores()->sync($request->vendedor_id);
+                $cliente->sucursales()->sync($request->sucursalp_id);
+                if(isset($request->direccion_id)){
+                    $auxDirCli=ClienteDirec::where('cliente_id',$id)->whereNotIn('id', $request->direccion_id)->pluck('id')->toArray(); //->destroy();
+                    for ($i=0; $i < count($auxDirCli) ; $i++){
+                        ClienteDirec::destroy($auxDirCli[$i]);
                     }
+                    $cont_direc = count($request->direccion_id);
+                    if($cont_direc>0){
+                        for ($i=0; $i < count($request->direccion_id) ; $i++){
+                            if( $request->direccion_id[$i] == '0' ){
+                                $clienteDireccion = new ClienteDirec;
+                                $clienteDireccion->cliente_id = $id;
+                                $clienteDireccion->direccion = $request->direcciondetalle[$i];
+                                $clienteDireccion->direcciondetalle = $request->direcciondetalle[$i];
+                                $clienteDireccion->region_id = $request->region_id[$i];
+                                $clienteDireccion->provincia_id = $request->provincia_id[$i];
+                                $clienteDireccion->comuna_id = $request->comuna_id[$i];
+                                $clienteDireccion->save();
+                            }else{
+                                DB::table('clientedirec')->updateOrInsert(
+                                    ['id' => $request->direccion_id[$i], 'cliente_id' => $id],
+                                    [
+                                        'direccion' => $request->direcciondetalle[$i],
+                                        'direcciondetalle' => $request->direcciondetalle[$i],
+                                        'region_id' => $request->region_id[$i],
+                                        'provincia_id' => $request->provincia_id[$i],
+                                        'comuna_id' => $request->comuna_id[$i],
+                                    ]
+                                );
+                            }
+                            /* ESTO ES PARA INSERTAR O ELIMINAR SUCURSALES EN DIRECCIONES
+                            $idDireccion = $request->direccion_id[$i]; 
+                            if($request->sucursal_id[$i] == NULL){
+                                $aux_arraySuc = [];
+                            }else{
+                                $aux_arraySuc = explode(",", $request->sucursal_id[$i]);
+                            }
+                            $clientedirec = ClienteDirec::findOrFail($idDireccion);
+                            $clientedirec->sucursals()->sync($aux_arraySuc);
+                            */
+                        }
+                    }
+            
                 }
-        
+            }else{
+                return redirect('cliente')->with('mensaje','No tiene permiso para editar!');
             }
-
+            DB::commit();
             return redirect('cliente')->with('mensaje','Cliente actualizado con exito!');
-        }else{
-            return redirect('cliente')->with('mensaje','No tiene permiso para editar!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect('cliente')->with([
+                'mensaje'=> 'Error: ' . $e->getMessage(),
+                'tipo_alert' => 'alert-error'
+            ]);
         }
+
 
     }
 

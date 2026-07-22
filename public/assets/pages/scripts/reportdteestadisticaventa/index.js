@@ -171,7 +171,7 @@ var eventFired = function ( type ) {
     
 }
 
-function datosFac(orderby = "",aux_genexcel){
+function datosFac(orderby = "",aux_genexcel,formatoexcel = 0){
     var data1 = {
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -189,6 +189,7 @@ function datosFac(orderby = "",aux_genexcel){
         areaproduccion_id : $("#areaproduccion_id").val(),
         categoriaprod_id  : $("#categoriaprod_id").val(),
         claseprod_id      : $("#claseprod_id").val(),
+        formatoexcel      : formatoexcel, 
         _token            : $('input[name=_token]').val()
     };
 
@@ -206,6 +207,7 @@ function datosFac(orderby = "",aux_genexcel){
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&categoriaprod_id="+data1.categoriaprod_id +
     "&claseprod_id="+data1.claseprod_id +
+    "&formatoexcel="+data1.formatoexcel +
     "&_token="+data1._token;
 
     var data = {
@@ -303,7 +305,7 @@ function btnpdf(data){
 function exportarExcelSantaEster() {
     var tabla = $('#tabla-data-consulta').DataTable();
     orderby = " order by foliocontrol.doc,dte.id ";
-    data = datosFac(orderby,1);
+    data = datosFac(orderby,1,1);
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
       url: "/reportdteestadisticaventa/reportdteestadisticaventapage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
@@ -343,7 +345,7 @@ function exportarExcelSantaEster() {
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto","DocOrigen","NDocOrigen","FechaOrigen","Sucursal","CentroEconomico_ID","CentroEconomico_Nombre"]);
+        datosExcel.push(["Tipo Doc","NDoc","Fecha","Cliente","RUT","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","UN","Formato","Kg","Neto","DocOrigen","NDocOrigen","FechaOrigen","Sucursal","CentroEconomico_ID","CentroEconomico_Nombre","Categoria","Peso U","Peso Nóminal"]);
         data.datos.forEach(function(registro) {
             aux_totalMonto += registro.montoitem;
             aux_totalComision += registro.comision;
@@ -389,7 +391,10 @@ function exportarExcelSantaEster() {
                 aux_dteorigen_fchemis,
                 registro.sucursal_nombre,
                 registro.centroeconomico_id,
-                registro.centroeconomico_nombre
+                registro.centroeconomico_nombre,
+                registro.categoriaprod_nombre,
+                registro.at_peso,
+                registro.qtyitem * registro.at_peso
             ];
             aux_vendedor_id = registro.vendedor_id;
             count++;
@@ -454,10 +459,13 @@ function createExcelSantaEster(datosExcel) {
     ajustarcolumnaexcel(worksheet,"T");
     ajustarcolumnaexcel(worksheet,"U");
     ajustarcolumnaexcel(worksheet,"V");
-    
+    ajustarcolumnaexcel(worksheet,"W");
+    ajustarcolumnaexcel(worksheet,"X");
+    ajustarcolumnaexcel(worksheet,"Y");
+    ajustarcolumnaexcel(worksheet,"Z");
 
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 22; i++) {
+    for (let i = 1; i <= 25; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
     }
@@ -468,6 +476,13 @@ function createExcelSantaEster(datosExcel) {
     columnG.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
+        }
+    });
+
+    const columnH = worksheet.getColumn(25);
+    columnH.eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+        cell.numFmt = "#,##0.00";
         }
     });
 
@@ -557,7 +572,7 @@ function createExcelSantaEster(datosExcel) {
 function exportarExcelLosPinos() {
     var tabla = $('#tabla-data-consulta').DataTable();
     orderby = " order by foliocontrol.doc,dte.id ";
-    data = datosFac(orderby,1);
+    data = datosFac(orderby,1,2);
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
         url: "/reportdteestadisticaventa/reportdteestadisticaventapage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
