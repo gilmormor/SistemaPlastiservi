@@ -357,6 +357,10 @@
                                     $aux_Tcantdesp += $detalle->cantdesp;
 
                                     $aux_kilos = ($NVDet->totalkilos/$NVDet->cant) * $detalle->cantdesp;
+                                    //Si la categoría exige ingreso manual de kilos (stakgguiadesp=1), se inicia en 0 para obligar al despachador a ingresarlos
+                                    if(isset($NVDet->categoriaprod->stakgguiadesp) and $NVDet->categoriaprod->stakgguiadesp == 1){
+                                        $aux_kilos = 0;
+                                    }
                                 }
                                 $aux_Tkilos += $aux_kilos;
                                 $producto_id = isset($dteguiadesp) ? $detalle->producto_id : $NVDet->producto_id;

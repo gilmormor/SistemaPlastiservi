@@ -627,6 +627,10 @@ $(".form-horizontal").on("submit", function(event){
 		}
 	});			
 	*/
+	// El input del modal de kilos (#auxeditcampoN) es required y la validación del form lo revisa aunque esté oculto:
+	// se le asigna un valor dummy para que no bloquee el guardar (mismo workaround de dteguiadesp)
+	$("#auxeditcampoN").val("1");
+
 	activarClases();
 	validarItemVacios();
 
