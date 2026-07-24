@@ -26,6 +26,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+
+        //Recalcula la caché de "pendiente por producir" (stock - pendiente) usada por calcprecioprodsn (#stockM)
+        //en cotización/nota de venta. Requiere un único cron en el hosting que llame "php artisan schedule:run"
+        //cada minuto; Laravel decide internamente cuándo corresponde ejecutar este comando.
+        $schedule->command('producto:actualizar-cache-pendientexproducir')
+                 ->everyFiveMinutes()
+                 ->withoutOverlapping();
     }
 
     /**
