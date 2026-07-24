@@ -3825,6 +3825,11 @@ function descArcTXT(nameFile,aux_venmodant = ""){
 }
 
 function llenarcampostockM(respuesta){
+	// Requerimiento comercial: en #stockM se debe mostrar el pendiente por producir (stock - pendiente por
+	// despachar), NUNCA el stock real, ni siquiera un instante mientras responde el AJAX. Por eso el stock de
+	// "bodegas" solo se guarda en una variable auxiliar y se usa como respaldo si pendientePorProducirXProducto
+	// falla o no tiene valor para este producto/sucursal (ej: producto muy nuevo, aún sin caché).
+	var aux_stockRespaldo = null;
 	if ($('#sucursal_id').length) {
 		tuObjeto = respuesta["bodegas"];
 		for (var clave in tuObjeto) {
@@ -3833,17 +3838,15 @@ function llenarcampostockM(respuesta){
 				// Haces algo con el objetoInterior
 				//console.log(objetoInterior.id, objetoInterior.nombre, objetoInterior.desc);
 				if(objetoInterior.sucursal_id == $('#sucursal_id').val()){
-					$("#stockM").val(0);
+					aux_stockRespaldo = 0;
 					if(objetoInterior.stock >= 0){
-						$("#stockM").val(objetoInterior.stock);
+						aux_stockRespaldo = objetoInterior.stock;
 					}
 				}
 			}
 		}
 	}
-	// Requerimiento comercial: en #stockM mostrar el pendiente por producir (stock - pendiente por despachar,
-	// misma fórmula del reporte reportinvstockbppendxprod) en vez del stock; puede ser negativo (informativo).
-	// Solo aplica si la pantalla tiene #stockM y una sucursal seleccionada; si el AJAX falla se conserva el stock actual.
+
 	if ($('#stockM').length && $('#sucursal_id').length && $('#sucursal_id').val() && respuesta && respuesta['id']) {
 		$.ajax({
 			url: '/producto/pendientePorProducirXProducto',
@@ -3856,9 +3859,19 @@ function llenarcampostockM(respuesta){
 			success: function (resp) {
 				if(resp && resp.mensaje == 'ok' && resp.difcantpend !== null){
 					$("#stockM").val(resp.difcantpend);
+				}else if(aux_stockRespaldo !== null){
+					$("#stockM").val(aux_stockRespaldo);
+				}
+			},
+			error: function(){
+				if(aux_stockRespaldo !== null){
+					$("#stockM").val(aux_stockRespaldo);
 				}
 			}
 		});
+	}else if ($('#stockM').length && aux_stockRespaldo !== null){
+		// Pantalla sin #sucursal_id o sin producto válido: se mantiene el comportamiento original (mostrar el stock)
+		$("#stockM").val(aux_stockRespaldo);
 	}
 }
 
