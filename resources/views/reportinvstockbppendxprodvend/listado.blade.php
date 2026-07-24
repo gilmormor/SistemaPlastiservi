@@ -17,7 +17,7 @@
 			</td>
 			<td class="info_factura">
 				<div class="round">
-					<span class="h3">Stock x Producción</span>
+					<span class="h3">Stock Producto</span>
 					<p>Fecha: {{date("d-m-Y h:i:s A")}}</p>
 					<p>Sucursal: {{$request->sucursal_nombre}}</p>
 					<p>Estatus NV: {{$request->aprobstatusdesc}}</p>
