@@ -3829,18 +3829,37 @@ function llenarcampostockM(respuesta){
 		tuObjeto = respuesta["bodegas"];
 		for (var clave in tuObjeto) {
 			if (tuObjeto.hasOwnProperty(clave)) {
-				var objetoInterior = tuObjeto[clave];							
+				var objetoInterior = tuObjeto[clave];
 				// Haces algo con el objetoInterior
 				//console.log(objetoInterior.id, objetoInterior.nombre, objetoInterior.desc);
 				if(objetoInterior.sucursal_id == $('#sucursal_id').val()){
-					$("#stockM").val(0);					
+					$("#stockM").val(0);
 					if(objetoInterior.stock >= 0){
 						$("#stockM").val(objetoInterior.stock);
 					}
 				}
 			}
 		}
-	}	
+	}
+	// Requerimiento comercial: en #stockM mostrar el pendiente por producir (stock - pendiente por despachar,
+	// misma fórmula del reporte reportinvstockbppendxprod) en vez del stock; puede ser negativo (informativo).
+	// Solo aplica si la pantalla tiene #stockM y una sucursal seleccionada; si el AJAX falla se conserva el stock actual.
+	if ($('#stockM').length && $('#sucursal_id').length && $('#sucursal_id').val() && respuesta && respuesta['id']) {
+		$.ajax({
+			url: '/producto/pendientePorProducirXProducto',
+			type: 'POST',
+			data: {
+				producto_id: respuesta['id'],
+				sucursal_id: $('#sucursal_id').val(),
+				_token: $('input[name=_token]').val()
+			},
+			success: function (resp) {
+				if(resp && resp.mensaje == 'ok' && resp.difcantpend !== null){
+					$("#stockM").val(resp.difcantpend);
+				}
+			}
+		});
+	}
 }
 
 function formDataToObject(formData) {

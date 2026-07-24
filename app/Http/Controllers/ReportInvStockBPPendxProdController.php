@@ -37,6 +37,49 @@ class ReportInvStockBPPendxProdController extends Controller
         return view('reportinvstockbppendxprod.index', compact('tablashtml','selecmultprod'));
 
     }
+    //Pendiente por producir de UN producto en UNA sucursal: difcantpend = stock - (cant - cantdesp).
+    //Reutiliza la misma consulta del reporte (pendientexProducto + stocksql) para que el valor coincida siempre con él.
+    //Sin permiso del reporte: es informativo para vendedores (se muestra en #stockM de calcprecioprodsn).
+    public function pendientePorProducirXProducto(Request $request){
+        $respuesta = ['mensaje' => 'error', 'difcantpend' => null];
+        if(empty($request->producto_id) or empty($request->sucursal_id)){
+            return $respuesta;
+        }
+        //Mismos parámetros que usa reportinvstockbppendxprodpage, más el filtro por producto y sucursal
+        $request->request->add(['groupby' => " group by notaventadetalle.producto_id "]);
+        $request->request->add(['orderby' => " order by notaventadetalle.producto_id "]);
+        $request->request->add(['FiltarxVendedor' => false]);
+        //stocksql exige mesanno en formato "Mes Año" en español (ej: "Julio 2026"): se usa el mes actual para el stock vigente
+        $aux_meses = [1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre'];
+        $request->request->add(['mesanno' => $aux_meses[(int)date('n')] . " " . date('Y')]);
+        //Mismos filtros por defecto del reporte para que el valor coincida siempre con él:
+        //tipobodega 1,2 (input oculto del reporte) y aprobstatus 3 = solo NV aprobadas (opción por defecto del reporte)
+        $request->request->add(['tipobodega' => "1,2"]);
+        $request->request->add(['aprobstatus' => "3"]);
+
+        $pendientexprods = Producto::pendientexProducto($request,2,1);
+        $datas = InvMov::stocksql($request,"producto.id");
+
+        $aux_stock = 0;
+        foreach ($datas as $data) {
+            if($data->producto_id == $request->producto_id){
+                $aux_stock = $data->stock;
+                break;
+            }
+        }
+        $aux_cantpend = 0;
+        foreach ($pendientexprods as $pendientexprod) {
+            if($pendientexprod->producto_id == $request->producto_id){
+                $aux_cantpend = $pendientexprod->cant - $pendientexprod->cantdesp;
+                break;
+            }
+        }
+        //Misma fórmula del reporte: con pendiente resta; sin pendiente queda el stock; sin stock queda el pendiente en negativo
+        $respuesta['mensaje'] = 'ok';
+        $respuesta['difcantpend'] = $aux_stock - $aux_cantpend;
+        return $respuesta;
+    }
+
     public function reportinvstockbppendxprodpage(Request $request){
         //dd($request);
         can('reporte-stock-+-pendiente');

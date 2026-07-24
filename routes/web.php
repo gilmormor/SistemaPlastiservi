@@ -1355,6 +1355,13 @@ Route::get('reportinvstockbppendxprodpage', 'ReportInvStockBPPendxProdController
 Route::get('reportinvstockbppendxprod/reporte', 'ReportInvStockBPPendxProdController@reporte')->name('reportinvstockbppendxprod_reporte');
 Route::get('reportinvstockbppendxprod/exportPdf', 'ReportInvStockBPPendxProdController@exportPdf')->name('reportinvstockbppendxprod_exportPdf');
 Route::get('reportinvstockbppendxprod/totalizarindex', 'ReportInvStockBPPendxProdController@totalizarindex')->name('reportinvstockbppendxprod_totalizarindex');
+//Pendiente por producir de un producto por sucursal (informativo, sin permiso de reporte): usado por calcprecioprodsn (#stockM)
+Route::post('producto/pendientePorProducirXProducto', 'ReportInvStockBPPendxProdController@pendientePorProducirXProducto')->name('producto_pendientePorProducirXProducto');
+
+/*RUTAS REPORTE STOCK + PENDIENTE X PRODUCTO VENDEDOR (copia de reportinvstockbppendxprod)*/
+Route::get('reportinvstockbppendxprodvend', 'ReportInvStockBPPendxProdVendController@index')->name('reportinvstockbppendxprodvend');
+Route::get('reportinvstockbppendxprodvend/reporte', 'ReportInvStockBPPendxProdVendController@reporte')->name('reportinvstockbppendxprodvend_reporte');
+Route::get('reportinvstockbppendxprodvend/exportPdf', 'ReportInvStockBPPendxProdVendController@exportPdf')->name('reportinvstockbppendxprodvend_exportPdf');
 
 /*RUTAS REPORTE PESAJE*/
 Route::get('reportpesaje', 'ReportPesajeController@index')->name('reportpesaje');
