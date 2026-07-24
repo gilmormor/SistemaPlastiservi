@@ -1,6 +1,6 @@
 @extends("theme.$theme.layout")
 @section('titulo')
-Pendiente x Producción
+Stock x Producción
 @endsection
 
 @section("scripts")
@@ -25,7 +25,7 @@ Pendiente x Producción
         @include('includes.mensaje')
         <div class="box box-primary box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title">Pendiente x Producción</h3>
+                <h3 class="box-title">Stock x Producción</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                 </div>
