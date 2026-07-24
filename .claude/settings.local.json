@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git merge *)",
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(git check-ignore *)",
+      "Bash(rm -f .claude/settings.local.json.bak)",
+      "Bash(git add *)"
+    ]
+  }
+}
