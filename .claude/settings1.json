@@ -1,0 +1,8 @@
+{
+  "model": "sonnet",
+  "env": {
+    "MAX_THINKING_TOKENS": "2500",
+    "CLAUDE_AUTOCOMPACT_PCT": "70",
+    "CLAUDE_MAX_CONTEXT_WINDOW": "150000"
+  }
+}

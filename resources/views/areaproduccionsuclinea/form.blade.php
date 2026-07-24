@@ -1,3 +1,6 @@
+<?php 
+    use App\Models\AreaProduccionSuc;
+?>
 <div class="form-group">
     <label for="nombre" class="col-lg-3 control-label requerido">Nombre</label>
     <div class="col-lg-9">
@@ -24,10 +27,10 @@
                 @foreach($tablas['areaproduccionsucs'] as $areaproduccionsuc)
                     <option
                         value="{{$areaproduccionsuc->id}}"
-                        @if (isset($data) and ($data->areaproduccionsuc_id==$areaproduccionsuc->id))
+                        @if (isset($data) and ($data->areaproduccionsuc_id==$areaproduccionsuc_id))
                             {{'selected'}}
                         @endif
-                        >{{$areaproduccionsuc->areaproduccion->nombre}} - {{$areaproduccionsuc->sucursal->nombre}}</option>
+                        >{{$areaproduccionsuc->areaproduccion_nombre}} - {{$areaproduccionsuc->sucursal_nombre}}</option>
                 @endforeach                    
         </select>
     </div>

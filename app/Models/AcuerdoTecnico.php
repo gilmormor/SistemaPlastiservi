@@ -13,6 +13,20 @@ class AcuerdoTecnico extends Model
 {
     use SoftDeletes;
     protected $table = "acuerdotecnico";
+
+    /**
+     * Peso unitario derivado.
+     * Usa el helper global `pesounitat($at)` definido en app/Helpers/biblioteca.php,
+     * que considera at_formatofilm, at_peso, densidad de materia prima (pe) y
+     * ancho×largo×espesor cuando aplica.
+     * Devuelve 0 si no se puede calcular.
+     */
+    public function getPesoUnitarioAttribute()
+    {
+        if (!function_exists('pesounitat')) return 0;
+        return pesounitat($this);
+    }
+
     protected $fillable = [
         'at_notaventadetalle_id',
         'producto_id',
@@ -85,7 +99,8 @@ class AcuerdoTecnico extends Model
         'at_cantxunimed',
         'at_firmado',
         'usuariodel_id'
-    ];    
+    ];
+    protected $appends = ['nombre_producto']; // se incluirá automáticamente en JSON
 
     //RELACION INVERSA PARA BUSCAR EL PADRE
     public function color()
@@ -165,6 +180,26 @@ class AcuerdoTecnico extends Model
     public function acuerdotecnicocvalatdets()
     {
         return $this->hasMany(AcuerdoTecnicoCValAtDet::class,"acuerdotecnico_id");
+    }
+
+    //Atributo personalizado para obtener el nombre del producto
+    // Se asume que el modelo Producto tiene un método atributosProducto()
+    //primero busca el nombre en atributosProducto, si no lo encuentra usa el campo nombre
+    //el valor lo asigna al atributo nombre_producto: protected $appends = ['nombre_producto'];
+    public function getNombreProductoAttribute()
+    {
+        // aquí decides si usas directamente el campo nombre
+        // o si llamas a tu función atributosProducto()
+        if ($this->producto) {
+            return $this->producto->atributosProducto($this->producto_id)['nombre']
+                   ?? $this->producto->nombre;
+        }
+        return null;
+    }
+    //RELACION MUCHOS A MUCHOS EtapaProd AreaProduccionSucEtapaProd
+    public function apsucetapaprods()
+    {
+        return $this->belongsToMany(AreaProduccionSucEtapaProd::class, 'acuerdotecnicoapsucetapaprod','acuerdotecnico_id','apsucetapaprod_id')->withTimestamps();
     }
 
     public static function buscaratxcampos($request)

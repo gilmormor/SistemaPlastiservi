@@ -67,36 +67,33 @@
 					<span class="h3" style="margin-bottom: 0px;">Descripción</span>
 					<table class="datos_cliente" style="padding-top: 0px;">
 						<tr class="headtarial">
-							<td style="width: 16% !important;"><strong>Fecha Creacion:</strong></td>
-							<td style="width: 25% !important;"><p>{{date('d/m/Y h:i:s A', strtotime($acuerdotecnico->created_at))}}</td>
-							<td style="width: 10% !important;"></td>
-							<td style="width: 15% !important;"><p></p></td>
-							<td style="width: 6% !important;"></td>
-							<td style="width: 10% !important;"><p></p></td>
+							<td style="width: 40% !important;"><strong>Fecha Creacion: </strong>{{date('d/m/Y h:i:s A', strtotime($acuerdotecnico->created_at))}}</td>
 						</tr>
 						<tr class="headtarial">
-							<td style="width: 16% !important;"><strong>Producto:</strong></td>
-							@if ($acuerdotecnico->cotizaciondetalle)
+							<td style="width: 16% !important;"><strong>Producto: </strong>
+								@if ($acuerdotecnico->cotizaciondetalle)
+									{{$acuerdotecnico->cotizaciondetalle->producto->categoriaprod->nombre}}
+								@else
+									{{$acuerdotecnico->producto->categoriaprod->nombre}}
+								@endif
+							</td>
+							{{-- @if ($acuerdotecnico->cotizaciondetalle)
 								<td style="width: 25% !important;"><p>{{$acuerdotecnico->cotizaciondetalle->producto->categoriaprod->nombre}}</p></td>
 							@else
 								<td style="width: 25% !important;"><p>{{$acuerdotecnico->producto->categoriaprod->nombre}}</p></td>
-							@endif
-							<td style="width: 16% !important;"><strong>Unid Medida:</strong></td>
-							<td style="width: 25% !important;"><p>{{$acuerdotecnico->unidadmedida->nombre}}</p></td>
+							@endif --}}
+							<td style="width: 70% !important;"><strong>Descripción: </strong> {{$acuerdotecnico->at_desc}}</td>
+							<td style="width: 25% !important;"><strong>Unid Medida: </strong>{{$acuerdotecnico->unidadmedida->nombre}}</td>
+						</tr>
+						<tr class="headtarial">
+							<td style="width: 20% !important;"><strong>Ent. Muestra: </strong>{{$acuerdotecnico->at_entmuestra == '1' ? 'Si' : 'No' }}</td>
+							<td style="width: 30% !important;"><strong>Tipo Sello: </strong>{{$acuerdotecnico->claseprod->cla_nombre . ($acuerdotecnico->at_tiposelloobs ? ", " . $acuerdotecnico->at_tiposelloobs : "")}}</td>
 							@if ($acuerdotecnico->at_formatofilm > 0)
 								<td style="width: 16% !important;"><strong>Formato: </strong>{{number_format($acuerdotecnico->at_formatofilm, 2, ',', '.')}} Kg.</td>
 							@endif
 						</tr>
 						<tr class="headtarial">
-							<td style="width: 16% !important;"><strong>Descripción:</strong></td>
-							<td style="width: 25% !important;"><p>{{$acuerdotecnico->at_desc}}</p></td>
-							<td style="width: 10% !important;"><strong>Ent. Muestra:</strong></td>
-							<td style="width: 15% !important;"><p>{{$acuerdotecnico->at_entmuestra == '1' ? 'Si' : 'No' }}</p></td>
-							<td style="width: 20% !important;"><strong>Tipo Sello/Clase:</strong> {{$acuerdotecnico->claseprod->cla_nombre . ($acuerdotecnico->at_tiposelloobs ? ", " . $acuerdotecnico->at_tiposelloobs : "")}}</td>
-						</tr>
-						<tr class="headtarial">
-							<td style="width: 10% !important;"><strong>Glosa:</strong></td>
-							<td style="width: 85% !important;"><p>{{isset($acuerdotecnico->at_glosa) ? $acuerdotecnico->at_glosa : $acuerdotecnico->producto->glosa}}</p></td>
+							<td colspan="3" style="width: 50% !important;"><strong>Nombre completo: </strong>{{$acuerdotecnico->producto ? $acuerdotecnico->producto->atributosProducto($acuerdotecnico->producto_id)["nombre"] : $acuerdotecnico->at_desc . " (At Temporal)"}}</td>
 						</tr>
 					</table>
 				</div>

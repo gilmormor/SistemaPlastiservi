@@ -530,6 +530,7 @@ class SoapController extends Controller
         }
     }
 
+    // Portado desde master_20260513-01_anterior_20260506-01 — consulta PDF de DTE al servicio BES
     public function consulta_TXTDTE($RutEmpresa,$TipoDocto,$NroDocto)
     {
         try{

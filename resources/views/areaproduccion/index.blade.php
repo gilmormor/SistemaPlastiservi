@@ -4,7 +4,8 @@ Area Producción
 @endsection
 
 @section("scripts")
-    <script src="{{autoVer("assets/pages/scripts/admin/index.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
+    <script src="{{autoVer("assets/pages/scripts/areaproduccion/index.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')
@@ -25,30 +26,10 @@ Area Producción
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
-                            <th>Descripción</th>
-                            <th class="width70"></th>
+                            <th>Nombre</th>
+                            <th class="width70">Acción</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($datas as $data)
-                        <tr>
-                            <td>{{$data->id}}</td>
-                            <td>{{$data->nombre}}</td>
-                            <td>
-                                <a href="{{route('editar_areaproduccion', ['id' => $data->id])}}" class="btn-accion-tabla tooltipsC" title="Editar este registro">
-                                    <i class="fa fa-fw fa-pencil"></i>
-                                </a>
-                                <form action="{{route('eliminar_areaproduccion', ['id' => $data->id])}}" class="d-inline form-eliminar" method="POST">
-                                    @csrf @method("delete")
-                                    <button type="submit" class="btn-accion-tabla eliminar tooltipsC" title="Eliminar este registro">
-                                        <i class="fa fa-fw fa-trash text-danger"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-
-                    </tbody>
                 </table>
             </div>
         </div>

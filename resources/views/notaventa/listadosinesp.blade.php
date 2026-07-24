@@ -81,7 +81,7 @@
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($notaventaDetalles as $notaventaDetalle)
-				<?php 
+				<?php
 					$aux_producto_nombre = $notaventaDetalle->producto->atribNomProd($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id);
 				?>
 					<tr class="headt" style="height:150%;">

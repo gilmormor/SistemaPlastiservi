@@ -35,7 +35,7 @@ class AreaProduccion extends Model
     {
         return $this->hasMany(AreaProduccionSuc::class,'areaproduccion_id');
     }
-
+    
     public static function areaproduccionxusuario(){
         $user = Usuario::findOrFail(auth()->id());
         $sucurArray = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];

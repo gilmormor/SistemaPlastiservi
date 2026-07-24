@@ -24,6 +24,7 @@ use App\Models\DespachoSol_InvMov;
 use App\Models\DespachoSolAnul;
 use App\Models\DespachoSolDet;
 use App\Models\DespachoSolDet_InvBodegaProducto;
+use App\Models\DespachoSolDet_OpDetRegProd; // Trazabilidad de lotes de producción por despacho
 use App\Models\DespachoSolDTE;
 use App\Models\DespachoSolEnvOrdDesp;
 use App\Models\Dte;
@@ -32,10 +33,12 @@ use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
+use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovDet_BodSolDesp;
+use App\Models\InvMovDetNVDet;
 use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
@@ -186,7 +189,16 @@ class DespachoSolController extends Controller
     public function crearsol($id)
     {
         can('crear-solicitud-despacho');
+        
+        //$notaventadetalle = NotaVentaDetalle::findOrFail(49551);
+        //dd($notaventadetalle->otdetnvdet);
         $data = NotaVenta::findOrFail($id);
+        if(isset($data->otnotaventa) and $data->otnotaventa->ot->aprobstatus == 0){
+            return redirect('despachosol/listarnv')->with([
+                'mensaje'=>'Nota Venta tiene OT esperando por ser aprobada. OT: ' . $data->otnotaventa->ot->id,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if(isset($data->cliente->clientebloqueado->descripcion)){
             return redirect('despachosol')->with([
                 'mensaje'=>'Condición financiera en revisión: ' . $data->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->cliente->razonsocial,
@@ -272,6 +284,13 @@ class DespachoSolController extends Controller
         can('guardar-solicitud-despacho');
         //dd($request);
         $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+        if(isset($notaventa->otnotaventa) and $notaventa->otnotaventa->ot->aprobstatus == 0){
+            return redirect('despachosol/listarnv')->with([
+                'mensaje'=>'Nota Venta tiene OT esperando por ser aprobada. OT: ' . $notaventa->otnotaventa->ot->id,
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         //BLOQUEO POR DEUDA: DESHABILITADO POR AUTORIZACION DE JEANNETTE MARTINEZ 14/08/2024
         /* $request1 = new Request();
         $request1->merge(['modulo_id' => 4]);
@@ -406,7 +425,27 @@ class DespachoSolController extends Controller
                                 $notaventadetalle->cantsoldes   p = $request->cantsoldesp[$i];
                                 $notaventadetalle->save();
                                 */
-                                //$despacho_id = $despachosol->id;    
+                                //$despacho_id = $despachosol->id;
+
+                                // Guardar lotes de producción asociados a este despachosoldet (trazabilidad granular)
+                                // Los lotes se identifican por opdetregprod_nvdet_id[] que debe coincidir con el NVdet actual
+                                if (!empty($request->opdetregprod_id)) {
+                                    foreach ($request->opdetregprod_id as $k => $opdetregprod_id_val) {
+                                        $nvdetLote = $request->opdetregprod_nvdet_id[$k] ?? null;
+                                        if ($nvdetLote == $request->NVdet_id[$i]) {
+                                            $cantLote   = floatval($request->opdetregprod_cant[$k]   ?? 0);
+                                            $cantKgLote = floatval($request->opdetregprod_cantkg[$k] ?? 0);
+                                            if ($cantLote > 0) {
+                                                DespachoSolDet_OpDetRegProd::create([
+                                                    'despachosoldet_id' => $despachosoldet->id,
+                                                    'opdetregprod_id'   => $opdetregprod_id_val,
+                                                    'cant'              => $cantLote,
+                                                    'cantkg'            => $cantKgLote,
+                                                ]);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -577,7 +616,7 @@ class DespachoSolController extends Controller
                 ]);
             }
             */
-            if(true or $despachosol->updated_at == $request->updated_at){
+            if($despachosol->updated_at == $request->updated_at){
                 $despachosol->updated_at = date("Y-m-d H:i:s");
                 $despachosol->comunaentrega_id = $request->comunaentrega_id;
                 $despachosol->tipoentrega_id = $request->tipoentrega_id;
@@ -730,7 +769,31 @@ class DespachoSolController extends Controller
                                     $notaventadetalle->cantsoldesp = $request->cantsoldesp[$i];
                                     $notaventadetalle->save();
                                     */
-                                    //$despacho_id = $despachosol->id;    
+                                    //$despacho_id = $despachosol->id;
+
+                                    // Actualizar lotes de producción para este despachosoldet (trazabilidad granular)
+                                    // Se elimina y re-inserta para simplificar (no hay lógica encadenada en esta tabla)
+                                    if (!empty($request->opdetregprod_id)) {
+                                        $despachosoldet_id_actual = $request->NVdet_id[$i]; // en update, NVdet_id = despachosoldet_id
+                                        // Borrar asignaciones previas de lotes para este despachosoldet
+                                        DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet_id_actual)->delete();
+                                        // Re-insertar desde el formulario
+                                        foreach ($request->opdetregprod_id as $k => $opdetregprod_id_val) {
+                                            $nvdetLote = $request->opdetregprod_nvdet_id[$k] ?? null;
+                                            if ($nvdetLote == $despachosoldet_id_actual) {
+                                                $cantLote   = floatval($request->opdetregprod_cant[$k]   ?? 0);
+                                                $cantKgLote = floatval($request->opdetregprod_cantkg[$k] ?? 0);
+                                                if ($cantLote > 0) {
+                                                    DespachoSolDet_OpDetRegProd::create([
+                                                        'despachosoldet_id' => $despachosoldet_id_actual,
+                                                        'opdetregprod_id'   => $opdetregprod_id_val,
+                                                        'cant'              => $cantLote,
+                                                        'cantkg'            => $cantKgLote,
+                                                    ]);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -925,6 +988,19 @@ class DespachoSolController extends Controller
                     'mensaje' => 'Registro fue modificado previamente.'
                 ]);
             }
+            // Validar que el período de inventario esté aperturado antes de crear movimientos
+            $annomesHoy = date('Ym');
+            if (!InvControl::where('annomes', $annomesHoy)
+                    ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
+                    ->where('status', 0)
+                    ->exists()) {
+                return response()->json([
+                    'status'     => 0,
+                    'tipmen'     => 'error',
+                    'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                    'tipo_alert' => 'error'
+                ]);
+            }
             $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
             foreach ($despachosol->despachosoldets as $despachoorddet) {
@@ -1055,6 +1131,17 @@ class DespachoSolController extends Controller
                             $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $aux_cant;
                             $array_invmovdet["invmov_id"] = $invmov->id;
                             $invmovdet = InvMovDet::create($array_invmovdet);
+
+                            //ESTO ES PARA EL MODULO DE PRODUCCION
+                            //SI EL CAMPO notaventadetalle->requiere_fabricacion=1 ENTONCES DEBE 
+                            //CREAR UN REGISTRO EN invmovdetnvdet PARA CONTROLAR EL SALDO DE LO QUE 
+                            //INGRESO POR PRODUCCION Y LO QUE FUE DEVUELTO POR SOLICITUD DE DESPACHO
+                            if($despachosoldet->notaventadetalle->requiere_fabricacion == 1){
+                                $array_invmovdetnvdet = array();
+                                $array_invmovdetnvdet["invmovdet_id"] = $invmovdet->id;
+                                $array_invmovdetnvdet["notaventadetalle_id"] = $despachosoldet->notaventadetalle->id;
+                                InvMovDetNVDet::create($array_invmovdetnvdet);
+                            }
                         }
                     }
                 }
@@ -1192,6 +1279,19 @@ class DespachoSolController extends Controller
             $despachosol = DespachoSol::findOrFail($request->id);
             if($despachosol->aprorddesp != 1){
                 return response()->json(['mensaje' => 'Registro fue modificado previamente.']);
+            }
+            // Validar que el período de inventario esté aperturado antes de crear movimientos
+            $annomesHoy = date('Ym');
+            if (!InvControl::where('annomes', $annomesHoy)
+                    ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
+                    ->where('status', 0)
+                    ->exists()) {
+                return response()->json([
+                    'error'      => 1,
+                    'tipmen'     => 'error',
+                    'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                    'tipo_alert' => 'error'
+                ]);
             }
             $invmodulo = InvMovModulo::where("cod","SOLDESP")->get();
             $invmoduloBod = InvMovModulo::findOrFail($invmodulo[0]->id);
@@ -1549,6 +1649,40 @@ class DespachoSolController extends Controller
                         ]);
                     }
 
+                    // VALIDACIÓN CC: bloquear si algún lote tiene rechazo sin desbloquear
+                    $ccBloqueados = DB::select("
+                        SELECT
+                            dsop.opdetregprod_id,
+                            SUM(IF(ccm.status = 3 AND desb.id IS NULL, 1, 0))     AS rechazados_bloqueados,
+                            GROUP_CONCAT(DISTINCT IF(ccm.status = 3 AND desb.id IS NULL, ccm.id, NULL)
+                                         ORDER BY ccm.id SEPARATOR ', ')           AS ids_bloqueados
+                        FROM   despachosoldet_opdetregprod dsop
+                        JOIN   despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+                                                  AND ISNULL(dsd.deleted_at)
+                        LEFT JOIN ccregistmuestra ccm ON ccm.opdetregprod_id = dsop.opdetregprod_id
+                                                      AND ISNULL(ccm.deleted_at)
+                                                      AND ccm.sta_env = 2
+                        LEFT JOIN ccregistmuestra_desbloqueo desb ON desb.ccregistmuestra_id = ccm.id
+                        WHERE  dsd.despachosol_id = ?
+                        GROUP BY dsop.opdetregprod_id
+                        HAVING rechazados_bloqueados > 0
+                    ", [$despachosol->id]);
+
+                    if (count($ccBloqueados) > 0) {
+                        $detalles = [];
+                        foreach ($ccBloqueados as $cb) {
+                            $detalles[] = 'Reg. Prod. #' . $cb->opdetregprod_id
+                                        . ' — Muestra(s) CC: #' . $cb->ids_bloqueados;
+                        }
+                        return response()->json([
+                            'error'      => 1,
+                            'mensaje'    => "No se puede crear la Orden de Despacho. Los siguientes lotes tienen rechazo CC sin desbloquear:\n"
+                                          . implode("\n", $detalles)
+                                          . "\n\nVaya a CC → Muestras y desbloquee las muestras rechazadas antes de proceder.",
+                            'tipo_alert' => 'error',
+                        ]);
+                    }
+
                     //ANTES DE PROCESAR SOLICITUD VALIDO QUE LOS PRODUCTOS INVOLUCRADOS TENGAS BODEGA DE PICKING CORRESPONDIENTE A LA SUCURSAL DE CADA PRODUCTO
                     //ESTO DEBE IR EL EL PROYECTO FINAL
                     $aux_arraysuc = [];
@@ -1575,6 +1709,20 @@ class DespachoSolController extends Controller
                     }
                     //ANTES DE PROCESAR SOLICITUD VALIDO QUE LOS PRODUCTOS INVOLUCRADOS TENGAS BODEGA DE PICKING CORRESPONDIENTE A LA SUCURSAL DE CADA PRODUCTO
                     //ESTO DEBE IR EL EL PROYECTO FINAL
+
+                    // Validar que el período de inventario esté aperturado antes de crear movimientos
+                    $annomesHoy = date('Ym');
+                    if (!InvControl::where('annomes', $annomesHoy)
+                            ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
+                            ->where('status', 0)
+                            ->exists()) {
+                        return response()->json([
+                            'status'     => 0,
+                            'tipmen'     => 'error',
+                            'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                            'tipo_alert' => 'error'
+                        ]);
+                    }
 
                     //$despachosol = DespachoSol::findOrFail($request->id);
                     $aux_bandera = true;
@@ -1623,7 +1771,7 @@ class DespachoSolController extends Controller
                                 $invmov_array["sucursal_id"] = $despachosol->notaventa->sucursal_id;
                                 $invmov_array["usuario_id"] = auth()->id();
                                 $arrayinvmov_id = array();
-                                
+
                                 $invmov = InvMov::create($invmov_array);
                                 array_push($arrayinvmov_id, $invmov->id);
                                 foreach ($despachosol->despachosoldets as $despachosoldet) {
@@ -1644,8 +1792,19 @@ class DespachoSolController extends Controller
                                                 $array_invmovdet["cantkg"] = ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $array_invmovdet["cant"];
                                                 $array_invmovdet["invmov_id"] = $invmov->id;
                                                 $invmovdet = InvMovDet::create($array_invmovdet);
+
+                                                //ESTO ES PARA EL MODULO DE PRODUCCION
+                                                //SI EL CAMPO notaventadetalle->requiere_fabricacion=1 ENTONCES DEBE
+                                                //CREAR UN REGISTRO EN invmovdetnvdet PARA CONTROLAR EL SALDO DE LO QUE
+                                                //INGRESO POR PRODUCCION Y LO QUE FUE DEVUELTO POR SOLICITUD DE DESPACHO
+                                                if($despachosoldet->notaventadetalle->requiere_fabricacion == 1){
+                                                    $array_invmovdetnvdet = array();
+                                                    $array_invmovdetnvdet["invmovdet_id"] = $invmovdet->id;
+                                                    $array_invmovdetnvdet["notaventadetalle_id"] = $despachosoldet->notaventadetalle->id;
+                                                    InvMovDetNVDet::create($array_invmovdetnvdet);
+                                                }
                                             }
-                                        }    
+                                        }
                                     }
                                 }
                                 $invmov_array = array();
@@ -2058,13 +2217,13 @@ class DespachoSolController extends Controller
             ];    
 
             if($stareport == '1'){
-                if(env('APP_DEBUG')){
+                /* if(env('APP_DEBUG')){
                     if($aux_staacutec == false){
                         return view('despachosol.reporte', compact('despachosol','despachosoldets','empresa','datosArray'));
                     }else{
                         return view('despachosol.reporteat', compact('despachosol','despachosoldets','empresa','datosArray'));
                     }
-                }
+                } */
                 if($aux_staacutec == false){
                     $pdf = PDF::loadView('despachosol.reporte', compact('despachosol','despachosoldets','empresa','datosArray'));
                 }else{
@@ -2633,15 +2792,18 @@ function consulta($request,$aux_sql,$orden){
         clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
         GROUP_CONCAT(
-            CONCAT_WS('|', notaventadetalle.producto_id, notaventadetalle.cant, notaventadetalle.preciounit, notaventadetalle.subtotal,if(ISNULL(vista_sumsoldespdet.cantsoldesp),0,vista_sumsoldespdet.cantsoldesp), 0, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),notaventadetalle.totalkilos)
+            CONCAT_WS('|', notaventadetalle.producto_id, notaventadetalle.cant, notaventadetalle.preciounit, notaventadetalle.subtotal,if(ISNULL(vista_sumsoldespdet.cantsoldesp),0,vista_sumsoldespdet.cantsoldesp), notaventadetalle.requiere_fabricacion, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),notaventadetalle.totalkilos,notaventadetalle.id)
             SEPARATOR ';'
-        ) AS nvdetalle
+        ) AS nvdetalle,
+        ot.id as ot_id,ot.aprobstatus as ot_aprobstatus
         FROM notaventa INNER JOIN notaventadetalle
         ON notaventa.id=notaventadetalle.notaventa_id and 
         if((SELECT cantsoldesp
                 FROM vista_sumsoldespdet
                 WHERE notaventadetalle_id=notaventadetalle.id
                 ) >= notaventadetalle.cant,false,true)
+        LEFT JOIN vista_sumsoldespdet
+        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
         INNER JOIN producto
         ON notaventadetalle.producto_id=producto.id
         INNER JOIN categoriaprod
@@ -2677,9 +2839,12 @@ function consulta($request,$aux_sql,$orden){
         ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
         LEFT JOIN vista_sumsoldespdet
         ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
+        LEFT JOIN otnotaventa
+        ON otnotaventa.notaventa_id = notaventa.id and otnotaventa.ot_id not in (SELECT otanul.ot_id from otanul WHERE ISNULL(otanul.deleted_at))
+        LEFT JOIN ot
+        ON ot.id = otnotaventa.ot_id AND ot.id AND ISNULL(ot.deleted_at)
         LEFT JOIN acuerdotecnico
         ON acuerdotecnico.producto_id = notaventadetalle.producto_id
-
         WHERE
         categoriaprod.id in (SELECT categoriaprodsuc.categoriaprod_id 
             FROM categoriaprodsuc 
@@ -2855,6 +3020,7 @@ function consulta($request,$aux_sql,$orden){
         ORDER BY $aux_orden;";
         //dd($sql);
     }
+    $aux_permCambiarRF = can('cambiar-estatus-requiere-fabricacion-nota-de-venta',false);
     $datas = DB::select($sql);
     if($aux_sql==1){
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
@@ -2894,8 +3060,8 @@ function consulta($request,$aux_sql,$orden){
                 //Esta linea me estaba dando error porque a veces no venian los 8 elementos 
                 //list($producto_id, $cant, $precio, $subtotal, $cantsoldesp, $requiere_fabricacion, $id, $totalkilos) = explode('|', $detalle);
 
-                // Asegurar que haya al menos 8 elementos, con valores por defecto
-                $datos = array_pad(explode('|', $detalle), 8, 0);
+                // Asegurar que haya al menos 9 elementos, con valores por defecto
+                $datos = array_pad(explode('|', $detalle), 9, 0);
                 list(
                     $producto_id,
                     $cant,
@@ -2904,7 +3070,8 @@ function consulta($request,$aux_sql,$orden){
                     $cantsoldesp,
                     $requiere_fabricacion,
                     $id,
-                    $totalkilos
+                    $totalkilos,
+                    $notaventadetalle_id
                 ) = $datos;
 
                 $bodegas = [];
@@ -2973,7 +3140,7 @@ function consulta($request,$aux_sql,$orden){
                 }
                 
                 //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
-                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos, $bodegasStock, $aux_statusstock]);
+                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $cantsoldesp, $productoarray["nombre"], $requiere_fabricacion, $id, $totalkilos, $bodegasStock, $aux_statusstock, $notaventadetalle_id]);
                 $detalleArrayFinal[] = $detalleFinal;
                 $aux_ContProd++;
             }
@@ -2996,6 +3163,7 @@ function consulta($request,$aux_sql,$orden){
     
             // Reconstruir el campo detallenv con los nuevos valores
             $data->nvdetalle = implode(';', $detalleArrayFinal);
+            $data->permCambiarRF = $aux_permCambiarRF;
             //AQUI SE FILTRA POR EL STOCK
             if(($aux_condFlagStock != "") and ($aux_condFlagStock == $aux_statusstockReg)){
                 $newDatas [] = $data;

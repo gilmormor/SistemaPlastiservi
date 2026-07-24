@@ -1,0 +1,736 @@
+$(document).ready(function () {
+    Biblioteca.validacionGeneral('form-general');
+
+/*
+    $('.tablas').DataTable({
+		'paging'      : true, 
+		'lengthChange': true,
+		'searching'   : true,
+		'ordering'    : true,
+		'info'        : true,
+		'autoWidth'   : false,
+		"language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+	});
+*/
+
+/*
+    consultar(datoslnv());
+    $("#btnconsultar").click(function()
+    {
+        consultar(datoslnv());
+    });
+
+    $("#btnpdf1").click(function()
+    {
+        consultarpdf(datoslnv());
+    });
+*/
+    //alert(aux_nfila);
+    $('.datepicker').datepicker({
+		language: "es",
+        autoclose: true,
+        clearBtn : true,
+		todayHighlight: true
+    }).datepicker("setDate");
+    
+    $("#rut").focus(function(){
+        eliminarFormatoRut($(this));
+    });
+
+    configurarTabla('.tablas');
+
+
+
+    data = datoslnv1();
+    let table =$('#tabla-data-consulta').DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        'serverSide'  : true,
+        'ajax'        : "/otnv/listarnvpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
+        "order": [[ 0, "desc" ]],
+        'columns'     : [
+            {
+                className: 'dt-control',
+                orderable: false,
+                data: null,
+                defaultContent: '<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>'
+            },
+            {data: 'id'},
+            {data: 'fechahora'},
+            {data: 'notaventa_aprobfechahora'},
+            {data: 'razonsocial'},
+            {data: 'oc_id'},
+            {data: 'id'},
+            {data: 'comunanombre'},
+            {data: 'totalkilos'},
+            {data: 'subtotal'},
+            {data: 'id'},
+            {data: 'nvdetalle',className:"ocultar"},
+        ],
+        "language": {
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            $(row).attr('id','fila' + data.id);
+            $(row).attr('name','fila' + data.id);
+
+            aux_text = `<a class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta PDF" onclick="genpdfNV(${data.id},1)">
+                ${data.id}
+            </a>`
+            $('td', row).eq(1).html(aux_text);
+            $('td', row).eq(1).attr('data-order',data.id);
+
+            $('td', row).eq(2).attr('data-order',data.fechahora);
+            aux_fecha = new Date(data.fechahora);
+            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha) + " " + data.fechahora.substr(11, 8));
+            $('td', row).eq(2).attr("style","font-size:12px");
+
+            $('td', row).eq(3).attr('data-order',data.notaventa_aprobfechahora);
+            aux_fecha = new Date(data.notaventa_aprobfechahora);
+            $('td', row).eq(3).html(fechaddmmaaaa(aux_fecha) + " " + data.notaventa_aprobfechahora.substr(11, 8));
+            $('td', row).eq(3).attr("style","font-size:12px");
+
+            $('td', row).eq(4).attr("style","font-size:13px");
+
+            if(data.oc_file != "" && data.oc_file != null){
+                aux_text = 
+                    "<a class='btn-accion-tabla btn-sm' title='Ver Orden de Compra' onclick='verpdf2(\"" + data.oc_file + "\",2)'>" + 
+                        data.oc_id + 
+                    "</a>";
+                $('td', row).eq(5).html(aux_text);
+            }
+
+            aux_text = 
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Precio x Kg" onclick="genpdfNV(${data.id},2)">
+                <i class="fa fa-fw fa-file-pdf-o"></i>
+            </a>`;
+            $('td', row).eq(6).html(aux_text);
+
+            aux_kgpend = data.totalkilos - data.totalkgsoldesp;
+            aux_dinpend = data.subtotal - data.totalsubtotalsoldesp;
+            $('td', row).eq(8).attr('class', "kgpend");
+            $('td', row).eq(8).attr('data-order',aux_kgpend);
+            $('td', row).eq(8).attr('data-search',aux_kgpend);
+            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(8).html(MASKLA(aux_kgpend,2));
+
+            $('td', row).eq(9).attr('class', "dinpend");
+            $('td', row).eq(9).attr('data-order',aux_dinpend);
+            $('td', row).eq(9).attr('data-search',aux_dinpend);
+            $('td', row).eq(9).attr('style','text-align:right');
+            $('td', row).eq(9).html(MASKLA(aux_dinpend,0));
+
+            aux_text = 
+            `<a class="btn-accion-tabla btn-sm tooltipsC" title="Vista Previa SD" onclick="pdfSolDespPrev(${data.id},2)">
+                <i class='fa fa-fw fa-file-pdf-o'></i>                                    
+            </a>`;
+            /* let aux_rutadespsol = $("#aux_ruta_crearot").val();
+            let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/"+data.id+"/"); */
+            let nuevaaux_rutadespsol = data.rutacrear;
+            //$('td', row).eq(9).attr('class','action-buttons');
+            aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
+            aux_displaybtnac = ``;
+            aux_displaybtnbl = ``;
+            aux_mensajebloqueo = `Condición financiera en revisión: ${aux_clienteBloqueado}`;
+            aux_iconobloqueo = "fa-lock text-danger";
+            if(aux_clienteBloqueado == ""){
+                aux_displaybtnac = ``;
+                aux_displaybtnbl = `style="display:none;"`;
+            }else{
+                aux_displaybtnac = `style="display:none;"`;
+                aux_displaybtnbl = ``;
+                if(data.modulo_id_orddesp  !== null){
+                    aux_iconobloqueo = "fa-unlock text-yellow";
+                    aux_mensajebloqueo = `Habilitado para Despacho`;
+                }
+
+            }
+            //aux_clienteBloqueado = "";
+            aux_displaybtnac = ``;
+            //aux_displaybtnbl = `style="display:none;"`;
+
+            /* aux_verbotonbloqueo = 1;
+            if(aux_clienteBloqueado == ""){
+                aux_bloqueo = 0;
+                aux_text +=
+                `<a href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp" title="Hacer solicitud despacho: ${data.tipentnombre}">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i class="fa fa-fw ${data.icono}"></i>
+                    </button>
+                </a>`;
+            }else{
+                aux_text += 
+                    `<a id="aac${data.id}" name="aac${data.id}" class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_clienteBloqueado}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id})" aclassact="btn-accion-tabla tooltipsC enlace-soldesp" ahrefact="${nuevaaux_rutadespsol}" atitleact="Hacer solicitud despacho: ${data.tipentnombre}" iclassact="fa fa-fw ${data.icono}">
+                        <button type="button" class="btn btn-default btn-xs">
+                            <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw fa-lock text-danger"></i>
+                        </button>
+                    </a>`;
+            } */
+            aux_text += 
+            `<a ${aux_displaybtnac} href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp botonac${data.id}" title="Hacer OT">
+                <button type="button" class="btn btn-default btn-xs">
+                    <i class="fa fa-fw ${data.icono}"></i>
+                </button>
+            </a>
+            <a ${aux_displaybtnbl} class="btn-accion-tabla tooltipsC botonbloq${data.id}" title="${aux_mensajebloqueo}" onclick="llenartablaDataCobranza(${data.id},${data.cliente_id},${data.id},0)">
+                <button type="button" class="btn btn-default btn-xs">
+                    <i id="iac${data.id}" name="iac${data.id}" class="fa fa-fw ${aux_iconobloqueo}"></i>
+                </button>
+            </a>`;
+
+
+            /* if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null) || ($("#stabloxdeusiscob").val() == "1" && ((data.datacobranza_tdeudafec > 0) || (data.datacobranza_tdeuda > data.limitecredito)))){
+                aux_descbloq = "";
+                if((data.clientebloqueado_desc != "" && data.clientebloqueado_desc != null)){
+                    aux_descbloq = data.clientebloqueado_desc;
+                }
+                if($("#stabloxdeusiscob").val() == "1")
+                {
+                    if(data.datacobranza_tdeuda > data.limitecredito){
+                        aux_descbloq += "Excede cupo de Crédito ";
+                    }
+                    if(data.datacobranza_tdeudafec > 0){
+                        aux_descbloq += "Factura(s) Vencida(s)";
+                    }
+                }
+                aux_text += 
+                    `<a class="btn-accion-tabla tooltipsC" title="Condición financiera en revisión: ${aux_descbloq}">
+                        <i class="fa fa-fw fa-lock text-danger"></i>
+                    </a>`;
+            }else{
+                let aux_rutadespsol = $("#aux_ruta_creardespsol").val();
+                let nuevaaux_rutadespsol = aux_rutadespsol.replace("/0/", "/"+data.id+"/");
+                aux_text +=
+                `<a href="${nuevaaux_rutadespsol}" class="btn-accion-tabla tooltipsC enlace-soldesp" title="Hacer solicitud despacho: ${data.tipentnombre}">
+                    <i class="fa fa-fw ${data.icono}"></i>
+                </a>`;
+            } */
+            if(data.anulada != null && data.anulada != ""){
+                aux_text = "";
+                colorFila = 'background-color: #87CEEB;';
+                aux_data_toggle = "tooltip";
+                aux_title = "Anulada Fecha: " + data.anulada;
+                //$nuevoSolDesp = "";
+            }
+            if(data.despachosol_id != null){
+                aux_text = 
+                `<a class="btn-accion-tabla enlace-soldesp botonac${data.id}" title="Existe Solicitud despacho pendiente por aprobacion. SolDesp Nro.${data.despachosol_id}">
+                    <button type="button" class="btn btn-default btn-xs">
+                        <i class="fa fa-fw fa-cog"></i>
+                    </button>
+                </a>`;    
+            }
+            $('td', row).eq(10).html(aux_text);
+        }
+    });
+
+    totalizar();
+
+    $("#btnconsultar").click(function()
+    {
+        data = datoslnv1();
+        $('#tabla-data-consulta').DataTable().ajax.url( "/otnv/listarnvpage/" + data.data2 ).load();
+        totalizar();
+    });
+
+    // Add event listener for opening and closing details
+    table.on('click', 'td.dt-control', function (e) {
+        let tr = e.target.closest('tr');
+        let row = table.row(tr);
+    
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            $(this).html('<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>');
+        }
+        else {
+            // Open this row
+            row.child(format(row.data())).show();
+            $(this).html('<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-bottom text-aqua" title="Mostrar Detalle"></i>');
+        }
+    });
+    
+});
+
+// Función para decodificar entidades HTML con jQuery
+function decodeHtml(html) {
+    return $('<textarea/>').html(html).text();
+}
+
+// Formatting function for row details - modify as you need
+function format(d) {
+    // Descomponer el campo nvdetalle
+    //console.log(d.nvdetalle);
+    const detalleArray = decodeHtml(d.nvdetalle).split(';').map(detalle => {
+        const [producto_id, cant, precio,subtotal,cantsoldesp,producto_nombre,totalkilos,requiere_fabricacion,acuerdotecnico_id] = detalle.split('|');
+        return {
+            producto_id: parseInt(producto_id),
+            cant: parseInt(cant),
+            cantsoldesp: parseInt(cantsoldesp),
+            precio: parseFloat(precio),
+            subtotal: parseInt(subtotal),
+            producto_nombre: producto_nombre,
+            totalkilos: parseFloat(totalkilos),
+            requiere_fabricacion: parseInt(requiere_fabricacion),
+            acuerdotecnico_id : acuerdotecnico_id
+        };
+    });
+    // Generar tabla HTML
+    let tableHtml = `
+        <div style="display: flex; align-items: flex-start;"> <!-- Contenedor Flex (flecha al principio) -->
+            <div style="margin-left: 20px;">&#8627;</div> <!-- Flecha desplazada un poco a la derecha -->
+            <div class="table-responsive">
+            <table class="table table-bordered table-striped AllDataTables table-hover table-condensed" style="width: auto; margin-left: 5px;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;" title="Id Producto">ID Prod</th>
+                        <th>Nombre Producto</th>
+                        <th style="text-align: center;" title="Cantidad">Cant</th>
+                        <th style="text-align: center;">Desp</th>
+                        <th style="text-align: center;">Saldo</th>
+                        <th style="text-align: right;" title="Precio unitario">Precio</th>
+                        <th style="text-align: right;" title="Total kilos">Kg</th>
+                        <th style="text-align: right;">Subtotal</th>
+                        <th style="text-align: center;" title="Requiere Fabricación">ReqFab</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    // Recorrer los detalles y agregar filas a la tabla
+    detalleArray.forEach(detalle => {
+        aux_producto_id = detalle.producto_id;
+        if(detalle.acuerdotecnico_id != 0){
+            aux_producto_id = 
+            `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Acuerdo Técnico" onclick='genpdfAcuTec(${detalle.acuerdotecnico_id},${d.cliente_id},"")'>
+                ${detalle.producto_id}
+            </a>`;    
+        }
+
+        tableHtml += `
+            <tr>
+                <td style="text-align: center;">${aux_producto_id}</td>
+                <td>${detalle.producto_nombre}</td>
+                <td style="text-align: center;">${detalle.cant}</td>
+                <td style="text-align: center;">${detalle.cantsoldesp}</td>
+                <td style="text-align: center;">${detalle.cant - detalle.cantsoldesp}</td>
+                <td style="text-align: right;">${detalle.precio.toFixed(2)}</td>
+                <td style="text-align: right;">${detalle.totalkilos.toFixed(2)}</td>
+                <td style="text-align: right;">${detalle.subtotal.toFixed(2)}</td>
+                <td style="text-align: center;">${detalle.requiere_fabricacion === 1 ? 'Sí' : 'No'}</td>
+            </tr>
+        `;
+    });
+
+    // Cerrar la tabla
+    tableHtml += `
+                    </tbody>
+                </table>
+            </div>
+        </div> <!-- Fin del contenedor Flex -->
+    `;
+
+    // Devolver la tabla HTML
+    return tableHtml;
+    
+}
+
+function totalizar(){
+    let  table = $('#tabla-data-consulta').DataTable();
+    //console.log(table);
+    table
+        .on('draw', function () {
+            eventFired( 'Page' );
+        });
+    data = datoslnv1();
+    $.ajax({
+        url: '/otnv/totalizarlistarnvpage/' + data.data2,
+        type: 'GET',
+        success: function (datos) {
+            $("#totalgenkg").html(MASKLA(datos.aux_kgpend,2));
+            $("#totalgendin").html(MASKLA(datos.aux_dinpend,0));
+        }
+    });
+}
+
+var eventFired = function ( type ) {
+	total = 0;
+	$("#tabla-data-consulta tr .kgpend").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+    $("#totalkg").html(MASKLA(total,2))
+	total = 0;
+	$("#tabla-data-consulta tr .dinpend").each(function() {
+		valor = $(this).attr('data-order') ;
+		valorNum = parseFloat(valor);
+		total += valorNum;
+	});
+    $("#totaldinero").html(MASKLA(total,0))
+}
+
+function configurarTabla(aux_tabla){
+    $(aux_tabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        "order"       : [[ 0, "desc" ]],
+        "language": {
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });    
+}
+function configurarTabla2(aux_tabla){
+    $(aux_tabla).DataTable({
+        'paging'      : true, 
+        'lengthChange': true,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        "language": {
+            //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });    
+}
+
+
+function ajaxRequest(data,url,funcion) {
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			if(funcion=='aprobarcotvend'){
+				if (respuesta.mensaje == "ok") {
+					$("#fila"+data['nfila']).remove();
+					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+				} else {
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+					}else{
+						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+					}
+				}
+            }
+            if(funcion=='vistonotaventa'){
+				if (respuesta.mensaje == "ok") {
+					//$("#fila"+data['nfila']).remove();
+                    Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+                    
+				} else {
+					if (respuesta.mensaje == "sp"){
+						Biblioteca.notificaciones('Registro no tiene permiso procesar.', 'Plastiservi', 'error');
+					}else{
+						Biblioteca.notificaciones('El registro no pudo ser procesado, hay recursos usandolo', 'Plastiservi', 'error');
+					}
+				}
+			}
+
+		},
+		error: function () {
+		}
+	});
+}
+
+function datoslnv(){
+    var data = {
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        notaventa_id      : $("#notaventa_id").val(),
+        aprobstatus       : $("#aprobstatus").val(),
+        comuna_id         : $("#comuna_id").val(),
+        plazoentrega      : $("#plazoentrega").val(),
+        producto_id       : $("#producto_idPxP").val(),
+        filtro            : 0,
+        sucursal_id       : $("#sucursal_id").val(),
+        _token            : $('input[name=_token]').val()
+    };
+    return data;
+}
+
+function datoslnv1(){
+    aux_titulo ="";
+    var data1 = {
+        fechad            : $("#fechad").val(),
+        fechah            : $("#fechah").val(),
+        rut               : eliminarFormatoRutret($("#rut").val()),
+        vendedor_id       : $("#vendedor_id").val(),
+        oc_id             : $("#oc_id").val(),
+        giro_id           : $("#giro_id").val(),
+        areaproduccion_id : $("#areaproduccion_id").val(),
+        tipoentrega_id    : $("#tipoentrega_id").val(),
+        notaventa_id      : $("#notaventa_id").val(),
+        comuna_id         : $("#comuna_id").val(),
+        plazoentrega      : $("#plazoentrega").val(),
+        producto_id       : $("#producto_idPxP").val(),
+        sucursal_id       : $("#sucursal_id").val(),
+        filtro            : 0,
+        modulo_id         : 4,
+        statusBloqueo     : $("#statusBloqueo").val(),
+        _token            : $('input[name=_token]').val()
+    };
+
+    data2 = "?fechad="+data1.fechad+
+            "&fechah="+data1.fechah +
+            "&rut=" + data1.rut +
+            "&vendedor_id=" + data1.vendedor_id +
+            "&oc_id=" + data1.oc_id +
+            "&giro_id=" + data1.giro_id + 
+            "&areaproduccion_id=" + data1.areaproduccion_id +
+            "&tipoentrega_id=" + data1.tipoentrega_id +
+            "&notaventa_id=" + data1.notaventa_id +
+            "&comuna_id=" + data1.comuna_id +
+            "&plazoentrega=" + data1.plazoentrega +
+            "&filtro=" + data1.filtro +
+            "&producto_id=" + data1.producto_id +
+            "&sucursal_id=" + data1.sucursal_id +
+            "&modulo_id=" + data1.modulo_id +
+            "&statusBloqueo=" + data1.statusBloqueo +
+            "&aux_titulo=" + aux_titulo;
+    
+    var data = {
+        data1 : data1,
+        data2 : data2
+    };
+    return data;
+}
+
+
+function consultar(data){
+    $.ajax({
+        url: '/otnv/reporte',
+        type: 'POST',
+        data: data,
+        success: function (datos) {
+            if(datos['tabla'].length>0){
+                $("#tablaconsulta").html(datos['tabla']);
+                $("#tablaconsulta2").html(datos['tabla2']);
+                $("#tablaconsulta3").html(datos['tabla3']);
+
+                configurarTabla('#tabla-data-listar1');
+                let  table = $('#tabla-data-listar1').DataTable();
+                //console.log(table);
+                table
+                    .on('draw', function () {
+                        eventFired( 'Page' );
+                    });
+                configurarTabla('.tablascons');
+                configurarTabla2('.tablascons2');
+            }
+        }
+    });
+}
+
+function consultarpdf(data){
+    $.ajax({
+        url: '/notaventaconsulta/exportPdf',
+        type: 'GET',
+        data: data,
+        success: function (datos) {
+            $("#midiv").html(datos);
+            /*
+            if(datos['tabla'].length>0){
+                $("#tablaconsulta").html(datos['tabla']);
+                configurarTabla();
+            }
+            */
+        }
+    });
+}
+
+$("#rut").blur(function(){
+	codigo = $("#rut").val();
+	aux_sta = $("#aux_sta").val();
+	if( !(codigo == null || codigo.length == 0 || /^\s+$/.test(codigo)))
+	{
+		//totalizar();
+		if(!dgv(codigo.substr(0, codigo.length-1))){
+			swal({
+				title: 'Dígito verificador no es Válido.',
+				text: "",
+				icon: 'error',
+				buttons: {
+					confirm: "Aceptar"
+				},
+			}).then((value) => {
+				if (value) {
+					//ajaxRequest(form.serialize(),form.attr('action'),'eliminarusuario',form);
+					$("#rut").focus();
+				}
+			});
+			//$(this).val('');
+		}else{
+			var data = {
+				rut: $("#rut").val(),
+				_token: $('input[name=_token]').val()
+			};
+			$.ajax({
+				url: '/cliente/buscarCli',
+				type: 'POST',
+				data: data,
+				success: function (respuesta) {
+					if(respuesta.length>0){
+						formato_rut($("#rut"));
+					}else{
+                        formato_rut($("#rut"));
+                        swal({
+                            title: 'Cliente no existe.',
+                            text: "Aceptar para crear cliente temporal",
+                            icon: 'error',
+                            buttons: {
+                                confirm: "Aceptar",
+                                cancel: "Cancelar"
+                            },
+                        }).then((value) => {
+                            if (value) {
+                                limpiarclientemp();
+                                
+                                $("#myModalClienteTemp").modal('show');
+                            }else{
+                                $("#rut").focus();
+                                //$("#rut").val('');
+                            }
+                        });		
+					}
+				}
+			});
+		}
+	}
+});
+
+$("#btnbuscarcliente").click(function(event){
+    $("#rut").val("");
+    $("#myModalBusqueda").modal('show');
+});
+
+function copiar_rut(id,rut){
+	$("#myModalBusqueda").modal('hide');
+	$("#rut").val(rut);
+	//$("#rut").focus();
+	$("#rut").blur();
+}
+
+function visto(id,visto){
+    //alert($(this).attr("value"));
+    var data = {
+        id     : id,
+        _token : $('input[name=_token]').val()
+    };
+    var ruta = '/notaventa/visto/' + id;
+    ajaxRequest(data,ruta,'vistonotaventa');
+}
+
+$("#btnpdf21").click(function()
+{
+    aux_titulo = 'Nota de Venta Pendientes';
+    data = datoslnv();
+    cadena = "?fechad="+data.fechad+
+            "&fechah="+data.fechah +
+            "&rut=" + data.rut +
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id=" + data.oc_id +
+            "&giro_id=" + data.giro_id + 
+            "&areaproduccion_id=" + data.areaproduccion_id +
+            "&tipoentrega_id=" + data.tipoentrega_id +
+            "&notaventa_id=" + data.notaventa_id +
+            "&aprobstatus=" + data.aprobstatus +
+            "&comuna_id=" + data.comuna_id +
+            "&plazoentrega=" + data.plazoentrega +
+            "&filtro=" + data.filtro +
+            "&producto_id=" + data.producto_id +
+            "&aux_titulo=" + aux_titulo;
+    $('#contpdf').attr('src', '/otnv/pdfnotaventapendiente/'+cadena);
+    $("#myModalpdf").modal('show');
+});
+
+function btnpdf(numrep){
+    data = datoslnv();
+    cadena = "?fechad="+data.fechad+
+            "&fechah="+data.fechah +
+            "&rut=" + data.rut +
+            "&vendedor_id=" + data.vendedor_id +
+            "&oc_id=" + data.oc_id +
+            "&giro_id=" + data.giro_id + 
+            "&areaproduccion_id=" + data.areaproduccion_id +
+            "&tipoentrega_id=" + data.tipoentrega_id +
+            "&notaventa_id=" + data.notaventa_id +
+            "&aprobstatus=" + data.aprobstatus +
+            "&comuna_id=" + data.comuna_id +
+            "&plazoentrega=" + data.plazoentrega +
+            "&producto_id=" + data.producto_id +
+            "&filtro=" + data.filtro +
+            "&statusBloqueo=" + data.statusBloqueo +
+            "&numrep=" + numrep;
+    if(numrep==1){
+        aux_titulo = 'Nota de Venta Pendientes';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=1" + 
+            "&aux_orden=1";
+    }
+    if(numrep==2){
+        aux_titulo = 'Pendiente por Cliente y comuna';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=1" + 
+            "&aux_orden=2";
+    }
+    if(numrep==3){
+        aux_titulo = 'Pendiente por Producto';
+        cadena = cadena +
+            "&aux_titulo=" + aux_titulo +
+            "&aux_sql=2" + 
+            "&aux_orden=1";
+    }
+    if(data.statusBloqueo == "1"){
+        aux_titulo = 'Clientes bloqueados';
+    }
+    $('#contpdf').attr('src', '/otnv/pdfnotaventapendiente/'+cadena);
+    $("#myModalpdf").modal('show');
+}
+
+/* $(document).on("click", ".enlace-soldesp", function(event){
+    // Detenemos el comportamiento predeterminado del enlace
+    event.preventDefault();
+    // Aquí puedes obtener el href del enlace actual
+    var href = $(this).attr("href");
+
+    // Ejecutamos tu consulta jQuery aquí
+    // Por ejemplo, aquí podrías hacer una consulta AJAX
+    
+    // Simulando una consulta AJAX
+    swal({
+        title: '¿Desea continuar?',
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        // Si el usuario hace clic en "Aceptar", redirigimos
+        if (value) {
+            window.location.href = href;
+        }
+    });
+}); */

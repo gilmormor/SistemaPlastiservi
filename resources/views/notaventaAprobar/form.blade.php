@@ -65,10 +65,11 @@
                     <div class="row">
                         @if (($aux_sta==2 and $data->cotizacion_id and $data->id) or $aux_sta==3)
                             <div class="form-group col-xs-12 col-sm-1">
-                                <label for="cotizacion_id" class="control-label requerido" data-toggle='tooltip' title="Num Cotización">Cot</label>
                                 @if($aux_sta==2)
+                                    <label for="cotizacion_id" class="control-label requerido" data-toggle='tooltip' title="Num Cotización">Cot</label>
                                     <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id', $data->cotizacion_id ?? '')}}" required readonly/>
                                 @else
+                                    <label for="cotizacion_id" class="control-label requerido" data-toggle='tooltip' title="Num Nota Venta">NV</label>
                                     <input type="text" name="cotizacion_id" id="cotizacion_id" class="form-control" value="{{old('cotizacion_id', $data->id ?? '')}}" required readonly/>
                                 @endif
                             </div>            
@@ -440,21 +441,21 @@
                             <th style="display:none;">Largo</th>
                             <th style="display:none;">Esp</th>
                             <th style="display:none;">Espesor</th>
-                            <th>Peso</th>
+                            <th style="text-align:right;">Peso</th>
                             <th style="display:none;">Peso</th>
                             <th style="display:none;">TU</th>
                             <th style="display:none;">TUnion</th>
-                            <th>Desc</th>
+                            <th style="text-align:right;">Desc</th>
                             <th style="display:none;">DescPorc</th>
                             <th style="display:none;">DescVal</th>
-                            <th>P Neto Unit</th>
+                            <th title="Precio Unitario" style="text-align:right;">Precio Unit</th>
                             <th style="display:none;">Precio Neto Unit</th>
-                            <th>V Kilo</th>
+                            <th title="Precio x Kilo" style="text-align:right;">Precio Kilo</th>
                             <th style="display:none;">Precio X Kilo</th>
                             <th style="display:none;">Precio X Kilo Real</th>
-                            <th>Total Kilos</th>
+                            <th style="text-align:right;">Total Kilos</th>
                             <th style="display:none;">Total Kilos</th>
-                            <th>Sub Total</th>
+                            <th style="text-align:right;">Sub Total</th>
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
                             @if(($aux_sta==1 or $aux_sta==2) and $aux_concot == false)
@@ -624,7 +625,7 @@
                                         <input type="text" name="obs[]" id="obs{{$aux_nfila}}" class="form-control" value="{{$detalle->obs}}" style="display:none;"/>
                                     </td>
                                     <td name="pesoTD{{$aux_nfila}}" id="pesoTD{{$aux_nfila}}" style="text-align:right;">
-                                        {{$detalle->producto->peso}}
+                                        {{number_format($detalle->peso, (fmod($detalle->peso, 1) == 0.0 ? 2 : 6), ',', '.')}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="peso[]" id="peso{{$aux_nfila}}" class="form-control" value="{{$detalle->producto->peso}}" style="display:none;"/>

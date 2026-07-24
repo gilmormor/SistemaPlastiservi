@@ -202,6 +202,10 @@ function ajaxRequest(data,url,funcion) {
 				//console.log(respuesta);
 			}
 			if(funcion=='buscaratxcampos'){
+				// Unificado 2026-07-24: el controlador ahora envuelve la respuesta en respuesta["acuerdotecnico"]
+				// (mismo formato usado por cotizacion/cotizacionatfirmado/cotizacionaprobaracutec/atfirmadosubir),
+				// ya filtrado por coincidencia de CValAtDet.
+				respuesta = respuesta["acuerdotecnico"];
 				if(respuesta.length > 0){
 					aux_botones = { 
 						cancel: "Cerrar",

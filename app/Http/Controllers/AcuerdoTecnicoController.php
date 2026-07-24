@@ -10,6 +10,7 @@ use App\Models\Cliente;
 use App\Models\CValAt;
 use App\Models\CValAtDet;
 use App\Models\Empresa;
+use App\Models\MateriaPrima;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -177,7 +178,7 @@ class AcuerdoTecnicoController extends Controller
                 $registros = AcuerdoTecnicoCValAtDet::where('acuerdotecnico_id', $data->id)->get();
                 // 2. Obtener todos los campos at_cvalatdet del request
                 $camposCValAtDet = $this->obtenerCamposCValAtDet($request);
-                
+
                 // 3. CASO 1: No hay registros en BD
                 if ($registros->isEmpty()) {
                     // Verificar si TODOS los campos del request son "0"
@@ -189,14 +190,14 @@ class AcuerdoTecnicoController extends Controller
                     continue;
                     //return $todosSonCero;
                 }
-                
+
                 // 4. CASO 2: Hay registros en BD
                 $totalRegistros = $registros->count();
                 $matchCount = 0;
-                
+
                 foreach ($registros as $registro) {
                     $fieldName = 'at_cvalatdet' . $registro->cvalatdet_id;
-                    
+
                     // Verificar si el campo existe en el request
                     if ($request->has($fieldName)) {
                         // Comparar el valor del request con el valor en BD
@@ -217,7 +218,23 @@ class AcuerdoTecnicoController extends Controller
                 }
             }
             //dd($dataresultado);
-            return $dataresultado;
+            // Unificado 2026-07-24: respuesta envuelta (consumida por cotizacion/cotizacionatfirmado/cotizacionaprobaracutec/atfirmadosubir)
+            // con el array ya filtrado por coincidencia de CValAtDet (antes en $dataresultado, usado por ateditar).
+            $respuesta["acuerdotecnico"] = $dataresultado;
+            $respuesta["producto"]["nombre"] = nombreProductoAT($request);
+            $at = new AcuerdoTecnico();
+            $at->producto = Producto::findOrFail($request->producto_id);
+            $at->at_formatofilm = $request->at_formatofilm;
+            $at->at_unidadmedida_id = $request->at_unidadmedida_id;
+            $at->at_espesor = $request->at_espesor;
+            $at->at_peso = 0;
+            $at->at_ancho = $request->at_ancho;
+            $at->at_largo = $request->at_largo;
+            $at->at_espesor = $request->at_espesor;
+            $at->materiaprima = MateriaPrima::findOrFail($request->at_materiaprima_id);
+            $respuesta["producto"]["peso"] = pesounitat($at);
+            //dd($respuesta);
+            return $respuesta;
             //return datatables($datas)->toJson();
     
 

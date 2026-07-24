@@ -131,47 +131,49 @@
 					<th width="50px">Cant.</th>
 					<th class="textcenter" width="50px">Unid</th>
 					<th class="textleft" width="190px">Descripción</th>
-					<th class="textcenter" width="60px">Sello</th>
-					<th class="textcenter" width="35px">Ancho</th>
-					<th class="textcenter">Largo</th>
-					<th class="textcenter">Espesor</th>
 					<th class="textright" width="70px">Precio<br>Neto {{$aux_modena_desc}}</th>
 					<th class="textright" width="90px">Total<br>Neto {{$aux_modena_desc}}</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($cotizacionDetalles as $CotizacionDetalle)
-					<?php 
+					<?php
+						/* $aux_producto_nombre = $CotizacionDetalle->producto->nombre;
 						$aux_ancho = $CotizacionDetalle->producto->diametro;
 						$aux_espesor = 0; //$CotizacionDetalle->espesor;
-						$aux_largo = $CotizacionDetalle->producto->long . " mts";
-						$aux_cla_sello_nombre = "";
-						if(isset($CotizacionDetalle->producto->claseprod)){
-							$aux_cla_sello_nombre = $CotizacionDetalle->producto->claseprod->cla_nombre;
+						$aux_largo = $CotizacionDetalle->producto->long . " mts"; */
+						$atributoProd = $CotizacionDetalle->producto->atributosProducto($CotizacionDetalle->producto_id,$CotizacionDetalle->id);
+						$aux_producto_nombre = $atributoProd["nombre"];
+
+						//$aux_producto_nombre = $atributosproducto
+						/* if(isset($CotizacionDetalle->producto->claseprod)){
+							$aux_cla_sello_nombre1 = $CotizacionDetalle->producto->claseprod->cla_nombre;
 						}
 						$aux_atribAcuTec = "";
 						$aux_staAT = false;
-						if ($CotizacionDetalle->acuerdotecnicotemp != null){
+						if (isset($CotizacionDetalle->acuerdotecnicotemp)){
 							$AcuTec = $CotizacionDetalle->acuerdotecnicotemp;
 							//$aux_producto_nombre = $AcuTec->at_desc; //nl2br($CotizacionDetalle->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
 							$aux_staAT = true;
 							//$aux_producto_nombre = nl2br($AcuTec->at_desc . "\n" . $AcuTec->materiaprima->nombre . " " . $AcuTec->materiaprima->desc . "\n". $AcuTec->at_tiposelloobs);
+							$aux_producto_nombre = $CotizacionDetalle->acuerdotecnicotemp->producto_nombre . " " . $CotizacionDetalle->acuerdotecnicotemp->claseprod->cla_nombre;
 						}
-						if ($CotizacionDetalle->producto->acuerdotecnico != null){
+						if (isset($CotizacionDetalle->producto->acuerdotecnico)){
 							$AcuTec = $CotizacionDetalle->producto->acuerdotecnico;
 							//$aux_producto_nombre = nl2br($AcuTec->producto->categoriaprod->nombre . ", " . $AcuTec->at_desc);
 							$aux_staAT = true;
 							//$aux_producto_nombre = nl2br($AcuTec->at_desc . "\n" . $AcuTec->materiaprima->nombre . " " . $AcuTec->materiaprima->desc . "\n". $AcuTec->at_tiposelloobs);
-						}
-						if($aux_staAT){
+							$aux_producto_nombre = $CotizacionDetalle->producto->producto_nombre . " " . $CotizacionDetalle->producto->acuerdotecnico->claseprod->cla_nombre;
+						} */
+						/* if($aux_staAT){
 							$aux_atribAcuTec = $AcuTec->color->nombre . " " . $AcuTec->materiaprima->nombre . " " . $AcuTec->at_impresoobs;
 							$aux_producto_nombre = $AcuTec->at_desc;
 							$aux_ancho = $AcuTec->at_ancho . " " . $AcuTec->anchounidadmedida->nombre;
 							$aux_largo = $AcuTec->at_largo . " " . ($AcuTec->at_largo ? $AcuTec->largounidadmedida->nombre : "");
 							$aux_espesor = $AcuTec->at_espesor;
 							$aux_cla_sello_nombre = $AcuTec->claseprod->cla_nombre;
-						}
-						$aux_producto_nombre = $CotizacionDetalle->producto->atribNomProd($CotizacionDetalle->producto_id,$CotizacionDetalle->id);
+						} */
+
 					?>
 					<tr class="headt" style="height:150%;">
 						<td class="textcenter">{{$CotizacionDetalle->producto_id}}</td>
@@ -182,10 +184,6 @@
 								<br><span class='small-text'>{{$aux_atribAcuTec}}</span>
 							@endif --}}
 						</td>
-						<td class="textcenter">{{$aux_cla_sello_nombre}}</td>
-						<td class="textcenter">{{$aux_ancho}}</td>
-						<td class="textcenter">{{$aux_largo}}</td>
-						<td class="textcenter">{{number_format($aux_espesor, 3, ',', '.')}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->preciounit, $aux_monedaLocal ? 2 : 3, ",", ".")}}</td>
 						<td class="textright">{{number_format($CotizacionDetalle->subtotal, 0, ",", ".")}}&nbsp;</td>
 					</tr>
@@ -209,15 +207,15 @@
 				<td colspan="9" class="textright" width="85%"><span><strong>TOTAL</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}</strong></span></td>
 			-->
-				<td colspan="8" class="textright" width="85%"><span><strong>NETO</strong></span></td>
+				<td colspan="4" class="textright" width="85%"><span><strong>NETO</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->neto, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="8" class="textright" width="85%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
+				<td colspan="4" class="textright" width="85%"><span><strong>IVA {{$cotizacion->piva}}%</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->iva, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="8" class="textright" width="85%"><span><strong>TOTAL {{$aux_modena_desc}}</strong></span></td>
+				<td colspan="4" class="textright" width="85%"><span><strong>TOTAL {{$aux_modena_desc}}</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($cotizacion->total, 0, ",", ".")}}&nbsp;</strong></span></td>
 			</tr>
 		</table>
@@ -236,20 +234,20 @@
 						<table>
 							@if ($cotizacion->plaentdias > 0)
 								<tr>
-									<td colspan="9" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+									<td colspan="5" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
 									<td class="textleft" width="50%"><span>{{$cotizacion->plaentdias}} días hábiles</span></td>
 								</tr>				
 							@endif
 							<tr>
-								<td colspan="9" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
+								<td colspan="5" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
 								<td class="textleft" width="50%"><span>{{$cotizacion->lugarentrega}}</span></td>
 							</tr>
 							<tr>
-								<td colspan="9" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
+								<td colspan="5" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
 								<td class="textleft" width="50%"><span>{{$cotizacion->plazopago->descripcion}}</span></td>
 							</tr>
 							<tr>
-								<td colspan="9" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
+								<td colspan="5" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
 								<td class="textleft" width="50%"><span>{{$cotizacion->tipoentrega->nombre}}</span></td>
 							</tr>
 						</table>

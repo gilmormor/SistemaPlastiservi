@@ -147,8 +147,8 @@
 						@if ($aux_cantGD > 0)
 							<td class="textright">{{number_format($aux_cantGD, 0, ",", ".")}}</td>
 						@else
-							<td style="border: 0.5px solid rgb(144, 144, 144); 
-									width: 40px; 
+							<td style="border: 0.5px solid rgb(144, 144, 144);
+									width: 40px;
 									height: 25px;">
 							</td>
 						@endif
@@ -176,15 +176,15 @@
 	{{-- <div>
 		<table id="factura_detalle">
 			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>NETO</strong></span></td>
+				<td colspan="3" class="textright" width="90%"><span><strong>NETO</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($neto, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>IVA {{$despachoord->notaventa->piva}}%</strong></span></td>
+				<td colspan="3" class="textright" width="90%"><span><strong>IVA {{$despachoord->notaventa->piva}}%</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format(($neto * $despachoord->notaventa->piva)/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr class="headt">
-				<td colspan="7" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
+				<td colspan="3" class="textright" width="90%"><span><strong>TOTAL {{$datosArray["modena_desc"]}}</strong></span></td>
 				<td class="textright" width="10%"><span><strong>{{number_format($neto * ($despachoord->notaventa->piva+100)/100, $datosArray["monedaLocal"] ? 0 : 3, ",", ".")}}</strong></span></td>
 			</tr>
 		</table>
@@ -199,59 +199,59 @@
 		<span class="h3">Información</span>
 		<table id="factura_detalle">
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Plazo de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{date('d-m-Y', strtotime($despachoord->plazoentrega))}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Comuna: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Comuna: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachoord->comunaentrega->nombre}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Lugar de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachoord->lugarentrega}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Condición de Pago: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachoord->notaventa->plazopago->descripcion}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Tipo de Entrega: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachoord->tipoentrega->nombre}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Contacto: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachoord->contacto}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto email: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Contacto email: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{strtolower($despachoord->contactoemail)}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Contacto Teléfono: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Contacto Teléfono: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachoord->contactotelf}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Orden de Compra: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Orden de Compra: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{$despachoord->notaventa->oc_id}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>No. Cotización: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>No. Cotización: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{str_pad($despachoord->notaventa->cotizacion_id, 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Nota de Venta: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Nota de Venta: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{ str_pad($despachoord->notaventa_id, 10, "0", STR_PAD_LEFT) }}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Solicitud de Despacho: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Solicitud de Despacho: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{str_pad($despachoord->despachosol_id, 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Guia Despacho: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Guia Despacho: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{str_pad($despachoord->guiadespacho , 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textleft" width="40%"><span><strong>Nro Factura: </strong></span></td>
+				<td colspan="3" class="textleft" width="40%"><span><strong>Nro Factura: </strong></span></td>
 				<td class="textleft" width="50%"><span>{{str_pad($despachoord->numfactura, 10, "0", STR_PAD_LEFT)}}</span></td>
 			</tr>
 		</table>

@@ -51,6 +51,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use SplFileInfo;
 use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Support\Facades\File;
 use PhpParser\Node\Stmt\Foreach_;
 use Illuminate\Support\Facades\Storage;
@@ -500,6 +501,8 @@ class NotaVentaController extends Controller
         session(['editaracutec' => '0']);
         $data->contactotelf = $data->cliente->contactotelef;
         $data->contactoemail = $data->cliente->contactoemail;
+        $tablas['crearcot'] = 1;
+
         //dd($aux_aproNV);
         return view('notaventa.crearcot', compact('data','clienteselec','clientedirecs','clienteDirec','clientedirecs','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_statusPant','tablas','vendedor_id'));
 
@@ -610,6 +613,7 @@ class NotaVentaController extends Controller
                         $notaventadetalle->grupoprod_id = $producto->grupoprod_id;
                         $notaventadetalle->color_id = $producto->color_id;
                         $notaventadetalle->obs = $request->obs[$i];
+                        $notaventadetalle->requiere_fabricacion = $producto->categoriaprod->requiere_fabricacion;
                         $notaventadetalle->save();
                         $idDireccion = $notaventadetalle->id;    
                     }
@@ -621,8 +625,19 @@ class NotaVentaController extends Controller
             foreach ($cotizaciondetalles as $cotizaciondetalle) {
                 //dd($cotizaciondetalle->acuerdotecnicotemp);
                 $array_cotizaciondetalle = $cotizaciondetalle->attributesToArray();
+                if(isset($cotizaciondetalle->producto->acuerdotecnico->at_peso)){
+                    $aux_peso = $cotizaciondetalle->producto->acuerdotecnico->at_peso;
+                }else{
+                    if(isset($cotizaciondetalle->acuerdotecnicotempunoauno)){
+                        $aux_peso = $cotizaciondetalle->acuerdotecnicotempunoauno->at_peso;
+                    }else{
+                        $aux_peso = $cotizaciondetalle->producto->peso;
+                    }
+                }
+                $array_cotizaciondetalle["peso"] = $aux_peso;
                 $array_cotizaciondetalle["notaventa_id"] = $notaventaid;
                 $array_cotizaciondetalle["cotizaciondetalle_id"] = $array_cotizaciondetalle["id"];
+                $array_cotizaciondetalle["requiere_fabricacion"] = $cotizaciondetalle->producto->categoriaprod->requiere_fabricacion;
                 unset($array_cotizaciondetalle["id"],$array_cotizaciondetalle["usuariodel_id"],$array_cotizaciondetalle["deleted_at"],$array_cotizaciondetalle["created_at"],$array_cotizaciondetalle["updated_at"]);
                 //dd($array_cotizaciondetalle);
                 /*
@@ -882,6 +897,11 @@ class NotaVentaController extends Controller
                 for ($i=0; $i < count($request->NVdet_id) ; $i++){
                     $idcotizaciondet = $request->NVdet_id[$i]; 
                     $producto = Producto::findOrFail($request->producto_id[$i]);
+                    if(isset($producto->acuerdotecnico)){
+                        $aux_peso = $producto->acuerdotecnico->at_peso;
+                    }else{
+                        $aux_peso = $producto->peso;
+                    }
                     if( $request->NVdet_id[$i] == '0' ){
                         $notaventadetalle = new NotaVentaDetalle();
                         $notaventadetalle->notaventa_id = $notaventaid;
@@ -1413,9 +1433,9 @@ class NotaVentaController extends Controller
                 "modena_nombre" => $aux_modena_nombre,
                 "modena_desc" => $aux_modena_desc,
                 "modena_simb" => $aux_modena_simb
-            ];    
+            ];
             if($stareport == '1'){
-                if(env('APP_DEBUG')){
+                /* if(env('APP_DEBUG')){
                     return view('notaventa.listado', compact('notaventa','notaventaDetalles','empresa','datosArray'));
                 }
                 /* if($aux_staacutec){
@@ -1978,6 +1998,41 @@ class NotaVentaController extends Controller
         }
     }
 
+    public function updateRF(Request $request){
+        //dd($request);
+        if(can('cambiar-estatus-requiere-fabricacion-nota-de-venta',false)){
+            DB::beginTransaction();
+            try {
+                $notaventadetalle = NotaVentaDetalle::findOrFail($request->notaventadetalle_id);
+                $notaventadetalle->requiere_fabricacion = $request->rf;
+                //dd($notaventadetalle);
+                $notaventadetalle->save();
+                //throw new \Exception("Prueba de rollback"); // ← quitar después de probar
+                DB::commit();
+                return [
+                    "id" => 1,
+                    "title" => "",
+                    "mensaje" => "Estatus actualizado correctamente",
+                    "tipo_alert" => 'success'
+                ];
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return [
+                    "id" => 0,
+                    "title" => "",
+                    "mensaje" => "Error: " . $e->getMessage(),
+                    "tipo_alert" => 'error'
+                ];
+            }
+        }else{
+            return [
+                "id" => 0,
+                "title" => "",
+                "mensaje" => "No tienes permisos para realizar esta acción",
+                "tipo_alert" => 'error'
+             ];
+        }
+    }
 }
 
 function consultaNVaprobadas($id){

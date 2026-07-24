@@ -18,6 +18,7 @@ use App\Models\FormaPago;
 use App\Models\Giro;
 use App\Models\InvBodega;
 use App\Models\InvBodegaProducto;
+use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodSolDesp;
@@ -263,6 +264,19 @@ class PickingController extends Controller
             ]);
         }
         $invmoduloBodPesaje = InvMovModulo::findOrFail($invmoduloPesaje[0]->id);
+        // Validar que el período de inventario esté aperturado antes de crear movimientos
+        $annomesHoy = date('Ym');
+        if (!InvControl::where('annomes', $annomesHoy)
+                ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
+                ->where('status', 0)
+                ->exists()) {
+            return response()->json([
+                'status'     => 0,
+                'tipmen'     => 'error',
+                'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                'tipo_alert' => 'error'
+            ]);
+        }
         $statusSalPicking = false;
         $statusEntPicking = false;
         //VALIDAR EN EL CASO QUE EXISTAN 2 PRODUCTOS IGUALES EN LA NV 

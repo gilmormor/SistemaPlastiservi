@@ -67,10 +67,15 @@ $(document).ready(function () {
 
 	$(".numerico").blur(function(e){
 		if($(this).attr('valor') != undefined){
-			$(this).attr('valor',$(this).val());
+			let aux_valorStr = $(this).val();
+			let aux_valor = parseFloat(aux_valorStr) || 0;
+			$(this).attr('valor',aux_valor == 0 ? '' : aux_valor);
 			//$(this).val(MASK(0, $(this).val(), '-###,###,###,##0.00',1));
-			$(this).val(MASKLA($(this).val(),2));
-
+			if(aux_valor == 0){
+				$(this).val('');
+			}else{
+				$(this).val(MASKLA($(this).val(),2));
+			}
 		}
 	});
 	$(".numerico").focus(function(e){
@@ -726,12 +731,18 @@ function totalizarItem(aux_estprec){
 		$("#pesoM").val($("#pesoM").attr('valorini'));
 	}
 
+	aux_precioini = $("#precioM").val();
+	//console.log(aux_precioini);
 	$("#precioM").attr("valor",$("#precioM").val());
+	if($("#unidadmedida_idM").val() == 7){
+		$("#pesoM").val(1);
+	}
 	if($("#pesoM").val()==0){
 		aux_peso = 1;
 	}else{
 		aux_peso = $("#pesoM").val();
 	}
+	aux_tk = $("#cantM").val() * aux_peso;
 	if(aux_estprec==1)
 	{
 		precioneto = $("#precionetoM").val();
@@ -747,8 +758,70 @@ function totalizarItem(aux_estprec){
 				$("#precioM").attr("valor",$("#precioM").val());
 				aux_total = ($("#cantM").val() * $("#precionetoM").val()) * ($("#descuentoM").val());
 				aux_total = Math.round(aux_total);
-				$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
+				//$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
+				$("#subtotalM").val(MASKLA(aux_total.toFixed(2), 0));
 				$("#subtotalM").attr('valor',aux_total.toFixed(2));
+				if($("#pesoM").val()>0){
+					/* $("#totalkilosM").prop("disabled", true);
+					$("#totalkilosM").prop("readonly", true); */
+					if($("#totalkilosM").attr("sta_modif") == 0){
+						//$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.00',1));
+						$("#totalkilosM").val(MASKLA(aux_tk.toFixed(4), 0));
+						$("#totalkilosM").attr('valor',aux_tk.toFixed(4));	
+					}
+				}
+				if($("#totalkilosM").attr("sta_modif") == 1){
+					if($("#totalkilosM").attr("valor") > 0 && $("#cantM").val() > 0){
+						aux_peso = $("#totalkilosM").attr("valor") / $("#cantM").val();
+						$("#pesoM").val(aux_peso);
+						//console.log(aux_peso);
+					}
+				}
+				if(aux_tipoProd == 1 && aux_peso == 0){
+					/* $("#totalkilosM").removeAttr("disabled");
+					$("#totalkilosM").removeAttr("readonly"); */
+					$("#totalkilosM").val(0);
+					$("#totalkilosM").attr('valor',0);
+				}
+				if($("#totalkilosM").attr("valor") > 0){
+					aux_precioM = $("#subtotalM").attr("valor") / $("#totalkilosM").attr("valor");
+					aux_precioM = Math.round(aux_precioM);
+					//aux_precioM = aux_precioM.toFixed(2);
+					if($("#precioM").attr("sta_modif") == 1){
+						aux_subtotalM = $("#precioM").val() * $("#totalkilosM").attr("valor");
+						aux_subtotalM = Math.round(aux_subtotalM);
+
+						/* aux_subtotalM = aux_precioini * $("#totalkilosM").attr("valor")
+						aux_subtotalM = Math.round(aux_subtotalM); */
+						//$("#subtotalM").val(aux_subtotalM);
+						$("#subtotalM").val(MASKLA(aux_subtotalM.toFixed(2), 0));
+						$("#subtotalM").attr("valor",aux_subtotalM);
+						aux_precionetoM = aux_subtotalM / $("#cantM").val();
+						aux_precionetoM = aux_precionetoM.toFixed(2);
+						$("#precionetoM").val(aux_precionetoM);
+						$("#precionetoM").attr("valor",aux_precionetoM);
+						/* $("#precioM").val(aux_precioini);
+						$("#precioM").attr("valor",aux_precioini); */
+					}else{
+						aux_subtotalM = $("#cantM").val() * $("#precionetoM").val();
+						//aux_subtotalM = aux_precioini * $("#totalkilosM").attr("valor")
+						aux_subtotalM = Math.round(aux_subtotalM);
+						//$("#subtotalM").val(aux_subtotalM);
+						$("#subtotalM").val(MASKLA(aux_subtotalM.toFixed(2), 0));
+						$("#subtotalM").attr("valor",aux_subtotalM);
+						/* aux_precionetoM = aux_subtotalM / $("#cantM").val();
+						aux_precionetoM = aux_precionetoM.toFixed(2);
+						$("#precionetoM").val(aux_precionetoM);
+						$("#precionetoM").attr("valor",aux_precionetoM); */
+						aux_preciokg = aux_subtotalM / $("#totalkilosM").attr("valor");
+						$("#precioM").val(aux_preciokg.toFixed(2));
+						$("#precioM").attr("valor",aux_preciokg.toFixed(2));
+					}
+	
+				}
+				/* $("#precioM").attr("valor",aux_precioM);
+				$("#precioM").val(aux_precioM); */
+	
 				return 0;
 			}
 		}
@@ -764,19 +837,21 @@ function totalizarItem(aux_estprec){
 			$("#precionetoM").val(Math.round(precioneto));
 		}	
 	//alert(aux_peso);
-	aux_tk = $("#cantM").val() * aux_peso;
+	//console.log(aux_peso);
 	if($("#pesoM").val()>0){	
-		$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.00',1));
+		//$("#totalkilosM").val(MASK(0, aux_tk.toFixed(4), '-##,###,##0.00',1));
+		$("#totalkilosM").val(MASKLA(aux_tk.toFixed(4), 0));
 		$("#totalkilosM").attr('valor',aux_tk.toFixed(4));
 	}else{
 		//if($("#unidadmedida_idM option:selected").attr('value') == 7){
 		if($("#unidadmedida_idM").val() == 7){
 			aux_cant = MASK(0, $("#cantM").val(), '-#,###,###,##0.00',1);
-			$("#totalkilosM").val(aux_cant);
+			//$("#totalkilosM").val(aux_cant);
+			$("#totalkilosM").val(MASKLA(aux_cant.toFixed(4), 0));
 			$("#totalkilosM").attr('valor',$("#cantM").val());
 		}else{
 			if ($("#producto_idM").attr("acuerdotecnico_id") == 0){
-				$("#totalkilosM").val(0.00);
+				$("#totalkilosM").val("0,00");
 				$("#totalkilosM").attr('valor','0.00');	
 			}
 		}
@@ -784,7 +859,8 @@ function totalizarItem(aux_estprec){
 	//aux_total = ($("#cantM").val() * aux_peso * $("#precioM").val()) * ($("#descuentoM").val());
 	aux_total = ($("#cantM").val() * $("#precionetoM").val()) * ($("#descuentoM").val());
 	aux_total = Math.round(aux_total);
-	$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
+	//$("#subtotalM").val(MASK(0, aux_total.toFixed(2), '-#,###,###,##0.00',1));
+	$("#subtotalM").val(MASKLA(aux_total.toFixed(2), 0));
 	$("#subtotalM").attr('valor',aux_total.toFixed(2));
 	aux_precdesc = $("#precioM").val() * $("#descuentoM").val();
 //	$("#precioM").val(MASK(0, aux_precdesc, '-##,###,##0.00',1));
@@ -916,7 +992,7 @@ function modificarTabla(i){
 	$("#subtotalSFTD"+i).html($("#subtotalM").attr('valor'));
 
 	$("#unidadmedida_id"+i).val($("#unidadmedida_idM option:selected").attr('value'));
-	$("#unidadmedida_nomnreTD"+i).html($("#unidadmedida_idM option:selected").html());
+	$("#unidadmedida_nombreTD"+i).html($("#unidadmedida_idM option:selected").html());
 
 	if($("#invmovtipo_idM")){
 		$("#invbodega_idTXT"+i).html($("#invbodega_idM option:selected").html());
@@ -1138,6 +1214,8 @@ function limpiarInputOT(){
 	if($("#invmovtipo_idM")){
 		$("#invmovtipo_idM").val("");
 	}
+	$("#precioM").attr("sta_modif",0);
+	$("#precionetoM").attr("sta_modif",0);
 
     $(".selectpickercot").selectpicker('refresh');
 }
@@ -1207,6 +1285,8 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 	if(aux_acuerdotecnicoId > 0){
 		$("#producto_idM").attr("disabled", "disabled");
 		$("#btnbuscarproducto").attr("disabled", "disabled");
+		$("#totalkilosM").prop("disabled", true);
+		$("#totalkilosM").prop("readonly", true);
 	}
     limpiarInputOT();
 	quitarverificar();
@@ -1232,11 +1312,13 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 	//$("#precioM").val(MASK(0, $("#precioxkilo"+i).val(), '-##,###,##0.00',1));
 	$("#totalkilosM").attr('valor',$("#totalkilos"+i).val());
 	//$("#totalkilosM").val(MASK(0, $("#totalkilos"+i).val(), '-#,###,###,##0.00',1));
-	$("#totalkilosM").val($("#totalkilos"+i).val(),2);
+	aux_totalkilos = $("#totalkilos"+i).val();
+	//$("#totalkilosM").val(MASKLA(aux_totalkilos.toFixed(4), 0));
+	$("#totalkilosM").val(MASKLA(aux_totalkilos, 0));
 	
 	$("#subtotalM").attr('valor',$("#subtotal"+i).val());
 	//$("#subtotalM").val(MASK(0, $("#subtotal"+i).val(), '-#,###,###,##0.00',1));
-	$("#subtotalM").val(MASKLA($("#subtotal"+i).val(), 2));
+	$("#subtotalM").val(MASKLA($("#subtotal"+i).val(), 0));
 	$("#cla_nombreM").val($.trim( $("#cla_nombreTD"+i).html() ));
 	$("#tipounionM").val($("#tipounion"+i).val());
 	$("#diamextmmM").val($("#diamextmm"+i).val());
@@ -1290,13 +1372,12 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 					$(".selectpicker").selectpicker('refresh');
 					$("#unidadmedida_idM").attr("disabled",true);
 					$("#unidadmedida_idM").attr("readonly");
-					if($("#unidadmedida_idM").val() == 7){
-						$("#totalkilosM").prop("disabled", true);
-						$("#totalkilosM").prop("readonly", true);
-					}else{
-						$("#totalkilosM").prop("disabled", false);	
-						$("#totalkilosM").prop("readonly", false);		
+					if(respuesta["acuerdotecnico"]["at_peso"] > 0){
+						$("#pesoM").val(respuesta["acuerdotecnico"]["at_peso"]);
 					}
+					
+					$("#totalkilosM").prop("disabled", true);
+					$("#totalkilosM").prop("readonly", true);
 				}else{
 					$("#unidadmedida_idM").attr("disabled",false);
 					$("#unidadmedida_idM").attr("readonly",false);	
@@ -1306,6 +1387,13 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 				aux_peso = respuesta['peso'];
 				aux_peso = aux_peso.toFixed(3);
 				$("#pesoM").attr('valorini',aux_peso);
+				var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
+				//console.log(acuerdotecnico);
+				if(acuerdotecnico != 0){
+					$("#unidadmedida_idM").attr("disabled",true);
+					$("#unidadmedida_idM").attr("readonly",true);
+				}
+
 				$(".selectpicker").selectpicker('refresh');
 				activarCajasPreciokgUni();
 			}
@@ -1504,6 +1592,80 @@ function genpdfPESAJE(id,stareport){ //GENERAR PDF PESAJE
 	//console.log($('#contpdf'));
 	$("#myModalpdf").modal('show')
 }
+function genpdfCC(id, aux_venmodant, aux_slug) { // GENERAR PDF Muestra Control de Calidad
+    aux_venmodant = aux_venmodant || "";
+    aux_slug      = aux_slug      || "ver-pdf-muestra-cc";
+    var data = {
+        slug:   aux_slug,
+        _token: $('meta[name="csrf-token"]').attr('content') || $('input[name=_token]').first().val()
+    };
+    $.ajax({
+        url:  '/generales_valpermiso',
+        type: 'POST',
+        data: data,
+        success: function (respuesta) {
+            if (respuesta.resp) {
+                $("#venmodant").val("");
+                if (aux_venmodant !== "") {
+                    $("#" + aux_venmodant).modal('hide');
+                    $("#venmodant").val(aux_venmodant);
+                }
+                var queryString = '?timestamp=' + new Date().getTime();
+                $('#contpdf').attr('src', '/ccregistmuestra/' + id + '/exportPdf' + queryString);
+                $("#myModalpdf").modal('show');
+            } else {
+                swal({
+                    title: respuesta.mensaje,
+                    text:  respuesta.mensaje2,
+                    icon:  'error',
+                    buttons: { confirm: "Cerrar" }
+                });
+            }
+        }
+    });
+}
+
+// Ver etiqueta de etapa de producción (Reg. Prod.) en modal, con validación de permiso
+function verEtiquetaEtapaConPermiso(opdetregprod_id, aux_slug) {
+    aux_slug = aux_slug || "ver-etiqueta-regprod";
+    var csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name=_token]').first().val();
+    $.ajax({
+        url:  '/generales_valpermiso',
+        type: 'POST',
+        data: { slug: aux_slug, _token: csrf },
+        success: function (respuesta) {
+            if (respuesta.resp) {
+                $('#modalEtiquetaId').text('#' + opdetregprod_id);
+                $('#ifrEtiquetaEtapa').attr('src', '/opdetregprodtempaprobsup/etiqueta-etapa/' + opdetregprod_id);
+                $('#modalEtiquetaEtapa').modal('show');
+            } else {
+                swal({
+                    title: respuesta.mensaje,
+                    text:  respuesta.mensaje2,
+                    icon:  'error',
+                    buttons: { confirm: "Cerrar" }
+                });
+            }
+        }
+    });
+}
+
+// Imprimir etiqueta de etapa desde el iframe del modal (disponible globalmente)
+if (typeof imprimirEtiquetaEtapa === 'undefined') {
+    function imprimirEtiquetaEtapa() {
+        var iframe = document.getElementById('ifrEtiquetaEtapa');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        }
+    }
+}
+
+// Limpiar iframe al cerrar el modal de etiqueta (handler global, no inline)
+$(document).on('hidden.bs.modal', '#modalEtiquetaEtapa', function () {
+    $('#ifrEtiquetaEtapa').attr('src', 'about:blank');
+});
+
 function genpdfGD(id,nombre,aux_venmodant = "",aux_slug = "ver-pdf-guia-despacho"){ //GENERAR PDF Guia Despacho
 	var data = {
 		slug: aux_slug,
@@ -1615,9 +1777,11 @@ $("#precionetoM").blur(function(event){
 			aux_preciokilo = $("#precionetoM").val();
 		}
 	}else{
-		aux_preciokilo = $("#precionetoM").val()/$("#pesoM").val();
-		$("#precioM").val(aux_preciokilo.toFixed(2));
-		$("#precioM").attr('valor',aux_preciokilo.toFixed(2));	
+		if($("#precionetoM").attr("sta_modif") == 1){
+			aux_preciokilo = $("#precionetoM").val()/$("#pesoM").val();
+			$("#precioM").val(aux_preciokilo.toFixed(2));
+			$("#precioM").attr('valor',aux_preciokilo.toFixed(2));		
+		}
 	}
 	totalizarItem(0);
 });
@@ -1844,6 +2008,7 @@ $("#producto_idM").blur(function(){
 			type: 'POST',
 			data: data,
 			success: function (respuesta) {
+				//console.log(respuesta);
 				if(respuesta['cont']>0){
 					$("#producto_idM").attr("acuerdotecnico_id",respuesta.acuerdotecnico_id ? respuesta.acuerdotecnico_id : 0);
 					if(respuesta['estado'] == 0){
@@ -1915,7 +2080,6 @@ $("#producto_idM").blur(function(){
 					$("#precionetoM").attr('valor',respuesta['precioneto']);
 					//alert(respuesta['precio']);
 
-					$("#unidadmedida_idM").val(respuesta['unidadmedidafact_id']);
 					$("#anchoM").val('');
 					$("#anchoM").attr('valor','');
 					if(respuesta['at_ancho'] != null){
@@ -1941,7 +2105,24 @@ $("#producto_idM").blur(function(){
 					$("#stakilos").val(respuesta['stakilos']);
 					$("#categoriaprod_id").val(respuesta['categoriaprod_id']);
 					$("#acuerdotecnico_id").val(respuesta['acuerdotecnico_id']);
-					$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id']);
+					aux_peso = respuesta['peso'];
+					aux_peso = aux_peso.toFixed(3);
+					if(respuesta.acuerdotecnico != null){
+						if(respuesta["acuerdotecnico"]["at_peso"] > 0){
+							$("#pesoM").val(respuesta["acuerdotecnico"]["at_peso"]);
+						}
+						$("#unidadmedida_idM").val(respuesta.acuerdotecnico.at_unidadmedida_id);
+						$("#at_unidadmedida_idM").val(respuesta.acuerdotecnico.at_unidadmedida_id);	
+					}else{
+						$("#pesoM").val(aux_peso);
+						$("#unidadmedida_idM").val(respuesta['unidadmedidafact_id']);
+						$("#at_unidadmedida_idM").val(respuesta['at_unidadmedida_id']);	
+					}
+
+					if($("#pesoM").val()>0){
+						$("#totalkilosM").prop("disabled", true);
+						$("#totalkilosM").prop("readonly", true);
+					}else
 					activarCajasPreciokgUni();
 					mostrardatosadUniMed(respuesta);
 					llenarselectbodega(respuesta);
@@ -2280,7 +2461,7 @@ function annomes(mesanno){
 
 
 $("#unidadmedida_idM").change(function(){
-	$("#totalkilosM").val(0.00);
+	$("#totalkilosM").val("0,00");
 	$("#totalkilosM").attr('valor','0.00');
 	activarCajasPreciokgUni();
 	totalizarItem(0);
@@ -2288,7 +2469,11 @@ $("#unidadmedida_idM").change(function(){
 
 function MASKLA(num,dec){
 	//num = round(aux_cerodec,dec);
-	aux_num = new Intl.NumberFormat("de-DE").format(num);
+	//aux_num = new Intl.NumberFormat("de-DE").format(num);
+	let aux_num = new Intl.NumberFormat("de-DE", {
+		minimumFractionDigits: dec,
+		maximumFractionDigits: dec
+	  }).format(num);
 	if(dec>0){
 		aux_repcero = '0'.repeat(dec);
 		if(aux_num.indexOf(",") == -1){
@@ -2304,8 +2489,9 @@ function MASKLA(num,dec){
 
 $(".selectpicker").selectpicker({
 	noneSelectedText : "Seleccione...", // by this default "Nothing selected" -->will change to Please Select
-	selectAllText : "Selec todo",
+	selectAllText : "Seleccionar todo",
 	deselectAllText : "Borrar todo",
+	noneResultsText: "No se encontraron resultados para {0}", // Texto cuando no hay coincidencias
 	});
 
 function fechaddmmaaaa(f){
@@ -2439,13 +2625,67 @@ function llenarselectbodega(respuesta){
 	}	
 }
 
-function sumbod(i,y,aux_orig){
+// Handler de inputs de lotes de producción (lote-cant-input).
+// Valida que el valor sea numérico y no exceda cant_disponible (data-max).
+// Suma todos los lotes de la misma bodega y actualiza el input de bodega (readonly),
+// luego llama a sumbod() para que el formulario actualice totales normalmente.
+$(document).on('input', '.lote-cant-input', function() {
+    var $input    = $(this);
+    var ibpId     = $input.data('ibp');
+    var nfila     = $input.data('nfila');
+    var max       = parseFloat($input.data('max'))          || 0;
+    var cantKgTot = parseFloat($input.data('cantkg-total')) || 0;
+
+    // Eliminar caracteres no numéricos (permitir solo dígitos y punto)
+    var raw = $input.val().replace(/[^0-9.]/g, '');
+    var val = parseFloat(raw) || 0;
+
+    // Capear al disponible
+    if (val > max) { val = max; }
+    if (val < 0)   { val = 0;  }
+    $input.val(raw === '' ? '' : val);
+
+    // Calcular kg proporcional al valor asignado
+    var kgAsignar = (max > 0) ? (val / max) * cantKgTot : 0;
+    $input.next('input[type=hidden]').val(kgAsignar.toFixed(2));
+
+    // Sumar todos los lotes de esta bodega → actualizar input bodega readonly
+    var totalLotes = 0;
+    $('.lote-cant-input[data-ibp="' + ibpId + '"]').each(function() {
+        totalLotes += parseFloat($(this).val()) || 0;
+    });
+    var $bodInput = $('input.invcant[id$="-' + ibpId + '"]');
+    $bodInput.val(totalLotes > 0 ? totalLotes : '');
+    // Actualizar label visible en formedit (cantorddespF muestra <label> en vez de input)
+    $('#cantorddespF' + ibpId + ' label').text(totalLotes > 0 ? totalLotes : 0);
+
+    // Llamar sumbod() para actualizar cantsolTotal y subtotales del ítem
+    if (nfila) {
+        var y = nfila + '-' + ibpId;
+        sumbod(nfila, y, 'SD', 1);
+    }
+});
+
+function sumbod(i,y,aux_orig,requiere_fabricacion = 0){
+	//console.log("sumbod",i,y,aux_orig,requiere_fabricacion);
 	aux_stockcant = parseFloat($("#stockcantTD" + y).html());
 	if(aux_orig == "OD"){
 		if($("#invcant" + y).attr("stadespsinstock") == "0"){
 			if ($("#invcant" + y).val() > aux_stockcant){
 				$("#invcant" + y).val(aux_stockcant);
-			}	
+			}
+		}
+		// CC Fase 8: cap adicional por lotes CC rechazados bloqueados
+		var ccMax = parseFloat($("#invcant" + y).attr("data-cc-max"));
+		if (!isNaN(ccMax) && parseFloat($("#invcant" + y).val()) > ccMax) {
+			$("#invcant" + y).val(ccMax > 0 ? ccMax : "");
+		}
+	}
+	if(aux_orig == "SD"){
+		if(requiere_fabricacion == 1){
+			if ($("#invcant" + y).val() > aux_stockcant){
+				$("#invcant" + y).val(aux_stockcant);
+			}
 		}
 	}
 	totalSolDe = 0;
@@ -2480,6 +2720,7 @@ function sumbod(i,y,aux_orig){
 		}
 		valorNum = parseFloat(valor);
 		total += valorNum;
+		//console.log("total",total);
 		/*
 		aux_saldo = parseFloat($("#saldocantOrigF" + i).html());
 		if(total > aux_saldo){
@@ -3120,6 +3361,7 @@ async function buscarDatosProd(producto_id){
 							});
 						} else {
 							// En el resto del sistema bloquea el ingreso (comportamiento original)
+							respuesta = [];
 							swal({
 								title: 'Producto inactivo.',
 								text: "Producto existe pero está Inactivo.",
@@ -3129,7 +3371,10 @@ async function buscarDatosProd(producto_id){
 								},
 							}).then((value) => {
 								if (value) {
-									$("#producto_idM").focus();
+									producto_id.val("");
+									producto_id.attr("producto_id","");
+									producto_id.focus();
+									//$("#producto_idM").focus();
 								}
 							});
 						}
@@ -3185,7 +3430,8 @@ function buscarProd(item){
 async function llenarDatosProd(vlrcodigo){
 	let item = vlrcodigo.attr("item");
 	//console.log(item);
-	if($("#vlrcodigo" + item).val() != $("#producto_id" + item).val()){
+	//if($("#vlrcodigo" + item).val() != $("#producto_id" + item).val()){
+	if($("#vlrcodigo" + item).val() != $("#vlrcodigo" + item).attr("producto_id")){
 		arrayDatosProducto = await buscarDatosProd(vlrcodigo);
 		//console.log(arrayDatosProducto);
 		$("#producto_id" + item).val("");
@@ -3195,11 +3441,13 @@ async function llenarDatosProd(vlrcodigo){
 			$("#lblproducto_id" + item).html(arrayDatosProducto["id"]);
 			$("#vlrcodigo" + item).val(arrayDatosProducto["id"]);
 			$("#producto_id" + item).val(arrayDatosProducto["id"]);
+			vlrcodigo.attr("producto_id",arrayDatosProducto["id"]);
 			$("#nombreProdTD" + item).html(arrayDatosProducto["nombre"]);
 			$("#nmbitem" + item).val(arrayDatosProducto["nombre"]);
 			//$("#prcitem" + item).val(arrayDatosProducto["precio"]);
 			$("#prcitem" + item).val("");
 			//console.log(arrayDatosProducto["acuerdotecnico"]);
+			//console.log(arrayDatosProducto);
 			if(arrayDatosProducto["acuerdotecnico"] != null){
 				//console.log(arrayDatosProducto["acuerdotecnico"].at_ancho);
 				at_ancho = arrayDatosProducto["acuerdotecnico"].at_ancho;
@@ -3216,6 +3464,11 @@ async function llenarDatosProd(vlrcodigo){
 				aux_atribAcuTec = arrayDatosProducto["at_materiaprima_nombre"] + aux_color + aux_at_complementonomprod + aux_formatofilm;
 				//CONCATENAR TODO LOS CAMPOS NECESARIOS PARA QUE SE FORME EL NOMBRE DEL RODUCTO EN LA GUIA
 				aux_nombreprod = arrayDatosProducto["categoriaprod_nombre"] + " " + aux_atribAcuTec + " " + at_ancho + "x" + at_largo + "x" + at_espesor;
+				$("#vlrcodigo" + item).attr("at_peso",arrayDatosProducto["acuerdotecnico"].at_peso);
+				$("#unmditem" + item).val(arrayDatosProducto["at_unidadmedida_id"]);
+				if ($("#unidadmedidainp_id" + item).length > 0){
+					$("#unidadmedidainp_id" + item).val(arrayDatosProducto["at_unidadmedida_id"]);
+				}
 			}else{
 				//console.log("Sin Acuerdo");
 				//console.log(arrayDatosProducto);
@@ -3227,7 +3480,12 @@ async function llenarDatosProd(vlrcodigo){
 				aux_tipounion = "";
 				if(!(arrayDatosProducto["tipounion"] === "S/C" || arrayDatosProducto["tipounion"] === "S/U")){
 					aux_tipounion = " " + arrayDatosProducto["tipounion"];
-				}                                        
+				}
+				$("#vlrcodigo" + item).attr("at_peso",arrayDatosProducto["peso"]);
+				$("#unmditem" + item).val(arrayDatosProducto["unidadmedidafact_id"]);
+				if ($("#unidadmedidainp_id" + item).length > 0){
+					$("#unidadmedidainp_id" + item).val(arrayDatosProducto["unidadmedidafact_id"]);
+				}
 				aux_nombreprod = arrayDatosProducto["nombre"] + aux_diametro + aux_long + aux_cla_nombre + aux_tipounion;
 
 			}
@@ -3339,12 +3597,11 @@ function volverGenDTE(dte_id,aux_slug = "subir-dte-sii"){
 	});
 }
 
-function ajaxRequestGeneral(data,url,funcion) {
-	datatemp = data;
+function ajaxRequestGeneral(datatemp,url,funcion) {
 	$.ajax({
 		url: url,
 		type: 'POST',
-		data: data,
+		data: datatemp,
 		success: function (respuesta) {
 			if(funcion=='volverGenDTE'){
 				swal({
@@ -3368,14 +3625,36 @@ function ajaxRequestGeneral(data,url,funcion) {
 			}
 			if(funcion=='procesarDTE'){
 				if (respuesta.id != 0) {
+					if(datatemp.nombreobjeto != ""){
+						// Obtén el elemento <a> que disparó el evento
+						let element = $(`#${datatemp.nombreobjeto}`);
+
+						// Encuentra la tabla que contiene este elemento
+						let table = $(element).closest('table').DataTable();
+
+						// Ahora puedes usar la instancia de la tabla
+						let row = table.row("#fila" + respuesta.dte_id);
+
+						if (row && row.child && row.child.isShown()) {
+							row.child.hide();
+						}
+					}
                     $("#fila"+respuesta.dte_id).remove();
-					/* aux_text = 
+					/* aux_text =
 							`<a id="bntaproord${respuesta.dte_id}" name="bntaproord${respuesta.dte_id}" class="btn-accion-tabla btn-sm tooltipsC" onclick="procesarDTE(${respuesta.dte_id})" title="Enviar a procesados">
 								<span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
 							</a>`;
 					$("#accion" + respuesta.dte_id).html(aux_text); */
-					Biblioteca.notificaciones('El registro fue procesado con exito', 'Plastiservi', 'success');
+					// Si la respuesta incluye op_id (viene de programación de producción),
+					// mostrar el número de OP generada para que el programador lo comunique al operario.
+					var msgExito = 'El registro fue procesado con exito';
+					if (respuesta.op_id) {
+						msgExito = 'Enviado a Producción. OP generada: #' + respuesta.op_id;
+					}
+					Biblioteca.notificaciones(msgExito, 'Plastiservi', 'success');
 				} else {
+					// Reemplaza \n con <br> para el salto de línea
+					//console.log(respuesta.mensaje);
                     swal({
 						title: respuesta.title,
 						text: respuesta.mensaje,
@@ -3463,9 +3742,44 @@ function ajaxRequestGeneral(data,url,funcion) {
 				a.click();
 				document.body.removeChild(a);
 			}
+			if(funcion=='devolverValor'){
+				//console.log("Valor en ajax: " + respuesta);
+				return respuesta;
+			}
+			if(funcion=='ProcesarAlgo'){
+				//console.log("Valor en ajax: " + respuesta.mensaje);
+				//return respuesta;
+				Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+				return respuesta;
+			}
 
 		},
-		error: function () {
+		error: function (xhr) {
+			//console.log(xhr);
+			if(xhr.status == 422){
+				var errores = xhr.responseJSON.errors;
+				var mensaje = "";
+				$.each(errores, function (key, value) {
+					mensaje += value + "\n";
+				});
+				swal({
+					title: 'Error',
+					text: mensaje,
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar"
+					},
+				});
+			}else{
+				swal({
+					title: 'Error',
+					text: 'Ocurrió un error al procesar la solicitud.',
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar"
+					},
+				});
+			}
 		}
 	});
 }
@@ -3618,10 +3932,8 @@ function activarCajasPreciokgUni(){
 			$("#unidadmedida_idM").prop("disabled", true);
 			//console.log($("#at_unidadmedida_idM").val());
 			$("#unidadmedida_idM").val($("#at_unidadmedida_idM").val())
-			if($("#at_unidadmedida_idM").val() != 7){
-				$("#totalkilosM").prop("disabled", false);
-				$("#totalkilosM").prop("readonly", false);
-			}
+			$("#totalkilosM").prop("disabled", true);
+			$("#totalkilosM").prop("readonly", true);
 		}else{
 			$("#unidadmedida_idM").prop("disabled", false);
 		}
@@ -3635,8 +3947,12 @@ function activarCajasPreciokgUni(){
 			$("#totalkilosM").prop("readonly", true);	
 		}else{
 			$("#precionetoM").prop("disabled", false);
-			$("#totalkilosM").prop("disabled", false);
-			$("#totalkilosM").prop("readonly", false);	
+			/* $("#totalkilosM").prop("disabled", false);
+			$("#totalkilosM").prop("readonly", false);
+			if(aux_tipoProd != 1){
+				$("#totalkilosM").prop("disabled", true);	
+				$("#totalkilosM").prop("readonly", true);	
+			} */
 		}
 	}
 }
@@ -4090,7 +4406,6 @@ function llenartablaDataCobranza(id,cliente_id,notaventa_id,aux_consSisCobRemota
 
 function validarClienteBloqueadoxModulo(data){
 	aux_clienteBloqueado = "";
-	//console.log(data);
 	if(data.clientedesbloqueadopro_obs == ""){
 		aux_nvtotal = (typeof data.nvtotal !== 'undefined' && data.nvtotal != null) ? data.nvtotal : 0;
 		aux_deuda = data.datacobranza_tdeuda + aux_nvtotal;
@@ -4409,7 +4724,7 @@ function cargardatospantprodms(){
 	//$('#tabla-data-productos').DataTable().ajax.url( "productobuscarpage/" + data.data2 + "&producto_id=&tipoprod=" + aux_tipoprod ).load();
 }
 
-function genpdfFACDin(id,cedible,aux_venmodant = "",aux_slug = "ver-pdf-factura"){ //GENERAR PDF Solicitud de Despacho	
+function genpdfFACDin(id,cedible,aux_venmodant = "",aux_slug = "ver-pdf-factura"){ //GENERAR PDF Solicitud de Despacho
 	var data = {
 		slug: aux_slug,
 		_token: $('input[name=_token]').val()
@@ -4469,6 +4784,68 @@ function XMLDownLoad(id){ //GENERAR PDF Solicitud de Despacho
 				},
 			});
 			console.log('Error al descargar el archivo: ' + errorThrown);
+		}
+	});
+}
+
+function procesarReg1(id,aux_modulo_id,ruta,updatednum_at,mensaje){
+    var data = {
+        id : id,
+        nfila  : id,
+		modulo_id : aux_modulo_id,
+        updatednum_at : updatednum_at,
+        _token: $('input[name=_token]').val()
+    };
+    swal({
+        title: `¿ ${mensaje} ?`,
+        text: "Esta acción no se puede deshacer!",
+        icon: 'warning',
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+    }).then((value) => {
+        if (value) {
+            ajaxRequestGeneral(data,ruta,'procesarDTE');
+        }
+    });
+
+}
+
+function genpdf(id,aux_venmodant = "",aux_slug = "",rutareporte){ //GENERAR PDF Guia Despacho
+	var data = {
+		slug: aux_slug,
+		_token: $('input[name=_token]').val()
+	};
+	$.ajax({
+		url: '/generales_valpermiso',
+		type: 'POST',
+		data: data,
+		success: function (respuesta) {
+			//console.log(respuesta);
+			if(respuesta.resp){
+				$("#venmodant").val("");
+				if(aux_venmodant!=""){
+					$("#" + aux_venmodant).modal('hide');
+					$("#venmodant").val(aux_venmodant);
+				}
+				let id_str = id.toString();
+				id_str = id_str.padStart(8, "0");
+				$('#contpdf').attr('src', rutareporte);
+				$("#myModalpdf").modal('show')
+			
+
+			}else{
+				swal({
+					title: respuesta.mensaje,
+					text:  respuesta.mensaje2,
+					icon: 'error',
+					buttons: {
+						confirm: "Cerrar",
+					},
+				}).then((value) => {
+				});
+			}
 		}
 	});
 }
@@ -4996,3 +5373,235 @@ $(document).on('changed.bs.select', '#categoriaprod_id', function () {
     $claseprod_id.selectpicker('refresh');
 
 });
+
+// genpdfOD ya está definida arriba (línea 1540, idéntica) — se omite la duplicada que traía esta rama
+
+function procesarReg(id, aux_modulo_id, ruta, updatednum_at, mensaje, staobs, mensajeError = '', nombreobjeto = '') {
+    var data = {
+        id: id,
+        nfila: id,
+        modulo_id: aux_modulo_id,
+        updatednum_at: updatednum_at,
+		nombreobjeto: nombreobjeto,
+        _token: $('input[name=_token]').val()
+    };
+
+    // Crear una caja de texto para la observación y un contenedor para el mensaje de error
+    swal({
+        title: `¿${mensaje}?`,
+        text: "Esta acción no se puede deshacer!",
+        content: createCustomContent(mensajeError,staobs), // Función para añadir la caja de texto y mensaje
+        buttons: {
+            cancel: "Cancelar",
+            confirm: "Aceptar"
+        },
+        icon: 'warning',
+        onOpen: () => {
+            // Enfocar automáticamente en el input
+            const inputField = document.getElementById('observacion');
+            if (inputField) {
+                inputField.focus();
+            }
+        },
+    }).then((value) => {
+        if (value) {
+            // Obtener el valor de la caja de texto de observaciones
+            if(staobs == 1){
+                var observacion = document.getElementById('observacion').value.trim();
+                if (!observacion ) {
+					//console.log($("#" + nombreobjeto).attr('id'));
+                    // Mostrar mensaje de error si el campo está vacío
+                    procesarReg(id, aux_modulo_id, ruta, updatednum_at, mensaje,1,"El campo no puede quedar en blanco",nombreobjeto);
+        
+                    /* document.getElementById('error-message').textContent = "El campo no puede quedar en blanco";
+                    return swal({
+                        title: "Error",
+                        text: "El campo de observación no puede quedar en blanco",
+                        icon: "error",
+                        buttons: {
+                            confirm: "Aceptar"
+                        }
+                    }).then((value) => {
+                        procesarReg(id, aux_modulo_id, ruta, updatednum_at, mensaje,"El campo no puede quedar en blanco")
+                    }); */
+                } else {
+                    // Limpiar el mensaje de error y enviar la solicitud AJAX
+                    document.getElementById('error-message').textContent = "";
+                    data.obs = observacion; // Añadir la observación a los datos
+                    //console.log(data);
+                    ajaxRequestGeneral(data, ruta, 'procesarDTE');
+                }
+            }else{
+                ajaxRequestGeneral(data, ruta, 'procesarDTE');
+            }
+        }
+    });
+	const inputField = document.getElementById('observacion');
+	if (inputField) {
+		inputField.focus();
+	}
+
+
+}
+
+// Función para crear el contenido personalizado
+function createCustomContent(mensajeError,staobs) {
+	if(staobs == 1){
+		var container = document.createElement('div');
+
+		// Crear la caja de texto
+		var input = document.createElement('input');
+		input.type = 'text';
+		input.id = 'observacion';
+		input.placeholder = 'Ingrese su observación aquí';
+		input.style.width = '100%';
+		input.style.marginBottom = '10px';
+	
+		// Crear el contenedor para el mensaje de error
+		var errorMessage = document.createElement('div');
+		errorMessage.id = 'error-message';
+		errorMessage.style.color = 'red';
+		errorMessage.style.fontSize = '12px';
+		errorMessage.textContent = mensajeError; // Mostrar el mensaje inicial si existe
+	
+		// Añadir elementos al contenedor
+		container.appendChild(input);
+		container.appendChild(errorMessage);
+		const inputField = document.getElementById('observacion');
+		if (inputField) {
+			inputField.focus();
+		}
+	
+	
+		return container;
+	
+	}
+}
+
+$("#precioM").change(function(){
+	$("#precioM").attr("sta_modif",1);
+	$("#precionetoM").attr("sta_modif",0);
+});
+$("#precionetoM").change(function(){
+	$("#precioM").attr("sta_modif",0);
+	$("#precionetoM").attr("sta_modif",1);
+});
+$("#totalkilosM").change(function(){
+	$("#totalkilosM").attr("sta_modif",1);
+	totalizarItem(0);
+});
+
+$("#totalkilosM").blur(function(){
+	if($("#totalkilosM").attr("sta_modif") == 1){
+		totalizarItem(0);
+	}
+});
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Utilidades de cálculo de peso — Módulo de Producción
+ * Disponibles globalmente para cualquier JS del proyecto.
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * guardarValorPrev — memoriza el valor numérico del input al entrar (focus).
+ *
+ * Se llama con onfocus="guardarValorPrev(this)" en cualquier input que use
+ * los helpers calcularPeso / calcularCant. Permite detectar si el usuario
+ * realmente modificó el valor antes de ejecutar el recálculo en el blur,
+ * evitando cálculos innecesarios al navegar con Tab sin tocar el campo.
+ *
+ * Uso:  <input ... onfocus="guardarValorPrev(this)" onblur="calcularPeso(this)">
+ */
+function guardarValorPrev(input) {
+    // Guarda el valor numérico actual (atributo 'valor') como referencia
+    $(input).data('prev-valor', $(input).attr('valor'));
+}
+
+/**
+ * pesoUnitario — calcula el peso por unidad a partir de los parámetros del
+ * Acuerdo Técnico (AT) almacenados en atributos data-* del input #espesorprod{id}.
+ *
+ * Replica la lógica de pesounitat() definida en app/Helpers/biblioteca.php.
+ * Al ser JS puro no requiere ninguna llamada AJAX al backend.
+ *
+ * Convención de data-* esperados en el input #espesorprod{id}
+ * (se inyectan en createdRow del DataTable de cada módulo):
+ *   data-ancho       → acuerdotecnico.at_ancho
+ *   data-largo       → acuerdotecnico.at_largo
+ *   data-pe          → materiaprima.pe  (densidad del material)
+ *   data-formatofilm → acuerdotecnico.at_formatofilm
+ *   data-um-id       → acuerdotecnico.at_unidadmedida_id
+ *   data-doble       → 2 = bolsa (2 capas) | 1 = film (categoriaprod_id = 13)
+ *
+ * Fórmula principal:
+ *   peso_unit = ancho × largo × espesor × pe / 1000 × doble
+ *
+ * Casos especiales (mismo orden que el PHP):
+ *   1. at_formatofilm > 0       → devuelve at_formatofilm directamente
+ *   2. at_unidadmedida_id = 7  → peso unitario = 1 (UM especial)
+ *   3. espesor = 0              → devuelve 0 (sin espesor no hay fórmula)
+ *
+ * Nota: el backend fuerza at_peso = 0 antes de llamar pesounitat(), por eso
+ * aquí se omite ese campo y se aplica siempre la fórmula dimensional.
+ *
+ * @param  {string|number} id  — sufijo numérico del input (#espesorprod{id})
+ * @return {number}            — peso unitario calculado
+ */
+function pesoUnitario(id) {
+    var $esp        = $("#espesorprod" + id);
+    var espesor     = parseFloat($esp.attr('valor'))       || 0;
+    var formatofilm = parseFloat($esp.data('formatofilm')) || 0;
+    var umId        = parseInt($esp.data('um-id'))         || 0;
+    var ancho       = parseFloat($esp.data('ancho'))       || 0;
+    var largo       = parseFloat($esp.data('largo'))       || 0;
+    var pe          = parseFloat($esp.data('pe'))          || 0;
+    var doble       = parseInt($esp.data('doble'))         || 2;
+
+    if (formatofilm > 0) return formatofilm;   // caso: formato film fijo (sin fórmula)
+    if (umId === 7)      return 1;             // caso: UM especial, 1 kg por unidad
+    if (espesor === 0)   return 0;             // sin espesor no se puede calcular
+    return (ancho * largo * espesor * pe / 1000) * doble;
+}
+
+function updateRF(notaventadetalle_id, chkRF){
+	swal({
+		title: '¿ Seguro desea cambiar el estado de requiere fabricación ?',
+		//text: "Se eliminaran todos los item asociados a la guia: ",
+		icon: 'warning',
+		buttons: {
+			cancel: "Cancelar",
+			confirm: "Aceptar"
+		},
+	}).then((value) => {
+		if (value) {
+			//console.log('NVDet: ' + notaventadetalle_id, "checked: " + chkRF.checked);
+			var data = {
+				notaventadetalle_id: notaventadetalle_id,
+				rf : (chkRF.checked ? 1 : 0),
+				_token: $('input[name=_token]').val()
+			};
+			//respuesta= ajaxRequestGeneral(data,'/notaventa/updateRF', "ProcesarAlgo");
+			// ajaxRequestGeneral es async y no retorna la respuesta: se usa $.ajax directo
+			$.ajax({
+				url: '/notaventa/updateRF',
+				type: 'POST',
+				data: data,
+				success: function(respuesta) {
+					Biblioteca.notificaciones(respuesta.mensaje, 'Plastiservi', respuesta.tipo_alert);
+					if (respuesta.id == 0) {
+						// Si falló, revertir el checkbox al estado anterior
+						chkRF.checked = !chkRF.checked;
+					}
+				},
+				error: function() {
+					Biblioteca.notificaciones('Error de conexión.', 'Plastiservi', 'error');
+					chkRF.checked = !chkRF.checked;
+				}
+			});
+		}else{
+			chkRF.checked = !chkRF.checked;
+		}
+	});
+}
+
+// genpdfFACDin ya está definida arriba (línea 4727, funcionalmente idéntica) — se omite la duplicada que traía esta rama

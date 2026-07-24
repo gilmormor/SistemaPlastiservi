@@ -36,8 +36,7 @@
                 <option
                     value="{{$sucursal->id}}"
                     {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
-                    >{{$sucursal->nombre}}
-                </option>
+                    >{{$sucursal->nombre}}</option>
             @endforeach
         </select>
     </div>

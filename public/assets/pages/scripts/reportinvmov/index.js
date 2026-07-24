@@ -229,6 +229,13 @@ function consultarpage(data){
                         "</a>";
                     }
                     break;
+				case 9:
+                    if(data.idmovmod !== null){
+                        aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Registro de Produccion: " + data.idmovmod + "'>" +
+                            data.idmovmod +
+                        "</a>";
+                    }
+                    break;
                 default:
 					//aux_text = "Falta asignar PDF"
 			}

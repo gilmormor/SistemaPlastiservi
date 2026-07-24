@@ -27,7 +27,8 @@ class CategoriaProd extends Model
         'stakilos',
         'stadespsinstock',
         'omitiracutec',
-        'stakgguiadesp'
+        'stakgguiadesp',
+        'requiere_fabricacion'
     ];
 
     public function productos()

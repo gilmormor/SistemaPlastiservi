@@ -3530,7 +3530,7 @@ class Dte extends Model
                 "IDsNVPendDesp" => isset($arrayNVPend["IDsNVPendDesp"]) ? $arrayNVPend["IDsNVPendDesp"] : 0,
                 "TotalDteguiasPend" => isset($arrayNVPend["TotalDteguiasPend"]) ? $arrayNVPend["TotalDteguiasPend"] : 0,
                 "IDsDteguiasPend" => isset($arrayNVPend["IDsDteguiasPend"]) ? $arrayNVPend["IDsDteguiasPend"] : 0,
-            ];   
+            ];
             $aux_cont++;
         }
         //dd($ArrayFact);

@@ -45,6 +45,7 @@
     @yield("styles")
 
     <link rel="stylesheet" href="{{autoVer("assets/css/custom.css")}}">
+    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css"> --}}
     <!--
     <link rel="stylesheet" href="{{autoVer("assets/css/jspdf/pure-min.css")}}">
     <link rel="stylesheet" href="{{autoVer("assets/css/jspdf/grids-responsive-min.css")}}">
@@ -110,6 +111,9 @@
         <div id="loading-screen" style="display:none">
             <img src="{{asset("assets/$theme/dist/img/spinning-circles.svg")}}">
         </div>
+        {{-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script> --}}
+
         <!-- jQuery 3 -->
         <script src="{{asset("assets/$theme/bower_components/jquery/dist/jquery.min.js")}}"></script>
         <!-- jQuery UI - v1.12.1 - 2016-09-14 -->

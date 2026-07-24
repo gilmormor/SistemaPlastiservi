@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ValidarAreaProduccion;
 use App\Models\AreaProduccion;
+use App\Models\EtapaProd;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,36 @@ class AreaProduccionController extends Controller
         $datas = AreaProduccion::orderBy('id')->get();
         return view('areaproduccion.index', compact('datas'));
 
+    }
+
+    public function areaproduccionpage(){    
+        $sql = "SELECT areaproduccion.id,areaproduccion.nombre
+        from areaproduccion
+        where isnull(areaproduccion.deleted_at);";
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();
+    }
+    
+    public function areaproduccionsucetapaprodpage(Request $request){
+        //dd($request);
+        $aux_areaproduccion_idCond = " true ";
+        if(isset($request->areaproduccion_id) and $request->areaproduccion_id >= 0){
+            $aux_areaproduccion_idCond = "areaproduccion.id = $request->areaproduccion_id";
+        }
+        $sql = "SELECT areaproduccionsucetapaprod.id,etapaprod.nombre,
+            areaproduccionsucetapaprod.orden,
+            UNIX_TIMESTAMP(areaproduccionsucetapaprod.updated_at) as updatednum_at,
+            areaproduccionsucetapaprod.updated_at
+        from areaproduccion INNER JOIN areaproduccionsuc
+        ON areaproduccion.id = areaproduccionsuc.areaproduccion_id
+        INNER JOIN areaproduccionsucetapaprod
+        ON areaproduccionsuc.id = areaproduccionsucetapaprod.areaproduccionsuc_id
+        INNER JOIN etapaprod
+        ON areaproduccionsucetapaprod.etapaprod_id = etapaprod.id
+        where $aux_areaproduccion_idCond
+        AND isnull(areaproduccion.deleted_at);";
+        $datas = DB::select($sql);
+        return datatables($datas)->toJson();
     }
 
     /**

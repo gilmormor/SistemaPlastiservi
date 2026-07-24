@@ -118,7 +118,12 @@ $(document).ready(function () {
         });
     });
 
-    
+    if($("#requiere_fabricacion").val() == '1'){
+        $("#aux_requiere_fabricacion").prop("checked", true);
+    }else{
+        $("#aux_requiere_fabricacion").prop("checked", false);
+    }
+
 });
 
 function validarGlosa() {
@@ -538,4 +543,12 @@ $('#btn-agregar-detalle-insumo').click(function() {
     $('#tabla-detalles-insumos tbody').append(newRow);
     $(".numerico").numeric();
 
+});
+
+$("#aux_requiere_fabricacion").change(function() {
+    estaSeleccionado = $("#aux_requiere_fabricacion").is(":checked");
+    $("#requiere_fabricacion").val('0');
+    if(estaSeleccionado){
+        $("#requiere_fabricacion").val('1');
+    }
 });

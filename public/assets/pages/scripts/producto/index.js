@@ -42,6 +42,26 @@ $(document).ready(function () {
             $('td', row).eq(12).attr('data-search',data.precioneto);
             $('td', row).eq(12).attr('style','text-align:right');
             $('td', row).eq(12).html(MASKLA(data.precioneto,2));
+        },
+        initComplete: function () {
+            this.api()
+                .columns()
+                .every(function () {
+                    let column = this;
+                    let title = column.footer().textContent;
+
+                    // Create input element
+                    let input = document.createElement('input');
+                    input.placeholder = title;
+                    column.footer().replaceChildren(input);
+
+                    // Event listener for user input
+                    input.addEventListener('keyup', () => {
+                        if (column.search() !== this.value) {
+                            column.search(input.value).draw();
+                        }
+                    });
+                });
         }
       });
 

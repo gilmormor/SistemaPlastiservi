@@ -225,6 +225,26 @@
                                         $aux_staAT = true;
                                     }
                                     $aux_producto_nombre = $detalle->notaventadetalle->producto->glosa;
+
+                                    // CC (editar): validación por cadena completa de producción (BFS bidireccional centralizado)
+                                    $lotesAsigDetEdit = DB::select(
+                                        'SELECT dop.opdetregprod_id, dop.cant FROM despachosoldet_opdetregprod dop WHERE dop.despachosoldet_id = ?',
+                                        [$detalle->despachosoldet_id]
+                                    );
+                                    $ccLotesBloqueadosDetEdit  = [];
+                                    $totalCantBloqueadaDetEdit = 0;
+                                    foreach ($lotesAsigDetEdit as $la) {
+                                        $ccVal = \App\Models\CcValidacion::verificarCadenaDespacho($la->opdetregprod_id);
+                                        if ($ccVal['bloqueado']) {
+                                            $ccLotesBloqueadosDetEdit[] = [
+                                                'opdetregprod_id' => $la->opdetregprod_id,
+                                                'cant'            => $la->cant,
+                                                'ids_bloqueados'  => $ccVal['ids_bloqueados'],
+                                                'sin_muestra'     => $ccVal['sin_muestra'],
+                                            ];
+                                        }
+                                    }
+                                    $totalCantBloqueadaDetEdit = array_sum(array_column($ccLotesBloqueadosDetEdit, 'cant'));
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -335,6 +355,17 @@
                                                             if($invbodegaproducto->invbodega->tipo != 1 and $detalle->notaventadetalle->producto->categoriaprod->stadespsinstock == 1){
                                                                 $stadespsinstock=$detalle->notaventadetalle->producto->categoriaprod->stadespsinstock;
                                                             }
+                                                            // CC Fase 8 (editar): bloqueo en bodega picking de esta línea
+                                                            $aux_cc_bloq_cant_e  = 0;
+                                                            $aux_cc_bloq_lotes_e = [];
+                                                            if ($totalCantBloqueadaDetEdit > 0 && array_key_exists($invbodegaproducto->id . "-" . $detalle->id, $arrayBodegasPicking)) {
+                                                                $aux_cc_bloq_cant_e  = $totalCantBloqueadaDetEdit;
+                                                                $aux_cc_bloq_lotes_e = $ccLotesBloqueadosDetEdit;
+                                                            }
+                                                            $aux_stock_base_e   = ($aux_valueStock !== '') ? (int)$aux_valueStock : (int)$aux_stock;
+                                                            $aux_maxDesp_e      = ($aux_cc_bloq_cant_e > 0) ? max(0, $aux_stock_base_e - $aux_cc_bloq_cant_e) : (int)$aux_stock;
+                                                            $aux_stockvalorig_e = ($aux_cc_bloq_cant_e > 0) ? $aux_maxDesp_e : $aux_stock;
+                                                            $aux_cc_max_attr_e  = $aux_cc_bloq_cant_e > 0 ? 'data-cc-max="' . $aux_maxDesp_e . '"' : '';
                                                         ?>
                                                         @if (in_array($invbodegaproducto->invbodega_id,$array_bodegasmodulo) AND ($invbodegaproducto->invbodega->activo == 1)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QYE SON DE DESPACHO -->
                                                             <tr name="fbod{{$invbodegaproducto->id}}" id="fbod{{$invbodegaproducto->id}}">
@@ -370,7 +401,41 @@
                                                                         </a>
                                                                     -->
                                                                     @endif
-                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{($aux_cant)}}" title="Cant a despachar" nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
+                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{($aux_cant)}}" title='Cant a despachar (máx: {{$aux_stockvalorig_e}})' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stockvalorig_e}}" {!! $aux_cc_max_attr_e !!}/>
+                                                                    {{-- CC (editar): badge de cant bloqueada por lotes con CC rechazada o sin muestra (NR1) --}}
+                                                                    @foreach($aux_cc_bloq_lotes_e as $blInfo)
+                                                                        @if(!empty($blInfo['sin_muestra']))
+                                                                            <br><span class="label label-danger tooltipsC" style="font-size:9px;display:inline-block;margin-top:2px;white-space:normal;"
+                                                                                title="Lote #{{$blInfo['opdetregprod_id']}}: {{$blInfo['cant']}} un. bloqueadas — etapa requiere muestra CC y no tiene ninguna. Contacte a CC. Máx a despachar: {{$aux_stockvalorig_e}}.">
+                                                                                <i class="fa fa-ban"></i> L#{{$blInfo['opdetregprod_id']}}: -{{$blInfo['cant']}} sin muestra CC
+                                                                            </span>
+                                                                        @else
+                                                                            <br><span class="label label-danger tooltipsC" style="font-size:9px;display:inline-block;margin-top:2px;white-space:normal;"
+                                                                                title="Lote #{{$blInfo['opdetregprod_id']}}: {{$blInfo['cant']}} un. bloqueadas — muestra CC rechazada sin desbloquear. Máx a despachar: {{$aux_stockvalorig_e}}.">
+                                                                                <i class="fa fa-lock"></i> L#{{$blInfo['opdetregprod_id']}}: -{{$blInfo['cant']}} bl. <?php
+                                                                                    $mIds = array_map('trim', explode(',', $blInfo['ids_bloqueados']));
+                                                                                    $mLinks = [];
+                                                                                    foreach ($mIds as $mId) {
+                                                                                        $mLinks[] = '<a href="javascript:void(0);" onclick="genpdfCC(' . $mId . ')" class="tooltipsC" title="Ver PDF muestra #' . $mId . '" style="color:#fff;text-decoration:underline;cursor:pointer;font-weight:bold;">Mtra.#' . $mId . '</a>';
+                                                                                    }
+                                                                                    echo implode(', ', $mLinks);
+                                                                                ?>
+                                                                            </span>
+                                                                        @endif
+                                                                    @endforeach
+                                                                    {{-- Lotes de producción asignados (solo en bodega picking; vacío si el producto no requiere fabricación) --}}
+                                                                    @if(array_key_exists($invbodegaproducto->id . '-' . $detalle->id, $arrayBodegasPicking) && !empty($lotesAsigDetEdit))
+                                                                        <div style="margin-top:3px;">
+                                                                            @foreach($lotesAsigDetEdit as $loteAsig)
+                                                                                <a href="javascript:void(0)"
+                                                                                   onclick="verEtiquetaEtapaConPermiso({{$loteAsig->opdetregprod_id}}, 'ver-etiqueta-regprod')"
+                                                                                   title="Ver etiqueta — Lote de producción #{{$loteAsig->opdetregprod_id}}"
+                                                                                   style="color:#2980b9;font-weight:600;font-size:11px;display:inline-block;margin-top:1px;">
+                                                                                    <i class="fa fa-tag"></i> Lote-{{$loteAsig->opdetregprod_id}}
+                                                                                </a>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    @endif
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -425,7 +490,7 @@
                                     <td style="text-align:right;display:none;"> 
                                         <input type="text" name="totalkilos[]" id="totalkilos{{$aux_nfila}}" class="form-control" value="{{$totalkilosItem}}" style="display:none;"/>
                                     </td>
-                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}" style="display:none;"> 
+                                    <td name="tipounionTD{{$aux_nfila}}" id="tipounionTD{{$aux_nfila}}" style="display:none;">
                                         {{$detalle->notaventadetalle->producto->tipounion}}
                                     </td>
                                     <td style="text-align:right;display:none;"> 
@@ -478,9 +543,9 @@
                                         <input type="text" name="cantordTotal" id="cantordTotal" value={{$cantordTotal}} class="form-control" style="text-align:right;" readonly required/>
                                     </div>
                                 </td>
-                                <td colspan="2" style="text-align:right"><b>Total Kg</b></td>
+                                <td colspan="3" style="text-align:right"><b>Total Kg</b></td>
                                 <td id="totalkg" name="totalkg" style="text-align:right">0,00</td>
-                                <td colspan="2" style="text-align:right"><b>Neto</b></td>
+                                <td style="text-align:right"><b>Neto</b></td>
                                 <td id="tdneto" name="tdneto" style="text-align:right">0,00</td>
                             </tr>
                             <tr id="triva" name="triva">
@@ -500,3 +565,31 @@
 </div>
 
 @include('generales.modalpdf')
+
+{{-- Modal etiqueta de lote de producción (verEtiquetaEtapaConPermiso en general.js) --}}
+<div class="modal fade modal-etiqueta" id="modalEtiquetaEtapa" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width:440px;">
+        <div class="modal-content" style="border-radius:6px; overflow:hidden;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title" style="font-size:14px;">
+                    <i class="fa fa-tag"></i>&nbsp; Etiqueta de etapa &mdash; Reg. <span id="modalEtiquetaId"></span>
+                </h4>
+            </div>
+            <div class="modal-body" style="padding:0; height:340px;">
+                <iframe id="ifrEtiquetaEtapa" name="ifrEtiquetaEtapa" src="about:blank"
+                        style="width:100%; height:340px; border:none;"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-modals">
+                </iframe>
+            </div>
+            <div class="modal-footer" style="border-top:1px solid #e8edf3; padding:10px 16px;">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Cerrar
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="imprimirEtiquetaEtapa()">
+                    <i class="fa fa-print"></i> Imprimir etiqueta
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

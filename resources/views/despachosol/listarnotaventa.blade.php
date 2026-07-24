@@ -261,7 +261,7 @@ Notas de Venta
 				</div>
 			</div>
             <div class="table-responsive">
-                <table class="table display AllDataTables table-hover table-condensed" id="tabla-data-consulta" data-page-length="50">
+                <table class="table display AllDataTables table-hover table-condensed" id="tabla-data-consulta" data-page-length="25">
                     <thead>
                         <tr>
                             <th></th>
@@ -275,7 +275,8 @@ Notas de Venta
                             <th>Comuna</th>
                             <th style='text-align:right' class='tooltipsC' title='Kg Pendiente'>Kg Pend</th>
                             <th style='text-align:right' class='tooltipsC' title='$ Pendiente'>$ Pend</th>
-                            <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>            
+                            <th class='tooltipsC' title='Solicitud Despacho'>Despacho</th>
+                            <th class="ocultar">nvdetalle</th>
                         </tr>
                     </thead>
                     <tbody>

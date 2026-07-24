@@ -270,9 +270,11 @@ $(document).ready(function () {
 	});
 
 	fecha = charToDate($("#fechahora").val());
+	var dateToday = new Date(); 
 	$("#plazoentrega").datepicker({
 		language: "es",
 		autoclose: true,
+		minDate: dateToday,
         clearBtn : true,
 		startDate: fecha,
 		todayHighlight: true
@@ -452,22 +454,22 @@ function insertarTabla(){
 			'<td name="unidadmedida_nombreTD'+ aux_nfila + '" id="unidadmedida_nombreTD'+ aux_nfila + '">' +
 				$("#unidadmedida_idM option:selected").html() +
 			'</td>'+
-			'<td name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
+			'<td style="display:none;" name="cla_nombreTD'+ aux_nfila + '" id="cla_nombreTD'+ aux_nfila + '">'+ 
 				$("#cla_nombreM").val()+
 			'</td>'+
-			'<td name="diamextmmTD'+ aux_nfila + '" id="diamextmmTD'+ aux_nfila + '" style="text-align:right">'+ 
+			'<td name="diamextmmTD'+ aux_nfila + '" id="diamextmmTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 				$("#diamextmmM").val()+
 			'</td>'+
 			'<td style="display:none;">'+ 
 				'<input type="text" name="diamextmm[]" id="diamextmm'+ aux_nfila + '" class="form-control" value="'+ $("#diamextmmM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right">'+ 
+			'<td name="longTD'+ aux_nfila + '" id="longTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 				$("#largoM").attr('valor')+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="long[]" id="long'+ aux_nfila + '" class="form-control" value="'+ $("#largoM").attr('valor') +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right">'+ 
+			'<td name="espesorTD'+ aux_nfila + '" id="espesorTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 				MASKLA($("#espesor1M").attr('valor'),3)+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
@@ -481,7 +483,7 @@ function insertarTabla(){
 			'<td style="text-align:right;display:none;">'+ 
 				'<input type="text" name="peso[]" id="peso'+ aux_nfila + '" class="form-control" value="'+ $("#pesoM").val() +'" style="display:none;"/>'+
 			'</td>'+
-			'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '">'+ 
+			'<td name="tipounionTD'+ aux_nfila + '" id="tipounionTD'+ aux_nfila + '" style="text-align:right;display:none;">'+ 
 				$("#tipounionM").val()+
 			'</td>'+
 			'<td style="text-align:right;display:none;">'+ 
@@ -542,15 +544,15 @@ function insertarTabla(){
 
 		'</tr>'+
 		'<tr id="trneto" name="trneto">'+
-			'<td colspan="14" style="text-align:right"><b>Neto</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>Neto</b></td>'+
 			'<td id="tdneto" name="tdneto" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="triva" name="triva">'+
-			'<td colspan="14" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>IVA ' + $("#aux_iva").val() + '%</b></td>'+
 			'<td id="tdiva" name="tdiva" style="text-align:right">0.00</td>'+
 		'</tr>'+
 		'<tr id="trtotal" name="trtotal">'+
-			'<td colspan="14" style="text-align:right"><b>Total</b></td>'+
+			'<td colspan="9" style="text-align:right"><b>Total</b></td>'+
 			'<td id="tdtotal" name="tdtotal" style="text-align:right">0.00</td>'+
 		'</tr>';
 	

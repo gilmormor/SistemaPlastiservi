@@ -261,7 +261,7 @@ class DteGuiaDespController extends Controller
             //SI $request->tipoguiadesp = 20, GENERO DE FORMA AUTOMATICA LA GUIA DE TRASLADO, LUEGO SE GENERA LA GUIA DE VENTA
             //PASO EL VALOR DE 6 A LA FUNCION PARA IDENTIFICAR QUE VOY A GENERAR LA GUIA DE TRASLADO
             $respuesta = guardarDTE($request,6,$cont_producto);
-            if($respuesta["id"] != 1){
+            if(isset($respuesta["id"]) and $respuesta["id"] != 1){
                 return redirect('dteguiadesp/listarorddesp')->with([
                     'mensaje'=>$respuesta["mensaje"] ,
                     'tipo_alert' => 'alert-error'
@@ -271,7 +271,7 @@ class DteGuiaDespController extends Controller
             $aux_indtraslado = 1; 
         }
         $respuesta = guardarDTE($request,$aux_indtraslado,$cont_producto);
-        if($respuesta["id"] == 1){
+        if(isset($respuesta["id"]) and $respuesta["id"] == 1){
             $foliocontrol = Foliocontrol::findOrFail(2);
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             if($aux_foliosdisp <= $foliocontrol->folmindisp){

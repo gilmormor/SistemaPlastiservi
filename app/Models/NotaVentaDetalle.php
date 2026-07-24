@@ -39,6 +39,7 @@ class NotaVentaDetalle extends Model
         'claseprod_id',
         'grupoprod_id',
         'color_id',
+        'requiere_fabricacion',
         'obs',
         'usuariodel_id'
     ];
@@ -107,5 +108,14 @@ class NotaVentaDetalle extends Model
     {
         return $this->hasMany(DocInsumoDet::class, 'origendet_id', 'id')
             ->where('origentipo', 'NV');
+    }
+
+    //RELACION de uno a uno acuerdotecnicotemp
+    public function otdetnvdet()
+    {
+        return $this->hasOne(OtDetNVDet::class,"notaventadetalle_id")
+                    ->whereHas('otdet.ot', function ($query) {
+                        $query->whereDoesntHave('otanul');
+                    });
     }
 }

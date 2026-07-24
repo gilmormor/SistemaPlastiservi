@@ -81,7 +81,7 @@
 			</thead>
 			<tbody id="detalle_productos">
 				@foreach($notaventaDetalles as $notaventaDetalle)
-					<?php 
+					<?php
 						/* $aux_ancho = $notaventaDetalle->producto->diametro;
 						$aux_largo = $notaventaDetalle->producto->long . "Mts";
 						$aux_espesor = ""; //number_format($notaventaDetalle->producto->espesor, 3, ',', '.');

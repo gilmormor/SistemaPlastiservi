@@ -63,6 +63,7 @@
 		<table id="factura_detalle">
 				<thead>
 					<tr>
+						<th width="30px">Cod</th>
 						<th width="20px">Cant.</th>
 						<th width="20px" class="textcenter">UN</th>
 						<th class="textleft" width="190px">Descripción</th>
@@ -116,6 +117,7 @@
 							$aux_producto_nombre = $notaventaDetalle->producto->atribNomProd($notaventaDetalle->producto_id,$notaventaDetalle->cotizaciondetalle_id);
 						?>
 						<tr class="headt" style="height:150%;">
+							<td class="textcenter">{{$notaventaDetalle->producto_id}}</td>
 							<td class="textcenter">{{number_format($notaventaDetalle->cant, 0, ",", ".")}}</td>
 							<td class="textcenter">{{$notaventaDetalle->unidadmedida->nombre}}</td>
 							<td class="textleft">{{$aux_producto_nombre}}</td>
