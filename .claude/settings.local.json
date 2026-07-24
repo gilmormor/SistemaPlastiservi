@@ -191,7 +191,25 @@
       "Bash(\"C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe\" \"C:\\\\Users\\\\SISPLA~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--laragon-www-plastiservi\\\\315d6bfc-b75e-4fd8-8a75-168ce57124c2\\\\scratchpad\\\\check149.php\")",
       "Bash(C:/laragon/bin/php/php-7.4.33-Win32-VC15-x64/php.exe C:\\\\Users\\\\SISPLA~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--laragon-www-plastiservi\\\\315d6bfc-b75e-4fd8-8a75-168ce57124c2\\\\scratchpad\\\\check149b.php)",
       "Bash(mysql -u root plxrevisarcierregd -e ' *)",
-      "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE 'despachosoldet%';\")"
+      "Bash(mysql -u root plxrevisarcierregd -e \"SHOW TABLES LIKE 'despachosoldet%';\")",
+      "Bash(mysql -u root biblioteca -e \"SHOW TABLES LIKE 'apsuc%';\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE areaproduccionsucetapaprod;\")",
+      "Bash(rm -f \"C:/laragon/www/plastiservi/storage/framework/views/\"*.php)",
+      "Bash(echo \"Cache de vistas borrada: $?\")",
+      "Bash(mysql -u root biblioteca -e \"DESCRIBE opdetregprod_origen;\")",
+      "Bash(mysql -u root biblioteca -e \"SELECT MAX\\(id\\) as max_id FROM permisos;\")",
+      "Bash(mysql -u root -e \"SELECT MAX\\(id\\) as max_id FROM biblioteca.permisos;\")",
+      "Bash(mysql --user=root --password=\"\" biblioteca -e \"SELECT MAX\\(id\\) as max_id FROM permisos;\")",
+      "PowerShell(& \"C:\\\\laragon\\\\bin\\\\mysql\\\\mysql-8.0.30-winx64\\\\bin\\\\mysql.exe\" -u root biblioteca -e \"SELECT MAX\\(id\\) as max_id FROM permisos; SELECT id, nombre FROM permisos WHERE id >= 565 ORDER BY id;\" 2>&1)",
+      "Bash(\"C:/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -u root biblioteca -e \"SELECT MAX\\(id\\) as max_id FROM permisos; SELECT id, nombre FROM permisos WHERE id >= 565 ORDER BY id;\")",
+      "Bash(\"C:/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -u root biblioteca -e \"SHOW TABLES LIKE 'permis%';\")",
+      "Bash(\"C:/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -u root biblioteca -e \"SELECT MAX\\(id\\) FROM permiso; SELECT id, nombre FROM permiso WHERE id >= 565 ORDER BY id;\")",
+      "Bash(\"C:/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -u root biblioteca -e \"SELECT DISTINCT rol_id FROM permiso_rol WHERE permiso_id IN \\(567, 568\\) ORDER BY rol_id;\")",
+      "Bash(C:/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe -u root biblioteca -e ' *)",
+      "Bash(\"C:/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -u root biblioteca -e \"SHOW TABLES LIKE '%etapa%';\")",
+      "Bash(rm -f \"C:/laragon/www/plastiservi/storage/framework/views/\"*.php 2>/dev/null && echo \"Cache borrada\")",
+      "Bash(rm -f \"C:/laragon/www/plastiservi/storage/framework/views/\"*.php 2>/dev/null && echo \"OK\")",
+      "Bash(\"C:/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -u root biblioteca -e \"DESCRIBE producto;\")"
     ]
   }
 }

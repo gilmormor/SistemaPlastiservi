@@ -82,7 +82,7 @@ Reporte Muestras CC
                             </div>
                         </div>
 
-                        {{-- Fila 3: RUT cliente + Producto --}}
+                        {{-- Fila 3: RUT cliente + Producto + Lote --}}
                         <div class="col-xs-12 col-md-12" style="margin-top:8px;">
                             <div class="col-xs-12 col-md-4">
                                 <label>RUT cliente:</label>
@@ -102,6 +102,10 @@ Reporte Muestras CC
                                         <button class="btn btn-default" type="button" id="btnbuscarproducto" name="btnbuscarproducto">Buscar</button>
                                     </span>
                                 </div>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <label>Lote / Registro prod. (ID):</label>
+                                <input type="text" name="opdetregprod_id" id="opdetregprod_id" class="form-control" placeholder="Ej: 126" maxlength="10">
                             </div>
                         </div>
 

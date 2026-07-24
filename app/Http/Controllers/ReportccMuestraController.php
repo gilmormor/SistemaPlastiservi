@@ -142,6 +142,10 @@ class ReportccMuestraController extends Controller
             $codprods = implode(',', array_map('intval', explode(',', $request->producto_idPxP)));
             $where[]  = "odrp.producto_id IN ($codprods)";
         }
+        if ($request->opdetregprod_id) {
+            $where[]  = "ccm.opdetregprod_id = ?";
+            $params[] = (int)$request->opdetregprod_id;
+        }
         // Filtro anulado: 1=solo anulados, 0=solo no anulados, vacío=todos
         if ($request->anulado === '1') {
             $where[] = "anul.id IS NOT NULL";

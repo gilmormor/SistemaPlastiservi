@@ -242,6 +242,11 @@ $(document).ready(function () {
         $(this).val($(this).val().replace(/[^0-9,]/g, ''));
     });
 
+    // Lote — solo dígitos
+    $('#opdetregprod_id').on('input', function () {
+        $(this).val($(this).val().replace(/[^0-9]/g, ''));
+    });
+
     // Validación RUT: solo números y K
     $('#rut1').on('input', function () {
         var rut = $(this).val().replace(/[^0-9kK]/g, '');
@@ -272,18 +277,19 @@ $(document).ready(function () {
     function datosFiltros() {
         // Enviar RUT sin guion para que el servidor compare contra ambos formatos
         var rutVal = $('#rut1').val().trim().replace('-', '');
-        return '?fecha_desde='   + encodeURIComponent($('#fecha_desde').val())
-             + '&fecha_hasta='   + encodeURIComponent($('#fecha_hasta').val())
-             + '&sucursal_id='   + $('#sucursal_id').val()
-             + '&etapaprod_id='  + $('#etapaprod_id').val()
-             + '&operario_id='   + $('#operario_id').val()
-             + '&maquina_id='    + $('#maquina_id').val()
+        return '?fecha_desde='      + encodeURIComponent($('#fecha_desde').val())
+             + '&fecha_hasta='      + encodeURIComponent($('#fecha_hasta').val())
+             + '&sucursal_id='      + $('#sucursal_id').val()
+             + '&etapaprod_id='     + $('#etapaprod_id').val()
+             + '&operario_id='      + $('#operario_id').val()
+             + '&maquina_id='       + $('#maquina_id').val()
              + '&cliente_rut='      + encodeURIComponent(rutVal)
-             + '&producto_idPxP='  + encodeURIComponent($('#producto_idPxP').val())
-             + '&status='          + $('#status').val()
-             + '&sta_env='       + $('#sta_env').val()
-             + '&anulado='       + $('#anulado').val()
-             + '&desbloqueado='  + $('#desbloqueado').val();
+             + '&producto_idPxP='   + encodeURIComponent($('#producto_idPxP').val())
+             + '&status='           + $('#status').val()
+             + '&sta_env='          + $('#sta_env').val()
+             + '&anulado='          + $('#anulado').val()
+             + '&desbloqueado='     + $('#desbloqueado').val()
+             + '&opdetregprod_id='  + $('#opdetregprod_id').val();
     }
 
     function totalizarindex(qs) {

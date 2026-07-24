@@ -79,6 +79,7 @@ class CcRegistMuestraController extends Controller
             LEFT  JOIN notaventa   nv       ON nv.id = otnv.notaventa_id AND nv.deleted_at IS NULL
             LEFT  JOIN acuerdotecnico at    ON at.producto_id = odrp.producto_id
             LEFT  JOIN ccregistmuestraanul       anul        ON anul.ccregistmuestra_id = ccm.id
+                                                           AND  anul.deleted_at IS NULL
             LEFT  JOIN usuario                   usuarioanul ON usuarioanul.id = anul.usuario_id
             LEFT  JOIN ccregistmuestra_desbloqueo desb        ON desb.ccregistmuestra_id = ccm.id
             LEFT  JOIN usuario                   usuariodesb ON usuariodesb.id = desb.usuario_id

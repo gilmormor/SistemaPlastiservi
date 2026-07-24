@@ -227,39 +227,25 @@
                                     $atributoProd = $detalle->notaventadetalle->producto->atributosProducto($detalle->notaventadetalle->producto_id,$detalle->notaventadetalle->cotizaciondetalle_id);
                 					$aux_producto_nombre = $atributoProd["nombre"];
 
-                                    // CC Fase 8 (editar): calcular lotes bloqueados (muestra rechazada sin desbloqueo) para esta línea de SD
+                                    // CC (editar): validación por cadena completa de producción (BFS bidireccional centralizado)
                                     $lotesAsigDetEdit = DB::select(
                                         'SELECT dop.opdetregprod_id, dop.cant FROM despachosoldet_opdetregprod dop WHERE dop.despachosoldet_id = ?',
                                         [$detalle->despachosoldet_id]
                                     );
-                                    $ccLotesBloqueadosDetEdit = [];
+                                    $ccLotesBloqueadosDetEdit  = [];
                                     $totalCantBloqueadaDetEdit = 0;
-                                    if (!empty($lotesAsigDetEdit)) {
-                                        $loteIds = implode(',', array_column((array)$lotesAsigDetEdit, 'opdetregprod_id'));
-                                        $ccInfoEdit = DB::select("
-                                            SELECT cc.opdetregprod_id,
-                                                   COUNT(cc.id) AS rechazados_bloqueados,
-                                                   GROUP_CONCAT(cc.id ORDER BY cc.id) AS ids_bloqueados
-                                            FROM ccregistmuestra cc
-                                            WHERE cc.opdetregprod_id IN ($loteIds)
-                                              AND cc.status = 3
-                                              AND cc.id NOT IN (SELECT ccregistmuestra_id FROM ccregistmuestraanul)
-                                              AND cc.deleted_at IS NULL
-                                            GROUP BY cc.opdetregprod_id
-                                        ");
-                                        $ccInfoEditIdx = [];
-                                        foreach ($ccInfoEdit as $row) { $ccInfoEditIdx[$row->opdetregprod_id] = $row; }
-                                        foreach ($lotesAsigDetEdit as $la) {
-                                            if (isset($ccInfoEditIdx[$la->opdetregprod_id]) && $ccInfoEditIdx[$la->opdetregprod_id]->rechazados_bloqueados > 0) {
-                                                $ccLotesBloqueadosDetEdit[] = [
-                                                    'opdetregprod_id' => $la->opdetregprod_id,
-                                                    'cant'            => $la->cant,
-                                                    'ids_bloqueados'  => $ccInfoEditIdx[$la->opdetregprod_id]->ids_bloqueados,
-                                                ];
-                                            }
+                                    foreach ($lotesAsigDetEdit as $la) {
+                                        $ccVal = \App\Models\CcValidacion::verificarCadenaDespacho($la->opdetregprod_id);
+                                        if ($ccVal['bloqueado']) {
+                                            $ccLotesBloqueadosDetEdit[] = [
+                                                'opdetregprod_id' => $la->opdetregprod_id,
+                                                'cant'            => $la->cant,
+                                                'ids_bloqueados'  => $ccVal['ids_bloqueados'],
+                                                'sin_muestra'     => $ccVal['sin_muestra'],
+                                            ];
                                         }
-                                        $totalCantBloqueadaDetEdit = array_sum(array_column($ccLotesBloqueadosDetEdit, 'cant'));
                                     }
+                                    $totalCantBloqueadaDetEdit = array_sum(array_column($ccLotesBloqueadosDetEdit, 'cant'));
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}">
                                     <td style="display:none;" name="NVdet_idTD{{$aux_nfila}}" id="NVdet_idTD{{$aux_nfila}}">
@@ -414,19 +400,26 @@
                                                                     -->
                                                                     @endif
                                                                     <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{($aux_cant)}}" title='Cant a despachar (máx: {{$aux_stockvalorig_e}})' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stockvalorig_e}}" {!! $aux_cc_max_attr_e !!}/>
-                                                                    {{-- CC Fase 8 (editar): badge de cant bloqueada por lotes CC rechazados --}}
+                                                                    {{-- CC (editar): badge de cant bloqueada por lotes con CC rechazada o sin muestra (NR1) --}}
                                                                     @foreach($aux_cc_bloq_lotes_e as $blInfo)
-                                                                        <br><span class="label label-danger tooltipsC" style="font-size:9px;display:inline-block;margin-top:2px;white-space:normal;"
-                                                                            title="Lote #{{$blInfo['opdetregprod_id']}}: {{$blInfo['cant']}} un. bloqueadas — muestra CC rechazada sin desbloquear. Máx a despachar: {{$aux_stockvalorig_e}}.">
-                                                                            <i class="fa fa-lock"></i> L#{{$blInfo['opdetregprod_id']}}: -{{$blInfo['cant']}} bl. <?php
-                                                                                $mIds = array_map('trim', explode(',', $blInfo['ids_bloqueados']));
-                                                                                $mLinks = [];
-                                                                                foreach ($mIds as $mId) {
-                                                                                    $mLinks[] = '<a href="javascript:void(0);" onclick="genpdfCC(' . $mId . ')" class="tooltipsC" title="Ver PDF muestra #' . $mId . '" style="color:#fff;text-decoration:underline;cursor:pointer;font-weight:bold;">Mtra.#' . $mId . '</a>';
-                                                                                }
-                                                                                echo implode(', ', $mLinks);
-                                                                            ?>
-                                                                        </span>
+                                                                        @if(!empty($blInfo['sin_muestra']))
+                                                                            <br><span class="label label-danger tooltipsC" style="font-size:9px;display:inline-block;margin-top:2px;white-space:normal;"
+                                                                                title="Lote #{{$blInfo['opdetregprod_id']}}: {{$blInfo['cant']}} un. bloqueadas — etapa requiere muestra CC y no tiene ninguna. Contacte a CC. Máx a despachar: {{$aux_stockvalorig_e}}.">
+                                                                                <i class="fa fa-ban"></i> L#{{$blInfo['opdetregprod_id']}}: -{{$blInfo['cant']}} sin muestra CC
+                                                                            </span>
+                                                                        @else
+                                                                            <br><span class="label label-danger tooltipsC" style="font-size:9px;display:inline-block;margin-top:2px;white-space:normal;"
+                                                                                title="Lote #{{$blInfo['opdetregprod_id']}}: {{$blInfo['cant']}} un. bloqueadas — muestra CC rechazada sin desbloquear. Máx a despachar: {{$aux_stockvalorig_e}}.">
+                                                                                <i class="fa fa-lock"></i> L#{{$blInfo['opdetregprod_id']}}: -{{$blInfo['cant']}} bl. <?php
+                                                                                    $mIds = array_map('trim', explode(',', $blInfo['ids_bloqueados']));
+                                                                                    $mLinks = [];
+                                                                                    foreach ($mIds as $mId) {
+                                                                                        $mLinks[] = '<a href="javascript:void(0);" onclick="genpdfCC(' . $mId . ')" class="tooltipsC" title="Ver PDF muestra #' . $mId . '" style="color:#fff;text-decoration:underline;cursor:pointer;font-weight:bold;">Mtra.#' . $mId . '</a>';
+                                                                                    }
+                                                                                    echo implode(', ', $mLinks);
+                                                                                ?>
+                                                                            </span>
+                                                                        @endif
                                                                     @endforeach
                                                                     {{-- Lotes de producción asignados (solo en bodega picking; vacío si el producto no requiere fabricación) --}}
                                                                     @if(array_key_exists($invbodegaproducto->id . '-' . $detalle->id, $arrayBodegasPicking) && !empty($lotesAsigDetEdit))

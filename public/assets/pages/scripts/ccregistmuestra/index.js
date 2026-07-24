@@ -153,6 +153,11 @@ $(document).ready(function () {
         }
     });
 
+    // Auto-refresh cada 90 s: permite ver muestras rechazadas por el supervisor sin recargar manualmente
+    setInterval(function () {
+        tabla.ajax.reload(null, false);
+    }, 90000);
+
     // Aprobar via AJAX con SweetAlert (estándar del sistema)
     $(document).on('click', '.btn-aprobar', function () {
         var id         = $(this).data('id');

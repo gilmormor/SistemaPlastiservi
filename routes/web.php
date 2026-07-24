@@ -1796,6 +1796,11 @@ Route::get('reportcoberturacc/page',           'ReportCoberturaccController@page
 Route::get('reportcoberturacc/exportPdf',      'ReportCoberturaccController@exportPdf')->name('reportcoberturacc_exportPdf');
 Route::get('reportcoberturacc/totalizarindex', 'ReportCoberturaccController@totalizarindex')->name('reportcoberturacc_totalizarindex');
 
+/*RUTAS REPORTE CC POR LOTE*/
+Route::get('reportcclote',           'ReportCcLoteController@index')->name('reportcclote');
+Route::get('reportcclote/consultar', 'ReportCcLoteController@consultar')->name('reportcclote_consultar');
+Route::get('reportcclote/exportPdf', 'ReportCcLoteController@exportPdf')->name('reportcclote_exportPdf');
+
 Route::post('etapaprodcampo',                           'EtapaProdCampoController@guardar')->name('etapaprodcampo_guardar');
 Route::put('etapaprodcampo/{id}',                       'EtapaProdCampoController@actualizar')->name('etapaprodcampo_actualizar');
 Route::delete('etapaprodcampo/{id}',                    'EtapaProdCampoController@eliminar')->name('etapaprodcampo_eliminar');
