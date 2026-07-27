@@ -14,6 +14,7 @@ class CreateTableFormadeteccionnc extends Migration
     public function up()
     {
         Schema::create('formadeteccionnc', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('descripcion',250)->comment('Descripción forma de deteccion No conformidad.');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro.')->nullable();

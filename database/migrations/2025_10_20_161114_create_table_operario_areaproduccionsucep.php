@@ -20,6 +20,7 @@ class CreateTableOperarioAreaproduccionsucep extends Migration
             $table->unsignedBigInteger('areaproduccionsucep_id');
             $table->foreign('areaproduccionsucep_id','fk_operario_areaproduccionsucep_areaproduccionsucep')->references('id')->on('areaproduccionsucetapaprod')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
+            $table->engine = 'InnoDB';
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_spanish_ci';
         });

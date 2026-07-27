@@ -14,6 +14,7 @@ class CreateTableMotivonc extends Migration
     public function up()
     {
         Schema::create('motivonc', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->string('descripcion',100)->comment('Descripción Motivo No conformidad');
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();

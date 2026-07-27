@@ -14,6 +14,7 @@ class CreateTableRechazoresmedtom extends Migration
     public function up()
     {
         Schema::create('rechazoresmedtom', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->dateTime('fecha')->comment('Fecha y hora rechazo.');
             $table->string('descripcion',250)->comment('Descripcion del rechazo.');

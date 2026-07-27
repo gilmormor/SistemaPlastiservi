@@ -21,6 +21,7 @@ class CreateTableAtfirmeli extends Migration
             $table->unsignedBigInteger('usuario_id')->comment('Usuario que hizo el cambio');
             $table->foreign('usuario_id','fk_atfirmeli_usuario')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
+            $table->engine = 'InnoDB';
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_spanish_ci';
         });

@@ -14,6 +14,7 @@ class CreateTableNoconformidad extends Migration
     public function up()
     {
         Schema::create('noconformidad', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->dateTime('fechahora')->comment('Fecha creacion.')->nullable();
             $table->unsignedBigInteger('usuario_id')->comment('Usuario quien creo el registro.');

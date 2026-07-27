@@ -20,6 +20,7 @@ class CreateTableEmailxlotePersona extends Migration
             $table->unsignedBigInteger('persona_id')->nullable();
             $table->foreign('persona_id','fk_emailxlote_persona_persona')->references('id')->on('persona')->onDelete('restrict')->onUpdate('restrict');
             $table->timestamps();
+            $table->engine = 'InnoDB';
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_spanish_ci';
         });

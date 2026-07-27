@@ -14,6 +14,7 @@ class CreateTableRechazonc extends Migration
     public function up()
     {
         Schema::create('rechazonc', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->dateTime('fecha')->comment('Fecha y hora rechazo.');
             $table->string('accioninmediata',250)->comment('Observación Accion inmediata No Conformidad.');

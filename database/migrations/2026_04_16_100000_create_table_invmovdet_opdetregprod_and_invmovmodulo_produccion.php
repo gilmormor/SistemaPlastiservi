@@ -40,6 +40,7 @@ class CreateTableInvmovdetOpdetregprodAndInvmovmoduloProduccion extends Migratio
             // No FK hacia opdetregprod porque esa tabla puede no existir aún
             // en todas las bases de datos del proyecto.
             $table->index('opdetregprod_id');
+            $table->engine = 'InnoDB';
         });
     }
 

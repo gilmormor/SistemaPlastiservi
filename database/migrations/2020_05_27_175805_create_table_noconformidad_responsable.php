@@ -14,6 +14,7 @@ class CreateTableNoconformidadResponsable extends Migration
     public function up()
     {
         Schema::create('noconformidad_responsable', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->bigIncrements('id');
             $table->unsignedBigInteger('noconformidad_id');
             $table->foreign('noconformidad_id','fk_noconformidad_responsable_noconformidad')->references('id')->on('noconformidad')->onDelete('restrict')->onUpdate('restrict');
