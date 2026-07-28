@@ -49,9 +49,12 @@ Productos
                         <tfoot>
                             <tr>
                                 <th class="width30">ID</th>
-                                <th>Nombre</th>
+                                <th>SKU</th>
+                                <th>Glosa</th>
                                 <th>Categoria</th>
                                 <th>Grupo</th>
+                                <th>Grupo Cat. Prom.</th>
+                                <th>Clase</th>
                                 <th>Diametro</th>
                                 <th>Espesor mm</th>
                                 <th>Largo</th>

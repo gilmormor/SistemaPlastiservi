@@ -2837,8 +2837,6 @@ function consulta($request,$aux_sql,$orden){
         ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
         LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
         ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
-        LEFT JOIN vista_sumsoldespdet
-        ON vista_sumsoldespdet.notaventadetalle_id=notaventadetalle.id
         LEFT JOIN otnotaventa
         ON otnotaventa.notaventa_id = notaventa.id and otnotaventa.ot_id not in (SELECT otanul.ot_id from otanul WHERE ISNULL(otanul.deleted_at))
         LEFT JOIN ot
