@@ -33,8 +33,8 @@ class CreateTableOtdet extends Migration
             $table->boolean('requiere_fabricacion')->comment('Status para identificar si el producto requiere fabricacion previa, 1=producto se fabrica contra pedido 0=producto no se envia a proceso de fabricacion.')->default(0);
             $table->string('obs',100)->comment('Observacion')->nullable();
             $table->boolean('sta_envprog')->comment('Estatus enviado a programacion de produccion.')->default(0);
-            $table->dateTime('envprogfecha')->comment('Fecha de envio a programacion');
-            $table->unsignedBigInteger('envprogusu_id')->comment('Usuario que envio a programacion');
+            $table->dateTime('envprogfecha')->comment('Fecha de envio a programacion')->nullable();
+            $table->unsignedBigInteger('envprogusu_id')->comment('Usuario que envio a programacion')->nullable();
             $table->foreign('envprogusu_id','fk_otdet_envprogusu')->references('id')->on('usuario')->onDelete('restrict')->onUpdate('restrict');
 
             $table->unsignedBigInteger('usuariodel_id')->comment('ID Usuario que elimino el registro')->nullable();
