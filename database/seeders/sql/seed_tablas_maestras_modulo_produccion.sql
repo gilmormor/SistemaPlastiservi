@@ -19,19 +19,16 @@
 -- Dumping data for table `maquinagrupo`
 --
 
-LOCK TABLES `maquinagrupo` WRITE;
 /*!40000 ALTER TABLE `maquinagrupo` DISABLE KEYS */;
 INSERT INTO `maquinagrupo` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (1,'Extrusora','Extrusora',1,NULL,'2025-03-20 18:32:09','2025-03-20 18:32:09',NULL);
 INSERT INTO `maquinagrupo` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (2,'Impresora','Impresora',1,NULL,'2025-03-20 18:32:22','2025-03-20 18:32:22',NULL);
 INSERT INTO `maquinagrupo` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (3,'Selladora','Selladora',1,NULL,'2025-03-20 18:32:32','2025-03-20 18:33:31',NULL);
 /*!40000 ALTER TABLE `maquinagrupo` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `etapaprod`
 --
 
-LOCK TABLES `etapaprod` WRITE;
 /*!40000 ALTER TABLE `etapaprod` DISABLE KEYS */;
 INSERT INTO `etapaprod` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (1,'Materias primas','Programacion',1,NULL,NULL,'2025-06-11 14:50:44','2026-05-28 13:19:25');
 INSERT INTO `etapaprod` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (2,'Mezclado','Mezclas',1,NULL,NULL,'2025-06-11 14:50:56','2025-06-11 14:50:56');
@@ -43,24 +40,20 @@ INSERT INTO `etapaprod` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, 
 INSERT INTO `etapaprod` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (9,'Rebobinado','Rebobinado',1,NULL,NULL,'2026-05-28 13:22:18','2026-05-28 13:22:18');
 INSERT INTO `etapaprod` (`id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (10,'Etiquetado','Etiquetado',1,NULL,NULL,'2026-05-28 19:24:21','2026-05-28 19:24:21');
 /*!40000 ALTER TABLE `etapaprod` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `atributo`
 --
 
-LOCK TABLES `atributo` WRITE;
 /*!40000 ALTER TABLE `atributo` DISABLE KEYS */;
 INSERT INTO `atributo` (`id`, `nombre`, `desc`, `tipodato`, `longitud`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (1,'Ancho','Ancho',1,'10',1,NULL,'2025-03-20 20:45:04','2025-03-20 20:45:04',NULL);
 INSERT INTO `atributo` (`id`, `nombre`, `desc`, `tipodato`, `longitud`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (2,'Largo','Largo',2,'10,2',1,NULL,'2025-03-21 12:29:32','2025-03-21 12:29:32',NULL);
 /*!40000 ALTER TABLE `atributo` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `operario`
 --
 
-LOCK TABLES `operario` WRITE;
 /*!40000 ALTER TABLE `operario` DISABLE KEYS */;
 INSERT INTO `operario` (`id`, `nombre`, `desc`, `usuario_id`, `activo`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (1,'Pato','Pato',1,0,NULL,NULL,'2025-04-02 20:32:59','2025-10-23 17:46:49');
 INSERT INTO `operario` (`id`, `nombre`, `desc`, `usuario_id`, `activo`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (2,'Fernando','Fernando',1,1,NULL,NULL,'2025-04-02 20:53:37','2025-04-02 20:53:37');
@@ -72,22 +65,18 @@ INSERT INTO `operario` (`id`, `nombre`, `desc`, `usuario_id`, `activo`, `usuario
 INSERT INTO `operario` (`id`, `nombre`, `desc`, `usuario_id`, `activo`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (8,'Sellado','Sellado',1,1,NULL,NULL,'2025-11-03 20:01:31','2025-11-03 20:01:31');
 INSERT INTO `operario` (`id`, `nombre`, `desc`, `usuario_id`, `activo`, `usuariodel_id`, `deleted_at`, `created_at`, `updated_at`) VALUES (9,'Juan Perez','Juan Perez',1,1,NULL,NULL,'2026-04-23 16:20:02','2026-04-23 16:20:02');
 /*!40000 ALTER TABLE `operario` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `bin`
 --
 
-LOCK TABLES `bin` WRITE;
 /*!40000 ALTER TABLE `bin` DISABLE KEYS */;
 /*!40000 ALTER TABLE `bin` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `maquina`
 --
 
-LOCK TABLES `maquina` WRITE;
 /*!40000 ALTER TABLE `maquina` DISABLE KEYS */;
 INSERT INTO `maquina` (`id`, `sucursal_id`, `maquinagrupo_id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (1,1,1,'E01','E01',1,NULL,'2025-03-20 19:32:48','2025-06-23 13:08:51',NULL);
 INSERT INTO `maquina` (`id`, `sucursal_id`, `maquinagrupo_id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (2,1,1,'E02','E02',1,NULL,'2025-03-20 20:05:42','2025-03-20 20:05:42',NULL);
@@ -108,13 +97,11 @@ INSERT INTO `maquina` (`id`, `sucursal_id`, `maquinagrupo_id`, `nombre`, `desc`,
 INSERT INTO `maquina` (`id`, `sucursal_id`, `maquinagrupo_id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (17,1,3,'S04','S04',1,NULL,'2025-03-21 18:34:32','2025-03-21 18:34:32',NULL);
 INSERT INTO `maquina` (`id`, `sucursal_id`, `maquinagrupo_id`, `nombre`, `desc`, `usuario_id`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (18,1,1,'E12','E12',1,NULL,'2025-06-23 14:15:34','2025-06-23 14:15:34',NULL);
 /*!40000 ALTER TABLE `maquina` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `maquinaetapaprod`
 --
 
-LOCK TABLES `maquinaetapaprod` WRITE;
 /*!40000 ALTER TABLE `maquinaetapaprod` DISABLE KEYS */;
 INSERT INTO `maquinaetapaprod` (`id`, `maquina_id`, `etapaprod_id`, `created_at`, `updated_at`) VALUES (4,5,3,'2025-06-23 14:12:10','2025-06-23 14:12:10');
 INSERT INTO `maquinaetapaprod` (`id`, `maquina_id`, `etapaprod_id`, `created_at`, `updated_at`) VALUES (5,6,3,'2025-06-23 14:12:21','2025-06-23 14:12:21');
@@ -135,22 +122,18 @@ INSERT INTO `maquinaetapaprod` (`id`, `maquina_id`, `etapaprod_id`, `created_at`
 INSERT INTO `maquinaetapaprod` (`id`, `maquina_id`, `etapaprod_id`, `created_at`, `updated_at`) VALUES (29,2,3,'2025-09-23 15:49:34','2025-09-23 15:49:34');
 INSERT INTO `maquinaetapaprod` (`id`, `maquina_id`, `etapaprod_id`, `created_at`, `updated_at`) VALUES (30,3,3,'2025-09-23 15:49:44','2025-09-23 15:49:44');
 /*!40000 ALTER TABLE `maquinaetapaprod` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `maquinaatributo`
 --
 
-LOCK TABLES `maquinaatributo` WRITE;
 /*!40000 ALTER TABLE `maquinaatributo` DISABLE KEYS */;
 /*!40000 ALTER TABLE `maquinaatributo` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `areaproduccionsucetapaprod`
 --
 
-LOCK TABLES `areaproduccionsucetapaprod` WRITE;
 /*!40000 ALTER TABLE `areaproduccionsucetapaprod` DISABLE KEYS */;
 INSERT INTO `areaproduccionsucetapaprod` (`id`, `areaproduccionsuc_id`, `etapaprod_id`, `unidadmedida_id`, `requiere_kg`, `requiere_cc`, `usa_matprima`, `orden`, `created_at`, `updated_at`) VALUES (1,1,1,NULL,1,0,0,1,'2025-10-01 18:13:01','2025-10-01 18:13:23');
 INSERT INTO `areaproduccionsucetapaprod` (`id`, `areaproduccionsuc_id`, `etapaprod_id`, `unidadmedida_id`, `requiere_kg`, `requiere_cc`, `usa_matprima`, `orden`, `created_at`, `updated_at`) VALUES (2,1,2,NULL,1,0,0,2,'2025-10-01 18:13:01','2025-10-01 18:13:26');
@@ -170,13 +153,11 @@ INSERT INTO `areaproduccionsucetapaprod` (`id`, `areaproduccionsuc_id`, `etapapr
 INSERT INTO `areaproduccionsucetapaprod` (`id`, `areaproduccionsuc_id`, `etapaprod_id`, `unidadmedida_id`, `requiere_kg`, `requiere_cc`, `usa_matprima`, `orden`, `created_at`, `updated_at`) VALUES (16,4,9,10,1,0,0,3.1,'2026-05-28 19:15:14','2026-05-28 19:23:22');
 INSERT INTO `areaproduccionsucetapaprod` (`id`, `areaproduccionsuc_id`, `etapaprod_id`, `unidadmedida_id`, `requiere_kg`, `requiere_cc`, `usa_matprima`, `orden`, `created_at`, `updated_at`) VALUES (17,4,10,9,1,0,0,5.5,'2026-05-28 19:24:44','2026-05-28 19:46:09');
 /*!40000 ALTER TABLE `areaproduccionsucetapaprod` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `operario_areaproduccionsucep`
 --
 
-LOCK TABLES `operario_areaproduccionsucep` WRITE;
 /*!40000 ALTER TABLE `operario_areaproduccionsucep` DISABLE KEYS */;
 INSERT INTO `operario_areaproduccionsucep` (`id`, `operario_id`, `areaproduccionsucep_id`, `created_at`, `updated_at`) VALUES (2,4,6,'2025-10-20 20:42:47','2025-10-20 20:42:47');
 INSERT INTO `operario_areaproduccionsucep` (`id`, `operario_id`, `areaproduccionsucep_id`, `created_at`, `updated_at`) VALUES (5,5,7,'2025-10-22 19:26:19','2025-10-22 19:26:19');
@@ -190,13 +171,11 @@ INSERT INTO `operario_areaproduccionsucep` (`id`, `operario_id`, `areaproduccion
 INSERT INTO `operario_areaproduccionsucep` (`id`, `operario_id`, `areaproduccionsucep_id`, `created_at`, `updated_at`) VALUES (13,2,16,'2026-06-05 13:31:11','2026-06-05 13:31:11');
 INSERT INTO `operario_areaproduccionsucep` (`id`, `operario_id`, `areaproduccionsucep_id`, `created_at`, `updated_at`) VALUES (14,2,17,'2026-06-05 14:58:12','2026-06-05 14:58:12');
 /*!40000 ALTER TABLE `operario_areaproduccionsucep` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `personaetapaprod`
 --
 
-LOCK TABLES `personaetapaprod` WRITE;
 /*!40000 ALTER TABLE `personaetapaprod` DISABLE KEYS */;
 INSERT INTO `personaetapaprod` (`id`, `persona_id`, `areaproduccionsucetapaprod_id`, `created_at`, `updated_at`) VALUES (5,25,6,'2025-10-03 14:57:10','2025-10-03 14:57:10');
 INSERT INTO `personaetapaprod` (`id`, `persona_id`, `areaproduccionsucetapaprod_id`, `created_at`, `updated_at`) VALUES (6,25,7,'2025-10-03 14:57:10','2025-10-03 14:57:10');
@@ -225,13 +204,11 @@ INSERT INTO `personaetapaprod` (`id`, `persona_id`, `areaproduccionsucetapaprod_
 INSERT INTO `personaetapaprod` (`id`, `persona_id`, `areaproduccionsucetapaprod_id`, `created_at`, `updated_at`) VALUES (34,21,16,'2026-06-02 20:51:44','2026-06-02 20:51:44');
 INSERT INTO `personaetapaprod` (`id`, `persona_id`, `areaproduccionsucetapaprod_id`, `created_at`, `updated_at`) VALUES (35,21,17,'2026-06-02 20:51:44','2026-06-02 20:51:44');
 /*!40000 ALTER TABLE `personaetapaprod` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `etapaprod_campo`
 --
 
-LOCK TABLES `etapaprod_campo` WRITE;
 /*!40000 ALTER TABLE `etapaprod_campo` DISABLE KEYS */;
 INSERT INTO `etapaprod_campo` (`id`, `apsucetapaprod_id`, `nombre`, `etiqueta`, `tipo`, `formula`, `unidad`, `decimales`, `requerido`, `orden`, `mapea_campo`, `created_at`, `updated_at`, `deleted_at`) VALUES (1,10,'peso_neto_pallet','Peso Neto Pallet','number',NULL,'kg',2,1,1,NULL,'2026-06-03 17:37:36','2026-06-03 17:37:36',NULL);
 INSERT INTO `etapaprod_campo` (`id`, `apsucetapaprod_id`, `nombre`, `etiqueta`, `tipo`, `formula`, `unidad`, `decimales`, `requerido`, `orden`, `mapea_campo`, `created_at`, `updated_at`, `deleted_at`) VALUES (2,10,'peso_scrap','Peso Scrap','number',NULL,'kg',2,0,2,NULL,'2026-06-03 17:37:36','2026-06-03 17:37:36',NULL);
@@ -246,13 +223,11 @@ INSERT INTO `etapaprod_campo` (`id`, `apsucetapaprod_id`, `nombre`, `etiqueta`, 
 INSERT INTO `etapaprod_campo` (`id`, `apsucetapaprod_id`, `nombre`, `etiqueta`, `tipo`, `formula`, `unidad`, `decimales`, `requerido`, `orden`, `mapea_campo`, `created_at`, `updated_at`, `deleted_at`) VALUES (11,7,'olor','Olor','text',NULL,'olor',2,1,1,NULL,'2026-07-02 18:05:56','2026-07-02 18:05:56',NULL);
 INSERT INTO `etapaprod_campo` (`id`, `apsucetapaprod_id`, `nombre`, `etiqueta`, `tipo`, `formula`, `unidad`, `decimales`, `requerido`, `orden`, `mapea_campo`, `created_at`, `updated_at`, `deleted_at`) VALUES (12,7,'color','Color','text',NULL,'color',2,1,2,NULL,'2026-07-02 18:06:24','2026-07-02 18:06:24',NULL);
 /*!40000 ALTER TABLE `etapaprod_campo` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `ccparam`
 --
 
-LOCK TABLES `ccparam` WRITE;
 /*!40000 ALTER TABLE `ccparam` DISABLE KEYS */;
 INSERT INTO `ccparam` (`id`, `nombre`, `etiqueta`, `tipo`, `unidad`, `decimales`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (1,'Espesor','Espesor','number','Unidad',2,1,NULL,'2026-06-16 15:05:54','2026-06-16 15:05:54',NULL);
 INSERT INTO `ccparam` (`id`, `nombre`, `etiqueta`, `tipo`, `unidad`, `decimales`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (2,'espesor','Espesor','number','µm',2,1,NULL,'2026-06-16 15:21:21','2026-06-16 16:28:56',NULL);
@@ -261,13 +236,11 @@ INSERT INTO `ccparam` (`id`, `nombre`, `etiqueta`, `tipo`, `unidad`, `decimales`
 INSERT INTO `ccparam` (`id`, `nombre`, `etiqueta`, `tipo`, `unidad`, `decimales`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (5,'resistencia','resistencia','number','Res',2,0,NULL,'2026-06-16 16:28:13','2026-06-16 16:28:13',NULL);
 INSERT INTO `ccparam` (`id`, `nombre`, `etiqueta`, `tipo`, `unidad`, `decimales`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (6,'color','Color','text',NULL,2,5,NULL,'2026-06-18 16:29:14','2026-06-18 16:29:14',NULL);
 /*!40000 ALTER TABLE `ccparam` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `ccparam_apsucetapaprod`
 --
 
-LOCK TABLES `ccparam_apsucetapaprod` WRITE;
 /*!40000 ALTER TABLE `ccparam_apsucetapaprod` DISABLE KEYS */;
 INSERT INTO `ccparam_apsucetapaprod` (`id`, `apsucetapaprod_id`, `ccparam_id`, `valor_min`, `valor_max`, `requerido`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (1,11,2,50.0000,150.0000,1,1,NULL,'2026-06-16 15:24:03','2026-06-16 15:24:03',NULL);
 INSERT INTO `ccparam_apsucetapaprod` (`id`, `apsucetapaprod_id`, `ccparam_id`, `valor_min`, `valor_max`, `requerido`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (2,10,1,1.0000,60.0000,1,1,NULL,'2026-06-16 15:36:01','2026-06-16 15:36:01',NULL);
@@ -286,13 +259,11 @@ INSERT INTO `ccparam_apsucetapaprod` (`id`, `apsucetapaprod_id`, `ccparam_id`, `
 INSERT INTO `ccparam_apsucetapaprod` (`id`, `apsucetapaprod_id`, `ccparam_id`, `valor_min`, `valor_max`, `requerido`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (15,17,4,50.0000,600.0000,1,0,NULL,'2026-07-13 13:20:11','2026-07-13 13:20:11',NULL);
 INSERT INTO `ccparam_apsucetapaprod` (`id`, `apsucetapaprod_id`, `ccparam_id`, `valor_min`, `valor_max`, `requerido`, `orden`, `usuariodel_id`, `created_at`, `updated_at`, `deleted_at`) VALUES (16,9,6,1.0000,100.0000,1,2,NULL,'2026-07-15 22:01:44','2026-07-15 22:01:44',NULL);
 /*!40000 ALTER TABLE `ccparam_apsucetapaprod` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping data for table `apsucetapaprod_bodega`
 --
 
-LOCK TABLES `apsucetapaprod_bodega` WRITE;
 /*!40000 ALTER TABLE `apsucetapaprod_bodega` DISABLE KEYS */;
 INSERT INTO `apsucetapaprod_bodega` (`id`, `apsucetapaprod_id`, `invbodega_id`, `created_at`, `updated_at`) VALUES (1,6,24,'2026-06-24 16:31:11','2026-06-24 16:31:11');
 INSERT INTO `apsucetapaprod_bodega` (`id`, `apsucetapaprod_id`, `invbodega_id`, `created_at`, `updated_at`) VALUES (2,7,25,'2026-06-24 16:31:23','2026-06-24 16:31:23');
@@ -306,7 +277,6 @@ INSERT INTO `apsucetapaprod_bodega` (`id`, `apsucetapaprod_id`, `invbodega_id`, 
 INSERT INTO `apsucetapaprod_bodega` (`id`, `apsucetapaprod_id`, `invbodega_id`, `created_at`, `updated_at`) VALUES (11,7,30,'2026-06-25 20:48:31','2026-06-25 20:48:31');
 INSERT INTO `apsucetapaprod_bodega` (`id`, `apsucetapaprod_id`, `invbodega_id`, `created_at`, `updated_at`) VALUES (12,6,29,'2026-06-26 00:49:30','2026-06-26 00:49:30');
 /*!40000 ALTER TABLE `apsucetapaprod_bodega` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -317,4 +287,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-27 13:55:23
+-- Dump completed on 2026-07-28 11:24:10
