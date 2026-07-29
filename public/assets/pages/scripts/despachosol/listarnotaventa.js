@@ -194,10 +194,10 @@ $(document).ready(function () {
                         </button>
                     </a>`;
             } */
-            if((data.ot_aprobstatus == null) || (data.ot_aprobstatus == 1)){
+            if((data.ot_aprobstatus == null) || (data.ot_aprobstatus == 2)){
                 data_icono = data.icono;
                 aux_titlehacersoldesp = `Hacer solicitud despacho: ${data.tipentnombre}`;
-                if(data.ot_aprobstatus == 1){
+                if(data.ot_aprobstatus == 2){
                     data_icono = 'fa-cog text-aqua';
                     aux_titlehacersoldesp += `. OT Nro. ${data.ot_id} aprobada`;
                 }
