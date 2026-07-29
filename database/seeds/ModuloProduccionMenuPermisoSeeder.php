@@ -218,9 +218,10 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
     }
 
     /**
-     * Vincula al rol Administrador todos los permisos y menús del Módulo Producción
-     * que ya insertó seedPermisos()/seedMenus(), solo los que en biblioteca (origen)
-     * ya estaban vinculados a Administrador.
+     * Vincula al rol Administrador los permisos y menús del Módulo Producción que en
+     * biblioteca (origen) ya estaban vinculados a Administrador. Incluye tanto los que
+     * insertó seedPermisos()/seedMenus() como algunos que ya existían en destino con
+     * otro id (creados por una migración anterior sin vincularlos a ningún rol).
      */
     private function vincularAdministrador()
     {
@@ -250,6 +251,11 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             'eliminar-ccparam-apsucetapaprod', 'ver-pdf-muestra-cc', 'ver-etiqueta-regprod',
             'supervisar-ccregistmuestra', 'listar-cc-muestra-desbloqueo', 'guardar-cc-muestra-desbloqueo',
             'listar-reporte-cc-muestra', 'reporte-cc-lote',
+            // Estos ya existían en producción con un id distinto al de biblioteca
+            // (creados por una migración anterior que solo insertaba el permiso,
+            // sin vincularlo a ningún rol). Detectado 2026-07-29 al probar en producción.
+            'listar-ccregistmuestra', 'crear-ccregistmuestra', 'ver-ccregistmuestra',
+            'liberar-ccregistmuestra', 'anular-ccregistmuestra', 'reporte-cobertura-cc',
         ];
 
         foreach ($slugsPermisos as $slug) {
