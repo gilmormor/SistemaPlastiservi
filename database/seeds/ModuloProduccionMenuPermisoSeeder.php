@@ -133,6 +133,15 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             ['Guardar CC Desbloqueo Muestras', 'guardar-cc-muestra-desbloqueo'],
             ['Listar Reporte CC Muestra', 'listar-reporte-cc-muestra'],
             ['Reporte CC por Lote', 'reporte-cc-lote'],
+            // Estos ya existían en el ambiente de referencia usado para generar este
+            // seeder (con id distinto al de biblioteca), pero en otros ambientes
+            // (ej. "marchablanca") no existen para nada. Se agregan aquí también
+            // para que se creen si faltan, no solo para vincularlos a Administrador.
+            ['Listar Muestras CC', 'listar-ccregistmuestra'],
+            ['Crear Muestra CC', 'crear-ccregistmuestra'],
+            ['Ver Muestra CC', 'ver-ccregistmuestra'],
+            ['Liberar Muestra CC', 'liberar-ccregistmuestra'],
+            ['Anular Muestra CC', 'anular-ccregistmuestra'],
         ];
 
         foreach ($permisos as [$nombre, $slug]) {
