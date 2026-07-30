@@ -727,7 +727,20 @@ class DespachoSol extends Model
                 IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
                 modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
                 clientedesbloqueadomodulo_orddesp.modulo_id as modulo_id_orddesp,
-                IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs
+                IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
+                GROUP_CONCAT(
+                    CONCAT_WS('|',
+                        IFNULL(notaventadetalle.producto_id,0),
+                        IFNULL(despachosoldet.cantsoldesp,0),
+                        IFNULL(notaventadetalle.preciounit,0),
+                        IFNULL(despachosoldet.cantsoldesp * notaventadetalle.preciounit,0),
+                        IFNULL((SELECT SUM(cantdesp) FROM vista_sumorddespdet WHERE despachosoldet_id=despachosoldet.id),0),
+                        IFNULL(producto.glosa,''),
+                        IFNULL(notaventadetalle.requiere_fabricacion,0),
+                        IFNULL(acuerdotecnico.id,0)
+                    )
+                    SEPARATOR ';'
+                ) AS nvdetalle
                 FROM despachosol INNER JOIN despachosoldet
                 ON despachosol.id=despachosoldet.despachosol_id
                 AND $aux_condactivas
@@ -772,6 +785,8 @@ class DespachoSol extends Model
                 ON clientedesbloqueado_orddesp.cliente_id = notaventa.cliente_id and clientedesbloqueado_orddesp.notaventa_id = notaventa.id and not isnull(clientedesbloqueado_orddesp.notaventa_id) and isnull(clientedesbloqueado_orddesp.deleted_at)
                 LEFT JOIN clientedesbloqueadomodulo as clientedesbloqueadomodulo_orddesp
                 ON clientedesbloqueadomodulo_orddesp.clientedesbloqueado_id = clientedesbloqueado_orddesp.id and clientedesbloqueadomodulo_orddesp.modulo_id = 7
+                LEFT JOIN acuerdotecnico
+                ON acuerdotecnico.producto_id = notaventadetalle.producto_id
     
                 WHERE $vendedorcond
                 and $aux_condFecha
