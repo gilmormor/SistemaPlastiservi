@@ -172,7 +172,7 @@ $statusLabel = [
 
 <div style="text-align:right;margin-top:4px;">
     <a href="javascript:void(0);"
-       onclick="verPdfCcLote('/reportcclote/exportPdf?opdetregprod_id={{$loteId}}')"
+       onclick="verPdfCcLote('/reportcclote/exportPdf?opdetregprod_id={{$loteId}}', 'modalCcLote')"
        class="btn btn-danger btn-xs tooltipsC" title="Exportar PDF">
         <i class="fa fa-file-pdf-o"></i> PDF
     </a>

@@ -1173,6 +1173,19 @@ function verDetalleCCLote(loteId) {
         }
     });
 }
+
+// Muestra el PDF de reportcclote en el modal global myModalpdf, ocultando el
+// modal de detalle CC (modalCcLote) y restaurándolo al cerrar el PDF (mismo
+// patrón que genpdfOD/genpdfSD en general.js).
+function verPdfCcLote(url, aux_venmodant = "modalCcLote") {
+    $("#venmodant").val("");
+    if (aux_venmodant != "") {
+        $("#" + aux_venmodant).modal('hide');
+        $("#venmodant").val(aux_venmodant);
+    }
+    $('#contpdf').attr('src', url);
+    $("#myModalpdf").modal('show');
+}
 </script>
 
 {{-- Modal etiqueta de etapa (Reg. Prod.) — usado desde el label de rechazo CC --}}

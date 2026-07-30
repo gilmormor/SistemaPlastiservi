@@ -6,7 +6,13 @@ Reporte CC por Lote
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script>
     // Abre el PDF en modal; limpia el iframe al cerrar para liberar memoria
-    function verPdfCcLote(url) {
+    // aux_venmodant: id de un modal anterior a ocultar (usado cuando este partial
+    // se embebe dentro de otra pantalla, ej. despachosol/form.blade.php). En esta
+    // página no aplica (no hay modal anterior), se ignora si no existe.
+    function verPdfCcLote(url, aux_venmodant) {
+        if (aux_venmodant && $('#' + aux_venmodant).length) {
+            $('#' + aux_venmodant).modal('hide');
+        }
         $('#iframePdfCcLote').attr('src', url);
         $('#modalPdfCcLote').modal('show');
     }
