@@ -293,8 +293,6 @@ $(document).ready(function () {
 
     //configurarTabla('.tablas');
 
-    configurarTabla("#tabla-data-pendientesoldesp","",false)
-
     // Add event listener for opening and closing details
     table.on('click', 'td.dt-control', function (e) {
         let tr = e.target.closest('tr');
