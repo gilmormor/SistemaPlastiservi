@@ -1626,8 +1626,11 @@ function genpdfCC(id, aux_venmodant, aux_slug) { // GENERAR PDF Muestra Control 
 }
 
 // Ver etiqueta de etapa de producción (Reg. Prod.) en modal, con validación de permiso
-function verEtiquetaEtapaConPermiso(opdetregprod_id, aux_slug) {
+// aux_venmodant: id de un modal anterior a ocultar mientras se ve la etiqueta (se
+// restaura automáticamente al cerrar). Se ignora si no se pasa o si ese modal no existe.
+function verEtiquetaEtapaConPermiso(opdetregprod_id, aux_slug, aux_venmodant) {
     aux_slug = aux_slug || "ver-etiqueta-regprod";
+    aux_venmodant = aux_venmodant || "";
     var csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name=_token]').first().val();
     $.ajax({
         url:  '/generales_valpermiso',
@@ -1635,6 +1638,11 @@ function verEtiquetaEtapaConPermiso(opdetregprod_id, aux_slug) {
         data: { slug: aux_slug, _token: csrf },
         success: function (respuesta) {
             if (respuesta.resp) {
+                $("#venmodant").val("");
+                if (aux_venmodant !== "" && $("#" + aux_venmodant).length) {
+                    $("#" + aux_venmodant).modal('hide');
+                    $("#venmodant").val(aux_venmodant);
+                }
                 $('#modalEtiquetaId').text('#' + opdetregprod_id);
                 $('#ifrEtiquetaEtapa').attr('src', '/opdetregprodtempaprobsup/etiqueta-etapa/' + opdetregprod_id);
                 $('#modalEtiquetaEtapa').modal('show');
@@ -1661,9 +1669,15 @@ if (typeof imprimirEtiquetaEtapa === 'undefined') {
     }
 }
 
-// Limpiar iframe al cerrar el modal de etiqueta (handler global, no inline)
+// Al cerrar el modal de etiqueta: limpiar el iframe y restaurar el modal anterior
+// (si verEtiquetaEtapaConPermiso guardó uno en #venmodant al abrirlo).
 $(document).on('hidden.bs.modal', '#modalEtiquetaEtapa', function () {
     $('#ifrEtiquetaEtapa').attr('src', 'about:blank');
+    var aux_venmodant = $("#venmodant").val();
+    if (aux_venmodant != "") {
+        $("#venmodant").val("");
+        $("#" + aux_venmodant).modal('show');
+    }
 });
 
 function genpdfGD(id,nombre,aux_venmodant = "",aux_slug = "ver-pdf-guia-despacho"){ //GENERAR PDF Guia Despacho

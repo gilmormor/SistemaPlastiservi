@@ -86,7 +86,7 @@ $statusLabel = [
                 </td>
                 @endif
                 <td>
-                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow['id']}},'ver-etiqueta-regprod')"
+                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRow['id']}},'ver-etiqueta-regprod','modalCcLote')"
                        style="color:#2980b9;font-weight:600;" title="Ver etiqueta lote #{{$loteRow['id']}}">
                         <i class="fa fa-tag"></i> #{{$loteRow['id']}}
                     </a>
