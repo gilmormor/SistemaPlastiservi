@@ -19,6 +19,11 @@ Inventario Control
         <div class="box box-danger">
             <div class="box-header with-border">
                 <h3 class="box-title">Cierre y apertura de Inventario Mensual</h3>
+                <div class="box-tools pull-right">
+                    <a href="javascript:void(0);" onclick="verManualInvControl()" class="btn btn-default btn-sm tooltipsC" title="Ver manual de ayuda de este proceso">
+                        <i class="fa fa-question-circle"></i> Ayuda
+                    </a>
+                </div>
             </div>
             <div class="box-body">
                 <div class="row">
@@ -86,4 +91,13 @@ Inventario Control
         </div>
     </div>
 </div>
+
+@include('generales.modalpdf')
+<script>
+// Muestra el manual de ayuda (PDF) de este proceso en el modal global de PDF.
+function verManualInvControl() {
+    $('#contpdf').attr('src', '{{asset("manuales/manual_invcontrol.pdf")}}');
+    $('#myModalpdf').modal('show');
+}
+</script>
 @endsection
