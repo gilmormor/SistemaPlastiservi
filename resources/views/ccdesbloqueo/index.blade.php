@@ -192,17 +192,5 @@ CC — Desbloqueo de Muestras
 </div>
 
 {{-- Modal etiqueta de registro de producción --}}
-<div class="modal fade" id="modalEtiquetaEtapa" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><i class="fa fa-tag"></i> Etiqueta Registro de Producción</h4>
-            </div>
-            <div class="modal-body" style="padding:0;">
-                <iframe id="ifrEtiquetaEtapa" src="" style="width:100%;height:600px;border:none;"></iframe>
-            </div>
-        </div>
-    </div>
-</div>
+@include('generales.modaletiquetaetapa')
 @endsection
