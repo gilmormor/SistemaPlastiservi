@@ -5129,6 +5129,11 @@ function llenarPantallaProductoNew(respuesta){
 	}
 	aux_peso = respuesta['peso'];
 	aux_peso = aux_peso.toFixed(3);
+	// Si el producto tiene acuerdo técnico, el peso unitario real es el del acuerdo (at_peso),
+	// no el peso genérico del producto.
+	if(respuesta.acuerdotecnico != null && respuesta.acuerdotecnico.at_peso > 0){
+		aux_peso = respuesta.acuerdotecnico.at_peso;
+	}
 	$("#pesoM").val(aux_peso);
 	$("#pesoM").attr('valorini',aux_peso);
 	$("#tipounionM").val(respuesta['tipounion']);
