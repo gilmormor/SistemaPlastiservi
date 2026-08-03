@@ -1386,6 +1386,12 @@ function editarRegistro(i,aux_acuerdotecnicoId = 0){
 				}
 				aux_peso = respuesta['peso'];
 				aux_peso = aux_peso.toFixed(3);
+				// Si tiene acuerdo técnico, valorini debe reflejar el at_peso realmente
+				// mostrado en pesoM (arriba), no producto.peso — si no, totalizarItem()
+				// restaura pesoM desde valorini y lo deja en 0 al perder foco precioM/precionetoM.
+				if(respuesta.acuerdotecnico != null && respuesta.acuerdotecnico.at_peso > 0){
+					aux_peso = respuesta.acuerdotecnico.at_peso;
+				}
 				$("#pesoM").attr('valorini',aux_peso);
 				var acuerdotecnico = JSON.parse($("#acuerdotecnico" + i).val());
 				//console.log(acuerdotecnico);
