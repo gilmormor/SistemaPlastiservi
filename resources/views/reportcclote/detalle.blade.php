@@ -37,6 +37,7 @@ $statusLabel = [
             <th style="width:50px;text-align:center;">Req. CC</th>
             <th style="width:80px;">Lote</th>
             <th style="width:70px;text-align:right;">Kg</th>
+            <th style="width:80px;text-align:right;">U/S</th>
             <th>Operario / Máquina</th>
             <th style="width:60px;text-align:center;">N° Muestra</th>
             <th style="width:140px;text-align:center;">Status muestra</th>
@@ -59,7 +60,7 @@ $statusLabel = [
                         <span class="label label-default" style="font-size:10px;">No</span>
                     @endif
                 </td>
-                <td colspan="5" style="color:#999;font-style:italic;">
+                <td colspan="6" style="color:#999;font-style:italic;">
                     <i class="fa fa-clock-o"></i> Sin registro de producción — etapa no procesada aún
                 </td>
                 <td style="text-align:center;">
@@ -96,7 +97,10 @@ $statusLabel = [
                 </td>
                 <td style="text-align:right;">
                     {{number_format($loteRow['kgprod'] ?? 0, 2, ',', '.')}}
-                    <small style="color:#888;">{{$loteRow['unidadmedida'] ?? 'kg'}}</small>
+                </td>
+                <td style="text-align:right;">
+                    {{number_format($loteRow['cantprod'] ?? 0, 2, ',', '.')}}
+                    <small style="color:#888;">{{$loteRow['unidadmedida'] ?? '—'}}</small>
                 </td>
                 <td>
                     <span style="color:#555;">{{$loteRow['operario'] ?? '—'}}</span>

@@ -56,6 +56,7 @@ $statusLabel = [
             <th style="width:35px;text-align:center;">Req.CC</th>
             <th style="width:50px;">Lote</th>
             <th style="width:55px;text-align:right;">Kg</th>
+            <th style="width:65px;text-align:right;">U/S</th>
             <th>Operario / Máquina</th>
             <th>Muestras CC</th>
             <th style="width:80px;text-align:center;">Estado CC</th>
@@ -72,7 +73,7 @@ $statusLabel = [
                         {{$fila['requiere_cc'] ? 'Sí' : 'No'}}
                     </span>
                 </td>
-                <td colspan="4" style="color:#999;font-style:italic;">Sin registro de producción — no procesada aún</td>
+                <td colspan="5" style="color:#999;font-style:italic;">Sin registro de producción — no procesada aún</td>
                 <td style="text-align:center;"><span class="lbl lbl-default">No iniciada</span></td>
             </tr>
         @else
@@ -93,7 +94,10 @@ $statusLabel = [
                 </td>
                 <td style="text-align:right;">
                     {{number_format($loteRow['kgprod'] ?? 0, 2, ',', '.')}}
-                    <small>{{$loteRow['unidadmedida'] ?? 'kg'}}</small>
+                </td>
+                <td style="text-align:right;">
+                    {{number_format($loteRow['cantprod'] ?? 0, 2, ',', '.')}}
+                    <small>{{$loteRow['unidadmedida'] ?? '—'}}</small>
                 </td>
                 <td>
                     {{$loteRow['operario'] ?? '—'}}
