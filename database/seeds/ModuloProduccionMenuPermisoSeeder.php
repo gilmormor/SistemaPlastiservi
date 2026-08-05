@@ -28,6 +28,7 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             $this->seedPermisos();
             $this->seedMenus();
             $this->vincularAdministrador();
+            $this->eliminarMenusObsoletos();
         });
 
         $this->command->info('Módulo Producción: permisos, menús y vínculos con Administrador poblados correctamente.');
@@ -196,6 +197,7 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             ['Persona Etapa Produccion', 'personaetapaprod', 4, 'fa-user'],
             ['Aprobar Registro Produccion', 'opdetregprodtempaprobsup', 14, 'fa-thumbs-o-up'],
             ['Trazabilidad OP', 'op/seguimiento', 15, 'fa-share-alt'],
+            ['Consulta Lote', 'reportcclote', 18, 'fa fa-search'],
         ];
         foreach ($nivel2 as [$nombre, $url, $orden, $icono]) {
             $this->insertarSiNoExisteMenu($idProduccion, $nombre, $url, $orden, $icono);
@@ -212,11 +214,9 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
         $this->insertarSiNoExisteMenu($idMaquinas, 'Atributos', 'atributo', 3, 'fa-stack-overflow');
 
         // Nivel 3: hijos de Registro de Produccion
+        // Nota: 'Mezclado','Extrusion.','Impresion','Sellado' (set/2..set/5) se eliminaron
+        // (ver eliminarMenusObsoletos) por estar mal configurados; solo se deja 'Mezclas'.
         $this->insertarSiNoExisteMenu($idRegProd, 'Mezclas', 'opdetregprodtemp/set/1', 1, 'fa-magic');
-        $this->insertarSiNoExisteMenu($idRegProd, 'Mezclado', 'opdetregprodtemp/set/2', 2, 'fa-retweet');
-        $this->insertarSiNoExisteMenu($idRegProd, 'Extrusion.', 'opdetregprodtemp/set/3', 3, 'fa-opera');
-        $this->insertarSiNoExisteMenu($idRegProd, 'Impresion', 'opdetregprodtemp/set/4', 4, 'fa-print');
-        $this->insertarSiNoExisteMenu($idRegProd, 'Sellado', 'opdetregprodtemp/set/5', 5, 'fa-flickr');
 
         // Nivel 3: hijos de Control de Calidad
         $this->insertarSiNoExisteMenu($idCC, '🔬 Reg Muestra', 'ccregistmuestra', 1, 'fa fa-flask');
@@ -315,15 +315,12 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             ['Maquina', 'maquina'],
             ['Atributos', 'atributo'],
             ['Mezclas', 'opdetregprodtemp/set/1'],
-            ['Mezclado', 'opdetregprodtemp/set/2'],
-            ['Extrusion.', 'opdetregprodtemp/set/3'],
-            ['Impresion', 'opdetregprodtemp/set/4'],
-            ['Sellado', 'opdetregprodtemp/set/5'],
             ['🔬 Reg Muestra', 'ccregistmuestra'],
             ['Supervisar Muestra CC', 'ccmuestrasuper'],
             ['Desbloquear CC Muestra', 'ccdesbloqueo'],
             ['CC Muestra', 'reportccmuestra'],
             ['Cobertura CC', 'reportcoberturacc'],
+            ['Consulta Lote', 'reportcclote'],
         ];
 
         foreach ($menusNuevos as [$nombre, $url]) {
@@ -344,5 +341,30 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    /**
+     * Elimina menús mal configurados que no deben existir en ningún ambiente:
+     * 'Mezclado','Extrusion.','Impresion','Sellado' bajo 'Registro de Produccion'
+     * (opdetregprodtemp/set/2..5). Detectado 2026-08-05, se decidió eliminarlos
+     * tanto en desarrollo como al poblar producción. Idempotente: no falla si ya
+     * no existen (por ejemplo, si ya se eliminaron manualmente en desarrollo).
+     */
+    private function eliminarMenusObsoletos()
+    {
+        $urlsObsoletas = [
+            'opdetregprodtemp/set/2',
+            'opdetregprodtemp/set/3',
+            'opdetregprodtemp/set/4',
+            'opdetregprodtemp/set/5',
+        ];
+
+        $idsMenu = DB::table('menu')->whereIn('url', $urlsObsoletas)->pluck('id');
+        if ($idsMenu->isEmpty()) {
+            return;
+        }
+
+        DB::table('menu_rol')->whereIn('menu_id', $idsMenu)->delete();
+        DB::table('menu')->whereIn('id', $idsMenu)->delete();
     }
 }
