@@ -55,4 +55,5 @@ Aprobar Registro de Produccion
     @include('generales.modalpdf')
     @include('generales.verpdf')
     @include('generales.aprobarcotnv')
+    @include('generales.modaletiquetaetapa')
 @endsection

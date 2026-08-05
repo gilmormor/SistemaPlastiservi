@@ -313,11 +313,17 @@ function ajaxRequest(data,url,funcion) {
 						var urlEtiqueta  = '/opdetregprodtempaprobsup/' + tipoEtiqueta + '/' + respuesta.opdetregprod_id;
 						swal({
 							title: 'Registro aprobado',
-							text: '¿Desea imprimir la etiqueta?',
+							text: '¿Desea ver la etiqueta?',
 							icon: 'success',
-							buttons: { cancel: 'No imprimir', confirm: 'Imprimir etiqueta' }
+							buttons: { cancel: 'No', confirm: 'Ver etiqueta' }
 						}).then(function(value){
-							if(value){ window.open(urlEtiqueta, '_blank'); }
+							if(value){
+								// Mostrar en el mismo modal de etiqueta usado en op/seguimiento
+								// (no abrir una pestaña/ventana nueva del navegador).
+								$('#modalEtiquetaId').text('#' + respuesta.opdetregprod_id);
+								$('#ifrEtiquetaEtapa').attr('src', urlEtiqueta);
+								$('#modalEtiquetaEtapa').modal('show');
+							}
 						});
 					}
 				}
