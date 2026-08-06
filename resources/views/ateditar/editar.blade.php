@@ -14,6 +14,12 @@
 @endsection
 
 @section('scripts')
+    <script>
+        // Permite editar la unidad de medida base del acuerdo tecnico solo en esta pantalla
+        // (ateditar/{id}/editar). En el resto de pantallas que usan el mismo modal
+        // (ej. cotizacion/crear) esta variable no existe y el campo se mantiene bloqueado.
+        var permitirEditarUmAT = true;
+    </script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/ateditar/crear.js")}}" type="text/javascript"></script>
 @endsection
