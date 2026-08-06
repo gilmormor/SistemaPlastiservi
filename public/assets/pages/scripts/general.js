@@ -3021,6 +3021,15 @@ function crearEditarAcuTec(i){
 	$("#at_tiposello_id").val(1);
 	$("#at_unidadmedida_id").val($("#unidadmedida_id" + i).val())
 	$("#at_unidadmedida_nombre").val($("#at_unidadmedida_id option:selected").html())
+	// Solo en ateditar/{id}/editar (permitirEditarUmAT=true) se deja editable el select real;
+	// en el resto de pantallas (ej. cotizacion/crear) se mantiene bloqueado como siempre.
+	if(typeof permitirEditarUmAT !== 'undefined' && permitirEditarUmAT){
+		$("#div_at_unidadmedida_nombre").hide();
+		$("#div_at_unidadmedida_id").show();
+	}else{
+		$("#div_at_unidadmedida_nombre").show();
+		$("#div_at_unidadmedida_id").hide();
+	}
 	$(".selectpicker").selectpicker('refresh');
 	embalajePlastiservi();
     $("#myModalAcuerdoTecnico").modal('show');

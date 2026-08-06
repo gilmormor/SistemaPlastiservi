@@ -923,6 +923,15 @@ Route::get('inventsalaprobarpage', 'InvEntSalAprobarController@inventsalaprobarp
 Route::post('inventsalaprobar', 'InvEntSalAprobarController@guardar')->name('guardar_inventsalaprobar');
 Route::post('inventsalaprobar/aprobar/{id}', 'InvEntSalAprobarController@aprobar')->name('inventsalaprobar_aprobar');
 
+/*RUTAS Restriccion Usuarios Aprobadores por Modulo*/
+Route::get('usuaprobmodulo', 'UsuAprobModuloController@index')->name('usuaprobmodulo');
+Route::get('usuaprobmodulopage', 'UsuAprobModuloController@usuaprobmodulopage')->name('usuaprobmodulopage');
+Route::get('usuaprobmodulo/crear', 'UsuAprobModuloController@crear')->name('crear_usuaprobmodulo');
+Route::post('usuaprobmodulo', 'UsuAprobModuloController@guardar')->name('guardar_usuaprobmodulo');
+Route::get('usuaprobmodulo/{id}/editar', 'UsuAprobModuloController@editar')->name('editar_usuaprobmodulo');
+Route::put('usuaprobmodulo/{id}', 'UsuAprobModuloController@actualizar')->name('actualizar_usuaprobmodulo');
+Route::delete('usuaprobmodulo/{id}', 'UsuAprobModuloController@eliminar')->name('eliminar_usuaprobmodulo');
+
 /*RUTAS Generales*/
 Route::post('generales_valpermiso', 'GeneralesController@generales_valpermiso')->name('generales_valpermiso');
 
