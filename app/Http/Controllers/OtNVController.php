@@ -103,12 +103,18 @@ class OtNVController extends Controller
     public function crearot($id,$updatednum_at)
     {
         can('crear-otnv');
-        $notaventa = NotaVenta::findOrFail($id);
+        $notaventa = NotaVenta::find($id);
+        if (!$notaventa) {
+            return redirect('otnv/listarnv')->with([
+                'mensaje' => "No se encontró la Nota de Venta #$id.",
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         if(strtotime($notaventa->updated_at) != $updatednum_at){
             return redirect('otnv/listarnv')->with([
                 'mensaje'=>'Registro no fue creado. Registro Editado por otro usuario. Fecha Hora: '.$notaventa->updated_at,
                 'tipo_alert' => 'alert-error'
-            ]);    
+            ]);
         }
 
         if(isset($notaventa->otnotaventa->ot_id)){
@@ -119,7 +125,6 @@ class OtNVController extends Controller
             ]);
         }
 
-        $notaventa = NotaVenta::findOrFail($id);
         if(isset($data->cliente->clientebloqueado->descripcion)){
             return redirect('despachosol')->with([
                 'mensaje'=>'Condición financiera en revisión: ' . $data->cliente->clientebloqueado->descripcion . ". Razon Social: " . $data->cliente->razonsocial,
@@ -163,11 +168,18 @@ class OtNVController extends Controller
         $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-            $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
+        $user = Usuario::find(auth()->id());
+        if (!$user) {
+            return redirect('otnv/listarnv')->with([
+                'mensaje' => "No se encontró el Usuario autenticado (id=" . auth()->id() . ").",
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $sucurArrayUsuario = $user->sucursales->pluck('id')->toArray();
+
+        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) use ($sucurArrayUsuario) {
             $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
+            ->whereIn('sucursal_usuario.sucursal_id', $sucurArrayUsuario);
                     })
             ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
             ->join('vendedor', function ($join) {
@@ -181,15 +193,26 @@ class OtNVController extends Controller
             ])
             ->get();
 
-        $empresa = Empresa::findOrFail(1);
+        $empresa = Empresa::find(1);
+        if (!$empresa) {
+            return redirect('otnv/listarnv')->with([
+                'mensaje' => "No se encontró la Empresa (id=1).",
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
         $tipoentregas = TipoEntrega::orderBy('id')->get();
         $giros = Giro::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
-        $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
-        $array_bodegasmodulo = $invmovmodulo[0]->invmovmodulobodsals->pluck('id')->toArray();
-        $user = Usuario::findOrFail(auth()->id());
-        $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
+        $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->first();
+        if (!$invmovmodulo) {
+            return redirect('otnv/listarnv')->with([
+                'mensaje' => "No se encontró el InvMovModulo con cod=SOLDESP.",
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+        $array_bodegasmodulo = $invmovmodulo->invmovmodulobodsals->pluck('id')->toArray();
+        $tablas['sucurArray'] = $sucurArrayUsuario; //$clientesArray['sucurArray'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
         return view('otnv.crear', compact('notaventa','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','array_bodegasmodulo','tablas'));
     }
