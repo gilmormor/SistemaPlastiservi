@@ -18,6 +18,7 @@ use App\Models\Producto;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
 use App\Models\UnidadMedida;
+use App\Models\UsuAprobModulo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -334,6 +335,13 @@ class InvEntSalController extends Controller
         if ($request->ajax()) {
             //dd($request);
             $inventsal = InvEntSal::findOrFail($request->id);
+            if (!UsuAprobModulo::puedeAprobar(auth()->id(), 'inventsalaprobar', $inventsal->usuario_id)) {
+                return response()->json([
+                    'resp' => 0,
+                    'tipmen' => 'error',
+                    'mensaje' => 'No tiene permiso para aprobar registros creados por este usuario.'
+                ]);
+            }
             if(($inventsal->staaprob == 1) and ($inventsal->staanul == null)){
                 //VALIDAR SI EL REGISTRO YA FUE APROBADA O QUE FUE ELIMINADA O ANULADA
                 $sql = "SELECT COUNT(*) AS cont
