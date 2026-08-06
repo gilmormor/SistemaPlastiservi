@@ -33,3 +33,16 @@
         <span class="help-block">Puede seleccionar varios, incluyendo al mismo usuario aprobador.</span>
     </div>
 </div>
+<div class="form-group" id="div_invbodega_id" style="display:none">
+    <label for="invbodega_id" class="col-lg-3 control-label">Bodegas permitidas (opcional)</label>
+    <div class="col-lg-6">
+        <select name="invbodega_id[]" id="invbodega_id" class="form-control selectpicker" data-live-search='true' multiple>
+            @foreach($bodegas as $id => $nombre)
+                <option value="{{$id}}"
+                    {{is_array(old('invbodega_id')) ? (in_array($id, old('invbodega_id')) ? 'selected' : '') : (isset($data) ? ($data->bodegasAprobEntSalInv->firstWhere('id', $id) ? 'selected' : '') : '')}}
+                >{{$nombre}}</option>
+            @endforeach
+        </select>
+        <span class="help-block">Solo aplica al módulo "Aprobar Entr Sal Inv". Si no selecciona ninguna, puede aprobar cualquier bodega.</span>
+    </div>
+</div>

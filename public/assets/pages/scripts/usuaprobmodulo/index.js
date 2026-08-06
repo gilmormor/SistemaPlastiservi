@@ -14,6 +14,7 @@ $(document).ready(function () {
             {data: 'usuario_nombre'},
             {data: 'modulo_nombre'},
             {data: 'usuarios_permitidos'},
+            {data: 'bodegas_permitidas', defaultContent: '<span style="color:#aaa;">Todas</span>'},
             {defaultContent :
                 "<a href='usuaprobmodulo' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>" +
                     "<i class='fa fa-fw fa-pencil'></i>" +

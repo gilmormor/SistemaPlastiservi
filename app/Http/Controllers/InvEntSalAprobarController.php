@@ -114,12 +114,27 @@ function consultaindex(){
     //RESTRICCION POR USUARIO CREADOR (usuaprobmodulo): si el usuario que va a aprobar tiene
     //restriccion configurada para este modulo, solo se le muestran los registros creados por
     //los usuarios permitidos. Si no tiene restriccion configurada, ve todos (comportamiento actual).
+    //RESTRICCION POR BODEGA (usuaprobmodulobodega, opcional): si el usuario configuro bodegas
+    //permitidas, se excluyen los movimientos que tengan alguna linea (inventsaldet) con una
+    //bodega fuera de esa lista. Si no configuro ninguna bodega, sin restriccion (ve cualquiera).
     $filtroUsuarioCreador = "";
+    $filtroBodega = "";
     $restriccion = UsuAprobModulo::where('usuario_id', $user->id)->where('modulo', 'inventsalaprobar')->first();
     if ($restriccion) {
         $idsPermitidos = $restriccion->usuariosPermitidos()->pluck('usuario.id')->toArray();
         $idsPermitidos = !empty($idsPermitidos) ? implode(",", $idsPermitidos) : "0";
         $filtroUsuarioCreador = " and inventsal.usuario_id IN ($idsPermitidos)";
+
+        $bodegasPermitidas = $restriccion->bodegasAprobEntSalInv()->pluck('invbodega.id')->toArray();
+        if (!empty($bodegasPermitidas)) {
+            $idsBodegas = implode(",", $bodegasPermitidas);
+            $filtroBodega = " and not exists (
+                select 1 from inventsaldet isd
+                where isd.inventsal_id = inventsal.id
+                and isd.invbodega_id not in ($idsBodegas)
+                and isnull(isd.deleted_at)
+            )";
+        }
     }
 
     //CON ESTA INSTRUCCION SQL VALIDO QUE LAS SUCURSALES QUE TIENE USUARIO CREADOR DEL REGISTRO
@@ -134,6 +149,7 @@ function consultaindex(){
         and vista_sucfisxusu.sucursal_id IN ($arraySucFisxUsu)
         and isnull(inventsal.deleted_at)
         $filtroUsuarioCreador
+        $filtroBodega
         GROUP BY inventsal.id;";
     return DB::select($sql);
 }

@@ -33,6 +33,7 @@ Restricción Aprobación por Módulo
                             <th>Usuario Aprobador</th>
                             <th>Módulo</th>
                             <th>Puede aprobar registros de</th>
+                            <th>Bodegas permitidas</th>
                             <th class="width70">Acción</th>
                         </tr>
                     </thead>

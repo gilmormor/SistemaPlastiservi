@@ -342,6 +342,14 @@ class InvEntSalController extends Controller
                     'mensaje' => 'No tiene permiso para aprobar registros creados por este usuario.'
                 ]);
             }
+            $bodegaIds = $inventsal->inventsaldets->pluck('invbodega_id')->unique()->values()->toArray();
+            if (!UsuAprobModulo::puedeAprobarBodegas(auth()->id(), 'inventsalaprobar', $bodegaIds)) {
+                return response()->json([
+                    'resp' => 0,
+                    'tipmen' => 'error',
+                    'mensaje' => 'No tiene permiso para aprobar movimientos con alguna de estas bodegas.'
+                ]);
+            }
             if(($inventsal->staaprob == 1) and ($inventsal->staanul == null)){
                 //VALIDAR SI EL REGISTRO YA FUE APROBADA O QUE FUE ELIMINADA O ANULADA
                 $sql = "SELECT COUNT(*) AS cont

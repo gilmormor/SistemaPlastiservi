@@ -3,6 +3,10 @@
     Restricción Aprobación por Módulo
 @endsection
 
+@section("scripts")
+    <script src="{{autoVer("assets/pages/scripts/usuaprobmodulo/form.js")}}" type="text/javascript"></script>
+@endsection
+
 @section('contenido')
 <div class="row">
     <div class="col-lg-12">

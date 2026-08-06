@@ -32,6 +32,17 @@ class UsuAprobModuloController extends Controller
         return collect($menus)->pluck('nombre', 'url')->toArray();
     }
 
+    // Bodegas disponibles para el select opcional de "Bodegas permitidas" (solo aplica a inventsalaprobar)
+    private function obtenerBodegasDisponibles()
+    {
+        $sql = "SELECT ib.id, CONCAT(s.nombre, '/', ib.nombre) AS nombre
+                FROM invbodega ib
+                INNER JOIN sucursal s ON s.id = ib.sucursal_id
+                WHERE ib.deleted_at IS NULL
+                ORDER BY s.nombre, ib.nombre";
+        return collect(DB::select($sql))->pluck('nombre', 'id')->toArray();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -46,11 +57,15 @@ class UsuAprobModuloController extends Controller
     public function usuaprobmodulopage()
     {
         $sql = "SELECT uam.id, uam.usuario_id, usu.nombre AS usuario_nombre, uam.modulo,
-                       GROUP_CONCAT(usu2.nombre ORDER BY usu2.nombre SEPARATOR ', ') AS usuarios_permitidos
+                       GROUP_CONCAT(DISTINCT usu2.nombre ORDER BY usu2.nombre SEPARATOR ', ') AS usuarios_permitidos,
+                       GROUP_CONCAT(DISTINCT CONCAT(suc.nombre,'/',ib.nombre) ORDER BY suc.nombre, ib.nombre SEPARATOR ', ') AS bodegas_permitidas
                 FROM usuaprobmodulo uam
                 INNER JOIN usuario usu ON usu.id = uam.usuario_id
                 LEFT JOIN usuaprobmoduledet uamd ON uamd.usuaprobmodulo_id = uam.id
                 LEFT JOIN usuario usu2 ON usu2.id = uamd.usuario_creador_id
+                LEFT JOIN usuaprobmodulobodega uamb ON uamb.usuaprobmodulo_id = uam.id
+                LEFT JOIN invbodega ib ON ib.id = uamb.invbodega_id
+                LEFT JOIN sucursal suc ON suc.id = ib.sucursal_id
                 WHERE uam.deleted_at IS NULL
                 GROUP BY uam.id";
         $datas = DB::select($sql);
@@ -71,7 +86,8 @@ class UsuAprobModuloController extends Controller
         can('crear-usuaprobmodulo');
         $usuarios = Usuario::orderBy('nombre')->pluck('nombre', 'id')->toArray();
         $modulos = $this->obtenerModulosDisponibles();
-        return view('usuaprobmodulo.crear', compact('usuarios', 'modulos'));
+        $bodegas = $this->obtenerBodegasDisponibles();
+        return view('usuaprobmodulo.crear', compact('usuarios', 'modulos', 'bodegas'));
     }
 
     /**
@@ -96,6 +112,7 @@ class UsuAprobModuloController extends Controller
 
         $usuAprobModulo = UsuAprobModulo::create($request->only(['usuario_id', 'modulo']));
         $usuAprobModulo->usuariosPermitidos()->sync($request->usuario_creador_id);
+        $usuAprobModulo->bodegasAprobEntSalInv()->sync($request->invbodega_id ?? []);
 
         return redirect('usuaprobmodulo')->with('mensaje', 'Restricción creada con éxito');
     }
@@ -120,10 +137,11 @@ class UsuAprobModuloController extends Controller
     public function editar($id)
     {
         can('editar-usuaprobmodulo');
-        $data = UsuAprobModulo::with('usuariosPermitidos')->findOrFail($id);
+        $data = UsuAprobModulo::with(['usuariosPermitidos', 'bodegasAprobEntSalInv'])->findOrFail($id);
         $usuarios = Usuario::orderBy('nombre')->pluck('nombre', 'id')->toArray();
         $modulos = $this->obtenerModulosDisponibles();
-        return view('usuaprobmodulo.editar', compact('data', 'usuarios', 'modulos'));
+        $bodegas = $this->obtenerBodegasDisponibles();
+        return view('usuaprobmodulo.editar', compact('data', 'usuarios', 'modulos', 'bodegas'));
     }
 
     /**
@@ -151,6 +169,7 @@ class UsuAprobModuloController extends Controller
         $usuAprobModulo = UsuAprobModulo::findOrFail($id);
         $usuAprobModulo->update($request->only(['usuario_id', 'modulo']));
         $usuAprobModulo->usuariosPermitidos()->sync($request->usuario_creador_id);
+        $usuAprobModulo->bodegasAprobEntSalInv()->sync($request->invbodega_id ?? []);
 
         return redirect('usuaprobmodulo')->with('mensaje', 'Restricción actualizada con éxito');
     }

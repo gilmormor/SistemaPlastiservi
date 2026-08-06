@@ -28,6 +28,8 @@ class ValidarUsuAprobModulo extends FormRequest
             'modulo'     => 'required|max:100',
             'usuario_creador_id'   => 'required|array|min:1',
             'usuario_creador_id.*' => 'integer',
+            'invbodega_id'         => 'nullable|array',
+            'invbodega_id.*'       => 'integer',
         ];
     }
 
