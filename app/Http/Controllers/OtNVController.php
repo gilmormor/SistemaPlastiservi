@@ -214,7 +214,7 @@ class OtNVController extends Controller
         $array_bodegasmodulo = $invmovmodulo->invmovmodulobodsals->pluck('id')->toArray();
         $tablas['sucurArray'] = $sucurArrayUsuario; //$clientesArray['sucurArray'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
-        return view('otnv.crear', compact('notaventa','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','sucurArray','aux_sta','aux_cont','aux_statusPant','array_bodegasmodulo','tablas'));
+        return view('otnv.crear', compact('notaventa','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','aux_sta','aux_statusPant','array_bodegasmodulo','tablas'));
     }
 
         /**
