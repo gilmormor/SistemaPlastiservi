@@ -52,14 +52,11 @@ class OtItemEnvProgProdController extends Controller
             //dd($request->updatednum_at);
             /* dd(strtotime($otdet->updated_at));
             dd($otdet); */
-            if(strtotime($ot->updated_at) != $request->otupdatednum_at){
-                return response()->json([
-                    'id' => 0,
-                    'mensaje'=>"Encabezado de registro modificado por otro usuario. \nFecha: " . date('d-m-Y h:i:s A', strtotime($ot->updated_at)),
-                    'tipo_alert' => 'error'
-                ]);    
-            }
-
+            // Nota: no se valida contra ot.updated_at aqui porque al enviar un item a
+            // programacion se toca el encabezado de la OT (mas abajo), lo que invalidaba
+            // en falso el envio de otros items de la misma OT que seguian en pantalla con
+            // el otupdatednum_at anterior. La concurrencia real que interesa en esta
+            // pantalla es a nivel de item, por eso se valida solo contra otdet.updated_at.
             if(strtotime($otdet->updated_at) != $request->updatednum_at){
                 return response()->json([
                     'id' => 0,
