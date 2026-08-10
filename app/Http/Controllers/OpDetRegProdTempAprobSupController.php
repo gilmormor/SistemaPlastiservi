@@ -584,19 +584,37 @@ class OpDetRegProdTempAprobSupController extends Controller
                             throw new \Exception('El período ' . $annomes . ' está cerrado. No se puede ingresar a bodega de producción.');
                         }
 
-                        // Buscar bodega de producción final: tipo=5 que NO esté asignada como bodega de etapa intermedia.
-                        // Las bodegas "Prod Mezclado", "Prod Sellado", etc. tienen filas en apsucetapaprod_bodega
-                        // y son para etapas intermedias; la bodega "Producción" general no está en esa tabla.
-                        $bodegasProduccion = InvBodega::where('tipo', 5)
-                            ->where('sucursal_id', $opdetregprodtemp->sucursal_id)
-                            ->whereNull('deleted_at')
-                            ->whereNotIn('id', function($q) {
-                                $q->select('invbodega_id')->from('apsucetapaprod_bodega');
-                            })
+                        // Si la ÚLTIMA etapa tiene bodegas configuradas explícitamente en
+                        // apsucetapaprod_bodega (igual que cualquier etapa intermedia), usar esas.
+                        // Antes esta rama excluía TODA bodega que apareciera en apsucetapaprod_bodega
+                        // asumiendo que esa tabla solo se usaba para etapas intermedias — pero si la
+                        // última etapa también tiene bodegas configuradas ahí, quedaban excluidas por
+                        // error y el sistema caía en la bodega "Producción" general en su lugar
+                        // (bug detectado 2026-08-07, RegProdId 14). Si la etapa no tiene ninguna
+                        // bodega configurada, se mantiene el fallback histórico: bodega tipo=5 que no
+                        // esté asignada a NINGUNA etapa (para no romper sucursales/etapas que nunca
+                        // configuraron esto).
+                        $apsucActualFinal  = $opdetregprodtemp->opdet->areaproduccionsucetapaprod;
+                        $bodegasEtapaFinal = ApsucEtapaProdBodega::where('apsucetapaprod_id', $apsucActualFinal->id)
+                            ->with('invbodega')
                             ->get();
 
+                        if ($bodegasEtapaFinal->isNotEmpty()) {
+                            $bodegasProduccion = $bodegasEtapaFinal->map(function ($b) {
+                                return (object) ['id' => $b->invbodega_id, 'nombre' => $b->invbodega->nombre ?? '—'];
+                            });
+                        } else {
+                            $bodegasProduccion = InvBodega::where('tipo', 5)
+                                ->where('sucursal_id', $opdetregprodtemp->sucursal_id)
+                                ->whereNull('deleted_at')
+                                ->whereNotIn('id', function($q) {
+                                    $q->select('invbodega_id')->from('apsucetapaprod_bodega');
+                                })
+                                ->get();
+                        }
+
                         if ($bodegasProduccion->isEmpty()) {
-                            throw new \Exception('No existe bodega de producción final (tipo=5 sin etapa asignada) configurada para esta sucursal.');
+                            throw new \Exception('No existe bodega de producción final configurada para esta etapa/sucursal.');
                         }
 
                         // Si hay más de 1 bodega general y el usuario aún no eligió, solicitar selección
@@ -683,6 +701,79 @@ class OpDetRegProdTempAprobSupController extends Controller
                             'invmovdet_id'        => $invmovdet->id,
                             'notaventadetalle_id' => $nvdetIdBodega,
                         ]);
+
+                        // SALIDA: descontar de la bodega donde estaba el lote origen.
+                        // Se basa en la trazabilidad FIFO ($opdetregprodtemp->origenes).
+                        // Si el lote anterior no tiene invmovdet (histórico pre-implementación)
+                        // se omite la salida para no romper lotes existentes.
+                        // (Antes este bloque solo existia en la rama de etapa intermedia; en la
+                        // ultima etapa se creaba la entrada a la bodega final pero nunca se
+                        // descontaba de la bodega de la etapa anterior — bug detectado 2026-08-07).
+                        foreach ($opdetregprodtemp->origenes as $tempOrigen) {
+                            // Buscar el invmovdet de ENTRADA asociado al lote origen
+                            $prevInvMovDet = InvMovDet::join(
+                                    'invmovdet_opdetregprod as lnk_sal',
+                                    'lnk_sal.invmovdet_id', '=', 'invmovdet.id'
+                                )
+                                ->where('lnk_sal.opdetregprod_id', $tempOrigen->opdetregprod_id)
+                                ->where('invmovdet.invmovtipo_id', 1)
+                                ->whereNull('invmovdet.deleted_at')
+                                ->select('invmovdet.*')
+                                ->first();
+
+                            if (!$prevInvMovDet) {
+                                // Lote histórico sin movimiento de inventario: omitir salida
+                                continue;
+                            }
+
+                            // Cantidad proporcional en la UM del lote origen
+                            $prevReg    = OpDetRegProd::find($tempOrigen->opdetregprod_id);
+                            $cantSalida = 0;
+                            if ($prevReg && $prevReg->kgprod > 0) {
+                                $cantSalida = round(
+                                    ($tempOrigen->kg / $prevReg->kgprod) * ($prevReg->cantprod ?? 0),
+                                    4
+                                );
+                            }
+
+                            $invmovSalida = InvMov::create([
+                                'fechahora'       => date('Y-m-d H:i:s'),
+                                'annomes'         => $annomes,
+                                'desc'            => 'Salida a bodega producción final - Reg:' . $opdetregprod->id,
+                                'obs'             => 'Consumido por: ' . ($apsucActualFinal->etapaprod->nombre ?? ''),
+                                'invmovmodulo_id' => 9,
+                                'idmovmod'        => $opdetregprod->id,
+                                'invmovtipo_id'   => 2,   // Salida
+                                'sucursal_id'     => $opdetregprodtemp->sucursal_id,
+                                'usuario_id'      => auth()->id(),
+                            ]);
+
+                            $ibpSalida = InvBodegaProducto::updateOrCreate(
+                                ['producto_id' => $opdetregprodtemp->producto_id, 'invbodega_id' => $prevInvMovDet->invbodega_id],
+                                ['producto_id' => $opdetregprodtemp->producto_id, 'invbodega_id' => $prevInvMovDet->invbodega_id]
+                            );
+                            $invmovdetSalida = InvMovDet::create([
+                                'invmov_id'            => $invmovSalida->id,
+                                'invbodegaproducto_id' => $ibpSalida->id,
+                                'producto_id'          => $opdetregprodtemp->producto_id,
+                                'invbodega_id'         => $prevInvMovDet->invbodega_id,
+                                'sucursal_id'          => $opdetregprodtemp->sucursal_id,
+                                'unidadmedida_id'      => $prevInvMovDet->unidadmedida_id,
+                                'invmovtipo_id'        => 2,
+                                // cant negativo porque tipomov de Salida = -1 y el sistema
+                                // almacena cant ya aplicado el signo (igual que inventsal)
+                                'cant'                 => -$cantSalida,
+                                'cantgrupo'            => -$cantSalida,
+                                'cantxgrupo'           => 1,
+                                'peso'                 => $prevInvMovDet->peso,
+                                'cantkg'               => -$tempOrigen->kg,
+                            ]);
+                            // Enlazar la salida con el lote origen (del que se descontó)
+                            InvMovDetOpDetRegProd::create([
+                                'invmovdet_id'    => $invmovdetSalida->id,
+                                'opdetregprod_id' => $tempOrigen->opdetregprod_id,
+                            ]);
+                        }
                     }
                 }
                 $opdet->save();
@@ -766,9 +857,21 @@ class OpDetRegProdTempAprobSupController extends Controller
             $notaventa_id = $otdet->otdetnvdet->notaventadetalle->notaventa_id;
         }
 
+        // Bodega real a la que ingresó este registro (vía el movimiento de entrada
+        // de inventario ya creado al aprobar), en vez del texto fijo "Bodega Producción".
+        $bodegaEntrada = InvMovDet::join('invmovdet_opdetregprod as lnk_bod', 'lnk_bod.invmovdet_id', '=', 'invmovdet.id')
+            ->where('lnk_bod.opdetregprod_id', $produccion->id)
+            ->where('invmovdet.invmovtipo_id', 1)
+            ->whereNull('invmovdet.deleted_at')
+            ->select('invmovdet.invbodega_id')
+            ->first();
+        $bodegaNombre = $bodegaEntrada
+            ? (InvBodega::find($bodegaEntrada->invbodega_id)->nombre ?? 'Bodega Producción')
+            : 'Bodega Producción';
+
         return view('opdetregprodtempaprobsup.etiqueta-bodega', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
-            'productoNombre', 'producto_id', 'notaventa_id'
+            'productoNombre', 'producto_id', 'notaventa_id', 'bodegaNombre'
         ));
     }
 

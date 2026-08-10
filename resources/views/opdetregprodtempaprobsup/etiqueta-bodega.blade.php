@@ -88,7 +88,7 @@
         🔬MUESTRA CC — NO ES PRODUCCIÓN
     </div>
     @endif
-    <div class="etiqueta-titulo">Ingreso Bodega Producción</div>
+    <div class="etiqueta-titulo">Ingreso {{ $bodegaNombre }}</div>
     <div class="etiqueta-body">
         <div class="etiqueta-datos">
             <table>
