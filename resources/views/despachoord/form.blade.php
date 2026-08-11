@@ -206,6 +206,22 @@
                                         $aux_nfila++;
                                         $aux_saldo = $detalle->cantsoldesp - $sumacantorddesp;
                                         $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
+                                        // Si el producto requiere fabricacion, solo mostrar las bodegas donde
+                                        // efectivamente hay stock de los lotes de produccion asignados a este
+                                        // item (via invmovdetnvdet, que enlaza el movimiento con la nota de venta
+                                        // detalle) - ya sea que el lote siga en su bodega de produccion (aun no
+                                        // aprobada la solicitud) o ya este en Picking (solicitud aprobada). Si no
+                                        // hay ningun lote/picking vinculado todavia, no se muestra ninguna bodega.
+                                        if ($detalle->notaventadetalle->requiere_fabricacion == 1) {
+                                            $bodegaproductoIdsConLote = DB::table('invmovdetnvdet as imdnv')
+                                                ->join('invmovdet as imd', 'imd.id', '=', 'imdnv.invmovdet_id')
+                                                ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle->id)
+                                                ->whereNull('imd.deleted_at')
+                                                ->groupBy('imd.invbodegaproducto_id')
+                                                ->havingRaw('SUM(imd.cant) > 0')
+                                                ->pluck('imd.invbodegaproducto_id');
+                                            $invbodegaproductos = $invbodegaproductos->whereIn('id', $bodegaproductoIdsConLote);
+                                        }
                                         $categoriaprod = $detalle->notaventadetalle->producto->categoriaprod;
                                         //CREAR REGISTRO EN TABLA invbodegaproducto (SOLO SI NO EXISTE)
                                         foreach ($categoriaprod->invbodegas as $invbodega){

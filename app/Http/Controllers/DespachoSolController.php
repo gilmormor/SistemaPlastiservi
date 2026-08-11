@@ -39,6 +39,7 @@ use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovDet_BodSolDesp;
 use App\Models\InvMovDetNVDet;
+use App\Models\InvMovDetOpDetRegProd;
 use App\Models\InvMovModulo;
 use App\Models\NotaVenta;
 use App\Models\NotaVentaCerrada;
@@ -1780,6 +1781,49 @@ class DespachoSolController extends Controller
                                         foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                                             $aux_cant = $oddetbodprod->cant * -1;
                                             if($aux_cant > 0){
+                                                // Trazabilidad de lote: si el item requiere fabricacion, en vez de un
+                                                // solo movimiento agregado por bodega, se crea un movimiento por cada
+                                                // lote asignado (despachosoldet_opdetregprod), enlazado via
+                                                // InvMovDetOpDetRegProd, para poder mostrar en despachoord de que
+                                                // lote(s) viene el stock y validar CC por lote.
+                                                $lotesAsignados = $despachosoldet->notaventadetalle->requiere_fabricacion == 1
+                                                    ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)->get()
+                                                    : collect();
+
+                                                if ($lotesAsignados->isNotEmpty()) {
+                                                    foreach ($lotesAsignados as $loteAsig) {
+                                                        $cantLote   = (float) $loteAsig->cant;
+                                                        $cantkgLote = (float) $loteAsig->cantkg;
+                                                        if ($cantLote <= 0) {
+                                                            continue;
+                                                        }
+                                                        $array_invmovdet = [
+                                                            "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id,
+                                                            "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
+                                                            "invbodega_id"         => $oddetbodprod->invbodegaproducto->invbodega_id,
+                                                            "sucursal_id"          => $despachosol->notaventa->sucursal_id,
+                                                            "unidadmedida_id"      => $despachosoldet->notaventadetalle->unidadmedida_id,
+                                                            "invmovtipo_id"        => 2,
+                                                            "cant"                 => -$cantLote,
+                                                            "cantgrupo"            => -$cantLote,
+                                                            "cantxgrupo"           => 1,
+                                                            "peso"                 => $despachosoldet->notaventadetalle->producto->peso,
+                                                            "cantkg"               => -$cantkgLote,
+                                                            "invmov_id"            => $invmov->id,
+                                                        ];
+                                                        $invmovdetLote = InvMovDet::create($array_invmovdet);
+                                                        InvMovDetOpDetRegProd::create([
+                                                            'invmovdet_id'    => $invmovdetLote->id,
+                                                            'opdetregprod_id' => $loteAsig->opdetregprod_id,
+                                                        ]);
+                                                        InvMovDetNVDet::create([
+                                                            'invmovdet_id'        => $invmovdetLote->id,
+                                                            'notaventadetalle_id' => $despachosoldet->notaventadetalle->id,
+                                                        ]);
+                                                    }
+                                                    continue;
+                                                }
+
                                                 $array_invmovdet = $oddetbodprod->attributesToArray();
                                                 $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                                                 $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
@@ -1826,13 +1870,13 @@ class DespachoSolController extends Controller
                                         foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                                             $aux_cant = $oddetbodprod->cant * -1;
                                             if($aux_cant > 0){
-                                                $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
+                                                $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                                                 foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
                                                     //BUSCAR BODEGA PICKING CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
                                                     if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
                                                         $aux_bodega_idPicking = $invmovmodulobodent->id;
                                                     }
-                                                }            
+                                                }
                                                 $invbodegaproducto = InvBodegaProducto::updateOrCreate(
                                                     ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodega_idPicking],
                                                     [
@@ -1840,6 +1884,51 @@ class DespachoSolController extends Controller
                                                         'invbodega_id' => $aux_bodega_idPicking
                                                     ]
                                                 );
+
+                                                // Trazabilidad de lote: mismo criterio que en la salida — un movimiento
+                                                // de entrada por cada lote asignado, enlazado via InvMovDetOpDetRegProd.
+                                                $lotesAsignados = $despachosoldet->notaventadetalle->requiere_fabricacion == 1
+                                                    ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)->get()
+                                                    : collect();
+
+                                                if ($lotesAsignados->isNotEmpty()) {
+                                                    foreach ($lotesAsignados as $loteAsig) {
+                                                        $cantLote   = (float) $loteAsig->cant;
+                                                        $cantkgLote = (float) $loteAsig->cantkg;
+                                                        if ($cantLote <= 0) {
+                                                            continue;
+                                                        }
+                                                        $array_invmovdet = [
+                                                            "invbodegaproducto_id" => $invbodegaproducto->id,
+                                                            "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
+                                                            "invbodega_id"         => $aux_bodega_idPicking,
+                                                            "sucursal_id"          => $invbodegaproducto->invbodega->sucursal_id,
+                                                            "unidadmedida_id"      => $despachosoldet->notaventadetalle->unidadmedida_id,
+                                                            "invmovtipo_id"        => 1,
+                                                            "cant"                 => $cantLote,
+                                                            "cantgrupo"            => $cantLote,
+                                                            "cantxgrupo"           => 1,
+                                                            "peso"                 => $despachosoldet->notaventadetalle->producto->peso,
+                                                            "cantkg"               => $cantkgLote,
+                                                            "invmov_id"            => $invmov->id,
+                                                        ];
+                                                        $invmovdetLote = InvMovDet::create($array_invmovdet);
+                                                        InvMovDetOpDetRegProd::create([
+                                                            'invmovdet_id'    => $invmovdetLote->id,
+                                                            'opdetregprod_id' => $loteAsig->opdetregprod_id,
+                                                        ]);
+                                                        InvMovDetNVDet::create([
+                                                            'invmovdet_id'        => $invmovdetLote->id,
+                                                            'notaventadetalle_id' => $despachosoldet->notaventadetalle->id,
+                                                        ]);
+                                                        InvMovDet_BodSolDesp::create([
+                                                            'invmovdet_id'                        => $invmovdetLote->id,
+                                                            'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id,
+                                                        ]);
+                                                    }
+                                                    continue;
+                                                }
+
                                                 $array_invmovdet = $oddetbodprod->attributesToArray();
                                                 $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                                 $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;

@@ -909,9 +909,26 @@ class OpDetRegProdTempAprobSupController extends Controller
             ->where('orden', '>', $etapaActualOrden)
             ->sortBy('orden')
             ->first();
-        $proximaEtapaNombre = $siguienteOpdet
-            ? $siguienteOpdet->areaproduccionsucetapaprod->etapaprod->nombre
-            : 'Última etapa (Bodega)';
+
+        if ($siguienteOpdet) {
+            $proximaEtapaNombre = $siguienteOpdet->areaproduccionsucetapaprod->etapaprod->nombre;
+        } else {
+            // Última etapa: mostrar la bodega real donde ingresó (no el texto generico "(Bodega)").
+            // Se identifica por invmovmodulo_id=9 (Produccion) para no confundir con movimientos
+            // posteriores de despacho (ej. traslado a Picking) que tambien quedan ligados al lote.
+            $entradaFinal = InvMovDet::join('invmovdet_opdetregprod as lnk', 'lnk.invmovdet_id', '=', 'invmovdet.id')
+                ->join('invmov', 'invmov.id', '=', 'invmovdet.invmov_id')
+                ->where('lnk.opdetregprod_id', $opdetregprod_id)
+                ->where('invmovdet.invmovtipo_id', 1)
+                ->where('invmov.invmovmodulo_id', 9)
+                ->whereNull('invmovdet.deleted_at')
+                ->select('invmovdet.invbodega_id')
+                ->first();
+            $bodegaFinalNombre = $entradaFinal
+                ? (InvBodega::find($entradaFinal->invbodega_id)->nombre ?? null)
+                : null;
+            $proximaEtapaNombre = 'Última etapa (' . ($bodegaFinalNombre ?? 'Bodega') . ')';
+        }
 
         // Nombre del producto
         $productoData   = Producto::atributosProducto($produccion->producto_id);
