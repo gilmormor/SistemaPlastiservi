@@ -347,12 +347,12 @@ class DteFacturaController extends Controller
 
         //HASTA AQUI LA VALIDACION 
 
-        //$respuesta = Dte::dteSolicitarFolio($dte);
+        $respuesta = Dte::dteSolicitarFolio($dte);
         //dd($respuesta["aux_folio"]);
-        $respuesta = [
+        /* $respuesta = [
                     'id' => 1,
                     'aux_folio' => '1234'
-        ];
+        ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
             $dte->fchemisgen = date("Y-m-d H:i:s");
