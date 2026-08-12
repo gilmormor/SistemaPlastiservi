@@ -15,7 +15,7 @@ $(document).ready(function () {
             {data: 'id'},
             {data: 'ot_id'},
             {data: 'op_id'},
-            {data: 'opdet_id'},
+            /* {data: 'opdet_id'}, */
             {data: 'razonsocial'},
             {data: 'opdet_kgrec'},
             {data: 'opdet_kgprod'},
@@ -57,51 +57,56 @@ $(document).ready(function () {
 			}
             $('td', row).eq(0).attr('updated_at', data.updatednum_at);
 
+            $('td', row).eq(2).attr('style','text-align:left');
+            $('td', row).eq(2).attr('data-order',data.op_id);
+            $('td', row).eq(2).attr('data-search',data.op_id);
+            $('td', row).eq(2).html(MASKLA(data.op_id, 0)+"/"+MASKLA(data.opdet_id, 0));
+
             // Columna 5 (opdet_kgrec): desplazada +1 por la nueva columna 'ot' en posicion 1
+            $('td', row).eq(4).attr('style','text-align:right');
+            $('td', row).eq(4).attr('data-order',data.opdet_kgrec);
+            $('td', row).eq(4).attr('data-search',data.opdet_kgrec);
+            $('td', row).eq(4).html(MASKLA(data.opdet_kgrec, 2));
+
             $('td', row).eq(5).attr('style','text-align:right');
-            $('td', row).eq(5).attr('data-order',data.opdet_kgrec);
-            $('td', row).eq(5).attr('data-search',data.opdet_kgrec);
-            $('td', row).eq(5).html(MASKLA(data.opdet_kgrec, 2));
+            $('td', row).eq(5).attr('data-order',data.opdet_kgprod);
+            $('td', row).eq(5).attr('data-search',data.opdet_kgprod);
+            $('td', row).eq(5).html(MASKLA(data.opdet_kgprod, 2));
 
             $('td', row).eq(6).attr('style','text-align:right');
-            $('td', row).eq(6).attr('data-order',data.opdet_kgprod);
-            $('td', row).eq(6).attr('data-search',data.opdet_kgprod);
-            $('td', row).eq(6).html(MASKLA(data.opdet_kgprod, 2));
+            $('td', row).eq(6).attr('data-order',data.opdet_kgscrap);
+            $('td', row).eq(6).attr('data-search',data.opdet_kgscrap);
+            $('td', row).eq(6).html(MASKLA(data.opdet_kgscrap, 2));
 
             $('td', row).eq(7).attr('style','text-align:right');
-            $('td', row).eq(7).attr('data-order',data.opdet_kgscrap);
-            $('td', row).eq(7).attr('data-search',data.opdet_kgscrap);
-            $('td', row).eq(7).html(MASKLA(data.opdet_kgscrap, 2));
+            $('td', row).eq(7).attr('data-order',data.kgprod);
+            $('td', row).eq(7).attr('data-search',data.kgprod);
+            $('td', row).eq(7).html(MASKLA(data.kgprod, 2));
 
             $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).attr('data-order',data.kgprod);
-            $('td', row).eq(8).attr('data-search',data.kgprod);
-            $('td', row).eq(8).html(MASKLA(data.kgprod, 2));
+            $('td', row).eq(8).attr('data-order',data.kgscrap);
+            $('td', row).eq(8).attr('data-search',data.kgscrap);
+            $('td', row).eq(8).html(MASKLA(data.kgscrap, 2));
 
             $('td', row).eq(9).attr('style','text-align:right');
-            $('td', row).eq(9).attr('data-order',data.kgscrap);
-            $('td', row).eq(9).attr('data-search',data.kgscrap);
-            $('td', row).eq(9).html(MASKLA(data.kgscrap, 2));
+            $('td', row).eq(9).attr('data-order',data.kgsaldo);
+            $('td', row).eq(9).attr('data-search',data.kgsaldo);
+            $('td', row).eq(9).html(MASKLA(data.kgsaldo, 2));
 
-            $('td', row).eq(10).attr('style','text-align:right');
-            $('td', row).eq(10).attr('data-order',data.kgsaldo);
-            $('td', row).eq(10).attr('data-search',data.kgsaldo);
-            $('td', row).eq(10).html(MASKLA(data.kgsaldo, 2));
-
-            $('td', row).eq(11).attr('id','updated_at' + data.id);
-            $('td', row).eq(11).attr('name','updated_at' + data.id);
-            $('td', row).eq(11).attr('updated_at',data.updatednum_at);
-            $('td', row).eq(11).addClass('updated_at');
+            $('td', row).eq(10).attr('id','updated_at' + data.id);
+            $('td', row).eq(10).attr('name','updated_at' + data.id);
+            $('td', row).eq(10).attr('updated_at',data.updatednum_at);
+            $('td', row).eq(10).addClass('updated_at');
 
             // Columna 15: Estado del cierre de la UM de salida
             const cantprodNum = parseFloat(data.cantprod) || 0;
             const umSalNombre = data.unidadmedidasal_nombre ? data.unidadmedidasal_nombre : 'UM salida';
             if (data.rollo_cerrado == 1 || cantprodNum > 0) {
-                $('td', row).eq(15).html(
+                $('td', row).eq(14).html(
                     `<span class="label" style="background-color:#5cb85c;color:#fff;padding:4px 8px;font-size:11px;" title="Este registro cerro ${cantprodNum} ${umSalNombre}(s) de salida de la etapa">✔ ${umSalNombre} Cerrado: ${cantprodNum}</span>`
                 );
             } else {
-                $('td', row).eq(15).html(
+                $('td', row).eq(14).html(
                     `<span class="label" style="background-color:#f0ad4e;color:#fff;padding:4px 8px;font-size:11px;" title="Registro parcial: kg procesados que aun no completan un(a) ${umSalNombre} de salida de la etapa">⚠ ${umSalNombre} Abierto (parcial)</span>`
                 );
             }
@@ -131,8 +136,8 @@ $(document).ready(function () {
                     <i class='fa fa-fw fa-pencil'></i>
                 </a>
                 ${btnEliminar}`;
-            $('td', row).eq(16).html(aux_text);
-            $('td', row).eq(16).attr('class','action-buttons');
+            $('td', row).eq(15).html(aux_text);
+            $('td', row).eq(15).attr('class','action-buttons');
 
         }
       });

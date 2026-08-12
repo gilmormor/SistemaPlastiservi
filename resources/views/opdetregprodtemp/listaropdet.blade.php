@@ -160,7 +160,7 @@ OP Det
                 <table class="table display AllDataTables table-hover table-condensed" id="tabla-data-consulta" data-page-length="25">
                     <thead>
                         <tr>
-                            <th></th>
+                            {{-- <th></th> --}}
                             <th title='Orden de Produccion Detalle ID'>OpDet ID</th>
                             <th title='Fecha OpDet'>FechaOp</th>
                             <th title='Trazabilidad'>Traz</th>

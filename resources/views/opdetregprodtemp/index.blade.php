@@ -32,8 +32,8 @@ Registrar Produccion
                             <tr>
                                 <th class="width70">ID</th>
                                 <th class="width70">ot</th>
-                                <th class="width70">op_id</th>
-                                <th class="width70">opdet_id</th>
+                                <th class="width70">op/opdet</th>
+                                {{-- <th class="width70">opdet_id</th> --}}
                                 <th class="width70">Razon Social</th>
                                 <th class="width70" title="Kilos recibidos">KgRec</th>
                                 <th class="width70" title="Kilos procesados">KgProc</th>

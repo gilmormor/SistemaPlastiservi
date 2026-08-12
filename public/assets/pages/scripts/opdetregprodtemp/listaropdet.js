@@ -30,12 +30,12 @@ $(document).ready(function () {
         'ajax'        : "/opdetregprodtemp/listaropdetpage/" + data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
         "order": [[ 0, "desc" ]],
         'columns'     : [
-            {
+            /* {
                 className: 'dt-control',
                 orderable: false,
                 data: null,
                 defaultContent: '<i class="btn-accion-tabla btn-sm glyphicon glyphicon-triangle-right text-aqua" title="Mostrar Detalle"></i>'
-            },
+            }, */
             {data: 'id'},
             {data: 'created_at'},
             {data: 'op_id'},
@@ -69,12 +69,12 @@ $(document).ready(function () {
                 </a>`;
 
             $('td', row).eq(1).html(aux_text); */
-            $('td', row).eq(1).attr('data-order',data.id);
+            $('td', row).eq(0).attr('data-order',data.id);
 
-            $('td', row).eq(2).attr('data-order',data.created_at);
+            $('td', row).eq(1).attr('data-order',data.created_at);
             aux_fecha = new Date(data.created_at);
-            $('td', row).eq(2).html(fechaddmmaaaa(aux_fecha) + " " + data.created_at.substr(11, 8));
-            $('td', row).eq(2).attr("style","font-size:12px");
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fecha) + " " + data.created_at.substr(11, 8));
+            $('td', row).eq(1).attr("style","font-size:12px");
 
             aux_textNV = "";
             if(data.notaventa_id){
@@ -95,7 +95,7 @@ $(document).ready(function () {
                 <a class="btn-accion-tabla btn-sm tooltipsC" title="Orden Produccion Detalle ${data.opdet_id}" onclick='genpdf(${data.op_id},"","ver-pdf-op","/op/exportPdf/${data.op_id}")' style="padding-left: 0px;">
                     ${data.id}
                 </a>`
-            $('td', row).eq(3).html(aux_text);
+            $('td', row).eq(2).html(aux_text);
 
 
 			if(data.acuerdotecnico_id != null){
@@ -115,21 +115,21 @@ $(document).ready(function () {
 							<i class="fa fa-fw fa-photo"></i>
 						</a>`;
 				}
-				$('td', row).eq(6).html(aux_text);
+				$('td', row).eq(5).html(aux_text);
 				//$('td', row).eq(0).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',' + aux_cliente_id +',"");');
 			}
+            $('td', row).eq(7).attr('style','text-align:right');
+            $('td', row).eq(7).html(MASKLA(data.cantrec,2));
             $('td', row).eq(8).attr('style','text-align:right');
-            $('td', row).eq(8).html(MASKLA(data.cantrec,2));
+            $('td', row).eq(8).html(MASKLA(data.kgrec,2));
             $('td', row).eq(9).attr('style','text-align:right');
-            $('td', row).eq(9).html(MASKLA(data.kgrec,2));
+            $('td', row).eq(9).html(MASKLA(data.cantprod,2));
             $('td', row).eq(10).attr('style','text-align:right');
-            $('td', row).eq(10).html(MASKLA(data.cantprod,2));
+            $('td', row).eq(10).html(MASKLA(data.kgprod,2));
             $('td', row).eq(11).attr('style','text-align:right');
-            $('td', row).eq(11).html(MASKLA(data.kgprod,2));
+            $('td', row).eq(11).html(MASKLA(data.kgscrap,2));
             $('td', row).eq(12).attr('style','text-align:right');
-            $('td', row).eq(12).html(MASKLA(data.kgscrap,2));
-            $('td', row).eq(13).attr('style','text-align:right');
-            $('td', row).eq(13).html(MASKLA(data.saldokg,2));
+            $('td', row).eq(12).html(MASKLA(data.saldokg,2));
 
             //href="${nuevaaux_rutadespsol}"
             aux_text = 
@@ -138,7 +138,7 @@ $(document).ready(function () {
                     <i class="fa fa-fw fa-gear text-primary"></i>
                 </button>
             </a>`;
-            $('td', row).eq(14).html(aux_text);
+            $('td', row).eq(13).html(aux_text);
 
 
             /* $('td', row).eq(5).attr("style","font-size:13px");
