@@ -4,6 +4,7 @@
  */
 
 var _apsucetapaprod_id_actual = null;
+var _camposCache = {}; // cache de campos cargados, para editarCampo(id) sin pasar JSON por el onclick
 
 /**
  * Abre el modal y carga los campos de la etapa indicada.
@@ -39,7 +40,9 @@ function renderizarTablaCampos(campos) {
     }
 
     var html = '';
+    _camposCache = {};
     $.each(campos, function (i, c) {
+        _camposCache[c.id] = c;
         var tipoLabel = { number: 'Número', text: 'Texto', calculated: 'Calculado' }[c.tipo] || c.tipo;
         html += '<tr id="fila-campo-' + c.id + '">' +
             '<td style="text-align:center;">' + c.orden + '</td>' +
@@ -52,7 +55,7 @@ function renderizarTablaCampos(campos) {
             '<td style="text-align:center;">' + (c.requerido ? '<i class="fa fa-check text-green"></i>' : '—') + '</td>' +
             '<td>' + (c.mapea_campo ? '<code>' + c.mapea_campo + '</code>' : '—') + '</td>' +
             '<td>' +
-                '<button type="button" class="btn btn-xs btn-warning" onclick="editarCampo(' + JSON.stringify(c) + ')" title="Editar">' +
+                '<button type="button" class="btn btn-xs btn-warning" onclick="editarCampo(' + c.id + ')" title="Editar">' +
                     '<i class="fa fa-pencil"></i>' +
                 '</button> ' +
                 '<button type="button" class="btn btn-xs btn-danger" onclick="eliminarCampo(' + c.id + ')" title="Eliminar">' +
@@ -79,7 +82,12 @@ function toggleFormula() {
 /**
  * Carga los datos de un campo en el formulario para editar.
  */
-function editarCampo(campo) {
+function editarCampo(campo_id) {
+    var campo = _camposCache[campo_id];
+    if (!campo) {
+        alertify.error('No se encontró el campo. Recargue la lista e intente de nuevo.');
+        return;
+    }
     $('#campoid_editar').val(campo.id);
     $('#campo_orden').val(campo.orden);
     $('#campo_etiqueta').val(campo.etiqueta);

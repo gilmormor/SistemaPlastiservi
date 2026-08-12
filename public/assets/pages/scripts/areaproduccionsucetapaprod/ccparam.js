@@ -4,6 +4,7 @@
  */
 
 var _ccParamApsucId = null;  // apsucetapaprod_id activo en el modal
+var _ccParamsCache = {}; // cache de parametros cargados, para editarCcParam(id) sin pasar JSON por el onclick
 
 function abrirModalCcParams(apsucetapaprod_id, etapaNombre) {
     _ccParamApsucId = apsucetapaprod_id;
@@ -19,10 +20,12 @@ function cargarCcParams(apsucetapaprod_id) {
     $('#tablaCcParamsBody').html('<tr><td colspan="8" class="text-center text-muted"><i class="fa fa-spinner fa-spin"></i> Cargando...</td></tr>');
     $.get('/ccparam_apsucetapaprod/' + apsucetapaprod_id + '/listar', function(resp) {
         var html = '';
+        _ccParamsCache = {};
         if (!resp.params || resp.params.length === 0) {
             html = '<tr><td colspan="8" class="text-center text-muted">Sin parámetros CC configurados para esta etapa.</td></tr>';
         } else {
             $.each(resp.params, function(i, p) {
+                _ccParamsCache[p.id] = p;
                 var req = p.requerido == 1 ? '<span class="label label-danger">Sí</span>' : '<span class="label label-default">No</span>';
                 var min = (p.valor_min !== null && p.valor_min !== '') ? p.valor_min : '—';
                 var max = (p.valor_max !== null && p.valor_max !== '') ? p.valor_max : '—';
@@ -36,7 +39,7 @@ function cargarCcParams(apsucetapaprod_id) {
                     '<td>' + max + '</td>' +
                     '<td>' + req + '</td>' +
                     '<td>' +
-                        '<a href="javascript:void(0)" onclick="editarCcParam(' + p.id + ',' + JSON.stringify(p) + ')" class="btn btn-xs btn-default" title="Editar"><i class="fa fa-pencil"></i></a> ' +
+                        '<a href="javascript:void(0)" onclick="editarCcParam(' + p.id + ')" class="btn btn-xs btn-default" title="Editar"><i class="fa fa-pencil"></i></a> ' +
                         '<a href="javascript:void(0)" onclick="eliminarCcParam(' + p.id + ',' + apsucetapaprod_id + ')" class="btn btn-xs btn-danger" title="Eliminar"><i class="fa fa-trash"></i></a>' +
                     '</td>' +
                 '</tr>';
@@ -58,7 +61,12 @@ function cargarCcParamsDisponibles(apsucetapaprod_id) {
     });
 }
 
-function editarCcParam(id, p) {
+function editarCcParam(id) {
+    var p = _ccParamsCache[id];
+    if (!p) {
+        alertify.error('No se encontró el parámetro. Recargue la lista e intente de nuevo.');
+        return;
+    }
     $('#ccparam_ap_id_editar').val(id);
     $('#formCcParamTitulo').html('<i class="fa fa-pencil"></i> Editar parámetro CC');
     $('#ccparam_ccparam_id').val(p.ccparam_id).prop('disabled', true);
