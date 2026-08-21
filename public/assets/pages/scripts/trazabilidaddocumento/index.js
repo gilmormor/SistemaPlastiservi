@@ -37,7 +37,7 @@ function buscarTrazabilidad() {
 
     $.get("/trazabilidaddocumento/buscar", params)
         .done(function (resp) {
-            renderResultados(resp.items || []);
+            renderResultados(resp.items || [], resp.nv_info);
         })
         .fail(function (xhr) {
             var msg = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : "Error al buscar la trazabilidad.";
@@ -45,14 +45,47 @@ function buscarTrazabilidad() {
         });
 }
 
-function renderResultados(items) {
+// Aviso del estado de la NV: aclara si no existe, si no tiene OT creada, o
+// que OT(s) tiene y en que estado. Sin esto, una NV sin OT devolvia "sin
+// resultados" sin explicar el motivo.
+function renderAvisoNv(nv) {
+    if (!nv) return '';
+
+    if (!nv.existe) {
+        return '<div class="trz-empty" style="color:#a93226;border-left:3px solid #a93226;padding-left:10px;">' +
+               '<i class="fa fa-exclamation-triangle"></i> La Nota de Venta <strong>' + nv.notaventa_id +
+               '</strong> no existe.</div>';
+    }
+
+    if (!nv.ots.length) {
+        return '<div class="trz-empty" style="color:#b7600a;border-left:3px solid #f39c12;padding-left:10px;">' +
+               '<i class="fa fa-exclamation-triangle"></i> La Nota de Venta <strong>' + nv.notaventa_id +
+               '</strong> existe pero <strong>no tiene ninguna OT creada</strong>, por lo que aun no hay produccion ni lotes que trazar.</div>';
+    }
+
+    var chips = nv.ots.map(function (o) {
+        var cls = 'green', nota = '';
+        if (o.anulada)        { cls = 'red';    nota = ' (anulada)'; }
+        else if (!o.aprobada) { cls = 'orange'; nota = ' (pendiente de aprobar)'; }
+        else if (!o.con_op)   { cls = 'blue';   nota = ' (sin OP)'; }
+        return '<span class="trz-chip ' + cls + '"><i class="fa fa-clipboard"></i> OT-' + o.id + nota + '</span>';
+    }).join(' ');
+
+    return '<div style="margin-bottom:12px;padding:8px 12px;background:#fff;border:1px solid #e3e8ef;border-radius:4px;">' +
+           '<span style="font-size:11px;color:#8a99aa;text-transform:uppercase;">Nota de Venta ' + nv.notaventa_id +
+           ' &nbsp;·&nbsp; ' + nv.ots.length + ' OT' + (nv.ots.length > 1 ? 's' : '') + '</span><br>' + chips + '</div>';
+}
+
+function renderResultados(items, nvInfo) {
     var $cont = $("#trz-resultados");
+    var aviso = renderAvisoNv(nvInfo);
+
     if (!items.length) {
-        $cont.html('<div class="trz-empty"><i class="fa fa-inbox"></i> Sin resultados para los filtros indicados.</div>');
+        $cont.html(aviso + '<div class="trz-empty"><i class="fa fa-inbox"></i> Sin resultados para los filtros indicados.</div>');
         return;
     }
 
-    var html = '';
+    var html = aviso;
     items.forEach(function (it) {
         html += renderItem(it);
     });

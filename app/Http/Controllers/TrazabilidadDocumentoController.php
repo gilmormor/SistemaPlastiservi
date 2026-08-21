@@ -89,7 +89,56 @@ class TrazabilidadDocumentoController extends Controller
             if ($item) $items[] = $item;
         }
 
-        return response()->json(['items' => $items]);
+        // Estado de la NV: si no tiene OT creada no habra produccion ni lotes, y
+        // la busqueda saldria vacia sin explicar el motivo. Se informa el estado
+        // para distinguir "la NV no existe" de "existe pero aun no tiene OT".
+        $nvInfo = null;
+        if (!empty($request->notaventa_id)) {
+            $nvInfo = $this->estadoNotaVenta($request->notaventa_id);
+        }
+
+        return response()->json(['items' => $items, 'nv_info' => $nvInfo]);
+    }
+
+    /**
+     * Estado de una Nota de Venta respecto a produccion: si existe, si tiene OT
+     * creada y en que estado esta cada una. Permite explicar por que una NV no
+     * arroja lotes (no existe / no tiene OT / la OT esta pendiente de aprobar).
+     */
+    private function estadoNotaVenta($notaventa_id)
+    {
+        $nv = DB::table('notaventa')->where('id', $notaventa_id)->whereNull('deleted_at')->first();
+        if (!$nv) {
+            return ['existe' => false, 'notaventa_id' => $notaventa_id, 'ots' => []];
+        }
+
+        $ots = DB::select("
+            SELECT ot.id,
+                   ot.aprobstatus,
+                   (SELECT COUNT(*) FROM otanul WHERE otanul.ot_id = ot.id AND ISNULL(otanul.deleted_at)) AS anulada,
+                   (SELECT COUNT(*) FROM otdet od
+                     INNER JOIN op ON op.otdet_id = od.id AND ISNULL(op.deleted_at)
+                     WHERE od.ot_id = ot.id AND ISNULL(od.deleted_at))                                    AS ops
+            FROM   otnotaventa otnv
+            INNER  JOIN ot ON ot.id = otnv.ot_id AND ISNULL(ot.deleted_at)
+            WHERE  otnv.notaventa_id = ?
+              AND  ISNULL(otnv.deleted_at)
+            ORDER  BY ot.id
+        ", [$notaventa_id]);
+
+        return [
+            'existe'       => true,
+            'notaventa_id' => (int) $notaventa_id,
+            'ots'          => array_map(function ($o) {
+                // aprobstatus: 1 = aprobada, 2 = pendiente/rechazada segun el flujo de otaprobar
+                return [
+                    'id'          => (int) $o->id,
+                    'aprobada'    => ((int) $o->aprobstatus === 1),
+                    'anulada'     => ((int) $o->anulada > 0),
+                    'con_op'      => ((int) $o->ops > 0),
+                ];
+            }, $ots),
+        ];
     }
 
     /**
