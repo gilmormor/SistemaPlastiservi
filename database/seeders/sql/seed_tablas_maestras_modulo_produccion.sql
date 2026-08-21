@@ -303,4 +303,13 @@ INSERT INTO `personaetapaprod` (`id`,`persona_id`,`areaproduccionsucetapaprod_id
 INSERT INTO `etapaprod_campo` (`id`,`apsucetapaprod_id`,`nombre`,`etiqueta`,`tipo`,`formula`,`unidad`,`decimales`,`requerido`,`orden`,`mapea_campo`,`created_at`,`updated_at`,`deleted_at`) VALUES
 (13,6,"lote_mat_prima","Lote Mat Prima","text",NULL,"kg",2,1,1,NULL,"2026-08-12 13:36:16","2026-08-12 15:21:39",NULL);
 
+INSERT INTO `apsucetapaprod_bodega` (`id`,`apsucetapaprod_id`,`invbodega_id`,`created_at`,`updated_at`) VALUES
+(13,6,25,"2026-08-03 17:58:48","2026-08-03 17:58:48"),
+(14,7,26,"2026-08-03 18:06:45","2026-08-03 18:06:45"),
+(15,8,27,"2026-08-05 13:20:33","2026-08-05 13:20:33"),
+(16,9,28,"2026-08-05 13:20:52","2026-08-05 13:20:52"),
+(17,10,29,"2026-08-05 13:21:14","2026-08-05 13:21:14"),
+(19,11,17,"2026-08-06 15:32:44","2026-08-06 15:32:44"),
+(20,11,30,"2026-08-06 15:32:50","2026-08-06 15:32:50");
+
 -- Dump completed on 2026-07-28 11:24:10
