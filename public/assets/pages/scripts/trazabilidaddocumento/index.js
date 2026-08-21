@@ -23,8 +23,9 @@ $(document).on('hidden.bs.modal', '#modalEtiquetaEtapa', function () {
 
 function buscarTrazabilidad() {
     var params = {
-        nrofactura:  $("#nrofactura").val(),
-        nroguia:     $("#nroguia").val(),
+        nrofactura:   $("#nrofactura").val(),
+        nroguia:      $("#nroguia").val(),
+        notaventa_id: $("#notaventa_id").val(),
         lote_id:     $("#lote_id").val(),
         producto_id: $("#producto_id").val(),
         fechad:      $("#fechad").val(),

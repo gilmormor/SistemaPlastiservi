@@ -83,6 +83,10 @@
             <input type="text" class="form-control numerico-entero" id="nroguia" placeholder="Ej: 176662"/>
         </div>
         <div class="col-xs-6 col-sm-2">
+            <label>N° Nota de Venta</label>
+            <input type="text" class="form-control numerico-entero" id="notaventa_id" placeholder="Ej: 33545"/>
+        </div>
+        <div class="col-xs-6 col-sm-2">
             <label>Lote</label>
             <input type="text" class="form-control numerico-entero" id="lote_id" placeholder="Ej: 43"/>
         </div>

@@ -62,6 +62,11 @@ class TrazabilidadDocumentoController extends Controller
             $sets[] = array_map(function ($r) { return (int) $r->id; }, $rows);
         }
 
+        if (!empty($request->notaventa_id)) {
+            $usoAlgunFiltro = true;
+            $sets[] = $this->lotesDesdeNotaVenta($request->notaventa_id);
+        }
+
         if (!empty($request->lote_id)) {
             $usoAlgunFiltro = true;
             $sets[] = [intval($request->lote_id)];
@@ -85,6 +90,50 @@ class TrazabilidadDocumentoController extends Controller
         }
 
         return response()->json(['items' => $items]);
+    }
+
+    /**
+     * Nota de Venta → notaventadetalle → despachosoldet →
+     * despachosoldet_opdetregprod → opdetregprod_id.
+     *
+     * Devuelve los lotes de TODOS los items de la NV que ya fueron asignados a
+     * alguna solicitud de despacho. Se suman ademas los lotes producidos para
+     * esa NV que aun no se despachan (via otnotaventa → ot → otdet → op), para
+     * que la busqueda por NV muestre la trazabilidad completa aunque el despacho
+     * todavia no exista.
+     */
+    private function lotesDesdeNotaVenta($notaventa_id)
+    {
+        // 1) Lotes ya comprometidos en solicitudes de despacho de esta NV
+        $despachados = DB::select("
+            SELECT DISTINCT dsop.opdetregprod_id
+            FROM   despachosol ds
+            INNER  JOIN despachosoldet dsd ON dsd.despachosol_id = ds.id
+            INNER  JOIN despachosoldet_opdetregprod dsop ON dsop.despachosoldet_id = dsd.id
+            WHERE  ds.notaventa_id = ?
+              AND  ISNULL(ds.deleted_at)
+              AND  ISNULL(dsd.deleted_at)
+        ", [$notaventa_id]);
+
+        // 2) Lotes producidos para esta NV (aunque no esten despachados aun)
+        $producidos = DB::select("
+            SELECT DISTINCT odrp.id
+            FROM   otnotaventa otnv
+            INNER  JOIN otdet od   ON od.ot_id = otnv.ot_id AND ISNULL(od.deleted_at)
+            INNER  JOIN op         ON op.otdet_id = od.id   AND ISNULL(op.deleted_at)
+            INNER  JOIN opdet      ON opdet.op_id = op.id   AND ISNULL(opdet.deleted_at)
+            INNER  JOIN opdetregprod odrp ON odrp.opdet_id = opdet.id
+                                          AND odrp.es_muestra = 0
+                                          AND ISNULL(odrp.deleted_at)
+            WHERE  otnv.notaventa_id = ?
+              AND  ISNULL(otnv.deleted_at)
+        ", [$notaventa_id]);
+
+        $ids = array_map(function ($r) { return (int) $r->opdetregprod_id; }, $despachados);
+        foreach ($producidos as $r) {
+            $ids[] = (int) $r->id;
+        }
+        return array_values(array_unique($ids));
     }
 
     /**
