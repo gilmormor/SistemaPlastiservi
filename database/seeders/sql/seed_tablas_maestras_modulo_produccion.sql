@@ -287,4 +287,20 @@ INSERT INTO `apsucetapaprod_bodega` (`id`, `apsucetapaprod_id`, `invbodega_id`, 
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+
+-- ===================================================================
+-- Registros de configuracion creados despues del dump original
+-- (agregado 2026-08-19). El seeder los convierte a INSERT IGNORE,
+-- asi que si ya existen en el destino se omiten sin duplicar.
+-- ===================================================================
+INSERT INTO `operario` (`id`,`nombre`,`desc`,`activo`,`usuario_id`,`usuariodel_id`,`deleted_at`,`created_at`,`updated_at`) VALUES
+(10,"Luciano","Luciano",1,1,NULL,NULL,"2026-08-17 12:20:38","2026-08-17 12:20:38");
+INSERT INTO `operario_areaproduccionsucep` (`id`,`operario_id`,`areaproduccionsucep_id`,`created_at`,`updated_at`) VALUES
+(15,1,11,"2026-08-07 12:10:07","2026-08-07 12:10:07"),
+(16,10,11,"2026-08-17 12:20:38","2026-08-17 12:20:38");
+INSERT INTO `personaetapaprod` (`id`,`persona_id`,`areaproduccionsucetapaprod_id`,`created_at`,`updated_at`) VALUES
+(36,21,11,"2026-08-07 12:07:34","2026-08-07 12:07:34");
+INSERT INTO `etapaprod_campo` (`id`,`apsucetapaprod_id`,`nombre`,`etiqueta`,`tipo`,`formula`,`unidad`,`decimales`,`requerido`,`orden`,`mapea_campo`,`created_at`,`updated_at`,`deleted_at`) VALUES
+(13,6,"lote_mat_prima","Lote Mat Prima","text",NULL,"kg",2,1,1,NULL,"2026-08-12 13:36:16","2026-08-12 15:21:39",NULL);
+
 -- Dump completed on 2026-07-28 11:24:10
