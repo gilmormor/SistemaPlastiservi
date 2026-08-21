@@ -270,12 +270,19 @@ class Ot extends Model
         IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
         modulo.stamodapl as modulo_stamodapl,clientedesbloqueadomodulo.modulo_id,
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
-        sum(otdet.kg) as aux_totalkg,
+        -- DISTINCT en el SUM y en el GROUP_CONCAT: los LEFT JOIN de esta consulta
+        -- (clientedesbloqueado, acuerdotecnico, otoc, otanul...) pueden devolver
+        -- varias filas por cada otdet, multiplicandolo. Ej: un cliente con 3
+        -- desbloqueos hacia que cada item apareciera 3 veces en el detalle y que
+        -- aux_totalkg quedara inflado 3x. Como no existen dos otdet identicos
+        -- dentro de una misma OT (verificado sobre todos los registros), DISTINCT
+        -- elimina solo las copias generadas por el fan-out.
+        (SELECT IFNULL(SUM(od2.kg),0) FROM otdet od2 WHERE od2.ot_id = ot.id AND ISNULL(od2.deleted_at)) as aux_totalkg,
         '' as obsdev, '' as rutaeditar,
         otnotaventa.notaventa_id,notaventa.cotizacion_id,comuna.nombre as nombre_comuna,
         otanul.obs as otanul_obs,otanul.created_at as otanulcreated_at,
         GROUP_CONCAT(
-            CONCAT_WS('|', otdet.producto_id, otdet.cant, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),unidadmedida.nombre, otdet.requiere_fabricacion)
+            DISTINCT CONCAT_WS('|', otdet.producto_id, otdet.cant, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),unidadmedida.nombre, otdet.requiere_fabricacion)
             SEPARATOR ';'
         ) AS nvdetalle
         FROM ot INNER JOIN otdet
