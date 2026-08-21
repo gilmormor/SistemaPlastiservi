@@ -1450,15 +1450,15 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
     $dteguiadesp->ot = $request->ot;
     $dte->dteguiadesp = $dteguiadesp;
 
-    $respuesta = Dte::dteSolicitarFolio($dte);
+    //$respuesta = Dte::dteSolicitarFolio($dte);
     //$respuesta = Dte::generardteprueba($dte);
-    /*
+    
     $respuesta = [
         'id' => 1,
         'aux_folio' => 1234,
 
     ];
-    */
+   
     $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
     if($respuesta["id"] == 1){
         $dte->fchemisgen = date("Y-m-d H:i:s");
@@ -1511,7 +1511,7 @@ function guardarDTE($request,$aux_indtraslado,$cont_producto){
         $foliocontrol->save();
 
         $dte = Dte::findOrFail($dteNew->id);
-        $respuesta = Dte::subirDteSii($dte);
+        //$respuesta = Dte::subirDteSii($dte);
         /* if($respuesta["id"] == 1){
             Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
         } */

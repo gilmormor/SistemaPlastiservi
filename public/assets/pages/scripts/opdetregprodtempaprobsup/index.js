@@ -309,8 +309,10 @@ function ajaxRequest(data,url,funcion) {
 
 					// Ofrecer impresión de etiqueta
 					if(respuesta.opdetregprod_id){
-						var tipoEtiqueta = respuesta.es_ultima_etapa ? 'etiqueta-bodega' : 'etiqueta-etapa';
-						var urlEtiqueta  = '/opdetregprodtempaprobsup/' + tipoEtiqueta + '/' + respuesta.opdetregprod_id;
+						// Misma etiqueta (tamaño térmico compacto) para todas las etapas,
+						// incluida la última — 'etiqueta-bodega' es un formato más grande
+						// que no cabe en la etiqueta física.
+						var urlEtiqueta  = '/opdetregprodtempaprobsup/etiqueta-etapa/' + respuesta.opdetregprod_id;
 						swal({
 							title: 'Registro aprobado',
 							text: '¿Desea ver la etiqueta?',

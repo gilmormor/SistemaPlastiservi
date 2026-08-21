@@ -1762,6 +1762,9 @@ Route::post('otitemprogramacion/cerraropdet', 'OtItemProgramacionController@cerr
 // Seguimiento de Órdenes de Producción (para el programador)
 Route::get('op/seguimiento',                  'OpSeguimientoController@index')->name('op_seguimiento');
 Route::get('op/seguimientopage',              'OpSeguimientoController@page')->name('op_seguimiento_page');
+
+Route::get('trazabilidaddocumento',           'TrazabilidadDocumentoController@index')->name('trazabilidaddocumento');
+Route::get('trazabilidaddocumento/buscar',    'TrazabilidadDocumentoController@buscar')->name('trazabilidaddocumento_buscar');
 Route::get('op/{op_id}/etapas-detalle',       'OpSeguimientoController@etapasDetalle')->name('op_etapas_detalle');
 
 /*RUTAS MAQUINAGRUPO*/
@@ -1916,6 +1919,7 @@ Route::delete('opdetregprodtemp/opdetregprodtemp/{id}', 'OpDetRegProdTempControl
 Route::get('opdetregprodtemp/listaropdet', 'OpDetRegProdTempController@listaropdet')->name('opdetregprodtemp_listaropdet');
 Route::get('opdetregprodtemp/listaropdetpage', 'OpDetRegProdTempController@listaropdetpage')->name('opdetregprodtemp_listaropdetpage');
 Route::post('opdetregprodtemp/enviaraprob/{id}', 'OpDetRegProdTempController@enviaraprob')->name('opdetregprodtemp_enviaraprob');
+Route::get('opdetregprodtemp/lotesorigen/{opdet_id}', 'OpDetRegProdTempController@lotesOrigen')->name('opdetregprodtemp_lotesorigen');
 
 /*RUTAS PERSONA ETAPAS DE PRODUCCION*/
 Route::get('personaetapaprod', 'PersonaEtapaProdController@index')->name('personaetapaprod');

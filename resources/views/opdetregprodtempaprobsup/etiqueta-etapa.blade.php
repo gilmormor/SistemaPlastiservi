@@ -71,7 +71,7 @@
             font-weight: bold;
             line-height: 1.15;
         }
-        .etiqueta-datos td:first-child { white-space: nowrap; width: 38%; }
+        .etiqueta-datos td:first-child { white-space: nowrap; width: 1%; padding-right: 3px; }
         .etiqueta-qr {
             display: table-cell;
             vertical-align: middle;
@@ -129,6 +129,12 @@
                     <td>Producto:</td>
                     <td>id {{ $producto_id }} - {{ $productoNombre }}</td>
                 </tr>
+                @if($clienteNombre)
+                <tr>
+                    <td>Cliente:</td>
+                    <td>{{ $clienteNombre }}</td>
+                </tr>
+                @endif
                 <tr>
                     <td>Cant / Kg:</td>
                     <td>{{ number_format($produccion->cantprod, 0, ',', '.') }} {{ $produccion->unidadmedidasal->nombre ?? 'UM' }} /
@@ -165,6 +171,9 @@
         <div class="etiqueta-qr">
             <div id="qrcode"></div>
             <small>Lote: {{ $produccion->id }}</small>
+            @if($empresaNombre)
+                <small style="font-weight:normal;">{{ $empresaNombre }}</small>
+            @endif
         </div>
     </div>
 </div>

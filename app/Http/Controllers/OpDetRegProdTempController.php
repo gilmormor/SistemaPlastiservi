@@ -281,6 +281,85 @@ public function etapaprod()
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Lista los lotes de la etapa anterior con saldo disponible, para que el
+     * operario elija manualmente de cuál(es) viene su registro de producción.
+     * $excluir_temp_id: al editar, excluye la reserva propia del registro actual.
+     */
+    public function lotesOrigen($opdet_id, Request $request)
+    {
+        can('guardar-registro-produccion');
+        $opdet = OpDet::findOrFail($opdet_id);
+        $excluirTempId = $request->input('excluir_temp_id');
+        $tieneEtapaAnterior = OpDetRegProdTempOrigen::opdetAnterior($opdet) !== null;
+        $lotes = $tieneEtapaAnterior ? OpDetRegProdTempOrigen::lotesDisponibles($opdet, $excluirTempId) : collect();
+        return response()->json([
+            // Primera etapa (sin etapa anterior): no hay de dónde elegir, kgprod/kgscrap
+            // se ingresan directo como hoy. Si HAY etapa anterior, la selección de lote
+            // es siempre obligatoria (aunque solo haya 1 lote pendiente).
+            'requiere_seleccion' => $tieneEtapaAnterior,
+            'lotes' => $lotes,
+        ]);
+    }
+
+    /**
+     * Valida y arma el array [opdetregprod_id => ['kg'=>produccion,'scrap'=>scrap]] de
+     * la selección manual de lotes enviada por el operario. Solo aplica si la etapa
+     * tiene una etapa anterior (si no, retorna null: no hay de dónde elegir, kgprod/
+     * kgscrap se usan tal cual los ingresó el operario). Lanza excepción si no cuadra
+     * (nunca cae en silencio al comportamiento anterior cuando hay ambigüedad real).
+     */
+    private function validarSeleccionLotes(Request $request, OpDet $opdet, $kgprodReq, $kgscrapReq, $excluirTempId = null)
+    {
+        if (!OpDetRegProdTempOrigen::opdetAnterior($opdet)) {
+            return null; // primera etapa: sin origen que elegir (futuro módulo MP)
+        }
+
+        $lotesDisponibles = OpDetRegProdTempOrigen::lotesDisponibles($opdet, $excluirTempId);
+
+        $seleccion = $request->input('origen_lote_id', []);
+        $seleccionKg = $request->input('origen_kg', []);
+        $seleccionScrap = $request->input('origen_scrap', []);
+        if (!is_array($seleccion) || count($seleccion) === 0) {
+            throw new \Exception('Debe seleccionar de qué lote(s) proviene esta producción.');
+        }
+
+        $disponiblePorLote = [];
+        foreach ($lotesDisponibles as $l) {
+            $disponiblePorLote[$l['id']] = $l['disponible_kg'];
+        }
+
+        $selecciones = [];
+        $totalProd = 0.0;
+        $totalScrap = 0.0;
+        foreach ($seleccion as $idx => $loteId) {
+            $kg = isset($seleccionKg[$idx]) ? (float) str_replace(',', '.', $seleccionKg[$idx]) : 0;
+            $scrap = isset($seleccionScrap[$idx]) ? (float) str_replace(',', '.', $seleccionScrap[$idx]) : 0;
+            if ($kg <= 0 && $scrap <= 0) continue;
+            if (!array_key_exists($loteId, $disponiblePorLote)) {
+                throw new \Exception('Uno de los lotes seleccionados ya no está disponible. Vuelva a intentar.');
+            }
+            if (($kg + $scrap) - $disponiblePorLote[$loteId] > 0.01) {
+                throw new \Exception('Los kg (producción + scrap) asignados al lote #'.$loteId.' superan su saldo disponible.');
+            }
+            $selecciones[$loteId] = ['kg' => $kg, 'scrap' => $scrap];
+            $totalProd += $kg;
+            $totalScrap += $scrap;
+        }
+
+        if (count($selecciones) === 0) {
+            throw new \Exception('Debe asignar kg de producción o scrap a al menos un lote de origen.');
+        }
+        if (abs($totalProd - (float) $kgprodReq) > 0.01) {
+            throw new \Exception('La suma de kg de producción por lote ('.number_format($totalProd, 2, ',', '.').') no cuadra con Kg Producción ('.number_format((float) $kgprodReq, 2, ',', '.').').');
+        }
+        if (abs($totalScrap - (float) $kgscrapReq) > 0.01) {
+            throw new \Exception('La suma de scrap por lote ('.number_format($totalScrap, 2, ',', '.').') no cuadra con Kg Scrap ('.number_format((float) $kgscrapReq, 2, ',', '.').').');
+        }
+
+        return $selecciones;
+    }
+
     public function guardar(ValidarOpDetRegProdTemp $request)
     {
         can('guardar-registro-produccion');
@@ -308,6 +387,23 @@ public function etapaprod()
         }
         // kgent = kgprod + kgscrap (invariante). El operario ingresa kgprod y kgscrap.
         $request->merge(['kgent' => $kgentReq]);
+
+        // Trazabilidad entre etapas: si la etapa anterior tiene más de un lote con
+        // saldo, la selección de lote es OBLIGATORIA. Se valida ANTES de crear nada:
+        // si falta o no cuadra, se rechaza el guardado completo (nunca cae en
+        // silencio al comportamiento automático cuando hay ambigüedad real).
+        $seleccionLotes = null;
+        if (!$request->input('es_muestra')) {
+            try {
+                $seleccionLotes = $this->validarSeleccionLotes($request, $opdet, $kgprodReq, $kgscrapReq);
+            } catch (\Exception $e) {
+                return redirect('opdetregprodtemp/listaropdet')->with([
+                    'mensaje' => $e->getMessage(),
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
+
         DB::beginTransaction();
         try {
             $opdet->updated_at = date("Y-m-d H:i:s");
@@ -338,9 +434,13 @@ public function etapaprod()
                 $opdetregprodtemp->save();
             }
 
-            // Trazabilidad entre etapas: reservar por FIFO los lotes aprobados de la
-            // etapa anterior que este registro consume. No bloquea si no hay lotes.
-            OpDetRegProdTempOrigen::asignarFifo($opdetregprodtemp);
+            // Trazabilidad entre etapas: si la etapa tiene etapa anterior, la selección
+            // de lote (con su desglose producción/scrap) ya fue validada arriba y es
+            // obligatoria. Si es la primera etapa (sin etapa anterior), no hay origen
+            // que registrar.
+            if ($seleccionLotes !== null) {
+                OpDetRegProdTempOrigen::asignarManual($opdetregprodtemp, $seleccionLotes);
+            }
 
             // Guardar máquina asociada al opdet (si la etapa usa máquina).
             $opdetMaq = DB::table('opdetmaquina')->where('opdet_id', $opdetregprodtemp->opdet_id)->first();
@@ -452,6 +552,25 @@ public function etapaprod()
                 'tipo_alert' => 'alert-error'
             ]);
         }
+        $opdetPrevio = OpDet::findOrFail($opdetregprodtemp->opdet_id);
+        $kgprodReq  = (float) $request->kgprod;
+        $kgscrapReq = (float) $request->kgscrap;
+        $kgentReq   = $kgprodReq + $kgscrapReq;
+
+        // Selección de lote obligatoria si la etapa tiene etapa anterior (excluye la
+        // reserva propia de este temp para que su saldo previo no se descuente 2 veces).
+        $seleccionLotes = null;
+        if (!$request->input('es_muestra')) {
+            try {
+                $seleccionLotes = $this->validarSeleccionLotes($request, $opdetPrevio, $kgprodReq, $kgscrapReq, $opdetregprodtemp->id);
+            } catch (\Exception $e) {
+                return redirect()->route('opdetregprodtemp_index01')->with([
+                    'mensaje' => $e->getMessage(),
+                    'tipo_alert' => 'alert-error'
+                ]);
+            }
+        }
+
         DB::beginTransaction();
         try {
             $opdet = OpDet::findOrFail($opdetregprodtemp->opdet_id);
@@ -459,9 +578,7 @@ public function etapaprod()
             $opdet->save();
 
             // kgent = kgprod + kgscrap (invariante). El operario ingresa kgprod y kgscrap.
-            $kgprodReq  = (float) $request->kgprod;
-            $kgscrapReq = (float) $request->kgscrap;
-            $request->merge(['kgent' => $kgprodReq + $kgscrapReq]);
+            $request->merge(['kgent' => $kgentReq]);
 
             $opdetregprodtemp->update($request->all());
 
@@ -486,9 +603,11 @@ public function etapaprod()
                 $opdetregprodtemp->save();
             }
 
-            // Trazabilidad entre etapas: reasignar reserva FIFO con los kg actualizados
-            // (borra las filas previas del temp y las recrea).
-            OpDetRegProdTempOrigen::asignarFifo($opdetregprodtemp);
+            // Trazabilidad entre etapas: reasignar la selección de lotes con los kg
+            // actualizados (borra las filas previas del temp y las recrea).
+            if ($seleccionLotes !== null) {
+                OpDetRegProdTempOrigen::asignarManual($opdetregprodtemp, $seleccionLotes);
+            }
 
             // Actualizar máquina: reemplazar el registro previo con el actual del opdet.
             $opdetMaq = DB::table('opdetmaquina')->where('opdet_id', $opdetregprodtemp->opdet_id)->first();

@@ -21,10 +21,13 @@ use App\Models\DespachoOrd_InvMov;
 use App\Models\DespachoOrdAnul;
 use App\Models\DespachoOrdDet;
 use App\Models\DespachoOrdDet_InvBodegaProducto;
+use App\Models\DespachoOrdDet_OpDetRegProd;
 use App\Models\DespachoOrdRec;
 use App\Models\DespachoSol;
 use App\Models\DespachoSolDet;
+use App\Models\DespachoSolDet_OpDetRegProd;
 use App\Models\DespachoSolEnvOrdDesp;
+use App\Models\InvMovDetOpDetRegProd;
 use App\Models\Dte;
 use App\Models\Empresa;
 use App\Models\FormaPago;
@@ -985,9 +988,30 @@ class DespachoOrdController extends Controller
                         $invmov = InvMov::create($invmov_array);
                         array_push($arrayinvmov_id, $invmov->id);
                         foreach ($despachoord->despachoorddets as $despachoorddet) {
+                            // Trazabilidad de lote: extiende hasta la Orden de Despacho la misma
+                            // trazabilidad granular que ya existe a nivel Solicitud de Despacho
+                            // (despachosoldet_opdetregprod). Se copia UNA vez por despachoorddet
+                            // (no depende de la bodega) a despachoorddet_opdetregprod, para que
+                            // devolverguiadesp() pueda usarla más adelante sin recalcularla.
+                            $lotesAsignados = ($despachoorddet->notaventadetalle->requiere_fabricacion == 1)
+                                ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachoorddet->despachosoldet_id)->get()
+                                : collect();
+
+                            if ($lotesAsignados->isNotEmpty()
+                                && !DespachoOrdDet_OpDetRegProd::where('despachoorddet_id', $despachoorddet->id)->exists()) {
+                                foreach ($lotesAsignados as $loteAsig) {
+                                    DespachoOrdDet_OpDetRegProd::create([
+                                        'despachoorddet_id' => $despachoorddet->id,
+                                        'opdetregprod_id'    => $loteAsig->opdetregprod_id,
+                                        'cant'               => $loteAsig->cant,
+                                        'cantkg'             => $loteAsig->cantkg,
+                                    ]);
+                                }
+                            }
+
                             foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
                                 //ESTO DEBE IR EN EL PROYECTO FINAL
-                                $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
+                                $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                                 foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
                                     //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
                                     if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
@@ -1003,7 +1027,41 @@ class DespachoOrdController extends Controller
                                         'invbodega_id' => $aux_bodegadespacho_id
                                     ]
                                 );
-        
+
+                                if ($lotesAsignados->isNotEmpty()) {
+                                    foreach ($lotesAsignados as $loteAsig) {
+                                        $cantLote = (float) $loteAsig->cant * ($oddetbodprod->cant < 0 ? -1 : 1);
+                                        $cantkgLote = (float) $loteAsig->cantkg * ($oddetbodprod->cant < 0 ? -1 : 1);
+                                        if ($cantLote == 0) {
+                                            continue;
+                                        }
+                                        $array_invmovdetLote = [
+                                            "invbodegaproducto_id" => $invbodegaproducto->id,
+                                            "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
+                                            "invbodega_id"         => $aux_bodegadespacho_id,
+                                            "sucursal_id"          => $invbodegaproducto->invbodega->sucursal_id,
+                                            "unidadmedida_id"      => $despachoorddet->notaventadetalle->unidadmedida_id,
+                                            "invmovtipo_id"        => 2,
+                                            "cant"                 => $cantLote,
+                                            "cantgrupo"            => $cantLote,
+                                            "cantxgrupo"           => 1,
+                                            "peso"                 => $despachoorddet->notaventadetalle->producto->peso,
+                                            "cantkg"               => $cantkgLote,
+                                            "invmov_id"            => $invmov->id,
+                                        ];
+                                        $invmovdetLote = InvMovDet::create($array_invmovdetLote);
+                                        InvMovDetOpDetRegProd::create([
+                                            'invmovdet_id'    => $invmovdetLote->id,
+                                            'opdetregprod_id' => $loteAsig->opdetregprod_id,
+                                        ]);
+                                        InvMovDet_BodOrdDesp::create([
+                                            'invmovdet_id'                        => $invmovdetLote->id,
+                                            'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id,
+                                        ]);
+                                    }
+                                    continue;
+                                }
+
                                 $array_invmovdet = $oddetbodprod->attributesToArray();
                                 $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                 $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
@@ -1021,7 +1079,7 @@ class DespachoOrdController extends Controller
                                     'invmovdet_id' => $invmovdet->id,
                                     'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                                 ]);
-        
+
                             }
                         }
 
@@ -1251,7 +1309,66 @@ class DespachoOrdController extends Controller
             $invmov = InvMov::create($invmov_array);
             array_push($arrayinvmov_id, $invmov->id);
             foreach ($despachoord->despachoorddets as $despachoorddet) {
+                // Trazabilidad de lote: copiar a despachoorddet_opdetregprod los lotes que la
+                // solicitud ya tenia asignados, para que la Orden de Despacho conserve el detalle
+                // por lote y la anulacion de guia pueda revertir con esa misma trazabilidad.
+                $lotesAsignados = ($despachoorddet->notaventadetalle->requiere_fabricacion == 1)
+                    ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachoorddet->despachosoldet_id)->get()
+                    : collect();
+
+                if ($lotesAsignados->isNotEmpty()
+                    && !DespachoOrdDet_OpDetRegProd::where('despachoorddet_id', $despachoorddet->id)->exists()) {
+                    foreach ($lotesAsignados as $loteAsig) {
+                        DespachoOrdDet_OpDetRegProd::create([
+                            'despachoorddet_id' => $despachoorddet->id,
+                            'opdetregprod_id'   => $loteAsig->opdetregprod_id,
+                            'cant'              => $loteAsig->cant,
+                            'cantkg'            => $loteAsig->cantkg,
+                        ]);
+                    }
+                }
+
                 foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
+                    // Un movimiento por lote (en vez de uno agregado) para no perder el detalle
+                    // de que lote sale de Picking hacia la bodega de Despacho.
+                    if ($lotesAsignados->isNotEmpty()) {
+                        foreach ($lotesAsignados as $loteAsig) {
+                            $cantLote   = (float) $loteAsig->cant   * ($oddetbodprod->cant < 0 ? -1 : 1);
+                            $cantkgLote = (float) $loteAsig->cantkg * ($oddetbodprod->cant < 0 ? -1 : 1);
+                            if ($cantLote == 0) { continue; }
+                            $invmovdetLote = InvMovDet::create([
+                                "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id,
+                                "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
+                                "invbodega_id"         => $oddetbodprod->invbodegaproducto->invbodega_id,
+                                "sucursal_id"          => $oddetbodprod->invbodegaproducto->invbodega->sucursal_id,
+                                "unidadmedida_id"      => $despachoorddet->notaventadetalle->unidadmedida_id,
+                                "invmovtipo_id"        => 2,
+                                "cant"                 => $cantLote,
+                                "cantgrupo"            => $cantLote,
+                                "cantxgrupo"           => 1,
+                                "peso"                 => $despachoorddet->notaventadetalle->producto->peso,
+                                "cantkg"               => $cantkgLote,
+                                "invmov_id"            => $invmov->id,
+                            ]);
+                            InvMovDetOpDetRegProd::create([
+                                'invmovdet_id'    => $invmovdetLote->id,
+                                'opdetregprod_id' => $loteAsig->opdetregprod_id,
+                            ]);
+                            if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
+                                foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                    if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                        InvMovDet_BodSolDesp::create([
+                                            'invmovdet_id' => $invmovdetLote->id,
+                                            'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                        ]);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        continue;
+                    }
+
                     $array_invmovdet = $oddetbodprod->attributesToArray();
                     $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                     $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
@@ -1263,7 +1380,7 @@ class DespachoOrdController extends Controller
                     $array_invmovdet["peso"] = $despachoorddet->notaventadetalle->producto->peso;
                     $array_invmovdet["cantkg"] = ($despachoorddet->notaventadetalle->totalkilos / $despachoorddet->notaventadetalle->cant) * $array_invmovdet["cant"];
                     $array_invmovdet["invmov_id"] = $invmov->id;
-                    $invmovdet = InvMovDet::create($array_invmovdet);                                
+                    $invmovdet = InvMovDet::create($array_invmovdet);
                     if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
                         /***BUSCO LA BODEGA QUE TIENE PICKING */
                         foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
@@ -1309,6 +1426,40 @@ class DespachoOrdController extends Controller
                             'invbodega_id' => $aux_bodegadespacho_id
                         ]
                     );
+                    // Trazabilidad de lote: un movimiento de entrada por cada lote, en espejo
+                    // con la salida de Picking de mas arriba.
+                    $lotesAsigEnt = DespachoOrdDet_OpDetRegProd::where('despachoorddet_id', $despachoorddet->id)->get();
+                    if ($lotesAsigEnt->isNotEmpty()) {
+                        foreach ($lotesAsigEnt as $loteAsig) {
+                            $cantLote   = (float) $loteAsig->cant   * ($oddetbodprod->cant < 0 ? -1 : 1) * -1;
+                            $cantkgLote = (float) $loteAsig->cantkg * ($oddetbodprod->cant < 0 ? -1 : 1) * -1;
+                            if ($cantLote == 0) { continue; }
+                            $invmovdetLote = InvMovDet::create([
+                                "invbodegaproducto_id" => $invbodegaproducto->id,
+                                "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
+                                "invbodega_id"         => $aux_bodegadespacho_id,
+                                "sucursal_id"          => $invbodegaproducto->invbodega->sucursal_id,
+                                "unidadmedida_id"      => $despachoorddet->notaventadetalle->unidadmedida_id,
+                                "invmovtipo_id"        => 1,
+                                "cant"                 => $cantLote,
+                                "cantgrupo"            => $cantLote,
+                                "cantxgrupo"           => 1,
+                                "peso"                 => $despachoorddet->notaventadetalle->producto->peso,
+                                "cantkg"               => $cantkgLote,
+                                "invmov_id"            => $invmov->id,
+                            ]);
+                            InvMovDetOpDetRegProd::create([
+                                'invmovdet_id'    => $invmovdetLote->id,
+                                'opdetregprod_id' => $loteAsig->opdetregprod_id,
+                            ]);
+                            InvMovDet_BodOrdDesp::create([
+                                'invmovdet_id' => $invmovdetLote->id,
+                                'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
+                            ]);
+                        }
+                        continue;
+                    }
+
                     $array_invmovdet = $oddetbodprod->attributesToArray();
                     $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                     $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;

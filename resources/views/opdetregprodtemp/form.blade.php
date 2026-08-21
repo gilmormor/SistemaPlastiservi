@@ -138,11 +138,15 @@
         </div>
     </div>
 </div>
+<div class="clearfix"></div>
 
-{{-- R1: Checkbox muestra física.
+{{-- R1: Checkbox muestra física. Solo aplica si la etapa requiere control de calidad
+     (areaproduccionsucetapaprod.requiere_cc). Si la etapa no requiere CC, no tiene
+     sentido registrar una muestra física de control de calidad.
      El hidden value="0" va ANTES del checkbox para que cuando esté desmarcado
      llegue 0, y cuando esté marcado el checkbox override con 1 (PHP toma el último). --}}
 <input type="hidden" name="es_muestra" value="0">
+@if($opdet->areaproduccionsucetapaprod->requiere_cc ?? 0)
 <div class="form-group col-xs-12" id="div-es-muestra" style="margin-bottom:4px;">
     <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:4px;padding:8px 14px;display:inline-block;">
         <label style="margin:0;font-weight:normal;cursor:pointer;">
@@ -152,6 +156,55 @@
             <strong>Este registro es <span style="color:#e65100;">MUESTRA FÍSICA</span></strong>
             — no suma a producción, no genera entrada a bodega
         </label>
+    </div>
+</div>
+@endif
+
+{{-- Trazabilidad: selección de lote de origen (etapa anterior).
+     Se muestra siempre que la etapa tenga una etapa anterior (así sea un solo lote).
+     Si es la primera etapa (sin etapa anterior — el origen vendrá del futuro módulo
+     de Materia Prima), esta sección no aparece y Kg Producción/Scrap se ingresan
+     directo como siempre. --}}
+<input type="hidden" id="excluir_temp_id" value="{{$data->id ?? ''}}">
+<script>
+    // Selección de lotes ya guardada (modo editar): kg = producción (kg total - scrap).
+    var LOTEORIGEN_EXISTENTE = {!! json_encode(isset($data) ? $data->origenes->map(function($o){
+        return ['id' => $o->opdetregprod_id, 'kg' => $o->kg - $o->scrap, 'scrap' => $o->scrap];
+    })->values() : []) !!};
+</script>
+<div class="form-group col-xs-12" id="div-lote-origen" style="display:none;">
+    <div class="box box-primary" style="margin-bottom:10px;">
+        <div class="box-header with-border" style="display:flex;align-items:center;gap:8px;">
+            <h3 class="box-title" style="margin:0;">Seleccione de qué lote viene esta producción</h3>
+            <span class="label label-default" id="lote-origen-badge" style="margin-left:auto;"></span>
+        </div>
+        <div class="box-body">
+            <p style="color:#777;font-size:12px;">
+                Indique cuántos kg de producción y cuántos de scrap salieron de cada lote.
+                Lo que no asigne queda disponible en el lote para un próximo registro (no se asume como scrap).
+            </p>
+            <div class="table-responsive">
+                <table class="table table-condensed table-bordered" id="tabla-lote-origen">
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">Lote</th>
+                            <th>Origen</th>
+                            <th class="text-right" style="width:110px;">Disponible</th>
+                            <th class="text-right" style="width:140px;">Kg Producción de este lote</th>
+                            <th class="text-right" style="width:140px;">Kg Scrap de este lote</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-lote-origen-body"></tbody>
+                </table>
+            </div>
+            <div style="text-align:right;padding:6px 4px;background:#f4f4f4;border-radius:3px;">
+                <span style="margin-right:20px;">Kg Producción: <strong id="lote-origen-kg-registro">0,00</strong></span>
+                <span style="margin-right:20px;">Kg asignados: <strong id="lote-origen-kg-asignado">0,00</strong></span>
+                <span style="margin-right:20px;">Kg Scrap: <strong id="lote-origen-scrap-registro">0,00</strong></span>
+                <span>Scrap asignado: <strong id="lote-origen-scrap-asignado">0,00</strong></span>
+            </div>
+            <div id="lote-origen-alerta" class="alert" style="margin-top:8px;margin-bottom:0;padding:8px 12px;font-size:12px;"></div>
+        </div>
     </div>
 </div>
 

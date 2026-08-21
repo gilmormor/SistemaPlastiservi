@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ApsucEtapaProdBodega;
 use App\Models\CategoriaGrupoValMes;
+use App\Models\Empresa;
 use App\Models\EtapaProd;
 use App\Models\InvBodega;
 use App\Models\Maquina;
@@ -364,6 +365,7 @@ class OpDetRegProdTempAprobSupController extends Controller
                             'opdetregprod_id'        => $opdetregprod->id,
                             'opdetregprod_origen_id' => $tempOrigen->opdetregprod_id,
                             'kg'                     => $tempOrigen->kg,
+                            'scrap'                  => $tempOrigen->scrap,
                             'cant'                   => $tempOrigen->cant,
                         ]);
                     }
@@ -851,10 +853,12 @@ class OpDetRegProdTempAprobSupController extends Controller
         $productoNombre = $productoData['nombre'] ?? '—';
         $producto_id = $produccion->producto_id;
 
-        // Nota de Venta (si el OT tiene relación con NV)
+        // Nota de Venta (si el OT tiene relación con NV) y nombre del cliente
         $notaventa_id = null;
+        $clienteNombre = null;
         if ($otdet->otdetnvdet && $otdet->otdetnvdet->notaventadetalle) {
             $notaventa_id = $otdet->otdetnvdet->notaventadetalle->notaventa_id;
+            $clienteNombre = $ot->cliente->razonsocial ?? null;
         }
 
         // Bodega real a la que ingresó este registro (vía el movimiento de entrada
@@ -869,9 +873,11 @@ class OpDetRegProdTempAprobSupController extends Controller
             ? (InvBodega::find($bodegaEntrada->invbodega_id)->nombre ?? 'Bodega Producción')
             : 'Bodega Producción';
 
+        $empresaNombre = optional(Empresa::first())->nombre ?? '';
+
         return view('opdetregprodtempaprobsup.etiqueta-bodega', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
-            'productoNombre', 'producto_id', 'notaventa_id', 'bodegaNombre'
+            'productoNombre', 'producto_id', 'notaventa_id', 'bodegaNombre', 'empresaNombre', 'clienteNombre'
         ));
     }
 
@@ -935,10 +941,18 @@ class OpDetRegProdTempAprobSupController extends Controller
         $producto_id = $produccion->producto_id;
         $productoNombre = $productoData['nombre'] ?? '—';
 
+        // Nombre del cliente, solo si la OT viene de una Nota de Venta.
+        $clienteNombre = null;
+        if ($otdet->otdetnvdet && $otdet->otdetnvdet->notaventadetalle) {
+            $clienteNombre = $ot->cliente->razonsocial ?? null;
+        }
+
+        $empresaNombre = optional(Empresa::first())->nombre ?? '';
+
         return view('opdetregprodtempaprobsup.etiqueta-etapa', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
             'productoNombre','producto_id', 'operarioNombre', 'maquina',
-            'maquinaNombre', 'proximaEtapaNombre'
+            'maquinaNombre', 'proximaEtapaNombre', 'empresaNombre', 'clienteNombre'
         ));
     }
 

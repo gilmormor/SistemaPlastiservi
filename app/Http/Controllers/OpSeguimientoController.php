@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Seguridad\Usuario;
+use App\Services\TrazabilidadLoteService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -227,6 +228,13 @@ class OpSeguimientoController extends Controller
 
         // 3. Registros aprobados en opdetregprod.
         // Se obtiene invmov_id (última etapa) y nvdet_id (para trazabilidad despacho).
+        // Un mismo lote puede quedar vinculado a VARIOS movimientos de inventario a lo
+        // largo de su vida (entrada a bodega al aprobar + movimientos de picking/despacho
+        // posteriores que también se ligan al opdetregprod_id para trazabilidad). Por eso
+        // se preagrega en una subconsulta (GROUP BY opdetregprod_id) para que el lote
+        // aparezca UNA sola vez, con todos sus invmov_id listados uno al lado del otro
+        // en invmov_ids — en vez de que el LEFT JOIN duplique la fila del lote por cada
+        // movimiento vinculado.
         $aprobados = DB::select("
             SELECT
                 r.id,
@@ -238,25 +246,49 @@ class OpSeguimientoController extends Controller
                 r.created_at,
                 IFNULL(operario.nombre, '—') AS operario_nombre,
                 IFNULL(usuario.nombre, '—')  AS usuario_nombre,
-                imd.invmov_id                AS invmov_id,
-                iodr.notaventadetalle_id     AS nvdet_id
+                MOVS.invmov_id                AS invmov_id,
+                MOVS.invmov_ids                AS invmov_ids,
+                MOVS.nvdet_id                  AS nvdet_id
             FROM opdetregprod r
             INNER JOIN opdet od ON od.id = r.opdet_id
             LEFT  JOIN operario ON operario.id = r.operario_id
             LEFT  JOIN usuario  ON usuario.id  = r.usuario_id
-            LEFT  JOIN invmovdet_opdetregprod iodr ON iodr.opdetregprod_id = r.id
-            LEFT  JOIN invmovdet imd              ON imd.id = iodr.invmovdet_id
+            LEFT JOIN (
+                SELECT iodr.opdetregprod_id,
+                       MIN(imd.invmov_id)                                             AS invmov_id,
+                       GROUP_CONCAT(DISTINCT imd.invmov_id ORDER BY imd.invmov_id SEPARATOR ', ') AS invmov_ids,
+                       MAX(iodr.notaventadetalle_id)                                  AS nvdet_id
+                FROM   invmovdet_opdetregprod iodr
+                INNER  JOIN invmovdet imd ON imd.id = iodr.invmovdet_id
+                GROUP  BY iodr.opdetregprod_id
+            ) MOVS ON MOVS.opdetregprod_id = r.id
             WHERE od.op_id = $op_id
               AND ISNULL(r.deleted_at)
             ORDER BY r.opdet_id ASC, r.id ASC
         ");
 
-        // Enriquecer registros de última etapa con árbol de trazabilidad de despacho.
-        // Se usa opdetregprod_id como clave de búsqueda (trazabilidad granular por lote).
-        // Para etapas intermedias (sin invmov_id) traza_despacho queda null.
+        // Marcar qué registros pertenecen a la ÚLTIMA etapa de la OP (mayor
+        // etapa_orden). Ya no basta con "tiene invmov_id": las etapas intermedias
+        // también generan movimientos de entrada/salida por la trazabilidad de
+        // lotes entre etapas, así que invmov_id por sí solo no distingue última
+        // etapa de una intermedia.
+        $opdetIdsUltimaEtapa = [];
+        if (!empty($etapas)) {
+            $maxOrden = max(array_column($etapas, 'etapa_orden'));
+            foreach ($etapas as $etapa) {
+                if ($etapa->etapa_orden == $maxOrden) {
+                    $opdetIdsUltimaEtapa[$etapa->opdet_id] = true;
+                }
+            }
+        }
+
+        // Enriquecer registros de última etapa con árbol de trazabilidad de despacho
+        // (Sol → Ord → Guía → Factura → NC/ND). Solo aplica a la última etapa: los
+        // lotes de etapas intermedias no se despachan directamente a cliente.
         foreach ($aprobados as &$aprobado) {
-            $aprobado->traza_despacho = $aprobado->invmov_id
-                ? $this->buildTrazaDespacho($aprobado->id)
+            $aprobado->es_ultima_etapa = isset($opdetIdsUltimaEtapa[$aprobado->opdet_id]);
+            $aprobado->traza_despacho = ($aprobado->es_ultima_etapa && $aprobado->invmov_id)
+                ? TrazabilidadLoteService::trazaDespacho($aprobado->id)
                 : null;
         }
         unset($aprobado);
@@ -326,242 +358,5 @@ class OpSeguimientoController extends Controller
         }
 
         return response()->json($etapas);
-    }
-
-    /**
-     * Construye el árbol jerárquico de trazabilidad de despacho para un lote de producción.
-     *
-     * Estructura devuelta:
-     *   Sol → Ord (+ anulada) → Guía (+ anulada) → Factura → NC/ND
-     *
-     * El $opdetregprod_id es el id del registro en opdetregprod (lote específico).
-     * Se busca a través de despachosoldet_opdetregprod para trazabilidad granular.
-     * Si no existe registro en esa tabla (datos históricos), retorna array vacío.
-     */
-    private function buildTrazaDespacho($opdetregprod_id)
-    {
-        $opdetregprod_id = intval($opdetregprod_id);
-        if (!$opdetregprod_id) return [];
-
-        // ── 1. Solicitudes de despacho vía tabla de lotes (trazabilidad granular) ──
-        // Incluye estado (aprorddesp/aprorddespfh), usuario creador y flag anulada
-        $sols = DB::select("
-            SELECT DISTINCT
-                dsd.despachosol_id   AS id,
-                ds.fechahora,
-                ds.aprorddesp,
-                ds.aprorddespfh,
-                u.nombre             AS usuario_nombre,
-                (SELECT COUNT(*) FROM despachosolanul
-                 WHERE  despachosol_id = ds.id)       AS anulada
-            FROM   despachosoldet_opdetregprod dsop
-            INNER  JOIN despachosoldet dsd ON dsd.id  = dsop.despachosoldet_id
-            INNER  JOIN despachosol    ds  ON ds.id   = dsd.despachosol_id
-            LEFT   JOIN usuario        u   ON u.id    = ds.usuario_id
-            WHERE  dsop.opdetregprod_id = ?
-              AND  ISNULL(dsd.deleted_at)
-            ORDER  BY dsd.despachosol_id
-        ", [$opdetregprod_id]);
-
-        if (empty($sols)) return [];
-
-        // ── 2. Órdenes de despacho (con flag anulada) ─────────────────────────
-        // Incluye estado (aprguiadesp/aprguiadespfh) y usuario creador
-        $ords = DB::select("
-            SELECT DISTINCT
-                dod.despachoord_id                                           AS id,
-                dsd.despachosol_id                                           AS sol_id,
-                (SELECT COUNT(*) FROM despachoordanul
-                 WHERE  despachoord_id = dod.despachoord_id)                AS anulada,
-                dor.fechahora,
-                dor.aprguiadesp,
-                dor.aprguiadespfh,
-                u.nombre                                                     AS usuario_nombre
-            FROM   despachosoldet_opdetregprod dsop
-            INNER  JOIN despachosoldet dsd ON dsd.id         = dsop.despachosoldet_id
-            INNER  JOIN despachoorddet dod ON dod.despachosoldet_id = dsd.id
-            INNER  JOIN despachoord    dor ON dor.id         = dod.despachoord_id
-            LEFT   JOIN usuario        u   ON u.id           = dor.usuario_id
-            WHERE  dsop.opdetregprod_id = ?
-              AND  ISNULL(dsd.deleted_at)
-              AND  ISNULL(dod.deleted_at)
-            ORDER  BY dod.despachoord_id
-        ", [$opdetregprod_id]);
-
-        if (empty($ords)) {
-            // Sols sin órdenes aún — incluir campos de estado y flag anulada
-            return array_map(function ($s) {
-                return [
-                    'id'             => $s->id,
-                    'fechahora'      => $s->fechahora,
-                    'aprorddesp'     => $s->aprorddesp,
-                    'aprorddespfh'   => $s->aprorddespfh,
-                    'usuario_nombre' => $s->usuario_nombre,
-                    'anulada'        => $s->anulada,
-                    'ords'           => [],
-                ];
-            }, $sols);
-        }
-
-        $ordIds = array_unique(array_column($ords, 'id'));
-        $ordIdsStr = implode(',', $ordIds);
-
-        // ── 3. Guías de despacho por orden (con flag anulada) ─────────────────
-        // Incluye estado (aprobstatus/aprobfechahora), creador y aprobador
-        $guias = DB::select("
-            SELECT
-                dtg.dte_id              AS id,
-                dtg.despachoord_id      AS ord_id,
-                dt.nrodocto,
-                dt.fechahora,
-                dt.aprobstatus,
-                dt.aprobfechahora,
-                (SELECT COUNT(*) FROM dteanul
-                 WHERE  dte_id = dtg.dte_id)  AS anulada,
-                ucrea.nombre            AS usuario_nombre,
-                uapro.nombre            AS aprobador_nombre
-            FROM   dteguiadesp dtg
-            INNER  JOIN dte     dt    ON dt.id    = dtg.dte_id
-            LEFT   JOIN usuario ucrea ON ucrea.id = dt.usuario_id
-            LEFT   JOIN usuario uapro ON uapro.id = dt.aprobusu_id
-            WHERE  dtg.despachoord_id IN ($ordIdsStr)
-              AND  ISNULL(dt.deleted_at)
-            ORDER  BY dtg.dte_id
-        ");
-
-        $guiaIds = array_column($guias, 'id');
-
-        // ── 4. Facturas vinculadas a cada guía ────────────────────────────────
-        // Incluye estado (aprobstatus/aprobfechahora), creador y aprobador
-        $facturas = [];
-        if (!empty($guiaIds)) {
-            $guiaIdsStr = implode(',', $guiaIds);
-            $facturas = DB::select("
-                SELECT
-                    dd.dte_id           AS id,
-                    dd.dter_id          AS guia_id,
-                    dt.nrodocto,
-                    dt.fechahora,
-                    dt.aprobstatus,
-                    dt.aprobfechahora,
-                    ucrea.nombre        AS usuario_nombre,
-                    uapro.nombre        AS aprobador_nombre
-                FROM   dtedte dd
-                INNER  JOIN dte     dt    ON dt.id    = dd.dte_id
-                LEFT   JOIN usuario ucrea ON ucrea.id = dt.usuario_id
-                LEFT   JOIN usuario uapro ON uapro.id = dt.aprobusu_id
-                WHERE  dd.dter_id IN ($guiaIdsStr)
-                  AND  dt.foliocontrol_id = 1
-                  AND  ISNULL(dt.deleted_at)
-                  AND  ISNULL(dd.deleted_at)
-                ORDER  BY dd.dte_id
-            ");
-        }
-
-        // ── 5. NC / ND por factura ────────────────────────────────────────────
-        // Incluye estado (aprobstatus/aprobfechahora), creador y aprobador
-        $ncnd = [];
-        if (!empty($facturas)) {
-            $facIds    = array_column($facturas, 'id');
-            $facIdsStr = implode(',', $facIds);
-            $ncnd = DB::select("
-                SELECT
-                    dd.dter_id          AS id,
-                    dd.dte_id           AS factura_id,
-                    dt.nrodocto,
-                    dt.foliocontrol_id,
-                    dt.fechahora,
-                    dt.aprobstatus,
-                    dt.aprobfechahora,
-                    ucrea.nombre        AS usuario_nombre,
-                    uapro.nombre        AS aprobador_nombre
-                FROM   dtedte dd
-                INNER  JOIN dte     dt    ON dt.id    = dd.dter_id
-                LEFT   JOIN usuario ucrea ON ucrea.id = dt.usuario_id
-                LEFT   JOIN usuario uapro ON uapro.id = dt.aprobusu_id
-                WHERE  dd.dte_id IN ($facIdsStr)
-                  AND  dt.foliocontrol_id IN (5, 6)
-                  AND  ISNULL(dt.deleted_at)
-                  AND  ISNULL(dd.deleted_at)
-                ORDER  BY dd.dter_id
-            ");
-        }
-
-        // ── Construir árbol ───────────────────────────────────────────────────
-        // NC/ND indexadas por factura_id
-        $ncndXFac = [];
-        foreach ($ncnd as $n) {
-            $ncndXFac[$n->factura_id][] = [
-                'id'               => $n->id,
-                'nrodocto'         => $n->nrodocto,
-                'foliocontrol_id'  => $n->foliocontrol_id,
-                'fechahora'        => $n->fechahora,
-                'aprobstatus'      => $n->aprobstatus,
-                'aprobfechahora'   => $n->aprobfechahora,
-                'usuario_nombre'   => $n->usuario_nombre,
-                'aprobador_nombre' => $n->aprobador_nombre,
-            ];
-        }
-
-        // Facturas indexadas por guia_id
-        $facXGuia = [];
-        foreach ($facturas as $f) {
-            $facXGuia[$f->guia_id][] = [
-                'id'               => $f->id,
-                'nrodocto'         => $f->nrodocto,
-                'fechahora'        => $f->fechahora,
-                'aprobstatus'      => $f->aprobstatus,
-                'aprobfechahora'   => $f->aprobfechahora,
-                'usuario_nombre'   => $f->usuario_nombre,
-                'aprobador_nombre' => $f->aprobador_nombre,
-                'ncnd'             => $ncndXFac[$f->id] ?? [],
-            ];
-        }
-
-        // Guías indexadas por ord_id
-        $guiasXOrd = [];
-        foreach ($guias as $g) {
-            $guiasXOrd[$g->ord_id][] = [
-                'id'               => $g->id,
-                'nrodocto'         => $g->nrodocto,
-                'anulada'          => (int)$g->anulada > 0,
-                'fechahora'        => $g->fechahora,
-                'aprobstatus'      => $g->aprobstatus,
-                'aprobfechahora'   => $g->aprobfechahora,
-                'usuario_nombre'   => $g->usuario_nombre,
-                'aprobador_nombre' => $g->aprobador_nombre,
-                'facturas'         => $facXGuia[$g->id] ?? [],
-            ];
-        }
-
-        // Órdenes indexadas por sol_id
-        $ordsXSol = [];
-        foreach ($ords as $o) {
-            $ordsXSol[$o->sol_id][] = [
-                'id'             => $o->id,
-                'anulada'        => (int)$o->anulada > 0,
-                'fechahora'      => $o->fechahora,
-                'aprguiadesp'    => $o->aprguiadesp,
-                'aprguiadespfh'  => $o->aprguiadespfh,
-                'usuario_nombre' => $o->usuario_nombre,
-                'guias'          => $guiasXOrd[$o->id] ?? [],
-            ];
-        }
-
-        // Árbol final: sols con ords anidadas
-        $tree = [];
-        foreach ($sols as $s) {
-            $tree[] = [
-                'id'             => $s->id,
-                'fechahora'      => $s->fechahora,
-                'aprorddesp'     => $s->aprorddesp,
-                'aprorddespfh'   => $s->aprorddespfh,
-                'usuario_nombre' => $s->usuario_nombre,
-                'anulada'        => (int)$s->anulada > 0,
-                'ords'           => $ordsXSol[$s->id] ?? [],
-            ];
-        }
-
-        return $tree;
     }
 }

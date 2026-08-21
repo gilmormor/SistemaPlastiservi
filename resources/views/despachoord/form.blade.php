@@ -213,14 +213,31 @@
                                         // aprobada la solicitud) o ya este en Picking (solicitud aprobada). Si no
                                         // hay ningun lote/picking vinculado todavia, no se muestra ninguna bodega.
                                         if ($detalle->notaventadetalle->requiere_fabricacion == 1) {
+                                            // Se restringe a los lotes asignados A ESTA solicitud: agrupar solo por
+                                            // bodega (sin filtrar por lote) hacia aparecer bodegas que tienen stock de
+                                            // OTROS lotes del mismo producto ajenos a este despacho.
+                                            $lotesDeEsteItem = DB::table('despachosoldet_opdetregprod')
+                                                ->where('despachosoldet_id', $detalle->id)
+                                                ->pluck('opdetregprod_id');
                                             $bodegaproductoIdsConLote = DB::table('invmovdetnvdet as imdnv')
                                                 ->join('invmovdet as imd', 'imd.id', '=', 'imdnv.invmovdet_id')
+                                                ->join('invmovdet_opdetregprod as iodr', 'iodr.invmovdet_id', '=', 'imd.id')
                                                 ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle->id)
+                                                ->whereIn('iodr.opdetregprod_id', $lotesDeEsteItem)
                                                 ->whereNull('imd.deleted_at')
                                                 ->groupBy('imd.invbodegaproducto_id')
                                                 ->havingRaw('SUM(imd.cant) > 0')
                                                 ->pluck('imd.invbodegaproducto_id');
                                             $invbodegaproductos = $invbodegaproductos->whereIn('id', $bodegaproductoIdsConLote);
+                                            // En Orden de Despacho el stock ya fue reservado y movido a Picking; si hay
+                                            // bodega de picking (tipo=1) se muestra solo esa, no la bodega de origen
+                                            // donde aun queda el saldo no reservado del mismo lote.
+                                            $bodegasPickingItem = $invbodegaproductos->filter(function ($bp) {
+                                                return $bp->invbodega->tipo == 1;
+                                            });
+                                            if ($bodegasPickingItem->isNotEmpty()) {
+                                                $invbodegaproductos = $bodegasPickingItem;
+                                            }
                                         }
                                         $categoriaprod = $detalle->notaventadetalle->producto->categoriaprod;
                                         //CREAR REGISTRO EN TABLA invbodegaproducto (SOLO SI NO EXISTE)

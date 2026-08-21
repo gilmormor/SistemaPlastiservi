@@ -18,6 +18,7 @@ class OpDetRegProdOrigen extends Model
         'opdetregprod_id',
         'opdetregprod_origen_id',
         'kg',
+        'scrap',
         'cant',
     ];
 

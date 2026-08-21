@@ -2660,9 +2660,26 @@ $(document).on('input', '.lote-cant-input', function() {
     var raw = $input.val().replace(/[^0-9.]/g, '');
     var val = parseFloat(raw) || 0;
 
-    // Capear al disponible
+    // Capear al disponible del lote
     if (val > max) { val = max; }
     if (val < 0)   { val = 0;  }
+
+    // Capear tambien al STOCK REAL de la bodega: la suma de los lotes de una misma
+    // bodega no puede superar lo que la bodega efectivamente tiene. El "disponible"
+    // por lote se calcula sobre el historico del lote (producido - despachado) y
+    // puede quedar por encima del stock real cuando el lote se movio entre bodegas,
+    // asi que sin este tope se podia asignar mas de lo que hay.
+    var stockBod = parseFloat($input.data('stock-bodega'));
+    if (!isNaN(stockBod)) {
+        var otrosLotes = 0;
+        $('.lote-cant-input[data-ibp="' + ibpId + '"]').not($input).each(function() {
+            otrosLotes += parseFloat($(this).val()) || 0;
+        });
+        var margen = stockBod - otrosLotes;
+        if (margen < 0) { margen = 0; }
+        if (val > margen) { val = Math.round(margen * 100) / 100; }
+    }
+
     $input.val(raw === '' ? '' : val);
 
     // Calcular kg proporcional al valor asignado
@@ -2684,6 +2701,65 @@ $(document).on('input', '.lote-cant-input', function() {
         var y = nfila + '-' + ibpId;
         sumbod(nfila, y, 'SD', 1);
     }
+});
+
+// ── RECHAZO/DEVOLUCION de orden de despacho con trazabilidad de lote ──────────
+// (vista despachoordrec/form). Solo actua cuando el item tiene lotes; si no los
+// tiene, estos elementos no existen en el DOM y la pantalla funciona como siempre.
+//
+// Flujo: el operario marca UNA bodega destino (radio .bodrec-destino) e ingresa
+// cuanto devuelve de cada lote (.lote-rec-input). La suma de los lotes se vuelca
+// automaticamente en el input de esa bodega (que queda readonly) y las demas
+// bodegas se dejan en blanco, evitando repartos ambiguos o duplicados.
+
+// Vuelca la suma de los lotes de una fila en la bodega marcada como destino
+function volcarLotesRecEnBodega(nfila) {
+    var total = 0;
+    $('.lote-rec-input[data-nfila="' + nfila + '"]').each(function () {
+        total += parseFloat($(this).val()) || 0;
+    });
+
+    var $destino = $('.bodrec-destino[data-nfila="' + nfila + '"]:checked');
+
+    // Limpiar todas las bodegas de la fila
+    $('.bodrec-cant[data-nfila="' + nfila + '"]').val('');
+
+    if ($destino.length) {
+        var ibpId = $destino.data('ibp');
+        var $bod  = $('.bodrec-cant[data-nfila="' + nfila + '"][data-ibp="' + ibpId + '"]');
+        $bod.val(total > 0 ? total : '');
+        // Reutiliza la funcion existente para que los totales se actualicen igual que siempre
+        if (typeof sumbodrec === 'function') {
+            sumbodrec(nfila, nfila + '-' + ibpId);
+        }
+    }
+}
+
+// Cantidad devuelta por lote: valida y calcula kg proporcionales
+$(document).on('input', '.lote-rec-input', function() {
+    var $input    = $(this);
+    var max       = parseFloat($input.data('max'))          || 0;
+    var cantKgTot = parseFloat($input.data('cantkg-total')) || 0;
+
+    // Solo digitos y punto decimal
+    var raw = $input.val().replace(/[^0-9.]/g, '');
+    var val = parseFloat(raw) || 0;
+
+    // Capear a lo realmente despachado de ese lote
+    if (val > max) { val = max; }
+    if (val < 0)   { val = 0;  }
+    $input.val(raw === '' ? '' : val);
+
+    // Kg proporcionales al valor devuelto
+    var kgAsignar = (max > 0) ? (val / max) * cantKgTot : 0;
+    $input.next('input[type=hidden]').val(kgAsignar.toFixed(2));
+
+    volcarLotesRecEnBodega($input.data('nfila'));
+});
+
+// Cambio de bodega destino: mueve el total a la bodega recien marcada
+$(document).on('change', '.bodrec-destino', function() {
+    volcarLotesRecEnBodega($(this).data('nfila'));
 });
 
 function sumbod(i,y,aux_orig,requiere_fabricacion = 0){

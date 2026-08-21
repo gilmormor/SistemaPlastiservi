@@ -22,6 +22,7 @@ use App\Models\InvControl;
 use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodSolDesp;
+use App\Models\InvMovDetOpDetRegProd;
 use App\Models\InvMovModulo;
 use App\Models\PlazoPago;
 use App\Models\Producto;
@@ -224,6 +225,69 @@ class PickingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Lotes presentes en la bodega de Picking para un item de solicitud de despacho,
+     * con la bodega de origen de cada uno (de donde salio realmente).
+     * Retorna: [ ['lote'=>id, 'cant'=>n, 'cantkg'=>n, 'ibp_origen'=>id|null], ... ]
+     * Si el item no maneja lotes retorna [] y el flujo sigue siendo el de siempre.
+     */
+    private function lotesEnPicking($despachosoldet_id)
+    {
+        // Lotes con saldo vigente en bodegas de Picking (tipo 1) para esta solicitud
+        $lotes = DB::select("
+            SELECT iodr.opdetregprod_id AS lote,
+                   SUM(imd.cant)        AS cant,
+                   SUM(imd.cantkg)      AS cantkg
+            FROM   invmovdet imd
+            JOIN   invmovdet_opdetregprod iodr ON iodr.invmovdet_id = imd.id
+            JOIN   invbodegaproducto ibp ON ibp.id = imd.invbodegaproducto_id
+            JOIN   invbodega b           ON b.id  = ibp.invbodega_id
+            WHERE  b.tipo = 1
+              AND  imd.deleted_at IS NULL
+              AND  imd.id IN (
+                    SELECT bs.invmovdet_id FROM invmovdet_bodsoldesp bs
+                    JOIN   despachosoldet_invbodegaproducto dsb ON dsb.id = bs.despachosoldet_invbodegaproducto_id
+                    WHERE  dsb.despachosoldet_id = ?
+                    UNION
+                    SELECT bo.invmovdet_id FROM invmovdet_bodorddesp bo
+                    JOIN   despachoorddet_invbodegaproducto dob ON dob.id = bo.despachoorddet_invbodegaproducto_id
+                    JOIN   despachoorddet dod ON dod.id = dob.despachoorddet_id
+                    WHERE  dod.despachosoldet_id = ?
+              )
+            GROUP  BY iodr.opdetregprod_id
+            HAVING cant > 0
+            ORDER  BY iodr.opdetregprod_id
+        ", [$despachosoldet_id, $despachosoldet_id]);
+
+        $result = [];
+        foreach ($lotes as $l) {
+            // Bodega de origen: aquella de almacenamiento (no picking/despacho/scrap/pesaje)
+            // donde el lote tiene el mayor saldo positivo. Es de donde salio realmente.
+            $orig = DB::select("
+                SELECT imd.invbodegaproducto_id AS ibp, SUM(imd.cant) AS tot
+                FROM   invmovdet imd
+                JOIN   invmovdet_opdetregprod iodr ON iodr.invmovdet_id = imd.id
+                JOIN   invbodegaproducto ibp2 ON ibp2.id = imd.invbodegaproducto_id
+                JOIN   invbodega b            ON b.id   = ibp2.invbodega_id
+                WHERE  iodr.opdetregprod_id = ?
+                  AND  imd.deleted_at IS NULL
+                  AND  b.tipo NOT IN (1,3,4,6)
+                GROUP  BY imd.invbodegaproducto_id
+                HAVING tot > 0
+                ORDER  BY tot DESC
+                LIMIT  1
+            ", [$l->lote]);
+
+            $result[] = [
+                'lote'       => $l->lote,
+                'cant'       => (float) $l->cant,
+                'cantkg'     => (float) $l->cantkg,
+                'ibp_origen' => $orig ? $orig[0]->ibp : null,
+            ];
+        }
+        return $result;
+    }
+
     public function guardar(Request $request)
     {
         can('guardar-picking');
@@ -439,13 +503,63 @@ class PickingController extends Controller
                     ]);
 
                 
-                $aux_sucursal_id_producto = $invbodegaproducto->invbodega->sucursal_id; 
+                $aux_cant = ($request->pickingPrevio[$j] - $request->invcant[$j]);
+
+                // Trazabilidad de lote: si lo que se libera corresponde a lotes de produccion,
+                // se devuelve a la BODEGA DE ORIGEN de cada lote (de donde salio realmente),
+                // en vez de mandarlo a Pesaje y tener que reubicarlo despues a mano.
+                // Si el item no tiene lotes -o no se puede determinar el origen- se mantiene
+                // el comportamiento historico: todo entra a la bodega de Pesaje.
+                $lotesPick = $this->lotesEnPicking($despachosoldet->id);
+                $lotesConOrigen = array_values(array_filter($lotesPick, function ($l) {
+                    return !empty($l['ibp_origen']);
+                }));
+
+                if (!empty($lotesConOrigen) && $aux_cant > 0) {
+                    $restante = $aux_cant;
+                    foreach ($lotesConOrigen as $lp) {
+                        if ($restante <= 0) break;
+                        $tomar = min($lp['cant'], $restante);
+                        if ($tomar <= 0) continue;
+                        $kgTomar = ($lp['cant'] > 0) ? ($tomar / $lp['cant']) * $lp['cantkg'] : 0;
+
+                        $ibpOrigen = InvBodegaProducto::findOrFail($lp['ibp_origen']);
+                        $invmovdetLote = InvMovDet::create([
+                            "invbodegaproducto_id" => $ibpOrigen->id,
+                            "producto_id"          => $ibpOrigen->producto_id,
+                            "invbodega_id"         => $ibpOrigen->invbodega_id,
+                            "sucursal_id"          => $ibpOrigen->invbodega->sucursal_id,
+                            "unidadmedida_id"      => $despachosoldet->notaventadetalle->unidadmedida_id,
+                            "invmovtipo_id"        => 1,
+                            "cant"                 => $tomar,
+                            "cantgrupo"            => $tomar,
+                            "cantxgrupo"           => 1,
+                            "peso"                 => $despachosoldet->notaventadetalle->producto->peso,
+                            "cantkg"               => round($kgTomar, 2),
+                            "invmov_id"            => $invmov_idSalPicking,
+                        ]);
+                        InvMovDetOpDetRegProd::create([
+                            'invmovdet_id'    => $invmovdetLote->id,
+                            'opdetregprod_id' => $lp['lote'],
+                        ]);
+                        $restante -= $tomar;
+                    }
+
+                    //BUSCO EL REGISTRO Y ACTUALIZO LOS VALORES DE PICKING Y EXESO QUE SE VA A LA SOLOCITUD Y LUEGO A LA ORDEN DE DESPACHO
+                    $despachosoldet_invbodegaproducto = DespachoSolDet_InvBodegaProducto::findOrFail($request->despachosoldet_invbodegaproducto_id[$j]);
+                    $despachosoldet_invbodegaproducto->cant = $request->invcant[$j] * -1;
+                    $despachosoldet_invbodegaproducto->cantex = ($aux_cant * -1) + $despachosoldet_invbodegaproducto->cantex;
+                    $despachosoldet_invbodegaproducto->save();
+                    continue;
+                }
+
+                $aux_sucursal_id_producto = $invbodegaproducto->invbodega->sucursal_id;
                 foreach($invmoduloBodPesaje->invmovmodulobodents as $invmovmodulobodent){
                     //BUSCAR BODEGA PESAJE CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
                     if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
                         $aux_bodega_idPesaje = $invmovmodulobodent->id;
                     }
-                }            
+                }
                 $invbodegaproducto = InvBodegaProducto::updateOrCreate(
                     ['producto_id' => $request->invbodegaproducto_producto_id[$j],'invbodega_id' => $aux_bodega_idPesaje],
                     [
@@ -453,7 +567,6 @@ class PickingController extends Controller
                         'invbodega_id' => $aux_bodega_idPesaje
                     ]
                 );
-                $aux_cant = ($request->pickingPrevio[$j] - $request->invcant[$j]);
                 $array_invmovdet = [
                     "invbodegaproducto_id" => $invbodegaproducto->id,
                     "producto_id" => $invbodegaproducto->producto_id,

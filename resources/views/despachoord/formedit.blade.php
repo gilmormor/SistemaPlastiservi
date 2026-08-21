@@ -167,6 +167,40 @@
                                     $aux_saldo = $detalle->despachosoldet->cantsoldesp - $sumacantorddesp;
                                     $subtotalItem = $detalle->cantdesp * $detalle->notaventadetalle->preciounit;
                                     $invbodegaproductos = $detalle->notaventadetalle->producto->invbodegaproductos;
+                                    // Si el producto requiere fabricacion, solo mostrar las bodegas donde
+                                    // efectivamente hay stock de los lotes de produccion asignados a este
+                                    // item (via invmovdetnvdet, que enlaza el movimiento con la nota de venta
+                                    // detalle) - ya sea que el lote siga en su bodega de produccion (aun no
+                                    // aprobada la solicitud) o ya este en Picking (solicitud aprobada). Si no
+                                    // hay ningun lote/picking vinculado todavia, no se muestra ninguna bodega.
+                                    // Mismo criterio que en form.blade.php (crearord).
+                                    if ($detalle->notaventadetalle->requiere_fabricacion == 1) {
+                                        // Se restringe a los lotes asignados A ESTE item: agrupar solo por bodega
+                                        // (sin filtrar por lote) hacia aparecer bodegas que tienen stock de OTROS
+                                        // lotes del mismo producto ajenos a este despacho.
+                                        $lotesDeEsteItem = DB::table('despachosoldet_opdetregprod')
+                                            ->where('despachosoldet_id', $detalle->despachosoldet_id)
+                                            ->pluck('opdetregprod_id');
+                                        $bodegaproductoIdsConLote = DB::table('invmovdetnvdet as imdnv')
+                                            ->join('invmovdet as imd', 'imd.id', '=', 'imdnv.invmovdet_id')
+                                            ->join('invmovdet_opdetregprod as iodr', 'iodr.invmovdet_id', '=', 'imd.id')
+                                            ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle->id)
+                                            ->whereIn('iodr.opdetregprod_id', $lotesDeEsteItem)
+                                            ->whereNull('imd.deleted_at')
+                                            ->groupBy('imd.invbodegaproducto_id')
+                                            ->havingRaw('SUM(imd.cant) > 0')
+                                            ->pluck('imd.invbodegaproducto_id');
+                                        $invbodegaproductos = $invbodegaproductos->whereIn('id', $bodegaproductoIdsConLote);
+                                        // En Orden de Despacho el stock ya fue reservado y movido a Picking; si hay
+                                        // bodega de picking (tipo=1) se muestra solo esa, no la bodega de origen
+                                        // donde aun queda el saldo no reservado del mismo lote.
+                                        $bodegasPickingItem = $invbodegaproductos->filter(function ($bp) {
+                                            return $bp->invbodega->tipo == 1;
+                                        });
+                                        if ($bodegasPickingItem->isNotEmpty()) {
+                                            $invbodegaproductos = $bodegasPickingItem;
+                                        }
+                                    }
 
                                     $aux_cantBodSD = 0;
                                     $despachosoldet = DespachoSolDet::findOrFail($detalle->despachosoldet_id);

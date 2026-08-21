@@ -17,6 +17,10 @@
     </script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/opdetregprodtemp/crear.js")}}" type="text/javascript"></script>
+    <script>
+        const LOTEORIGEN_URL_BASE = "{{ url('opdetregprodtemp/lotesorigen') }}";
+    </script>
+    <script src="{{autoVer("assets/pages/scripts/opdetregprodtemp/loteorigen.js")}}" type="text/javascript"></script>
 @endsection
 
 @section('contenido')

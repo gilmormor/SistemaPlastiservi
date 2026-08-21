@@ -41,6 +41,12 @@ class InvBodega extends Model
     public static function llenarArrayBodegasPickingSolDesp($detalles){
         $arrayBodegasPicking = [];
         foreach ($detalles as $detalle) {
+            // El movimiento de las ordenes de despacho depende del ITEM, no de la bodega:
+            // se calcula una sola vez por item. Antes estaba dentro del foreach de
+            // bodegas y se sumaba tantas veces como bodegas tuviera el item, inflando
+            // el picking en los items repartidos en mas de una bodega.
+            $aux_stockOrdItem = 0;
+            $aux_primeraBodItem = true;
             //dd($detalle);
             foreach ($detalle->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
                 $aux_stock = 0;
@@ -72,9 +78,13 @@ class InvBodega extends Model
                                             //dd($invmovdet_bodorddesp->invmovdet->invbodegaproducto->invbodega->tipo);
                                             //dd($invmovdet_bodorddesp);
                                         }
-        
+
                                         //dd($invmovdet_bodorddesp->invmovdet);
-                                        $aux_stock += $invmovdet_bodorddesp->invmovdet->cant;
+                                        // Solo se acumula en la primera bodega del item para no
+                                        // contar este movimiento una vez por cada bodega.
+                                        if($aux_primeraBodItem){
+                                            $aux_stockOrdItem += $invmovdet_bodorddesp->invmovdet->cant;
+                                        }
                                         //dd($aux_stock1);
                                     }
     
@@ -136,13 +146,28 @@ class InvBodega extends Model
                         'tipo_alert' => 'alert-error'
                     ]);
                 }
-                $arrayBodegasPicking[($invbodegaproductopicking[0]->id . "-". $detalle->id)] = [
-                    "invbodegaproducto_id" => $invbodegaproductopicking[0]->id,
-                    "producto_id" => $invbodegaproductopicking[0]->producto_id,
-                    "invbodega_id" => $invbodegaproductopicking[0]->invbodega_id,
-                    "sucursal_id" => $sucursal->id,
-                    "stock" => $aux_stock
-                ];
+                // La clave es siempre la bodega de Picking del producto, la misma para
+                // todas las bodegas del item. Si el item esta repartido en mas de una
+                // bodega, cada vuelta del foreach escribia en esa misma clave y la
+                // ultima SOBRESCRIBIA a las anteriores, perdiendo el stock ya calculado
+                // (ej: la salida de picking quedaba ligada a la primera bodega y se
+                // descartaba, mostrando picking pendiente que en realidad ya se libero).
+                // Se acumula para que el total refleje todas las bodegas del item.
+                $aux_clavePicking = $invbodegaproductopicking[0]->id . "-" . $detalle->id;
+                if (isset($arrayBodegasPicking[$aux_clavePicking])) {
+                    $arrayBodegasPicking[$aux_clavePicking]["stock"] += $aux_stock;
+                } else {
+                    // Primera bodega del item: se incluye aqui el movimiento de las
+                    // ordenes de despacho, que corresponde al item completo.
+                    $arrayBodegasPicking[$aux_clavePicking] = [
+                        "invbodegaproducto_id" => $invbodegaproductopicking[0]->id,
+                        "producto_id" => $invbodegaproductopicking[0]->producto_id,
+                        "invbodega_id" => $invbodegaproductopicking[0]->invbodega_id,
+                        "sucursal_id" => $sucursal->id,
+                        "stock" => $aux_stock + $aux_stockOrdItem
+                    ];
+                }
+                $aux_primeraBodItem = false;
             }
         }
         //dd($arrayBodegasPicking);

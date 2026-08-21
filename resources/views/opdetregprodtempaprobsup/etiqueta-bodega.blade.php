@@ -36,7 +36,7 @@
         }
         .etiqueta-datos table { width: 100%; border-collapse: collapse; }
         .etiqueta-datos td { padding: 2px 3px; vertical-align: top; }
-        .etiqueta-datos td:first-child { font-weight: bold; white-space: nowrap; width: 42%; }
+        .etiqueta-datos td:first-child { font-weight: bold; white-space: nowrap; width: 1%; padding-right: 6px; }
         .etiqueta-datos .val-grande {
             font-size: 10pt;
             font-weight: bold;
@@ -123,6 +123,12 @@
                     <td><strong>{{ $notaventa_id }}</strong></td>
                 </tr>
                 @endif
+                @if($clienteNombre)
+                <tr>
+                    <td>Cliente:</td>
+                    <td>{{ $clienteNombre }}</td>
+                </tr>
+                @endif
                 <tr>
                     <td>Lote:</td>
                     <td style="font-size:7pt; color:#555;">{{ $produccion->id }}</td>
@@ -132,11 +138,10 @@
         <div class="etiqueta-qr">
             <div id="qrcode"></div>
             <small>Lote: {{ $produccion->id }}</small>
+            @if($empresaNombre)
+                <small>{{ $empresaNombre }}</small>
+            @endif
         </div>
-    </div>
-    <div class="etiqueta-footer">
-        {{-- Plastiservi &mdash; Sistema ERP --}}
-        Plastiservi
     </div>
 </div>
 

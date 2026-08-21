@@ -272,8 +272,25 @@
                                                             $existencia = $invbodegaproducto::existencia($request);
                                                             //$existencia = $invbodegaproductoobj->consexistencia($request);
                                                             //$aux_stock = $invbodegaproducto->invbodega->nomabre == "SolDe" ? $aux_cantBodSD  : $existencia["stock"]["cant"];
-                                                            $aux_valueStock = ""; 
-                                                            $despachosoldet_invbodegaproducto_id = $detalle->despachosoldet_invbodegaproducto->id;
+                                                            $aux_valueStock = "";
+                                                            // Registro de asignacion correspondiente A ESTA bodega. Antes se usaba
+                                                            // la relacion hasOne $detalle->despachosoldet_invbodegaproducto, que
+                                                            // devuelve SIEMPRE el primer registro del item: todas las filas de
+                                                            // bodega enviaban el mismo id y PickingController@guardar aplicaba las
+                                                            // altas/liberaciones de picking siempre sobre esa misma fila, dejando
+                                                            // las demas bodegas sin liberar (y duplicando el movimiento en la primera).
+                                                            $despachosoldet_invbodegaproducto_id = null;
+                                                            foreach($detalle->despachosoldet_invbodegaproductos as $dsdBodProd){
+                                                                if($dsdBodProd->invbodegaproducto_id == $invbodegaproducto->id){
+                                                                    $despachosoldet_invbodegaproducto_id = $dsdBodProd->id;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if(is_null($despachosoldet_invbodegaproducto_id)){
+                                                                // Bodega sin asignacion propia en la solicitud: se conserva el
+                                                                // comportamiento anterior para no alterar los casos ya existentes.
+                                                                $despachosoldet_invbodegaproducto_id = $detalle->despachosoldet_invbodegaproducto->id;
+                                                            }
                                                             if(array_key_exists($invbodegaproducto->id . "-" . $detalle->id, $arrayBodegasPicking)){
                                                                 $aux_stock = $arrayBodegasPicking[$invbodegaproducto->id . "-" . $detalle->id]["stock"];
                                                                 $aux_valueStock = $aux_stock == 0 ? "" : $aux_stock;

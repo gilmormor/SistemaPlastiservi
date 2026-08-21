@@ -325,14 +325,7 @@ function renderEtapas(op_id, etapas) {
                         '<span style="text-align:right;">'                                + MASKLA(r.cantprod, 0) + '</span>' +
                         '<span>' +
                             '<span class="seg-chip green"><i class="fa fa-check-circle"></i> Aprobado</span>' +
-                            (r.invmov_id
-                                ? ' <a class="btn-accion-tabla btn-sm tooltipsC" ' +
-                                      'onclick=\'genpdfINVMOV(' + r.invmov_id + ',1)\' ' +
-                                      'style="padding-left:2px; font-size:11px; color:#8e44ad; cursor:pointer;" ' +
-                                      'data-original-title="Movimiento de Inv.">' +
-                                      '<i class="fa fa-archive"></i> ' + r.invmov_id +
-                                  '</a>'
-                                : '') +
+                            renderMovsInv(r) +
                         '</span>' +
                         '<span></span>' +
                         '</li>' +
@@ -406,6 +399,23 @@ function renderTrazEtapas(r) {
            '</li>';
 }
 
+// Un mismo lote puede tener varios movimientos de inventario vinculados (entrada a
+// bodega + movimientos de picking/despacho posteriores). El backend los trae
+// preagregados en r.invmov_ids ("215080, 215087, 215089"); se dibuja un link por
+// cada uno, uno al lado del otro, en vez de repetir la fila completa del lote.
+function renderMovsInv(r) {
+    if (!r.invmov_ids) return '';
+    var ids = String(r.invmov_ids).split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    return ids.map(function (id) {
+        return ' <a class="btn-accion-tabla btn-sm tooltipsC" ' +
+                   'onclick=\'genpdfINVMOV(' + id + ',1)\' ' +
+                   'style="padding-left:2px; font-size:11px; color:#8e44ad; cursor:pointer;" ' +
+                   'data-original-title="Movimiento de Inv.">' +
+                   '<i class="fa fa-archive"></i> ' + id +
+               '</a>';
+    }).join('');
+}
+
 // ── Trazabilidad despacho (última etapa) ───────────────────────────────────────
 // Dibuja el árbol jerárquico: Sol → Ord → Guía → Factura → NC/ND
 // Solo se muestra cuando r.invmov_id existe (última etapa).
@@ -452,7 +462,7 @@ function _trazEstadoDte(aprobstatus, aprobador, aprobfechahora) {
 }
 
 function renderTrazDespacho(r) {
-    if (!r.invmov_id) return '';
+    if (!r.es_ultima_etapa || !r.invmov_id) return '';
 
     var traza = r.traza_despacho;
     var inner = '';

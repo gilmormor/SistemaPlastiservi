@@ -892,7 +892,12 @@
                                                         <td style="padding:1px 2px;vertical-align:middle;">
                                                             {{-- El usuario ingresa cuánto de este lote incluye en la solicitud.
                                                                  JS valida que no exceda cant_disponible y suma al input de bodega (readonly).
-                                                                 Si el lote tiene rechazo CC sin desbloquear, el input queda deshabilitado. --}}
+                                                                 Si el lote tiene rechazo CC sin desbloquear, el input queda en readonly (NO
+                                                                 "disabled": un input disabled NO se envía en el submit del formulario, lo
+                                                                 que desalinea por posición los arrays opdetregprod_id[]/opdetregprod_cant[]
+                                                                 —el input oculto con el id del lote sí se sigue enviando siempre— causando
+                                                                 que el valor tipeado para OTRO lote quede mal asignado a este lote bloqueado.
+                                                                 readonly mantiene el campo en el envío (forzado en 0) y preserva la alineación. --}}
                                                             <input type="text"
                                                                    name="opdetregprod_cant[]"
                                                                    id="opdetregprod_cant_{{$invbodegaproducto->id}}_{{$loteRow->opdetregprod_id}}"
@@ -901,9 +906,10 @@
                                                                    data-nfila="{{$aux_nfila}}"
                                                                    data-max="{{$loteRow->cant_disponible}}"
                                                                    data-cantkg-total="{{$loteRow->cantkg_disponible}}"
+                                                                   data-stock-bodega="{{$spRow->cant_prod ?? 0}}"
                                                                    value="0"
                                                                    style="text-align:right;font-size:11px;{{$loteBlocked ? 'background:#ffcccc;cursor:not-allowed;' : ''}}"
-                                                                   @if($loteBlocked) disabled title="{{$sinMuestraCC && !$ccVal['rechazado'] ? 'Bloqueado — alguna etapa de la cadena requiere muestra CC: ' . implode(', ', $ccVal['etapas_problema']) : 'Bloqueado por rechazo CC — Muestra(s) #' . $ccVal['ids_bloqueados']}}" @endif />
+                                                                   @if($loteBlocked) readonly title="{{$sinMuestraCC && !$ccVal['rechazado'] ? 'Bloqueado — alguna etapa de la cadena requiere muestra CC: ' . implode(', ', $ccVal['etapas_problema']) : 'Bloqueado por rechazo CC — Muestra(s) #' . $ccVal['ids_bloqueados']}}" @endif />
                                                             {{-- Kg proporcionales calculados por JS --}}
                                                             <input type="hidden"
                                                                    name="opdetregprod_cantkg[]"

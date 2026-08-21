@@ -13,6 +13,7 @@ use App\Models\Comuna;
 use App\Models\DataCobranza;
 use App\Models\DespachoOrd;
 use App\Models\DespachoOrdAnulGuiaFact;
+use App\Models\DespachoOrdDet_OpDetRegProd;
 use App\Models\Dte;
 use App\Models\DteAnul;
 use App\Models\DteDet;
@@ -30,6 +31,7 @@ use App\Models\InvMov;
 use App\Models\InvMovDet;
 use App\Models\InvMovDet_BodOrdDesp;
 use App\Models\InvMovDet_BodSolDesp;
+use App\Models\InvMovDetOpDetRegProd;
 use App\Models\InvMovModulo;
 use App\Models\Modulo;
 use App\Models\NotaVenta;
@@ -347,12 +349,12 @@ class DteFacturaController extends Controller
 
         //HASTA AQUI LA VALIDACION 
 
-        $respuesta = Dte::dteSolicitarFolio($dte);
+        //$respuesta = Dte::dteSolicitarFolio($dte);
         //dd($respuesta["aux_folio"]);
-        /* $respuesta = [
+        $respuesta = [
                     'id' => 1,
                     'aux_folio' => '1234'
-        ]; */
+        ];
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
             $dte->fchemisgen = date("Y-m-d H:i:s");
@@ -448,11 +450,11 @@ class DteFacturaController extends Controller
             }
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             $dte = Dte::findOrFail($dteNew->id);
-            $respuesta = Dte::subirDteSii($dte);
+            //$respuesta = Dte::subirDteSii($dte);
             /* if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             } */
-            Dte::subirSisCobranza($dte);
+            //Dte::subirSisCobranza($dte);
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";
                 $aux_tipo_alert = 'alert-error';
@@ -855,18 +857,29 @@ class DteFacturaController extends Controller
                                 ]);         
                             }
                             if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
-                                /***VALIDO QUE EL VALOR EN CANT SEA MAYOR A CERO */
+                                /***VALIDO QUE EXISTA AL MENOS UNA BODEGA CON CANT MAYOR A CERO.
+                                 * Mas abajo, al registrar la entrada a Picking, se toma la PRIMERA
+                                 * bodega con (cant * -1) > 0 y se corta con break; por lo tanto aqui
+                                 * basta con que exista una. Antes se exigia que TODAS cumplieran, lo
+                                 * que bloqueaba la devolucion cuando alguna bodega del item ya tenia
+                                 * cant = 0 por haber liberado su picking (su valor pasa a cantex),
+                                 * aun habiendo otra bodega perfectamente valida para el enlace. */
+                                $aux_existeBodConCant = false;
                                 foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
-                                    if(($despachosoldet_invbodegaproducto->cant * -1) <= 0){
-                                        return response()->json([
-                                            'status'=>'0',
-                                            'id' => 0,
-                                            'error' => '0',
-                                            'title' => '',            
-                                            'mensaje'=> "Valor en despachosoldet_invbodegaproducto->cant es <= 0. despachosoldet_invbodegaproducto->id: " . $despachosoldet_invbodegaproducto->id,
-                                            'tipo_alert' => 'error'
-                                        ]);
+                                    if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                        $aux_existeBodConCant = true;
+                                        break;
                                     }
+                                }
+                                if(!$aux_existeBodConCant){
+                                    return response()->json([
+                                        'status'=>'0',
+                                        'id' => 0,
+                                        'error' => '0',
+                                        'title' => '',
+                                        'mensaje'=> "Ninguna bodega del item tiene cantidad pendiente en la solicitud (cant <= 0 en todas). despachosoldet_id: " . $oddetbodprod->despachoorddet->despachosoldet_id,
+                                        'tipo_alert' => 'error'
+                                    ]);
                                 }
                             }
                         }
@@ -887,17 +900,22 @@ class DteFacturaController extends Controller
                     $invmov = InvMov::create($invmov_array);
                     array_push($arrayinvmov_id, $invmov->id);
                     foreach ($despachoord->despachoorddets as $despachoorddet) {
+                        // Trazabilidad de lote: si este ítem quedó vinculado a lotes de
+                        // producción (despachoorddet_opdetregprod, poblada al aprobar la guía),
+                        // se revierte por lote en vez de un movimiento agregado sin trazabilidad.
+                        $lotesAsignados = DespachoOrdDet_OpDetRegProd::where('despachoorddet_id', $despachoorddet->id)->get();
+
                         foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
                             //ESTO DEBE IR EN EL PROYECTO FINAL
-                            $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id; 
+                            $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                             foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
                                 //BUSCAR BODEGA DESPACHO CORRESPONDIENTE AL PRODUCTO QUE SE ESTA PROCESANDO DEPENDIENDO DE LA SUCURSAL QUE CORRESPONDE EL PRODUCTO
                                 if($invmovmodulobodent->sucursal_id == $aux_sucursal_id_producto){
                                     $aux_bodegadespacho_id = $invmovmodulobodent->id;
                                 }
-                            }      
+                            }
                             //ESTO DEBE IR EN EL PROYECTO FINAL
-                            
+
                             $invbodegaproducto = InvBodegaProducto::updateOrCreate(
                                 ['producto_id' => $oddetbodprod->invbodegaproducto->producto_id,'invbodega_id' => $aux_bodegadespacho_id],
                                 [
@@ -905,7 +923,40 @@ class DteFacturaController extends Controller
                                     'invbodega_id' => $aux_bodegadespacho_id
                                 ]
                             );
-    
+
+                            if ($lotesAsignados->isNotEmpty()) {
+                                foreach ($lotesAsignados as $loteAsig) {
+                                    $cantLote = (float) $loteAsig->cant * ($oddetbodprod->cant < 0 ? -1 : 1);
+                                    $cantkgLote = (float) $loteAsig->cantkg * ($oddetbodprod->cant < 0 ? -1 : 1);
+                                    if ($cantLote == 0) {
+                                        continue;
+                                    }
+                                    $invmovdetLote = InvMovDet::create([
+                                        "invbodegaproducto_id" => $invbodegaproducto->id,
+                                        "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
+                                        "invbodega_id"         => $aux_bodegadespacho_id,
+                                        "sucursal_id"          => $invbodegaproducto->invbodega->sucursal_id,
+                                        "unidadmedida_id"      => $despachoorddet->notaventadetalle->unidadmedida_id,
+                                        "invmovtipo_id"        => 2,
+                                        "cant"                 => $cantLote,
+                                        "cantgrupo"            => $cantLote,
+                                        "cantxgrupo"           => 1,
+                                        "peso"                 => $despachoorddet->notaventadetalle->producto->peso,
+                                        "cantkg"               => $cantkgLote,
+                                        "invmov_id"            => $invmov->id,
+                                    ]);
+                                    InvMovDetOpDetRegProd::create([
+                                        'invmovdet_id'    => $invmovdetLote->id,
+                                        'opdetregprod_id' => $loteAsig->opdetregprod_id,
+                                    ]);
+                                    InvMovDet_BodOrdDesp::create([
+                                        'invmovdet_id'                        => $invmovdetLote->id,
+                                        'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id,
+                                    ]);
+                                }
+                                continue;
+                            }
+
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
@@ -923,7 +974,7 @@ class DteFacturaController extends Controller
                                 'invmovdet_id' => $invmovdet->id,
                                 'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id
                             ]);
-    
+
                         }
                     }
                     $invmov_array = array();
@@ -941,7 +992,49 @@ class DteFacturaController extends Controller
                     $invmov = InvMov::create($invmov_array);
                     array_push($arrayinvmov_id, $invmov->id);
                     foreach ($despachoord->despachoorddets as $despachoorddet) {
+                        $lotesAsignados = DespachoOrdDet_OpDetRegProd::where('despachoorddet_id', $despachoorddet->id)->get();
+
                         foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
+                            if ($lotesAsignados->isNotEmpty()) {
+                                foreach ($lotesAsignados as $loteAsig) {
+                                    $cantLote = ($oddetbodprod->cant >= 0) ? -(float) $loteAsig->cant : (float) $loteAsig->cant;
+                                    $cantkgLote = ($oddetbodprod->cant >= 0) ? -(float) $loteAsig->cantkg : (float) $loteAsig->cantkg;
+                                    if ($cantLote == 0) {
+                                        continue;
+                                    }
+                                    $invmovdetLote = InvMovDet::create([
+                                        "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id,
+                                        "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
+                                        "invbodega_id"         => $oddetbodprod->invbodegaproducto->invbodega_id,
+                                        "sucursal_id"          => $oddetbodprod->invbodegaproducto->invbodega->sucursal_id,
+                                        "unidadmedida_id"      => $despachoorddet->notaventadetalle->unidadmedida_id,
+                                        "invmovtipo_id"        => 1,
+                                        "cant"                 => $cantLote,
+                                        "cantgrupo"            => $cantLote,
+                                        "cantxgrupo"           => 1,
+                                        "peso"                 => $despachoorddet->notaventadetalle->producto->peso,
+                                        "cantkg"               => $cantkgLote,
+                                        "invmov_id"            => $invmov->id,
+                                    ]);
+                                    InvMovDetOpDetRegProd::create([
+                                        'invmovdet_id'    => $invmovdetLote->id,
+                                        'opdetregprod_id' => $loteAsig->opdetregprod_id,
+                                    ]);
+                                    if ($oddetbodprod->invbodegaproducto->invbodega->tipo == 1){ //Si = 1 Bodega de Picking
+                                        foreach($oddetbodprod->despachoorddet->despachosoldet->despachosoldet_invbodegaproductos as $despachosoldet_invbodegaproducto){
+                                            if(($despachosoldet_invbodegaproducto->cant * -1) > 0){
+                                                InvMovDet_BodSolDesp::create([
+                                                    'invmovdet_id' => $invmovdetLote->id,
+                                                    'despachosoldet_invbodegaproducto_id' => $despachosoldet_invbodegaproducto->id
+                                                ]);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                continue;
+                            }
+
                             $array_invmovdet = $oddetbodprod->attributesToArray();
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;

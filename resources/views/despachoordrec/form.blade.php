@@ -173,6 +173,38 @@
                                                 <input type="text" name="cantord[]" id="cantord{{$aux_nfila}}" class="form-control numerico cantordsum" onkeyup="actSaldo({{$aux_nfila}})" value="{{$aux_cantrec}}" style="text-align:right;" readonly/>
                                             </td>
                                             <td name="bodegasTB{{$aux_nfila}}" id="bodegasTB{{$aux_nfila}}" style="text-align:right;">
+                                                <?php
+                                                    // Trazabilidad de lote: lotes con los que se despacho esta orden.
+                                                    // Se calcula ANTES del loop de bodegas porque, si hay lotes, cada
+                                                    // bodega muestra un radio para elegir el destino unico del reingreso.
+                                                    // Si el item no tiene lotes, todo queda exactamente como antes.
+                                                    $lotesRecDisp = DB::table('despachoorddet_opdetregprod')
+                                                        ->where('despachoorddet_id', $detalle->id)
+                                                        ->orderBy('opdetregprod_id')
+                                                        ->get();
+                                                    $tieneLotesRec = $lotesRecDisp->isNotEmpty();
+                                                    // Bodegas donde estos lotes realmente estuvieron alguna vez.
+                                                    // Se usa para ampliar el listado a la bodega de origen (ej. Picking,
+                                                    // tipo 1) sin permitir mandar un lote a una bodega donde nunca estuvo
+                                                    // (eso dejaria su saldo por lote en negativo).
+                                                    $bodegasLoteRec = collect();
+                                                    if ($tieneLotesRec) {
+                                                        $bodegasLoteRec = collect(DB::select("
+                                                            SELECT DISTINCT imd.invbodegaproducto_id AS ibp
+                                                            FROM   invmovdet imd
+                                                            JOIN   invmovdet_opdetregprod iodr ON iodr.invmovdet_id = imd.id
+                                                            WHERE  iodr.opdetregprod_id IN (" . $lotesRecDisp->pluck('opdetregprod_id')->implode(',') . ")
+                                                              AND  imd.deleted_at IS NULL
+                                                        "))->pluck('ibp');
+                                                    }
+                                                    // Valores ya guardados (modo editar)
+                                                    $lotesRecPrev = collect();
+                                                    if (isset($despachoordrecdet_actual) && $despachoordrecdet_actual) {
+                                                        $lotesRecPrev = DB::table('despachoordrecdet_opdetregprod')
+                                                            ->where('despachoordrecdet_id', $despachoordrecdet_actual->id)
+                                                            ->get()->keyBy('opdetregprod_id');
+                                                    }
+                                                ?>
                                                 <table class="table" id="tabla-bodrec" style="font-size:14px">
                                                     <tbody>
                                                         @foreach($invbodegaproductos as $invbodegaproducto)
@@ -195,7 +227,19 @@
                                                                 }
 
                                                             ?>
-                                                            @if (($invbodegaproducto->invbodega->tipo == 2)) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
+                                                            <?php
+                                                                // Sin lotes: se conserva el filtro original (solo bodegas tipo 2).
+                                                                // Con lotes: se agregan tambien las bodegas de Picking (tipo 1) donde
+                                                                // esos lotes estuvieron, para poder devolver a la bodega de origen y
+                                                                // que la mercaderia quede disponible para un nuevo despacho.
+                                                                $mostrarBodRec = ($invbodegaproducto->invbodega->tipo == 2);
+                                                                if ($tieneLotesRec
+                                                                    && $invbodegaproducto->invbodega->tipo == 1
+                                                                    && $bodegasLoteRec->contains($invbodegaproducto->id)) {
+                                                                    $mostrarBodRec = true;
+                                                                }
+                                                            ?>
+                                                            @if ($mostrarBodRec) <!--SOLO MUESTRA LAS BODEGAS TIPO 1, LAS TIPO 2 NO LAS MUESTRA YA QUE ES BODEGA DE DESPACHO -->
                                                                 <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}">
                                                                     <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
                                                                         <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
@@ -203,6 +247,21 @@
                                                                         <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                                                         {{$invbodegaproducto->id}}
                                                                     </td>
+                                                                    @if($tieneLotesRec)
+                                                                    {{-- Radio de bodega destino: solo cuando el item tiene lotes.
+                                                                         Permite marcar UNA sola bodega; el JS vuelca ahi la suma
+                                                                         de lo devuelto por lote y deja las demas en blanco. --}}
+                                                                    <td style="text-align:center;padding:2px;width:22px;vertical-align:middle;">
+                                                                        <input type="radio"
+                                                                               name="bodrec_destino_{{$aux_nfila}}"
+                                                                               class="bodrec-destino"
+                                                                               data-nfila="{{$aux_nfila}}"
+                                                                               data-ibp="{{$invbodegaproducto->id}}"
+                                                                               value="{{$invbodegaproducto->id}}"
+                                                                               title="Marcar esta bodega como destino de la devolucion"
+                                                                               style="cursor:pointer;"/>
+                                                                    </td>
+                                                                    @endif
                                                                     <td style="text-align:left;padding-right: 0px;padding-left: 2px;padding-top: 4px;padding-bottom: 4px;" class='tooltipsC' title='Bodega: {{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->nombre}}'>
                                                                         <div class="centrarhorizontal">
                                                                             <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px">{{$invbodegaproducto->invbodega->nomabre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
@@ -222,7 +281,7 @@
                                                                                         @if ($despachoordrecdet_invbodegaproducto->invbodegaproducto_id == $invbodegaproducto->id)
                                                                                             <?php $bandera = true; ?>
                                                                                             <input type="text" name="despachoordrecdet_invbodegaproducto_id[]" id="despachoordrecdet_invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control numerico" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;display:none;" value="{{($despachoordrecdet_invbodegaproducto->id)}}"/>
-                                                                                            <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}}" onkeyup="sumbodrec({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}')" style="text-align:right;" value="{{($despachoordrecdet_invbodegaproducto->cant)}}"/>
+                                                                                            <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}} bodrec-cant" data-nfila="{{$aux_nfila}}" data-ibp="{{$invbodegaproducto->id}}" onkeyup="sumbodrec({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}')" style="text-align:right;" {{$tieneLotesRec ? 'readonly' : ''}} value="{{($despachoordrecdet_invbodegaproducto->cant)}}"/>
                                                                                         @endif
                                                                                     @endforeach
                                                                                 @endif
@@ -230,7 +289,7 @@
                                                                         @endif
                                                                         @if($bandera == false)
                                                                             <input type="text" name="despachoordrecdet_invbodegaproducto_id[]" id="despachoordrecdet_invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control numerico" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;display:none;" value=""/>
-                                                                            <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}}" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;"/>
+                                                                            <input type="text" name="invcant[]" id="invcant{{$invbodegaproducto->id}}" class="form-control numerico bodrec{{$aux_nfila}} bodrec-cant" data-nfila="{{$aux_nfila}}" data-ibp="{{$invbodegaproducto->id}}" onkeyup="sumbodrec({{$aux_nfila}},{{$invbodegaproducto->id}})" style="text-align:right;" {{$tieneLotesRec ? 'readonly' : ''}}/>
                                                                         @endif
                                                                     </td>
                                                                 </tr>                                                        
@@ -238,6 +297,44 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
+                                                @if($tieneLotesRec)
+                                                    <table class="table" style="font-size:12px;table-layout:fixed;width:230px;margin-top:4px;">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td colspan="2" style="padding:2px 4px;font-size:10px;color:#777;border-top:1px solid #ddd;">
+                                                                    <i class="fa fa-tag"></i> Cant. devuelta por lote
+                                                                    <br><span style="color:#999;">Marque arriba la bodega destino</span>
+                                                                </td>
+                                                            </tr>
+                                                            @foreach($lotesRecDisp as $loteRec)
+                                                            <?php $prevRec = $lotesRecPrev[$loteRec->opdetregprod_id] ?? null; ?>
+                                                            <tr>
+                                                                <td style="padding:1px 4px;font-size:10px;text-align:left;vertical-align:middle;">
+                                                                    <input type="hidden" name="rec_opdetregprod_id[]"    value="{{$loteRec->opdetregprod_id}}"/>
+                                                                    <input type="hidden" name="rec_opdetregprod_odd[]"   value="{{$detalle->id}}"/>
+                                                                    <a href="javascript:void(0);" onclick="verEtiquetaEtapaConPermiso({{$loteRec->opdetregprod_id}})"
+                                                                       style="color:#2980b9;font-weight:600;" title="Ver etiqueta — Lote #{{$loteRec->opdetregprod_id}}">
+                                                                        <i class="fa fa-tag"></i> Lote-{{$loteRec->opdetregprod_id}}
+                                                                    </a>
+                                                                    <span style="color:#bbb;">(desp. {{$loteRec->cant}})</span>
+                                                                </td>
+                                                                <td style="padding:1px 2px;vertical-align:middle;width:90px;">
+                                                                    <input type="text"
+                                                                           name="rec_opdetregprod_cant[]"
+                                                                           class="form-control numerico dismpadding lote-rec-input"
+                                                                           data-nfila="{{$aux_nfila}}"
+                                                                           data-max="{{$loteRec->cant}}"
+                                                                           data-cantkg-total="{{$loteRec->cantkg}}"
+                                                                           value="{{$prevRec ? $prevRec->cant : 0}}"
+                                                                           style="text-align:right;font-size:11px;"/>
+                                                                    <input type="hidden" name="rec_opdetregprod_cantkg[]"
+                                                                           value="{{$prevRec ? $prevRec->cantkg : 0}}"/>
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                @endif
                                             </td>
                                             <td name="cantorddespinputF{{$aux_nfila}}" id="cantorddespinputF{{$aux_nfila}}" style="text-align:right;display:none;">
                                                 <input type="text" name="cantorddesp[]" id="cantorddesp{{$aux_nfila}}" class="form-control" value="{{$aux_cantrec}}" style="text-align:right;"/>

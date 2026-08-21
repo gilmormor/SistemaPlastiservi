@@ -198,6 +198,7 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             ['Aprobar Registro Produccion', 'opdetregprodtempaprobsup', 14, 'fa-thumbs-o-up'],
             ['Trazabilidad OP', 'op/seguimiento', 15, 'fa-share-alt'],
             ['Consulta Lote', 'reportcclote', 18, 'fa fa-search'],
+            ['Trazabilidad Documento', 'trazabilidaddocumento', 20, 'fa-search'],
         ];
         foreach ($nivel2 as [$nombre, $url, $orden, $icono]) {
             $this->insertarSiNoExisteMenu($idProduccion, $nombre, $url, $orden, $icono);
@@ -321,6 +322,7 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             ['CC Muestra', 'reportccmuestra'],
             ['Cobertura CC', 'reportcoberturacc'],
             ['Consulta Lote', 'reportcclote'],
+            ['Trazabilidad Documento', 'trazabilidaddocumento'],
         ];
 
         foreach ($menusNuevos as [$nombre, $url]) {
