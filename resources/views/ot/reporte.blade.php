@@ -56,51 +56,69 @@
 
 		</tr>
 	</table>
-	<div>
-		<table id="factura_detalle">
-			<thead>
-				<tr>
-					<th width="25px">Cod</th>
-					<th width="30px">Cant.</th>
-					<th width="25px" class="textcenter">UN</th>
-					<th width="150px" class="textleft">Descripción</th>
-					<th width="15px" title="Requiere Fabricación">ReqFab</th>
-					<th width="30px" class="textright">Total Kg</th>
-				</tr>
-			</thead>
-			<tbody id="detalle_productos">
+	{{-- Anchos en % (no en px) y table-layout:fixed para que la tabla respete el
+	     100% del contenedor, igual que #factura_cliente. Con anchos en px la
+	     suma de columnas superaba el ancho util de la hoja y la ultima columna
+	     (Total Neto) se desbordaba. Los % suman exactamente 100. --}}
+	<table id="factura_detalle" style="table-layout:fixed; width:100%;">
+		<thead>
+			<tr>
+				<th style="width:8%;">Cod</th>
+				<th style="width:10%;">Cant.</th>
+				<th style="width:6%;" class="textcenter">UN</th>
+				<th style="width:40%;" class="textleft">Descripción</th>
+				<th style="width:6%;" title="Requiere Fabricación">ReqFab</th>
+				<th style="width:10%;" class="textright">Total Kg</th>
+				<th style="width:10%;" class="textright">P/Unit</th>
+				<th style="width:10%;" class="textright">Total Neto</th>
+			</tr>
+		</thead>
+		<tbody id="detalle_productos">
+			<?php
+				$totalkg = 0;
+			?>
+			@foreach($ot->otdets as $otdet)
 				<?php
-					$totalkg = 0;
+					//$aux_promPonderadoPrecioxkilo += ($ot->notaventadetalle->precioxkilo * (($ot->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
+					$totalkg += $otdet->kg;
+					$atributoProd = $otdet->producto->atributosProducto($otdet->producto_id);
+					$aux_producto_nombre = $atributoProd["nombre"];
 				?>
-				@foreach($ot->otdets as $otdet)
-					<?php
-						//$aux_promPonderadoPrecioxkilo += ($ot->notaventadetalle->precioxkilo * (($ot->notaventadetalle->totalkilos * 100) / $aux_sumtotalkilos)) / 100 ;
-						$totalkg += $otdet->kg;
-						$atributoProd = $otdet->producto->atributosProducto($otdet->producto_id);
-						$aux_producto_nombre = $atributoProd["nombre"];
-					?>
-					<tr class="headt" style="height:150%;">
-						<td class="textcenter">{{$otdet->producto_id}}</td>
-						<td class="textcenter">{{number_format($otdet->cant, 0, ",", ".")}}</td>
-						<td class="textcenter">{{$otdet->unidadmedida->nombre}}</td>
-						<td class="textleft">{{$aux_producto_nombre}}
-							@if ($otdet->obs)
-								<br><span class="small-text">{{$otdet->obs}}</span>
-							@endif
-						</td>
-						<td class="textcenter">{{$otdet->requiere_fabricacion == 1 ? "Sí" : "No"}}</td>
-						<td class="textright">{{number_format($otdet->kg, 2, ",", ".")}}</td>
-					</tr>
-				@endforeach
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="5" class="textright"><span><strong>Total</strong></span></td>
-					<td class="textright"><span><strong>{{number_format($totalkg, 2, ",", ".")}}</strong></span></td>
+				<tr class="headt" style="height:150%;">
+					<td class="textcenter">{{$otdet->producto_id}}</td>
+					<td class="textcenter">{{number_format($otdet->cant, 0, ",", ".")}}</td>
+					<td class="textcenter">{{$otdet->unidadmedida->nombre}}</td>
+					{{-- word-wrap: con table-layout:fixed una descripcion larga sin
+					     espacios desbordaria la celda en vez de cortarse. --}}
+					<td class="textleft" style="word-wrap:break-word; overflow-wrap:break-word;">{{$aux_producto_nombre}}
+						@if ($otdet->obs)
+							<br><span class="small-text">{{$otdet->obs}}</span>
+						@endif
+					</td>
+					<td class="textcenter">{{$otdet->requiere_fabricacion == 1 ? "Sí" : "No"}}</td>
+					<td class="textright">{{number_format($otdet->kg, 2, ",", ".")}}</td>
+					<td class="textright">{{number_format($otdet->preciounit, 2, ",", ".")}}</td>
+					<td class="textright">{{number_format($otdet->subtotal, 2, ",", ".")}}</td>
 				</tr>
-			</tfoot>
-		</table>
-	</div>
+			@endforeach
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="5" class="textright"><span><strong>Total</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($totalkg, 2, ",", ".")}}</strong></span></td>
+				<td class="textright"><span><strong>NETO</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($ot->neto, 2, ",", ".")}}</strong></span></td>
+			</tr>
+			<tr>
+				<td colspan="7" class="textright"><span><strong>IVA {{$ot->otnotaventa->notaventa->piva}}%</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($ot->iva, 2, ",", ".")}}</strong></span></td>
+			</tr>
+			<tr>
+				<td colspan="7" class="textright"><span><strong>TOTAL</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($ot->total, 2, ",", ".")}}</strong></span></td>
+			</tr>
+		</tfoot>
+	</table>
 	{{-- <div>
 		<table id="factura_detalle">
 			<tr class="headt">
