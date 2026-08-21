@@ -135,7 +135,10 @@ function eliminarCcParam(id, apsucetapaprod_id) {
     $.ajax({
         url: '/ccparam_apsucetapaprod/' + id,
         method: 'DELETE',
-        data: { _token: $('meta[name=csrf-token]').attr('content') },
+        // El layout no define la meta csrf-token, asi que se toma del input
+        // oculto del formulario (mismo criterio que guardarCcParam mas arriba).
+        // Sin este respaldo el token viajaba undefined y Laravel respondia 419.
+        data: { _token: $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').first().val() },
         success: function(resp) {
             if (resp.mensaje === 'ok') {
                 Biblioteca.notificaciones('Parámetro CC eliminado.', 'Params CC', 'success');
