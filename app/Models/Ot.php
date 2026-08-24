@@ -219,13 +219,17 @@ class Ot extends Model
             $aux_vendedor_idCond = "ot.vendedor_id in ($request->vendedor_id)";
         }
 
-        $aux_verFacturas = can('ver-facturas-de-todos-los-usuarios',false);
+        // Permiso propio para OT: antes se reutilizaba 'ver-facturas-de-todos-los-usuarios',
+        // lo que obligaba a dar acceso a facturas para poder ver las OT de otros usuarios.
+        // 'ver-ot-de-todos-los-usuarios' se asigna a los mismos roles que ya tenian el de
+        // facturas (ver PermisoVerOtTodosUsuariosSeeder), asi que el comportamiento no cambia.
+        $aux_verTodasOt = can('ver-ot-de-todos-los-usuarios',false);
         $aux_condFiltrarxUsuario = " true ";
-        if(!$aux_verFacturas){
+        if(!$aux_verTodasOt){
             $aux_condFiltrarxUsuario = " ot.usuario_id = $user->id ";
         }
 
-        //Incluido el 13/05/2024, para el reporte ReportDTEFacController. 
+        //Incluido el 13/05/2024, para el reporte ReportDTEFacController.
         if(!isset($request->producto_id) or empty($request->producto_id) or ($request->producto_id == "")){
             $aux_producto_idCond = "true";
         }else{
@@ -512,13 +516,15 @@ class Ot extends Model
             $aux_vendedor_idCond = "ot.vendedor_id in ($request->vendedor_id)";
         }
 
-        $aux_verFacturas = can('ver-facturas-de-todos-los-usuarios',false);
+        // Mismo permiso propio de OT que en reportot(), para que un rol vea las mismas
+        // OT en el reporte y en las pantallas de envio a programacion / programacion.
+        $aux_verTodasOt = can('ver-ot-de-todos-los-usuarios',false);
         $aux_condFiltrarxUsuario = " true ";
-        if(!$aux_verFacturas){
+        if(!$aux_verTodasOt){
             $aux_condFiltrarxUsuario = " ot.usuario_id = $user->id ";
         }
 
-        /* //Incluido el 13/05/2024, para el reporte ReportDTEFacController. 
+        /* //Incluido el 13/05/2024, para el reporte ReportDTEFacController.
         if(!isset($request->producto_id) or empty($request->producto_id) or ($request->producto_id == "")){
             $aux_producto_idCond = "true";
         }else{
