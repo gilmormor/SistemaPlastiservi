@@ -130,12 +130,15 @@ class TrazabilidadDocumentoController extends Controller
             'existe'       => true,
             'notaventa_id' => (int) $notaventa_id,
             'ots'          => array_map(function ($o) {
-                // aprobstatus: 1 = aprobada, 2 = pendiente/rechazada segun el flujo de otaprobar
+                // aprobstatus segun OtAprobarController: 2 = aprobada, 3 = rechazada.
+                // Cualquier otro valor (1 / null) es una OT que aun no se reviso.
+                $st = (int) $o->aprobstatus;
                 return [
-                    'id'          => (int) $o->id,
-                    'aprobada'    => ((int) $o->aprobstatus === 1),
-                    'anulada'     => ((int) $o->anulada > 0),
-                    'con_op'      => ((int) $o->ops > 0),
+                    'id'        => (int) $o->id,
+                    'aprobada'  => ($st === 2),
+                    'rechazada' => ($st === 3),
+                    'anulada'   => ((int) $o->anulada > 0),
+                    'con_op'    => ((int) $o->ops > 0),
                 ];
             }, $ots),
         ];
@@ -255,6 +258,12 @@ class TrazabilidadDocumentoController extends Controller
             'aprobfechahora'  => $lote->aprobfechahora,
             'notaventa_id'    => $notaventa_id,
             'ot_id'           => $ot->id,
+            // Estado de la OT, para mostrarlo junto a su chip en la cadena.
+            // aprobstatus segun OtAprobarController: 2 = aprobada, 3 = rechazada;
+            // cualquier otro valor es una OT que aun no se reviso.
+            'ot_aprobada'     => ((int) $ot->aprobstatus === 2),
+            'ot_rechazada'    => ((int) $ot->aprobstatus === 3),
+            'ot_anulada'      => DB::table('otanul')->where('ot_id', $ot->id)->whereNull('deleted_at')->exists(),
             'op_id'           => $op->id,
             'origenes'        => TrazabilidadLoteService::origenesLote($lote->id),
             'destinos'        => TrazabilidadLoteService::destinosLote($lote->id),

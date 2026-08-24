@@ -63,17 +63,23 @@ function renderAvisoNv(nv) {
                '</strong> existe pero <strong>no tiene ninguna OT creada</strong>, por lo que aun no hay produccion ni lotes que trazar.</div>';
     }
 
-    var chips = nv.ots.map(function (o) {
-        var cls = 'green', nota = '';
-        if (o.anulada)        { cls = 'red';    nota = ' (anulada)'; }
-        else if (!o.aprobada) { cls = 'orange'; nota = ' (pendiente de aprobar)'; }
-        else if (!o.con_op)   { cls = 'blue';   nota = ' (sin OP)'; }
-        return '<span class="trz-chip ' + cls + '"><i class="fa fa-clipboard"></i> OT-' + o.id + nota + '</span>';
-    }).join(' ');
-
-    return '<div style="margin-bottom:12px;padding:8px 12px;background:#fff;border:1px solid #e3e8ef;border-radius:4px;">' +
-           '<span style="font-size:11px;color:#8a99aa;text-transform:uppercase;">Nota de Venta ' + nv.notaventa_id +
-           ' &nbsp;·&nbsp; ' + nv.ots.length + ' OT' + (nv.ots.length > 1 ? 's' : '') + '</span><br>' + chips + '</div>';
+    // La NV tiene OT: no se muestra panel aparte. El estado de cada OT se ve
+    // dentro de la cadena de trazabilidad, junto a su propio chip (renderItem).
+    // Solo se avisa si ninguna OT llego a generar OP, porque en ese caso la
+    // busqueda no devuelve lotes y conviene explicar por que.
+    var conOp = nv.ots.filter(function (o) { return o.con_op; }).length;
+    if (conOp === 0) {
+        var det = nv.ots.map(function (o) {
+            if (o.anulada)        return 'OT-' + o.id + ' anulada';
+            if (o.rechazada)      return 'OT-' + o.id + ' rechazada';
+            if (!o.aprobada)      return 'OT-' + o.id + ' pendiente de aprobar';
+            return 'OT-' + o.id + ' aprobada pero sin OP';
+        }).join(', ');
+        return '<div class="trz-empty" style="color:#b7600a;border-left:3px solid #f39c12;padding-left:10px;">' +
+               '<i class="fa fa-exclamation-triangle"></i> La Nota de Venta <strong>' + nv.notaventa_id +
+               '</strong> tiene OT pero aun no hay produccion: ' + det + '.</div>';
+    }
+    return '';
 }
 
 function renderResultados(items, nvInfo) {
@@ -109,9 +115,16 @@ function renderItem(it) {
         '</a>';
         flow += '<span class="trz-arrow"><i class="fa fa-long-arrow-right"></i></span>';
     }
-    flow += '<a href="javascript:void(0)" class="trz-chip blue" style="cursor:pointer;" ' +
-        'onclick=\'genpdf(' + it.ot_id + ',"","ver-pdf-ot","/ot/exportPdf/' + it.ot_id + '")\' title="Orden de Trabajo">' +
-        '<i class="fa fa-clipboard"></i> OT-' + it.ot_id +
+    // Estado de la OT junto a su chip: solo se anota cuando NO esta aprobada,
+    // para no ensuciar la cadena en el caso normal.
+    var otCls = 'blue', otNota = '', otTitle = 'Orden de Trabajo';
+    if (it.ot_anulada)        { otCls = 'red';    otNota = ' (anulada)';              otTitle = 'Orden de Trabajo — anulada'; }
+    else if (it.ot_rechazada) { otCls = 'red';    otNota = ' (rechazada)';            otTitle = 'Orden de Trabajo — rechazada'; }
+    else if (!it.ot_aprobada) { otCls = 'orange'; otNota = ' (pend. aprobación)';     otTitle = 'Orden de Trabajo — pendiente de aprobación'; }
+
+    flow += '<a href="javascript:void(0)" class="trz-chip ' + otCls + '" style="cursor:pointer;" ' +
+        'onclick=\'genpdf(' + it.ot_id + ',"","ver-pdf-ot","/ot/exportPdf/' + it.ot_id + '")\' title="' + otTitle + '">' +
+        '<i class="fa fa-clipboard"></i> OT-' + it.ot_id + otNota +
     '</a>';
     flow += '<span class="trz-arrow"><i class="fa fa-long-arrow-right"></i></span>';
     flow += '<a href="javascript:void(0)" class="trz-chip blue" style="cursor:pointer;" ' +
