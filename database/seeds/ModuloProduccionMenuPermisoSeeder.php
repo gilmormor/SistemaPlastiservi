@@ -225,6 +225,9 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
         $this->insertarSiNoExisteMenu($idCC, 'Desbloquear CC Muestra', 'ccdesbloqueo', 3, 'fa fa-unlock text-blue');
         $this->insertarSiNoExisteMenu($idCC, 'CC Muestra', 'reportccmuestra', 4, 'fa-file-pdf-o');
         $this->insertarSiNoExisteMenu($idCC, 'Cobertura CC', 'reportcoberturacc', 5, 'fa fa-shield');
+        // Parametros de medicion que usa CC para evaluar las muestras. Sus permisos
+        // (listar/crear/editar/guardar/eliminar-ccparam) ya se crean mas arriba.
+        $this->insertarSiNoExisteMenu($idCC, 'Parametros Control de calidad', 'ccparam', 6, 'fa-eyedropper');
     }
 
     /**
@@ -323,6 +326,7 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
             ['Cobertura CC', 'reportcoberturacc'],
             ['Consulta Lote', 'reportcclote'],
             ['Trazabilidad Documento', 'trazabilidaddocumento'],
+            ['Parametros Control de calidad', 'ccparam'],
         ];
 
         foreach ($menusNuevos as [$nombre, $url]) {
