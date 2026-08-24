@@ -20,7 +20,7 @@ class ReportOtController extends Controller
      */
     public function index()
     {
-        can('listar-dte-factura-reporte');
+        can('listar-reporte-ot');
 
         $areaproduccions =  AreaProduccion::areaproduccionxusuario();
         $fechaAct = date("d/m/Y");
