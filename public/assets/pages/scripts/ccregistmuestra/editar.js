@@ -11,7 +11,13 @@ $(document).ready(function () {
     params.forEach(function (p) { paramMap[p.det_id] = p; });
 
     function calcularResultado(valor, p) {
-        if (p.tipo !== 'number') return 1;
+        // Cumple / No Cumple: "No Cumple" (0) es un rechazo. Debe coincidir con
+        // CcRegistMuestraDet::evaluar() del servidor, que es quien decide al guardar.
+        if (p.tipo === 'boolean') {
+            if (valor === null || valor === '') return null; // sin seleccionar
+            return (String(valor) === '0') ? 3 : 1;
+        }
+        if (p.tipo !== 'number') return 1; // texto libre: sin criterio, no se evalua
         var v = parseFloat(String(valor).replace(',', '.'));
         if (isNaN(v)) return null;
         var min = p.valor_min !== null && p.valor_min !== '' ? parseFloat(p.valor_min) : null;

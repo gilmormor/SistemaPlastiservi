@@ -29,7 +29,13 @@ function cargarCcParams(apsucetapaprod_id) {
                 var req = p.requerido == 1 ? '<span class="label label-danger">Sí</span>' : '<span class="label label-default">No</span>';
                 var min = (p.valor_min !== null && p.valor_min !== '') ? p.valor_min : '—';
                 var max = (p.valor_max !== null && p.valor_max !== '') ? p.valor_max : '—';
-                var tipoMap = {number: 'Numérico', text: 'Texto', boolean: 'Sí/No'};
+                // Si el rango sale del acuerdo tecnico, el min/max fijo no aplica:
+                // el rango lo define cada producto con su propia tolerancia.
+                if (p.at_campo) {
+                    min = '<span class="label label-info">' + (_atCampoLbl[p.at_campo] || p.at_campo) + '</span>';
+                    max = '<small class="text-muted">objetivo ± tolerancia del AT</small>';
+                }
+                var tipoMap = {number: 'Numérico', text: 'Texto', boolean: 'Cumple/No Cumple'};
                 html += '<tr id="ccparam-row-' + p.id + '">' +
                     '<td>' + p.orden + '</td>' +
                     '<td><strong>' + p.etiqueta + '</strong><br><small class="text-muted">' + p.nombre + '</small></td>' +
@@ -49,6 +55,25 @@ function cargarCcParams(apsucetapaprod_id) {
     }).fail(function() {
         $('#tablaCcParamsBody').html('<tr><td colspan="8" class="text-center text-danger">Error al cargar parámetros.</td></tr>');
     });
+}
+
+// Etiqueta legible del campo del acuerdo tecnico contra el que se compara.
+var _atCampoLbl = {
+    at_espesor: 'Espesor del AT',
+    at_ancho:   'Ancho del AT',
+    at_largo:   'Largo del AT',
+    at_fuelle:  'Fuelle del AT'
+};
+
+// Muestra u oculta los campos de rango fijo segun el origen elegido.
+function toggleRangoCcParam() {
+    if ($('#ccparam_at_campo').val()) {
+        $('.rango-fijo').hide();
+        $('#ccparam_valor_min').val('');
+        $('#ccparam_valor_max').val('');
+    } else {
+        $('.rango-fijo').show();
+    }
 }
 
 function cargarCcParamsDisponibles(apsucetapaprod_id) {
@@ -72,8 +97,10 @@ function editarCcParam(id) {
     $('#ccparam_ccparam_id').val(p.ccparam_id).prop('disabled', true);
     $('#ccparam_valor_min').val(p.valor_min !== null ? p.valor_min : '');
     $('#ccparam_valor_max').val(p.valor_max !== null ? p.valor_max : '');
+    $('#ccparam_at_campo').val(p.at_campo || '');
     $('#ccparam_orden').val(p.orden);
     $('#ccparam_requerido').prop('checked', p.requerido == 1);
+    toggleRangoCcParam();
 }
 
 function cancelarEdicionCcParam() {
@@ -82,8 +109,10 @@ function cancelarEdicionCcParam() {
     $('#ccparam_ccparam_id').val('').prop('disabled', false);
     $('#ccparam_valor_min').val('');
     $('#ccparam_valor_max').val('');
+    $('#ccparam_at_campo').val('');
     $('#ccparam_orden').val(0);
     $('#ccparam_requerido').prop('checked', true);
+    toggleRangoCcParam();
 }
 
 function guardarCcParam() {
@@ -92,6 +121,7 @@ function guardarCcParam() {
     var ccparamId  = $('#ccparam_ccparam_id').val();
     var valorMin   = $('#ccparam_valor_min').val();
     var valorMax   = $('#ccparam_valor_max').val();
+    var atCampo    = $('#ccparam_at_campo').val();
     var orden      = $('#ccparam_orden').val();
     var requerido  = $('#ccparam_requerido').is(':checked') ? 1 : 0;
 
@@ -102,7 +132,7 @@ function guardarCcParam() {
 
     // Fallback: algunos layouts no incluyen el meta csrf-token, se toma del input del form
     var csrfToken = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').first().val();
-    var data   = { valor_min: valorMin || null, valor_max: valorMax || null, requerido: requerido, orden: orden, _token: csrfToken };
+    var data   = { valor_min: valorMin || null, valor_max: valorMax || null, at_campo: atCampo || null, requerido: requerido, orden: orden, _token: csrfToken };
     var url    = '/ccparam_apsucetapaprod';
     var method = 'POST';
 

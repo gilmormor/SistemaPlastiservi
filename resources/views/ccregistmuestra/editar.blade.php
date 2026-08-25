@@ -68,7 +68,18 @@ CC — Editar Muestra #{{ $muestra->id }}
                                 @php
                                     $cap = $det->ccparamApsucetapaprod;
                                     $cp  = $cap ? $cap->ccparam : null;
-                                    $tipoLabel = ['number'=>'Numérico','text'=>'Texto','boolean'=>'Sí/No'][$cp->tipo ?? ''] ?? '—';
+                                    $tipoLabel = ['number'=>'Numérico','text'=>'Texto','boolean'=>'Cumple/No Cumple'][$cp->tipo ?? ''] ?? '—';
+                                    // Si la muestra se valido contra el acuerdo tecnico, manda el
+                                    // rango congelado en el detalle, no el rango fijo de la etapa.
+                                    $desdeAt = $det->rango_min !== null || $det->rango_max !== null;
+                                    $rgMin   = $desdeAt ? $det->rango_min : ($cap ? $cap->valor_min : null);
+                                    $rgMax   = $desdeAt ? $det->rango_max : ($cap ? $cap->valor_max : null);
+                                    // Mismos decimales que en la toma de muestra: los configurados
+                                    // en el parámetro pueden redondear el rango y volverlo ilegible.
+                                    $dec     = \App\Models\CcTolerancia::decimalesNecesarios(
+                                                   [$rgMin, $rgMax, $det->valor_objetivo],
+                                                   ($cp && $cp->decimales) ? $cp->decimales : 2
+                                               );
                                 @endphp
                                 <tr id="fila-det-{{ $det->id }}">
                                     <td>
@@ -80,15 +91,21 @@ CC — Editar Muestra #{{ $muestra->id }}
                                     </td>
                                     <td class="text-center">{{ $tipoLabel }}</td>
                                     <td class="text-center">
-                                        @if($cap && $cap->valor_min !== null)
-                                            <span class="text-info">{{ $cap->valor_min }}</span>
+                                        @if($rgMin !== null)
+                                            <span class="text-info">{{ number_format($rgMin, $dec, ',', '.') }}</span>
+                                            @if($desdeAt && $det->valor_objetivo !== null)
+                                                <br><small class="text-muted" title="Valor del acuerdo técnico">obj. {{ number_format($det->valor_objetivo, $dec, ',', '.') }}</small>
+                                            @endif
                                         @else
                                             <span class="text-muted">—</span>
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        @if($cap && $cap->valor_max !== null)
-                                            <span class="text-info">{{ $cap->valor_max }}</span>
+                                        @if($rgMax !== null)
+                                            <span class="text-info">{{ number_format($rgMax, $dec, ',', '.') }}</span>
+                                            @if($desdeAt && $det->tolerancia !== null)
+                                                <br><small class="text-muted" title="Tolerancia aplicada">±{{ rtrim(rtrim(number_format($det->tolerancia, 4, ',', '.'), '0'), ',') }}</small>
+                                            @endif
                                         @else
                                             <span class="text-muted">—</span>
                                         @endif
@@ -99,8 +116,8 @@ CC — Editar Muestra #{{ $muestra->id }}
                                                 class="form-control cc-param-input"
                                                 data-det-id="{{ $det->id }}"
                                                 data-tipo="{{ $cp->tipo }}">
-                                                <option value="1" {{ $det->valor == '1' ? 'selected' : '' }}>Sí</option>
-                                                <option value="0" {{ $det->valor == '0' ? 'selected' : '' }}>No</option>
+                                                <option value="1" {{ $det->valor == '1' ? 'selected' : '' }}>Cumple</option>
+                                                <option value="0" {{ $det->valor == '0' ? 'selected' : '' }}>No Cumple</option>
                                             </select>
                                         @else
                                             <input type="{{ ($cp && $cp->tipo === 'number') ? 'number' : 'text' }}"

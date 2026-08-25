@@ -157,16 +157,16 @@
                     $resBg    = [1 => '#00a65a', 2 => '#f39c12', 3 => '#dd4b39'];
                     $rl  = $resLabel[$det->resultado] ?? '—';
                     $rb  = $resBg[$det->resultado]   ?? '#999';
-                    $tipoMap = ['number' => 'Numérico', 'text' => 'Texto', 'boolean' => 'Sí/No'];
+                    $tipoMap = ['number' => 'Numérico', 'text' => 'Texto', 'boolean' => 'Cumple/No Cumple'];
                 @endphp
                 <tr>
                     <td>{{ $cp ? $cp->etiqueta : '—' }}
                         @if($cp && $cp->unidad)<small> ({{ $cp->unidad }})</small>@endif
                     </td>
                     <td class="textcenter">{{ $cp ? ($tipoMap[$cp->tipo] ?? $cp->tipo) : '—' }}</td>
-                    <td class="textcenter">{{ $cap && $cap->valor_min !== null ? $cap->valor_min : '—' }}</td>
-                    <td class="textcenter">{{ $cap && $cap->valor_max !== null ? $cap->valor_max : '—' }}</td>
-                    <td class="textcenter"><strong>{{ $det->valor }}</strong></td>
+                    <td class="textcenter">{{ $det->rango_min !== null || $det->rango_max !== null ? ($det->rango_min !== null ? rtrim(rtrim(number_format($det->rango_min,4,',','.'),'0'),',') : '—') : ($cap && $cap->valor_min !== null ? $cap->valor_min : '—') }}</td>
+                    <td class="textcenter">{{ $det->rango_min !== null || $det->rango_max !== null ? ($det->rango_max !== null ? rtrim(rtrim(number_format($det->rango_max,4,',','.'),'0'),',') : '—') : ($cap && $cap->valor_max !== null ? $cap->valor_max : '—') }}</td>
+                    <td class="textcenter"><strong>{{ $cp && $cp->tipo === 'boolean' ? ($det->valor === '1' || $det->valor === 1 ? 'Cumple' : ($det->valor === '0' || $det->valor === 0 ? 'No Cumple' : $det->valor)) : $det->valor }}</strong></td>
                     <td class="textcenter">
                         <span style="background:{{ $rb }};color:#fff;padding:2px 8px;border-radius:3px;font-size:8pt;">
                             {{ $rl }}

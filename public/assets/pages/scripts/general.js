@@ -5142,10 +5142,16 @@ function desvAnchoLargo(aux_valor){
 			case aux_valor > 50 && aux_valor <= 150:
 				aux_desv = "±2 CM";
 				break;
-			default:
+			// Tramo 151 a 300 y tramo 301 en adelante: antes todo lo mayor a 150
+			// caia en ±3 CM. Se agrega el cuarto tramo (±4 CM) que faltaba respecto
+			// de la tabla de tolerancias de Control de Calidad.
+			case aux_valor > 150 && aux_valor <= 300:
 				aux_desv = "±3 CM";
 				break;
-		}	
+			default:
+				aux_desv = "±4 CM";
+				break;
+		}
 	}
 	return aux_desv;
 }

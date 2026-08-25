@@ -110,7 +110,21 @@ CC — Nueva Muestra
                                         @foreach($params as $p)
                                         @php
                                             $cp = $p->ccparam;
-                                            $tipoLabel = ['number' => 'Numérico', 'text' => 'Texto', 'boolean' => 'Sí/No'][$cp->tipo] ?? $cp->tipo;
+                                            $tipoLabel = ['number' => 'Numérico', 'text' => 'Texto', 'boolean' => 'Cumple/No Cumple'][$cp->tipo] ?? $cp->tipo;
+                                            // Rango calculado desde el acuerdo tecnico del producto, si el
+                                            // parametro esta configurado asi. Si no, manda el rango fijo.
+                                            $rg     = isset($rangos[$p->id]) ? $rangos[$p->id] : null;
+                                            $rgMin  = $rg ? $rg['min'] : $p->valor_min;
+                                            $rgMax  = $rg ? $rg['max'] : $p->valor_max;
+                                            // Los decimales configurados en el parámetro pueden ser menos de los
+                                            // que el rango necesita: con 2 decimales, 0,025 y 0,031 se mostraban
+                                            // ambos como "0,03". Se usan los que hagan falta, sin bajar de los
+                                            // configurados. El step del input acompaña, si no no se podría teclear.
+                                            $dec    = \App\Models\CcTolerancia::decimalesNecesarios(
+                                                          [$rgMin, $rgMax, $rg ? $rg['objetivo'] : null],
+                                                          $cp->decimales ?: 2
+                                                      );
+                                            $step   = $dec > 0 ? '0.' . str_repeat('0', $dec - 1) . '1' : '1';
                                         @endphp
                                         <tr id="fila-param-{{ $p->id }}">
                                             <td>
@@ -119,18 +133,36 @@ CC — Nueva Muestra
                                                     <small class="text-muted">({{ $cp->unidad }})</small>
                                                 @endif
                                                 <br><small class="text-muted">{{ $cp->nombre }}</small>
+                                                {{-- Espesor: se mide contra el de producción, no contra el
+                                                     comprometido con el cliente. Se muestran ambos para que
+                                                     quien mide sepa cuál se está usando. --}}
+                                                @if($rg && $rg['usa_prod'])
+                                                    <br>
+                                                    <small class="text-muted" title="Espesor comprometido con el cliente en el acuerdo técnico">
+                                                        Esp AT: {{ rtrim(rtrim(number_format($rg['objetivo_at'], 4, ',', '.'), '0'), ',') }}
+                                                    </small>
+                                                    <small class="text-primary" style="font-weight:600;" title="Espesor de producción: es el que se valida">
+                                                        &nbsp;Esp Prod: {{ rtrim(rtrim(number_format($rg['objetivo'], 4, ',', '.'), '0'), ',') }}
+                                                    </small>
+                                                @endif
                                             </td>
                                             <td class="text-center">{{ $tipoLabel }}</td>
                                             <td class="text-center">
-                                                @if($p->valor_min !== null)
-                                                    <span class="text-info">{{ $p->valor_min }}</span>
+                                                @if($rgMin !== null)
+                                                    <span class="text-info">{{ number_format($rgMin, $dec, ',', '.') }}</span>
+                                                    @if($rg)
+                                                        <br><small class="text-muted" title="Valor del acuerdo técnico">obj. {{ number_format($rg['objetivo'], $dec, ',', '.') }}</small>
+                                                    @endif
                                                 @else
                                                     <span class="text-muted">—</span>
                                                 @endif
                                             </td>
                                             <td class="text-center">
-                                                @if($p->valor_max !== null)
-                                                    <span class="text-info">{{ $p->valor_max }}</span>
+                                                @if($rgMax !== null)
+                                                    <span class="text-info">{{ number_format($rgMax, $dec, ',', '.') }}</span>
+                                                    @if($rg)
+                                                        <br><small class="text-muted" title="Tolerancia del acuerdo técnico">{{ $rg['texto'] }}</small>
+                                                    @endif
                                                 @else
                                                     <span class="text-muted">—</span>
                                                 @endif
@@ -142,12 +174,12 @@ CC — Nueva Muestra
                                                         class="form-control cc-param-input"
                                                         data-param-id="{{ $p->id }}"
                                                         data-tipo="{{ $cp->tipo }}"
-                                                        data-min="{{ $p->valor_min }}"
-                                                        data-max="{{ $p->valor_max }}"
+                                                        data-min="{{ $rgMin }}"
+                                                        data-max="{{ $rgMax }}"
                                                         {{ $p->requerido ? 'required' : '' }}>
                                                         <option value="">-- Seleccione --</option>
-                                                        <option value="1">Sí</option>
-                                                        <option value="0">No</option>
+                                                        <option value="1">Cumple</option>
+                                                        <option value="0">No Cumple</option>
                                                     </select>
                                                 @else
                                                     <input type="{{ $cp->tipo === 'number' ? 'number' : 'text' }}"
@@ -155,10 +187,10 @@ CC — Nueva Muestra
                                                         class="form-control cc-param-input"
                                                         data-param-id="{{ $p->id }}"
                                                         data-tipo="{{ $cp->tipo }}"
-                                                        data-min="{{ $p->valor_min ?? '' }}"
-                                                        data-max="{{ $p->valor_max ?? '' }}"
+                                                        data-min="{{ $rgMin ?? '' }}"
+                                                        data-max="{{ $rgMax ?? '' }}"
                                                         data-decimales="{{ $cp->decimales }}"
-                                                        step="{{ $cp->decimales > 0 ? '0.' . str_repeat('0', $cp->decimales - 1) . '1' : '1' }}"
+                                                        step="{{ $step }}"
                                                         placeholder="{{ $cp->unidad ? 'Ej: 100 ' . $cp->unidad : 'Ingrese valor' }}"
                                                         {{ $p->requerido ? 'required' : '' }}>
                                                 @endif

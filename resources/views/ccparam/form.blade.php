@@ -22,7 +22,7 @@
             <option value="">-- Seleccione --</option>
             <option value="number"  {{old('tipo', $data->tipo ?? '') == 'number'  ? 'selected' : ''}}>Numérico</option>
             <option value="text"    {{old('tipo', $data->tipo ?? '') == 'text'    ? 'selected' : ''}}>Texto</option>
-            <option value="boolean" {{old('tipo', $data->tipo ?? '') == 'boolean' ? 'selected' : ''}}>Sí/No</option>
+            <option value="boolean" {{old('tipo', $data->tipo ?? '') == 'boolean' ? 'selected' : ''}}>Cumple/No Cumple</option>
         </select>
     </div>
 </div>

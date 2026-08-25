@@ -161,7 +161,7 @@
     $resultText  = [1=>'APROBADO', 2=>'APROBADO CON OBSERVACIONES', 3=>'RECHAZADO', 5=>'SIN PARÁMETROS'];
     $rc = $resultClass[$muestra->status] ?? 'result-5';
     $rt = $resultText[$muestra->status]  ?? '—';
-    $tipoMap = ['number' => 'Numérico', 'text' => 'Texto', 'boolean' => 'Sí/No'];
+    $tipoMap = ['number' => 'Numérico', 'text' => 'Texto', 'boolean' => 'Cumple/No Cumple'];
     $resLabel = [1 => ['OK','res-ok'], 2 => ['Obs','res-obs'], 3 => ['Fuera rango','res-bad']];
 @endphp
 
@@ -247,9 +247,9 @@
                             @if($cp && $cp->unidad)<br><span style="font-size:7pt;color:#555;">({{ $cp->unidad }})</span>@endif
                         </td>
                         <td>{{ $cp ? ($tipoMap[$cp->tipo] ?? $cp->tipo) : '—' }}</td>
-                        <td>{{ $cap && $cap->valor_min !== null ? $cap->valor_min : '—' }}</td>
-                        <td>{{ $cap && $cap->valor_max !== null ? $cap->valor_max : '—' }}</td>
-                        <td><strong>{{ $det->valor }}</strong></td>
+                        <td>{{ $det->rango_min !== null || $det->rango_max !== null ? ($det->rango_min !== null ? rtrim(rtrim(number_format($det->rango_min,4,',','.'),'0'),',') : '—') : ($cap && $cap->valor_min !== null ? $cap->valor_min : '—') }}</td>
+                        <td>{{ $det->rango_min !== null || $det->rango_max !== null ? ($det->rango_max !== null ? rtrim(rtrim(number_format($det->rango_max,4,',','.'),'0'),',') : '—') : ($cap && $cap->valor_max !== null ? $cap->valor_max : '—') }}</td>
+                        <td><strong>{{ $cp && $cp->tipo === 'boolean' ? ($det->valor === '1' || $det->valor === 1 ? 'Cumple' : ($det->valor === '0' || $det->valor === 0 ? 'No Cumple' : $det->valor)) : $det->valor }}</strong></td>
                         <td class="{{ $rl[1] }}">{{ $rl[0] }}</td>
                     </tr>
                     @endforeach

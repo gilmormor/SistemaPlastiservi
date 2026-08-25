@@ -14,6 +14,9 @@ class CcParamApsucetapaprod extends Model
         'ccparam_id',
         'valor_min',
         'valor_max',
+        // Campo del acuerdo técnico contra el que se valida (ver CcTolerancia).
+        // Vacío = rango fijo valor_min / valor_max, como siempre.
+        'at_campo',
         'requerido',
         'orden',
         'usuariodel_id',

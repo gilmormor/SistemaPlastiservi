@@ -301,11 +301,27 @@
                             <a href="/ccparam" target="_blank">Parámetros CC</a>.
                         </small>
                     </div>
-                    <div class="form-group col-sm-2">
+                    {{-- Origen del rango: fijo (valor_min/valor_max) o calculado desde el
+                         acuerdo técnico del producto (objetivo ± tolerancia del propio AT).
+                         Al elegir el AT se ocultan los campos de rango fijo, porque el rango
+                         pasa a ser distinto para cada producto. --}}
+                    <div class="form-group col-sm-4">
+                        <label>¿Contra qué se compara?</label>
+                        <select id="ccparam_at_campo" class="form-control" onchange="toggleRangoCcParam()">
+                            <option value="">Rango fijo (mínimo y máximo)</option>
+                            <option value="at_espesor">Espesor del acuerdo técnico</option>
+                            <option value="at_ancho">Ancho del acuerdo técnico</option>
+                            <option value="at_largo">Largo del acuerdo técnico</option>
+                            <option value="at_fuelle">Fuelle del acuerdo técnico</option>
+                        </select>
+                        <small class="text-muted">Con el acuerdo técnico, el rango sale del valor
+                            del producto y su tolerancia.</small>
+                    </div>
+                    <div class="form-group col-sm-2 rango-fijo">
                         <label>Valor mínimo</label>
                         <input type="number" step="any" id="ccparam_valor_min" class="form-control" placeholder="Ej: 80"/>
                     </div>
-                    <div class="form-group col-sm-2">
+                    <div class="form-group col-sm-2 rango-fijo">
                         <label>Valor máximo</label>
                         <input type="number" step="any" id="ccparam_valor_max" class="form-control" placeholder="Ej: 100"/>
                     </div>

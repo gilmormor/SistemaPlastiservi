@@ -102,10 +102,10 @@ CC — Ver Muestra #{{ $muestra->id }}
                         @endphp
                         <tr>
                             <td>{{ $cp ? $cp->etiqueta : '—' }} @if($cp && $cp->unidad)<small class="text-muted">({{ $cp->unidad }})</small>@endif</td>
-                            <td>{{ $cp ? (['number'=>'Numérico','text'=>'Texto','boolean'=>'Sí/No'][$cp->tipo] ?? $cp->tipo) : '—' }}</td>
-                            <td class="text-center">{{ $cap && $cap->valor_min !== null ? $cap->valor_min : '—' }}</td>
-                            <td class="text-center">{{ $cap && $cap->valor_max !== null ? $cap->valor_max : '—' }}</td>
-                            <td><strong>{{ $det->valor }}</strong></td>
+                            <td>{{ $cp ? (['number'=>'Numérico','text'=>'Texto','boolean'=>'Cumple/No Cumple'][$cp->tipo] ?? $cp->tipo) : '—' }}</td>
+                            <td class="text-center">{{ $det->rango_min !== null || $det->rango_max !== null ? ($det->rango_min !== null ? rtrim(rtrim(number_format($det->rango_min,4,',','.'),'0'),',') : '—') : ($cap && $cap->valor_min !== null ? $cap->valor_min : '—') }}</td>
+                            <td class="text-center">{{ $det->rango_min !== null || $det->rango_max !== null ? ($det->rango_max !== null ? rtrim(rtrim(number_format($det->rango_max,4,',','.'),'0'),',') : '—') : ($cap && $cap->valor_max !== null ? $cap->valor_max : '—') }}</td>
+                            <td><strong>{{ $cp && $cp->tipo === 'boolean' ? ($det->valor === '1' || $det->valor === 1 ? 'Cumple' : ($det->valor === '0' || $det->valor === 0 ? 'No Cumple' : $det->valor)) : $det->valor }}</strong></td>
                             <td><span class="label label-{{ $rl[1] }}">{{ $rl[0] }}</span></td>
                         </tr>
                         @endforeach

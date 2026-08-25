@@ -15,7 +15,7 @@ $(document).ready(function () {
             {data: 'nombre'},
             {data: 'etiqueta'},
             {data: 'tipo', render: function(d) {
-                var map = {number: 'Numérico', text: 'Texto', boolean: 'Sí/No'};
+                var map = {number: 'Numérico', text: 'Texto', boolean: 'Cumple/No Cumple'};
                 return map[d] || d;
             }},
             {data: 'unidad', defaultContent: '—'},

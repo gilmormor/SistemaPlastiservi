@@ -7,6 +7,7 @@ use App\Models\CcRegistMuestra;
 use App\Models\CcRegistMuestraAnul;
 use App\Models\CcRegistMuestraDet;
 use App\Models\CcRegistMuestraDesbloqueo;
+use App\Models\CcTolerancia;
 use App\Models\Empresa;
 use App\Models\EtapaProd;
 use App\Models\OpDetRegProd;
@@ -121,6 +122,7 @@ class CcRegistMuestraController extends Controller
         $reg = DB::select("
             SELECT
                 odrp.id, odrp.kgprod, odrp.cantprod, odrp.kgscrap, odrp.created_at,
+                odrp.producto_id,
                 ep.nombre        AS etapaprod_nombre,
                 prod.nombre      AS producto_nombre,
                 op.id            AS op_id,
@@ -152,17 +154,37 @@ class CcRegistMuestraController extends Controller
             ->orderBy('orden')
             ->get();
 
+        // Acuerdo técnico del producto del lote: de ahí salen el valor objetivo y la
+        // tolerancia de los parámetros configurados con at_campo.
+        $at = CcTolerancia::atDeProducto($reg->producto_id);
+
+        // Espesor con el que realmente se fabrica este ítem: producción baja el espesor
+        // respecto de lo comprometido con el cliente, y CC mide contra el fabricado.
+        $espesorProd = CcTolerancia::espesorProdDeLote($reg->id);
+
+        // Rango efectivo de cada parámetro, para mostrarlo en pantalla y validar en el JS.
+        $rangos = [];
+        foreach ($params as $p) {
+            $rangos[$p->id] = !empty($p->at_campo)
+                ? CcTolerancia::rango($at, $p->at_campo, $espesorProd)
+                : null;
+        }
+
         // Prepara el JSON de params para el JS (evita closure multilínea en @json Blade L6)
-        $ccParamsJson = json_encode($params->map(function ($p) {
+        $ccParamsJson = json_encode($params->map(function ($p) use ($rangos) {
+            $r = $rangos[$p->id];
             return [
                 'id'        => $p->id,
                 'tipo'      => $p->ccparam->tipo,
-                'valor_min' => $p->valor_min,
-                'valor_max' => $p->valor_max,
+                // Si el rango viene del AT manda ese; si no, el rango fijo de la etapa.
+                'valor_min' => $r ? $r['min'] : $p->valor_min,
+                'valor_max' => $r ? $r['max'] : $p->valor_max,
+                'objetivo'  => $r ? $r['objetivo'] : null,
+                'tol_texto' => $r ? $r['texto'] : null,
             ];
         })->values()->all());
 
-        return view('ccregistmuestra.crear', compact('reg', 'params', 'ccParamsJson'));
+        return view('ccregistmuestra.crear', compact('reg', 'params', 'ccParamsJson', 'rangos', 'espesorProd'));
     }
 
     /**
@@ -225,18 +247,30 @@ class CcRegistMuestraController extends Controller
             $peorResultado = 1;
             $valores = $request->input('valor_param', []);
 
+            // Acuerdo técnico del producto del lote, para los parámetros que se
+            // validan contra el AT en vez de contra un rango fijo.
+            $lote = OpDetRegProd::find($request->opdetregprod_id);
+            $at   = $lote ? CcTolerancia::atDeProducto($lote->producto_id) : null;
+            $espesorProd = CcTolerancia::espesorProdDeLote($request->opdetregprod_id);
+
             foreach ($valores as $ccparam_ap_id => $valor) {
                 $param = CcParamApsucetapaprod::with('ccparam')->find($ccparam_ap_id);
                 if (!$param) continue;
 
-                $resultado = CcRegistMuestraDet::calcularResultado($valor, $param);
-                if ($resultado > $peorResultado) $peorResultado = $resultado;
+                $eval = CcRegistMuestraDet::evaluar($valor, $param, $at, $espesorProd);
+                if ($eval['resultado'] > $peorResultado) $peorResultado = $eval['resultado'];
 
                 CcRegistMuestraDet::create([
                     'ccregistmuestra_id'        => $muestra->id,
                     'ccparam_apsucetapaprod_id' => $ccparam_ap_id,
                     'valor'                     => $valor,
-                    'resultado'                 => $resultado,
+                    'resultado'                 => $eval['resultado'],
+                    // Se congela el rango usado: si mañana cambia el AT, esta muestra
+                    // debe seguir mostrando contra qué se validó.
+                    'valor_objetivo'            => $eval['objetivo'],
+                    'tolerancia'                => $eval['tolerancia'],
+                    'rango_min'                 => $eval['min'],
+                    'rango_max'                 => $eval['max'],
                 ]);
             }
 
@@ -393,11 +427,15 @@ class CcRegistMuestraController extends Controller
         $ccParamsJson = json_encode($muestra->dets->map(function ($det) {
             $cap = $det->ccparamApsucetapaprod;
             $cp  = $cap ? $cap->ccparam : null;
+            // Si la muestra se validó contra el AT, el rango congelado manda sobre
+            // el rango fijo de la etapa.
+            $desdeAt = $det->rango_min !== null || $det->rango_max !== null;
             return [
                 'det_id'    => $det->id,
                 'tipo'      => $cp ? $cp->tipo : 'text',
-                'valor_min' => $cap ? $cap->valor_min : null,
-                'valor_max' => $cap ? $cap->valor_max : null,
+                'valor_min' => $desdeAt ? $det->rango_min : ($cap ? $cap->valor_min : null),
+                'valor_max' => $desdeAt ? $det->rango_max : ($cap ? $cap->valor_max : null),
+                'objetivo'  => $det->valor_objetivo,
             ];
         })->values()->all());
         return view('ccregistmuestra.editar', compact('muestra', 'ccParamsJson'));
@@ -428,13 +466,23 @@ class CcRegistMuestraController extends Controller
             $muestra->observacion = $request->observacion;
             $peorResultado = 1;
             $valores = $request->input('valor_param', []);
+            // Mismo AT que al crear: al editar se vuelve a evaluar con el acuerdo
+            // técnico vigente del producto del lote.
+            $lote = OpDetRegProd::find($muestra->opdetregprod_id);
+            $at   = $lote ? CcTolerancia::atDeProducto($lote->producto_id) : null;
+            $espesorProd = CcTolerancia::espesorProdDeLote($muestra->opdetregprod_id);
+
             foreach ($valores as $det_id => $valor) {
                 $det = CcRegistMuestraDet::with(['ccparamApsucetapaprod.ccparam'])->find($det_id);
                 if (!$det || $det->ccregistmuestra_id != $id) continue;
-                $resultado = CcRegistMuestraDet::calcularResultado($valor, $det->ccparamApsucetapaprod);
-                if ($resultado > $peorResultado) $peorResultado = $resultado;
-                $det->valor     = $valor;
-                $det->resultado = $resultado;
+                $eval = CcRegistMuestraDet::evaluar($valor, $det->ccparamApsucetapaprod, $at, $espesorProd);
+                if ($eval['resultado'] > $peorResultado) $peorResultado = $eval['resultado'];
+                $det->valor          = $valor;
+                $det->resultado      = $eval['resultado'];
+                $det->valor_objetivo = $eval['objetivo'];
+                $det->tolerancia     = $eval['tolerancia'];
+                $det->rango_min      = $eval['min'];
+                $det->rango_max      = $eval['max'];
                 $det->save();
             }
             $muestra->status     = $peorResultado;

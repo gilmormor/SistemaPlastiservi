@@ -28,6 +28,7 @@ class CcParamApsucetapaprodController extends Controller
                 cp.decimales,
                 cap.valor_min,
                 cap.valor_max,
+                cap.at_campo,
                 cap.requerido,
                 cap.orden
             FROM   ccparam_apsucetapaprod cap
@@ -55,6 +56,7 @@ class CcParamApsucetapaprodController extends Controller
             'requerido'         => 'required|boolean',
             'valor_min'         => 'nullable|numeric',
             'valor_max'         => 'nullable|numeric',
+            'at_campo'          => 'nullable|in:at_espesor,at_ancho,at_largo,at_fuelle',
         ]);
 
         // Evitar duplicado: mismo parámetro en la misma etapa
@@ -76,6 +78,8 @@ class CcParamApsucetapaprodController extends Controller
             'ccparam_id'        => $request->ccparam_id,
             'valor_min'         => $request->valor_min,
             'valor_max'         => $request->valor_max,
+            // Cuando el rango sale del acuerdo tecnico, el min/max fijo no se usa.
+            'at_campo'          => $request->at_campo ?: null,
             'requerido'         => $request->requerido,
             'orden'             => $request->orden,
         ]);
@@ -97,6 +101,7 @@ class CcParamApsucetapaprodController extends Controller
         $request->validate([
             'valor_min' => 'nullable|numeric',
             'valor_max' => 'nullable|numeric',
+            'at_campo'  => 'nullable|in:at_espesor,at_ancho,at_largo,at_fuelle',
             'requerido' => 'required|boolean',
             'orden'     => 'required|integer|min:0',
         ]);
@@ -105,6 +110,7 @@ class CcParamApsucetapaprodController extends Controller
         $cap->update([
             'valor_min' => $request->valor_min,
             'valor_max' => $request->valor_max,
+            'at_campo'  => $request->at_campo ?: null,
             'requerido' => $request->requerido,
             'orden'     => $request->orden,
         ]);
