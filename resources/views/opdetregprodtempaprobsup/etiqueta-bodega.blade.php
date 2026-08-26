@@ -129,6 +129,15 @@
                     <td>{{ $clienteNombre }}</td>
                 </tr>
                 @endif
+                {{-- Aptitud para contacto con alimentos (pedido de Control de Calidad).
+                     El color distingue de un vistazo apto / no apto / sin definir. --}}
+                <tr>
+                    <td colspan="2" style="padding-top:2px;">
+                        <strong style="font-size:7pt; {{ $aptoAlimento === 'APTO PARA CONTACTO CON ALIMENTOS' ? 'color:#1b6e3f;' : ($aptoAlimento === 'NO APTO PARA CONTACTO CON ALIMENTOS' ? 'color:#9c2b21;' : 'color:#777;') }}">
+                            {{ $aptoAlimento }}
+                        </strong>
+                    </td>
+                </tr>
                 <tr>
                     <td>Lote:</td>
                     <td style="font-size:7pt; color:#555;">{{ $produccion->id }}</td>

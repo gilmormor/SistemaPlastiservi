@@ -7,6 +7,7 @@ use App\Models\CategoriaGrupoValMes;
 use App\Models\Empresa;
 use App\Models\EtapaProd;
 use App\Models\InvBodega;
+use App\Models\MateriaPrima;
 use App\Models\Maquina;
 use App\Models\InvBodegaProducto;
 use App\Models\InvControl;
@@ -875,9 +876,14 @@ class OpDetRegProdTempAprobSupController extends Controller
 
         $empresaNombre = optional(Empresa::first())->nombre ?? '';
 
+        // Aptitud para contacto con alimentos: sale de la materia prima del acuerdo
+        // tecnico del producto. Pedido de Control de Calidad para la etiqueta.
+        $aptoAlimento = MateriaPrima::textoAptoAlimentoPorProducto($produccion->producto_id);
+
         return view('opdetregprodtempaprobsup.etiqueta-bodega', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
-            'productoNombre', 'producto_id', 'notaventa_id', 'bodegaNombre', 'empresaNombre', 'clienteNombre'
+            'productoNombre', 'producto_id', 'notaventa_id', 'bodegaNombre', 'empresaNombre',
+            'clienteNombre', 'aptoAlimento'
         ));
     }
 
@@ -949,10 +955,14 @@ class OpDetRegProdTempAprobSupController extends Controller
 
         $empresaNombre = optional(Empresa::first())->nombre ?? '';
 
+        // Misma aptitud que en la etiqueta de bodega (ver nota alli).
+        $aptoAlimento = MateriaPrima::textoAptoAlimentoPorProducto($produccion->producto_id);
+
         return view('opdetregprodtempaprobsup.etiqueta-etapa', compact(
             'produccion', 'opdet', 'op', 'otdet', 'ot',
             'productoNombre','producto_id', 'operarioNombre', 'maquina',
-            'maquinaNombre', 'proximaEtapaNombre', 'empresaNombre', 'clienteNombre'
+            'maquinaNombre', 'proximaEtapaNombre', 'empresaNombre', 'clienteNombre',
+            'aptoAlimento'
         ));
     }
 

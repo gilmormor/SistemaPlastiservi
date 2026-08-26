@@ -143,6 +143,15 @@
                     <td>Etapa:</td>
                     <td>{{ $etapaNombre }}</td>
                 </tr>
+                {{-- Aptitud para contacto con alimentos (pedido de Control de Calidad).
+                     Sale de la materia prima del acuerdo técnico del producto. --}}
+                <tr>
+                    <td colspan="2" style="padding-top:2px;">
+                        <strong style="{{ $aptoAlimento === 'APTO PARA CONTACTO CON ALIMENTOS' ? 'color:#1b6e3f;' : ($aptoAlimento === 'NO APTO PARA CONTACTO CON ALIMENTOS' ? 'color:#9c2b21;' : 'color:#777;') }}">
+                            {{ $aptoAlimento }}
+                        </strong>
+                    </td>
+                </tr>
                 <tr>
                     <td>Lote prod.:</td>
                     <td>#{{ $muestra->opdetregprod_id }}</td>

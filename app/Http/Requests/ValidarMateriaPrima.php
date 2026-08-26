@@ -27,6 +27,8 @@ class ValidarMateriaPrima extends FormRequest
             'nombre' => 'required|max:60|unique:materiaprima,nombre,' . $this->route('id'),
             'desc' => 'required|max:100',
             'pe' => 'required',
+            // Aptitud para alimentos: opcional (null = sin definir, lo declara CC)
+            'staaptoalimento' => 'nullable|in:0,1',
         ];
     }
 }

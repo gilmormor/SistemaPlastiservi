@@ -9,6 +9,7 @@ use App\Models\CcRegistMuestraDet;
 use App\Models\CcRegistMuestraDesbloqueo;
 use App\Models\CcTolerancia;
 use App\Models\Empresa;
+use App\Models\MateriaPrima;
 use App\Models\EtapaProd;
 use App\Models\OpDetRegProd;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -343,8 +344,12 @@ class CcRegistMuestraController extends Controller
         $op_id          = $reg ? $reg->op_id : '—';
         $ot_id          = $reg ? $reg->ot_id : '—';
 
+        // Aptitud para contacto con alimentos, desde la materia prima del acuerdo tecnico.
+        $aptoAlimento = MateriaPrima::textoAptoAlimentoPorProducto($reg ? $reg->producto_id : null);
+
         return view('ccregistmuestra.etiqueta-compacta',
-            compact('muestra', 'productoNombre', 'etapaNombre', 'usuarioCC', 'op_id', 'ot_id'));
+            compact('muestra', 'productoNombre', 'etapaNombre', 'usuarioCC', 'op_id', 'ot_id',
+                    'aptoAlimento'));
     }
 
     /**
@@ -365,9 +370,12 @@ class CcRegistMuestraController extends Controller
         $cantprod       = $reg ? $reg->cantprod : null;
         $unidadmedida   = $reg ? ($reg->unidadmedidasal_nombre ?? '') : '';
 
+        // Aptitud para contacto con alimentos, desde la materia prima del acuerdo tecnico.
+        $aptoAlimento = MateriaPrima::textoAptoAlimentoPorProducto($reg ? $reg->producto_id : null);
+
         return view('ccregistmuestra.etiqueta-completa',
             compact('muestra', 'productoNombre', 'etapaNombre', 'usuarioCC',
-                    'op_id', 'ot_id', 'kgprod', 'cantprod', 'unidadmedida'));
+                    'op_id', 'ot_id', 'kgprod', 'cantprod', 'unidadmedida', 'aptoAlimento'));
     }
 
     /**
@@ -377,6 +385,7 @@ class CcRegistMuestraController extends Controller
     {
         $rows = DB::select("
             SELECT odrp.id, odrp.kgprod, odrp.cantprod,
+                   odrp.producto_id,
                    ep.nombre   AS etapaprod_nombre,
                    prod.glosa  AS producto_nombre,
                    op.id       AS op_id,

@@ -28,6 +28,7 @@ Materia Prima
                             <th class="width70">ID</th>
                             <th>Nombre</th>
                             <th>Descripción</th>
+                            <th>Contacto con alimentos</th>
                             <th class="width70"></th>
                         </tr>
                     </thead>
