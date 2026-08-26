@@ -140,7 +140,12 @@ class CcRegistMuestraController extends Controller
                 -- producto puede no tener acuerdo técnico.
                 ot.cliente_id,
                 cli.razonsocial  AS cliente_nombre,
-                at.id            AS acuerdotecnico_id
+                at.id            AS acuerdotecnico_id,
+                -- Cliché: la imagen del arte impreso del producto. Control de Calidad
+                -- la necesita al tomar la muestra para verificar que lo impreso en el
+                -- material coincide con lo que declara el acuerdo técnico.
+                at.at_impreso,
+                at.at_impresofoto
             FROM  opdetregprod odrp
             INNER JOIN etapaprod  ep    ON ep.id   = odrp.etapaprod_id
             INNER JOIN producto   prod  ON prod.id = odrp.producto_id

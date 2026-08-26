@@ -55,7 +55,24 @@ CC — Nueva Muestra
                             {{ $reg->producto_id }}
                         @endif
                     </div>
-                    <div class="col-xs-12 col-sm-2">
+                    {{-- Cliché: imagen del arte impreso, para verificar contra el acuerdo
+                         técnico que lo impreso en el material es lo que corresponde.
+                         Solo aparece si el producto es impreso y tiene arte cargado. --}}
+                    <div class="col-xs-12 col-sm-1">
+                        <strong>Cliché:</strong><br>
+                        @if($reg->at_impresofoto)
+                            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC"
+                               title="Ver cliché — arte impreso del producto"
+                               onclick='verCliche(@json($reg->at_impresofoto))'>
+                                <i class="fa fa-picture-o"></i> Ver
+                            </a>
+                        @elseif($reg->at_impreso)
+                            <span class="text-muted" title="El producto es impreso pero no tiene arte cargado en el acuerdo técnico">Sin arte</span>
+                        @else
+                            <span class="text-muted" title="Producto sin impresión">—</span>
+                        @endif
+                    </div>
+                    <div class="col-xs-12 col-sm-1">
                         <strong>Etapa:</strong><br>
                         {{ $reg->etapaprod_nombre }}
                     </div>

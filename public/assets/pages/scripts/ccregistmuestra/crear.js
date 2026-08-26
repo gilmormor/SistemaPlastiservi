@@ -1,4 +1,47 @@
 /**
+ * Abre el cliché (arte impreso del producto) en el modal de la pantalla.
+ *
+ * Replica lo que hace verpdf2() de general.js para este caso concreto, incluida la
+ * validación de permiso contra el servidor: esta pantalla no carga general.js
+ * (ver nota en genpdfAcuTec). Los archivos del acuerdo técnico definitivo viven en
+ * la carpeta "at", que es la misma que usa Storage::url("imagenes/at/...") al
+ * cargarlos desde la pantalla del acuerdo técnico.
+ *
+ * Se define solo si no existe, para no pisar una implementación previa.
+ */
+if (typeof window.verCliche !== 'function') {
+    window.verCliche = function (archivo) {
+        if (!archivo) { return; }
+
+        // El permiso lo decide el servidor, igual que en el resto del sistema.
+        $.ajax({
+            url : '/generales_valpermiso',
+            type: 'POST',
+            data: {
+                slug  : 'ver-arte-acuerdo-tecnico',
+                _token: $('input[name=_token]').val()
+            },
+            success: function (respuesta) {
+                if (!respuesta.resp) {
+                    swal({
+                        title: respuesta.mensaje,
+                        text : respuesta.mensaje2,
+                        icon : 'error',
+                        buttons: { confirm: 'Cerrar' }
+                    });
+                    return;
+                }
+                // timestamp para saltar la caché del navegador al reemplazar el arte
+                var url = '/storage/imagenes/at/' + archivo + '?timestamp=' + new Date().getTime();
+                $('#venmodant').val('');
+                $('#contpdf').attr('src', url);
+                $('#myModalpdf').modal('show');
+            }
+        });
+    };
+}
+
+/**
  * Abre el PDF del acuerdo técnico del producto en el modal de la pantalla.
  *
  * Es la misma función que general.js, replicada acá a propósito: esta pantalla no
