@@ -17,6 +17,7 @@ class PermisoRolController extends Controller
      */
     public function index()
     {
+        can('listar-admin-permiso-rol');
         $rols = Rol::orderBy('id')->pluck('nombre', 'id')->toArray();
         $roles = Rol::get();
         $permisos = Permiso::get();
@@ -122,6 +123,7 @@ class PermisoRolController extends Controller
      */
     public function guardar(Request $request)
     {
+        can('guardar-admin-permiso-rol');
         if ($request->ajax()) {
             $permisos = new Permiso();
             if ($request->input('estado') == 1) {

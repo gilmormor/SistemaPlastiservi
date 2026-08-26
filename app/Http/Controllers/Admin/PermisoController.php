@@ -19,6 +19,7 @@ class PermisoController extends Controller
      */
     public function index()
     {
+        can('listar-admin-permiso');
         $permisos = Permiso::orderBy('id')->get();
         //return view('admin.permiso.index', ['permiso' => $permiso]); Asi se hace normalmente en laravel
         return view('admin.permiso.index', compact('permisos')); //Se usa compact() para evitar la sintaxis anterior 
@@ -40,6 +41,7 @@ class PermisoController extends Controller
      */
     public function crear()
     {
+        can('crear-admin-permiso');
         return view('admin.permiso.crear'); //Se usa compact() para evitar la sintaxis anterior
     }
 
@@ -51,6 +53,7 @@ class PermisoController extends Controller
      */
     public function guardar(ValidarPermiso $request)
     {
+        can('guardar-admin-permiso');
         Permiso::create($request->all());
         return redirect('admin/permiso/crear')->with('mensaje','Permiso creado con exito!');
 
@@ -75,6 +78,7 @@ class PermisoController extends Controller
      */
     public function editar($id)
     {
+        can('editar-admin-permiso');
         $data = Permiso::findOrFail($id);
         return view('admin.permiso.editar', compact('data'));
     }
@@ -88,6 +92,7 @@ class PermisoController extends Controller
      */
     public function actualizar(ValidarPermiso $request, $id)
     {
+        can('guardar-admin-permiso');
         Permiso::findOrFail($id)->update($request->all());
         return redirect('admin/permiso')->with('mensaje','Permiso actualizado con exito');
     }
@@ -100,6 +105,7 @@ class PermisoController extends Controller
      */
     public function eliminar(Request $request, $id)
     {
+        can('eliminar-admin-permiso');
         if ($request->ajax()) {
             if (Permiso::destroy($id)) {
                 return response()->json(['mensaje' => 'ok']);

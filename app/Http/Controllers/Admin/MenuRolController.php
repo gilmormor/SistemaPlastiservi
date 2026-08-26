@@ -17,6 +17,7 @@ class MenuRolController extends Controller
      */
     public function index()
     {
+        can('listar-admin-menu-rol');
         // Solo pasa los roles para el select; el árbol se carga por AJAX
         $rols = Rol::orderBy('nombre')->get(['id', 'nombre']);
         return view('admin.menu-rol.index', compact('rols'));
@@ -83,6 +84,7 @@ class MenuRolController extends Controller
      */
     public function guardar(Request $request)
     {
+        can('guardar-admin-menu-rol');
         if ($request->ajax()) {
             $menus = new Menu();
             if ($request->input('estado') == 1) {
