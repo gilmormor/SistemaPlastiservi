@@ -34,7 +34,7 @@ class CcRegistMuestraSupervisarController extends Controller
                 odrp.id          AS opdetregprod_id,
                 odrp.kgprod,
                 ep.nombre        AS etapaprod_nombre,
-                prod.nombre      AS producto_nombre,
+                prod.glosa       AS producto_nombre,
                 op.id            AS op_id,
                 ot.id            AS ot_id,
                 CONCAT('OP ', op.id, ' / OT ', ot.id) AS op_ot,

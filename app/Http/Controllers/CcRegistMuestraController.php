@@ -47,7 +47,7 @@ class CcRegistMuestraController extends Controller
                 odrp.cantprod,
                 um.nombre        AS unidadmedidasal_nombre,
                 ep.nombre        AS etapaprod_nombre,
-                prod.nombre      AS producto_nombre,
+                prod.glosa       AS producto_nombre,
                 op.id            AS op_id,
                 ot.id            AS ot_id,
                 CONCAT('OP ', op.id, ' / OT ', ot.id) AS op_ot,
@@ -124,11 +124,22 @@ class CcRegistMuestraController extends Controller
                 odrp.id, odrp.kgprod, odrp.cantprod, odrp.kgscrap, odrp.created_at,
                 odrp.producto_id,
                 ep.nombre        AS etapaprod_nombre,
-                prod.nombre      AS producto_nombre,
+                prod.glosa       AS producto_nombre,
+                -- glosa es el nombre comercial completo del producto (medidas, material,
+                -- tipo de sello); nombre solo trae la familia, por ejemplo BOLSA. Está
+                -- poblada en todo el catálogo, igual se deja respaldo a nombre en la vista.
+                prod.glosa       AS producto_glosa,
                 op.id            AS op_id,
                 ot.id            AS ot_id,
                 opdet.apsucetapaprod_id,
-                um.nombre        AS unidadmedidasal_nombre
+                um.nombre        AS unidadmedidasal_nombre,
+                -- Cliente de la OT y acuerdo técnico del producto: permiten abrir el
+                -- PDF del acuerdo desde el código de producto y mostrar a quién se le
+                -- fabrica. Ambos LEFT JOIN: una OT libre puede no tener cliente, y un
+                -- producto puede no tener acuerdo técnico.
+                ot.cliente_id,
+                cli.razonsocial  AS cliente_nombre,
+                at.id            AS acuerdotecnico_id
             FROM  opdetregprod odrp
             INNER JOIN etapaprod  ep    ON ep.id   = odrp.etapaprod_id
             INNER JOIN producto   prod  ON prod.id = odrp.producto_id
@@ -136,6 +147,9 @@ class CcRegistMuestraController extends Controller
             INNER JOIN op               ON op.id    = opdet.op_id
             INNER JOIN otdet            ON otdet.id = op.otdet_id
             INNER JOIN ot               ON ot.id    = otdet.ot_id
+            LEFT  JOIN cliente cli      ON cli.id   = ot.cliente_id
+            LEFT  JOIN acuerdotecnico at ON at.producto_id = odrp.producto_id
+                                        AND ISNULL(at.deleted_at)
             LEFT  JOIN unidadmedida um  ON um.id    = odrp.unidadmedidasal_id
             WHERE odrp.id = ? AND odrp.aprobstatus = 2 AND ISNULL(odrp.deleted_at)
             LIMIT 1
@@ -296,7 +310,7 @@ class CcRegistMuestraController extends Controller
         $muestra = CcRegistMuestra::with(['dets.ccparamApsucetapaprod.ccparam', 'usuario', 'usuarioStaenv', 'anulacion'])->findOrFail($id);
         $opdetregprod = DB::select("
             SELECT odrp.id, odrp.kgprod, odrp.cantprod, odrp.created_at,
-                   ep.nombre AS etapaprod_nombre, prod.nombre AS producto_nombre,
+                   ep.nombre AS etapaprod_nombre, prod.glosa AS producto_nombre,
                    op.id AS op_id, ot.id AS ot_id,
                    um.nombre AS unidadmedidasal_nombre
             FROM opdetregprod odrp
@@ -364,7 +378,7 @@ class CcRegistMuestraController extends Controller
         $rows = DB::select("
             SELECT odrp.id, odrp.kgprod, odrp.cantprod,
                    ep.nombre   AS etapaprod_nombre,
-                   prod.nombre AS producto_nombre,
+                   prod.glosa  AS producto_nombre,
                    op.id       AS op_id,
                    ot.id       AS ot_id,
                    um.nombre   AS unidadmedidasal_nombre
@@ -548,7 +562,7 @@ class CcRegistMuestraController extends Controller
             ->get();
         $reg_arr = DB::select("
             SELECT odrp.id, odrp.kgprod, odrp.cantprod,
-                   ep.nombre AS etapaprod_nombre, prod.nombre AS producto_nombre,
+                   ep.nombre AS etapaprod_nombre, prod.glosa AS producto_nombre,
                    op.id AS op_id, ot.id AS ot_id,
                    um.nombre AS unidadmedidasal_nombre
             FROM opdetregprod odrp
@@ -636,7 +650,7 @@ class CcRegistMuestraController extends Controller
                 odrp.kgscrap,
                 um.nombre        AS unidadmedidasal_nombre,
                 ep.nombre        AS etapaprod_nombre,
-                prod.nombre      AS producto_nombre,
+                prod.glosa       AS producto_nombre,
                 op.id            AS op_id,
                 ot.id            AS ot_id,
                 GROUP_CONCAT(DISTINCT maq.nombre ORDER BY maq.nombre SEPARATOR ', ') AS maquina_nombre,
@@ -714,7 +728,7 @@ class CcRegistMuestraController extends Controller
 
             $opdetregprod = DB::select("
                 SELECT odrp.id, odrp.kgprod, odrp.cantprod, odrp.created_at,
-                       ep.nombre AS etapaprod_nombre, prod.nombre AS producto_nombre,
+                       ep.nombre AS etapaprod_nombre, prod.glosa AS producto_nombre,
                        op.id AS op_id, ot.id AS ot_id,
                        um.nombre AS unidadmedidasal_nombre,
                        cli.rut AS cliente_rut, cli.razonsocial AS cliente_razonsocial

@@ -147,7 +147,7 @@ class CcDesbloqueoController extends Controller
                 odrp.cantprod,
                 um.nombre        AS unidadmedidasal_nombre,
                 ep.nombre        AS etapaprod_nombre,
-                prod.nombre      AS producto_nombre,
+                prod.glosa       AS producto_nombre,
                 prod.id          AS producto_id,
                 op.id            AS op_id,
                 ot.id            AS ot_id,

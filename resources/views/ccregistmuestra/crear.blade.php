@@ -36,9 +36,24 @@ CC — Nueva Muestra
                         <strong>OP / OT:</strong><br>
                         OP {{ $reg->op_id }} / OT {{ $reg->ot_id }}
                     </div>
-                    <div class="col-xs-12 col-sm-4">
+                    <div class="col-xs-12 col-sm-3">
                         <strong>Producto:</strong><br>
-                        {{ $reg->producto_nombre }}
+                        {{ $reg->producto_glosa ?: $reg->producto_nombre }}
+                    </div>
+                    {{-- Código de producto: abre el PDF del acuerdo técnico del producto,
+                         con el cliente de la OT para que el acuerdo salga a su nombre.
+                         Si el producto no tiene acuerdo técnico se muestra solo el código. --}}
+                    <div class="col-xs-12 col-sm-1">
+                        <strong>Código:</strong><br>
+                        @if($reg->acuerdotecnico_id)
+                            <a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC"
+                               title="Acuerdo Técnico"
+                               onclick='genpdfAcuTec({{ $reg->acuerdotecnico_id }}, {{ $reg->cliente_id ?: 0 }}, 1, "")'>
+                                {{ $reg->producto_id }}
+                            </a>
+                        @else
+                            {{ $reg->producto_id }}
+                        @endif
                     </div>
                     <div class="col-xs-12 col-sm-2">
                         <strong>Etapa:</strong><br>
@@ -50,6 +65,12 @@ CC — Nueva Muestra
                         @if($reg->cantprod)
                             / {{ number_format($reg->cantprod, 2, ',', '.') }} {{ $reg->unidadmedidasal_nombre }}
                         @endif
+                    </div>
+                    {{-- Cliente al que se le fabrica. Una OT libre (sin nota de venta)
+                         puede no tener cliente asociado. --}}
+                    <div class="col-xs-12 col-sm-12" style="margin-top:8px;">
+                        <strong>Cliente:</strong>
+                        {{ $reg->cliente_nombre ?: 'Sin cliente (OT libre)' }}
                     </div>
                 </div>
 
@@ -260,6 +281,10 @@ CC — Nueva Muestra
         </div>
     </div>
 </div>
+
+{{-- Modal contenedor del PDF del acuerdo técnico, que abre genpdfAcuTec().
+     Va fuera de los contenedores para que Bootstrap lo posicione sobre la página. --}}
+@include('generales.modalpdf')
 
 {{-- JSON de parámetros para el JS de cálculo en tiempo real --}}
 <script>

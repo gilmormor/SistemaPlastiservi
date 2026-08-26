@@ -1,7 +1,44 @@
 /**
+ * Abre el PDF del acuerdo técnico del producto en el modal de la pantalla.
+ *
+ * Es la misma función que general.js, replicada acá a propósito: esta pantalla no
+ * carga general.js y no conviene que lo haga, porque esa librería instala
+ * manejadores globales de máscara numérica que interfieren con los campos de
+ * medición (el espesor necesita 3 decimales). Se define solo si no existe, para
+ * no pisar la original si algún día general.js llegara a cargarse aquí.
+ */
+if (typeof window.genpdfAcuTec !== 'function') {
+    window.genpdfAcuTec = function (id, cliente_id, sta_formamostrar, aux_venmodant) {
+        var data = '?id=' + id +
+                   '&cliente_id=' + (cliente_id || 0) +
+                   '&sta_formamostrar=' + (sta_formamostrar || 1); // 1 = PDF, 2 = HTML
+
+        // Patrón de modal anidado: si se abre desde otro modal, se oculta y se
+        // recuerda para restaurarlo al cerrar el PDF.
+        $('#venmodant').val('');
+        if (aux_venmodant) {
+            $('#' + aux_venmodant).modal('hide');
+            $('#venmodant').val(aux_venmodant);
+        }
+
+        $('#contpdf').attr('src', '/acuerdotecnico/exportPdf/' + data);
+        $('#myModalpdf').modal('show');
+    };
+}
+
+/**
  * Cálculo en tiempo real del resultado por parámetro CC y semáforo general.
  */
 $(document).ready(function () {
+
+    // Altura del modal del PDF: el iframe usa height="100%", asi que sin una altura
+    // explicita en el .modal-body se queda en los 150px por defecto del iframe y el
+    // PDF se ve en una franja. general.js hace esto mismo al abrir #myModalpdf, pero
+    // esta pantalla no lo carga (ver nota en genpdfAcuTec). Se usa un namespace propio
+    // para no duplicar el manejador si general.js llegara a cargarse aqui.
+    $('#myModalpdf').off('show.bs.modal.ccmuestra').on('show.bs.modal.ccmuestra', function () {
+        $('#myModalpdf .modal-body').css('height', $(window).height() * 0.75);
+    });
 
     var params = window._ccParams || [];
 
