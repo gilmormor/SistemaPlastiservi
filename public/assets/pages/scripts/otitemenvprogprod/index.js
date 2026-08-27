@@ -385,7 +385,8 @@ function encabezadoTabla(){
                     <th title='Unidad de Medida'>Uni Med</th>
                     <th title='Espesor acuerdo tecnico'>Espesor</th>
                     <th title='Espesor Produccion' style="width: 50px;text-align:right;">Esp Prod</th>
-                    <th title='Kilos' style="width: 50px;text-align:right;">Kg</th>
+                    <th title='Kilos originales del item, antes de recalcular por espesor' style="width: 50px;text-align:right;">Kg Orig</th>
+                    <th title='Kilos a enviar' style="width: 50px;text-align:right;">Kg</th>
                     <th title='Cantidad' style="width: 50px;text-align:right;">Cant</th>
                     <th title='Cantidad a enviar a programacion (saldo pendiente)' style="width: 50px;text-align:right;">Cant Enviar</th>
                     <th title='Observacion'>Obs</th>
@@ -447,15 +448,16 @@ function configurarTabla(nombreTabla,url,serverSide) {
             {data: 'unidadmedida_nombre'}, // 9
             {data: 'at_espesor'}, // 10
             {data: 'espesorprod'}, // 11
-            {data: 'kgprod'}, // 12
-            {data: 'cant'}, // 13
-            {data: 'cantprod'}, // 14
-            {data: 'otdet_obs'}, // 15
-            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //16
-            {data: 'oc_file',className:"ocultar"}, //17
+            {data: 'kg'}, // 12 — kilos originales (solo lectura, se rellena en createdRow)
+            {data: 'kgprod'}, // 13
+            {data: 'cant'}, // 14
+            {data: 'cantprod'}, // 15
+            {data: 'otdet_obs'}, // 16
+            {data: 'clientebloqueado_descripcion',className:"ocultar"}, //17
             {data: 'oc_file',className:"ocultar"}, //18
-            {data: null, defaultContent: '', className:"ocultar"}, //19 nombrepdf (no viene del servidor)
-            {data: 'updated_at',className:"ocultar"}, //20
+            {data: 'oc_file',className:"ocultar"}, //19
+            {data: null, defaultContent: '', className:"ocultar"}, //20 nombrepdf (no viene del servidor)
+            {data: 'updated_at',className:"ocultar"}, //21
             //El boton eliminar esta en comentario Gilmer 23/02/2021
             {defaultContent : 
                 "<a href='/ot/enviaraprobarinventsal' class='btn-accion-tabla btn-sm btnaprobar' title='Aprobar'>" +
@@ -547,9 +549,17 @@ function configurarTabla(nombreTabla,url,serverSide) {
                  valororiginal="${data.espesorprod}" kgoriginal="${data.kgprod}"/>`;
             $('td', row).eq(11).html(aux_text);
 
-            // kgprod — también tiene onfocus/onblur para el cálculo inverso kg→cant
+            // Kg Orig — kilos pendientes del ítem antes de cualquier recálculo.
+            // Solo lectura: sirve de referencia para que el usuario pueda volver a
+            // ese valor después de que el cambio de espesor recalcule los kilos.
             let kgPendiente = data.kg - (parseFloat(data.kgenvprog) || 0);
             if (kgPendiente < 0) kgPendiente = 0;
+            $('td', row).eq(12).attr('style','text-align:right;color:#777;');
+            $('td', row).eq(12).html(MASKLA(kgPendiente,2));
+
+            // kgprod — el usuario escribe los kilos que va a enviar. NO recalcula la
+            // cantidad: antes lo hacía y, al reponer los kilos originales tras cambiar
+            // el espesor, le movía la cantidad que quería enviar.
             aux_text =
                 `<input type="text" name="kgprod[]" id="kgprod${data.id}"
                  class="form-control numerico"
@@ -557,15 +567,15 @@ function configurarTabla(nombreTabla,url,serverSide) {
                  item="${data.id}" style="width: 100px;text-align:right;" maxlength="15"
                  valororiginal="${kgPendiente}"
                  onfocus="guardarValorPrev(this)"
-                 title="Valor original Pendiente : ${MASKLA(kgPendiente,2)} kg"
-                 onblur="calcularCant(this)"/>`;
-            $('td', row).eq(12).html(aux_text);
-
-            aux_text = MASKLA(data.cant,0);
-            $('td', row).eq(13).attr('style','text-align:right');
+                 title="Valor original Pendiente : ${MASKLA(kgPendiente,2)} kg"/>`;
             $('td', row).eq(13).html(aux_text);
 
-            // cantprod — onfocus guarda el valor previo, onblur recalcula kg→cant
+            aux_text = MASKLA(data.cant,0);
+            $('td', row).eq(14).attr('style','text-align:right');
+            $('td', row).eq(14).html(aux_text);
+
+            // cantprod — el usuario escribe la cantidad a enviar. NO recalcula los
+            // kilos: cantidad y kilos son independientes, quien envía decide ambos.
             let cantPendiente = data.cant - (parseFloat(data.cantenvprog) || 0);
             if (cantPendiente < 0) cantPendiente = 0;
             aux_text =
@@ -574,14 +584,13 @@ function configurarTabla(nombreTabla,url,serverSide) {
                  value="${MASKLA(cantPendiente,2)}" valor="${cantPendiente}"
                  item="${data.id}" style="width: 100px;text-align:right;" maxlength="15"
                  onfocus="guardarValorPrev(this)"
-                 onblur="calcularPeso(this)"
                  valororiginal="${cantPendiente}"
                  data-cant="${data.cant}" data-cantenvprog="${parseFloat(data.cantenvprog)||0}"/>`;
-            $('td', row).eq(14).html(aux_text);    
+            $('td', row).eq(15).html(aux_text);    
 
-            $('td', row).eq(20).addClass('updated_at');
-            $('td', row).eq(20).attr('id','updated_at' + data.id);
-            $('td', row).eq(20).attr('name','updated_at' + data.id);
+            $('td', row).eq(21).addClass('updated_at');
+            $('td', row).eq(21).attr('id','updated_at' + data.id);
+            $('td', row).eq(21).attr('name','updated_at' + data.id);
 
             aux_clienteBloqueado = validarClienteBloqueadoxModulo(data); 
             aux_displaybtnac = ``;
@@ -603,8 +612,8 @@ function configurarTabla(nombreTabla,url,serverSide) {
                         <i class="fa fa-fw fa-save fa-lg"></i>
                     </a>
                 </div>`;
-            //$('td', row).eq(12).attr('style','padding-top: 0px;padding-bottom: 0px;');
-            $('td', row).eq(21).html(aux_text);
+            //$('td', row).eq(13).attr('style','padding-top: 0px;padding-bottom: 0px;');
+            $('td', row).eq(22).html(aux_text);
 
         }
     });
@@ -864,9 +873,13 @@ function calcularPeso(input) {
 }
 
 /**
- * calcularCant — cálculo inverso: recalcula cantprod cuando el usuario
- * cambia kgprod directamente.
- * Se dispara en onblur del input kgprod.
+ * calcularCant — cálculo inverso: recalcula cantprod a partir de kgprod.
+ *
+ * SIN USO desde que kilos y cantidad se desacoplaron: al reponer los kilos
+ * originales tras cambiar el espesor, esta función movía la cantidad que el
+ * usuario quería enviar. Se conserva por si hiciera falta reactivar el cálculo
+ * inverso; para volver a usarla, agregar onblur="calcularCant(this)" al input
+ * kgprod.
  * Si el peso unitario no es calculable (= 0) no hace nada para evitar división por cero.
  */
 function calcularCant(input) {
