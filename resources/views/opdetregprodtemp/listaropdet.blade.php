@@ -100,6 +100,19 @@ OP Det
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
+                                {{-- Lote de origen: el número de la etiqueta del material que
+                                     el operario tiene delante. Devuelve el ítem donde ese lote
+                                     entra a procesarse, no el que lo produjo. --}}
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="N° de lote que va a procesar (el de la etiqueta del material)">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="lote_id">Lote:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <input type="text" name="lote_id" id="lote_id" class="form-control" value="{{old('lote_id')}}" maxlength="10" placeholder="Ej: 49"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="producto_idPxP" class="control-label">Producto</label>
@@ -141,6 +154,31 @@ OP Det
                                             <option value="">Seleccione...</option>
                                             <option value="1">Clientes Bloqueados</option>
                                         </select>
+                                    </div>
+                                </div>
+                                {{-- Máquina: solo las de la etapa en la que está parado el usuario
+                                     (relación maquinaetapaprod). Con buscador, porque Extrusión
+                                     tiene 12. Si la etapa no tiene máquinas asignadas, el select
+                                     queda deshabilitado y lo dice, en vez de aparecer vacío. --}}
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Máquina asignada al ítem">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="maquina_id" class="control-label">Máquina:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        @if(count($tablashtml['maquinas']) > 0)
+                                            <select name="maquina_id[]" id="maquina_id" multiple
+                                                    class='selectpicker form-control'
+                                                    data-live-search='true' data-actions-box='true'
+                                                    title="Todas">
+                                                @foreach($tablashtml['maquinas'] as $maquina)
+                                                    <option value="{{$maquina->id}}">{{$maquina->nombre}}</option>
+                                                @endforeach
+                                            </select>
+                                        @else
+                                            <select id="maquina_id" class="form-control" disabled>
+                                                <option>Sin máquinas en esta etapa</option>
+                                            </select>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

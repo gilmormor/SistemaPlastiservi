@@ -496,6 +496,10 @@ function datosopdet(){
         op_id             : $("#op_id").val(),
         producto_id       : $("#producto_idPxP").val(),
         sucursal_id       : $("#sucursal_id").val(),
+        // Multiple: devuelve un array de ids, o null si no se eligio ninguna
+        maquina_id        : $("#maquina_id").val(),
+        // N° de lote de origen: filtra el item donde ese material entra a procesarse
+        lote_id           : $("#lote_id").val(),
         filtro            : 0,
         modulo_id         : 4,
         statusBloqueo     : $("#statusBloqueo").val(),
@@ -511,6 +515,8 @@ function datosopdet(){
             "&filtro=" + data1.filtro +
             "&producto_id=" + data1.producto_id +
             "&sucursal_id=" + data1.sucursal_id +
+            "&maquina_id=" + (data1.maquina_id || "") +
+            "&lote_id=" + (data1.lote_id || "") +
             "&modulo_id=" + data1.modulo_id +
             "&statusBloqueo=" + data1.statusBloqueo +
             "&aux_titulo=" + aux_titulo;

@@ -219,6 +219,19 @@ public function etapaprod()
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray();
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();
         $tablashtml["etapaprod"] = EtapaProd::findOrFail($etapaprod_id);
+
+        // Maquinas del filtro: solo las de la etapa en la que esta parado el usuario.
+        // La relacion vive en maquinaetapaprod. En etapas sin maquinas asignadas el
+        // select queda vacio, y la vista lo deshabilita para que se note el motivo.
+        $tablashtml["maquinas"] = DB::select("
+            SELECT m.id, m.nombre
+            FROM   maquina m
+            INNER  JOIN maquinaetapaprod mep ON mep.maquina_id = m.id
+            WHERE  mep.etapaprod_id = ?
+              AND  ISNULL(m.deleted_at)
+            ORDER  BY m.nombre
+        ", [$etapaprod_id]);
+
         return view('opdetregprodtemp.listaropdet', compact('fechaAct','tablashtml'));
     }
     public function listaropdetpage(Request $request){
@@ -880,6 +893,46 @@ function consultaopdet($request){
         $aux_condmodulo_id = " and clientedesbloqueadomodulo.modulo_id = $request->modulo_id";
     }
 
+    // Filtro por lote: el operario tiene delante un rollo con su etiqueta y necesita
+    // saber en que item debe registrarlo. Busca el opdet que CONSUME ese lote, no el
+    // que lo produjo: el de la misma OP cuyo orden es el inmediatamente superior al
+    // del opdet de origen. Es la inversa de OpDetRegProdTempOrigen::opdetAnterior().
+    $aux_condlote_id = " true";
+    if(!empty($request->lote_id)){
+        $aux_lote = intval($request->lote_id); // entero: la consulta se arma concatenando
+        if($aux_lote > 0){
+            $aux_condlote_id = "opdet.id IN (
+                SELECT oc.id
+                FROM   opdetregprod odrp
+                INNER  JOIN opdet oo ON oo.id = odrp.opdet_id
+                INNER  JOIN areaproduccionsucetapaprod ao ON ao.id = oo.apsucetapaprod_id
+                INNER  JOIN opdet oc ON oc.op_id = oo.op_id AND oc.id <> oo.id AND ISNULL(oc.deleted_at)
+                INNER  JOIN areaproduccionsucetapaprod ac ON ac.id = oc.apsucetapaprod_id
+                WHERE  odrp.id = $aux_lote
+                  AND  ISNULL(odrp.deleted_at)
+                  AND  ac.orden = (SELECT MIN(a2.orden)
+                                   FROM   opdet o2
+                                   INNER  JOIN areaproduccionsucetapaprod a2 ON a2.id = o2.apsucetapaprod_id
+                                   WHERE  o2.op_id = oo.op_id AND a2.orden > ao.orden
+                                     AND  ISNULL(o2.deleted_at))
+            )";
+        }
+    }
+
+    // Filtro por maquina asignada al item (opdetmaquina, que ya viene en el LEFT JOIN).
+    // Admite varias. Se fuerzan a entero para no abrir la puerta a inyeccion, ya que
+    // la consulta se arma concatenando.
+    $aux_condmaquina_id = " true";
+    if(!empty($request->maquina_id)){
+        $aux_maquinas = is_array($request->maquina_id)
+            ? $request->maquina_id
+            : explode(",", $request->maquina_id);
+        $aux_maquinas = array_filter(array_map('intval', $aux_maquinas));
+        if(count($aux_maquinas) > 0){
+            $aux_condmaquina_id = "opdetmaquina.maquina_id in (" . implode(",", $aux_maquinas) . ")";
+        }
+    }
+
     $sql = "SELECT opdet.id,op.id AS op_id,ot.id AS ot_id,otdet.id AS otdet_id,
             otnotaventa.notaventa_id,opdet.created_at,etapaprod.nombre AS etapaprod_nombre,cliente.razonsocial ,opdet.obs,maquina.nombre AS maquina_nombre,
             acuerdotecnico.id as acuerdotecnico_id,otdet.producto_id as producto_id,
@@ -944,6 +997,8 @@ function consultaopdet($request){
             AND $aux_condnotaventa_id
             AND $aux_condot_id
             AND $aux_condproducto_id
+            AND $aux_condmaquina_id
+            AND $aux_condlote_id
             AND opdet.kgrec > 0 AND (opdet.saldokg > 0)
             AND opdet.id not in (SELECT opdetcerr.opdet_id from opdetcerr WHERE  isnull(opdetcerr.deleted_at))
             AND isnull(opdet.deleted_at)
