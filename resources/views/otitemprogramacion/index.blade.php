@@ -17,6 +17,48 @@ Programación de Producción
 @endsection
 
 @section('contenido')
+<style>
+/* Con scrollX/scrollY, DataTables separa el encabezado y el cuerpo en dos tablas
+   distintas. table-layout:fixed las obliga a respetar los anchos declarados en
+   columnDefs (index.js) en lugar de estirarse cada una según su propio contenido,
+   que era lo que dejaba los títulos corridos respecto de sus columnas. */
+/* Selector de hijo directo (>) a propósito: alcanza solo la tabla principal, no las
+   sub-tablas de etapas que se abren dentro de una celda. Esas van dentro de un <td>,
+   así que no son hijas directas y conservan table-layout:auto para ajustarse a su
+   contenido; con fixed repartían el ancho en partes iguales y "Cod" quedaba enorme. */
+#tabla-data-factura,
+.dataTables_scrollHead > table,
+.dataTables_scrollBody > table {
+    table-layout: fixed;
+}
+/* Con anchos fijos, el texto largo (razón social, nombre de producto) debe partir
+   de línea en vez de ensanchar la columna y romper la alineación. Solo en las celdas
+   de la tabla principal. */
+.dataTables_scrollBody > table > tbody > tr > td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Sub-tabla de etapas de producción: cada columna ocupa lo que necesita.
+   El truco de width:1% + nowrap encoge la columna a su contenido. */
+table[id^="etapaprod"] {
+    width: auto !important;
+    table-layout: auto;
+}
+table[id^="etapaprod"] th,
+table[id^="etapaprod"] td {
+    white-space: nowrap;
+}
+table[id^="etapaprod"] th:nth-child(1),
+table[id^="etapaprod"] td:nth-child(1) {
+    width: 1%;
+    text-align: center;
+}
+table[id^="etapaprod"] th:nth-child(2),
+table[id^="etapaprod"] td:nth-child(2) {
+    width: 1%;
+}
+</style>
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')

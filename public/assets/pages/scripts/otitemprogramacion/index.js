@@ -391,23 +391,24 @@ function encabezadoTabla(){
                     <th title='ID OT'>OT</th>
                     <th title='Fecha'>Fecha</th>
                     <th class="ocultar">RUT</th>
-                    <th class="width200">Razón Social</th>
+                    <th>Razón Social</th>
                     <th title='Orden de Compra'>OC</th>
                     <th title='Nota Venta'>NV</th>
                     <th title='ID Producto'>ID Prod</th>
-                    <th class="width150" title='Nombre Producto'>Nombre Prod</th>
+                    <th title='Nombre Producto'>Nombre Prod</th>
                     <th title='Unidad de Medida'>Uni Med</th>
                     <th title='Espesor acuerdo tecnico'>Espesor/<br>EspProd</th>
                     <th class="ocultar" title='Espesor Produccion'>Espesor Prod</th>
-                    <th title='Cantidad' style="width: 50px;text-align:right;">Cant</th>
-                    <th title='Kg Produccion' style="width: 50px;text-align:right;">KgProd</th>
-                    <th title='Total Kg Programados' style="width: 50px;text-align:right;">KgProg</th>
-                    <th title='Kg enviados a programación (disponible para programar)' style="width: 60px;text-align:right;">KgEnvProg</th>
-                    <th title='Kilos' style="width: 50px;text-align:right;">Kg</th>
+                    <th title='Cantidad' style="text-align:right;">Cant</th>
+                    <th title='Cantidad ya enviada a programar' style="text-align:right;">CantEnvProg</th>
+                    <th title='Kg Produccion' style="text-align:right;">KgProd</th>
+                    <th title='Total Kg Programados' style="text-align:right;">KgProg</th>
+                    <th title='Kg enviados a programación (disponible para programar)' style="text-align:right;">KgEnvProg</th>
+                    <th title='Kilos' style="text-align:right;">Kg</th>
                     <th title='Observacion General'>ObsGen</th>
                     <th title='Observacion'>Obs</th>
                     <th title='Prioridad'>Prioridad</th>
-                    <th class="width80">Acción</th>
+                    <th>Acción</th>
                     <th class="ocultar">Obs Bloqueo</th>
                     <th class="ocultar">oc_folder</th>
                     <th class="ocultar">oc_file</th>
@@ -442,6 +443,11 @@ function configurarTabla(nombreTabla,url,serverSide) {
     // Configura DataTable con `serverSide` dinámico
     tabla = $(nombreTabla).DataTable({
         'paging'      : true,
+        // scrollX/scrollY dan el encabezado fijo, pero parten la tabla en dos: una
+        // para el encabezado y otra para el cuerpo. Para que no se desalineen, el
+        // ancho de cada columna se declara UNA sola vez en columnDefs (abajo) y
+        // DataTables lo aplica a ambas. No poner anchos a mano en los <th> ni en los
+        // inputs: competirian con estos y volveria el desfase.
         'scrollX'     : true,
         'scrollY'     : 'calc(100vh - 320px)',
         'scrollCollapse': true,
@@ -450,6 +456,31 @@ function configurarTabla(nombreTabla,url,serverSide) {
         'ordering'    : true,
         'info'        : true,
         'autoWidth'   : false,
+        // Ancho de cada columna, la unica fuente: DataTables lo replica en la tabla
+        // del encabezado y en la del cuerpo, que es lo que las mantiene cuadradas.
+        // Las columnas ocultas (3, 11 y 21 a 25) no llevan ancho: .ocultar las colapsa.
+        'columnDefs'  : [
+            { targets: 0 , width: '25px' },
+            { targets: 1 , width: '50px' },
+            { targets: 2 , width: '85px' },
+            { targets: 4 , width: '190px' },
+            { targets: 5 , width: '75px' },
+            { targets: 6 , width: '60px' },
+            { targets: 7 , width: '55px' },
+            { targets: 8 , width: '160px' },
+            { targets: 9 , width: '55px' },
+            { targets: 10, width: '75px' },
+            { targets: 12, width: '75px' },
+            { targets: 13, width: '85px' },
+            { targets: 14, width: '80px' },
+            { targets: 15, width: '80px' },
+            { targets: 16, width: '85px' },
+            { targets: 17, width: '110px' },
+            { targets: 18, width: '110px' },
+            { targets: 19, width: '160px' },
+            { targets: 20, width: '115px' },
+            { targets: 21, width: '95px' },
+        ],
         'processing'  : true,
         'serverSide'  : serverSide, // Se define dinámicamente
         'ajax'        : url, // Se define dinámicamente
@@ -473,6 +504,7 @@ function configurarTabla(nombreTabla,url,serverSide) {
             {data: 'at_espesor'}, // 10
             {data: 'espesorprod',className:"ocultar"}, // 11
             {data: 'cant'}, // 12
+            {data: 'cantenvprog'}, // 13 — ya enviado a programar
             {data: 'kgprod'}, // 13
             {data: 'kgprog'}, // 14
             {data: 'kgenvprog'}, // 15 — kg enviados a programación
@@ -597,36 +629,43 @@ function configurarTabla(nombreTabla,url,serverSide) {
             $('td', row).eq(12).attr('title','Cantidad Produccion');
             $('td', row).eq(12).html(aux_text);
 
-            aux_text = MASKLA(data.kgprod,2);
-            $('td', row).eq(13).attr('id','kgprodOrig' + data.id);
-            $('td', row).eq(13).attr('name','kgprodOrig' + data.id);
+            // Col 13 — Cantidad ya enviada a programar (otdet.cantenvprog). Puede
+            // venir nula en items que todavia no se enviaron; se muestra 0.
+            aux_text = MASKLA(parseFloat(data.cantenvprog) || 0, 0);
             $('td', row).eq(13).attr('style','text-align:right');
-            $('td', row).eq(13).attr('title','Kilos Produccion.');
-            $('td', row).eq(13).attr('valor',data.kgprod);
+            $('td', row).eq(13).attr('title','Cantidad ya enviada a programar');
             $('td', row).eq(13).html(aux_text);
 
-            aux_text = MASKLA(data.kgprog,2);
-            $('td', row).eq(14).attr('id','kgprog' + data.id);
-            $('td', row).eq(14).attr('name','kgprog' + data.id);
+            aux_text = MASKLA(data.kgprod,2);
+            $('td', row).eq(14).attr('id','kgprodOrig' + data.id);
+            $('td', row).eq(14).attr('name','kgprodOrig' + data.id);
             $('td', row).eq(14).attr('style','text-align:right');
-            $('td', row).eq(14).attr('title','Kilos Programados.');
-            $('td', row).eq(14).attr('valor',data.kgprog);
+            $('td', row).eq(14).attr('title','Kilos Produccion.');
+            $('td', row).eq(14).attr('valor',data.kgprod);
             $('td', row).eq(14).html(aux_text);
+
+            aux_text = MASKLA(data.kgprog,2);
+            $('td', row).eq(15).attr('id','kgprog' + data.id);
+            $('td', row).eq(15).attr('name','kgprog' + data.id);
+            $('td', row).eq(15).attr('style','text-align:right');
+            $('td', row).eq(15).attr('title','Kilos Programados.');
+            $('td', row).eq(15).attr('valor',data.kgprog);
+            $('td', row).eq(15).html(aux_text);
 
             // Col 15 — KgEnvProg (kg enviados a programación, disponible para programar)
             var aux_kgenvprog = parseFloat(data.kgenvprog) || 0;
             var aux_kgdisponible = aux_kgenvprog - parseFloat(data.kgprog || 0);
             aux_kgdisponible = (aux_kgdisponible < 0) ? 0 : aux_kgdisponible;
-            $('td', row).eq(15).attr('style','text-align:right; font-weight:bold; color:#1a6b1a;');
-            $('td', row).eq(15).attr('id','kgenvprog' + data.id);
-            $('td', row).eq(15).attr('valor', aux_kgenvprog);
-            $('td', row).eq(15).html(MASKLA(aux_kgenvprog, 2));
+            $('td', row).eq(16).attr('style','text-align:right; font-weight:bold; color:#1a6b1a;');
+            $('td', row).eq(16).attr('id','kgenvprog' + data.id);
+            $('td', row).eq(16).attr('valor', aux_kgenvprog);
+            $('td', row).eq(16).html(MASKLA(aux_kgenvprog, 2));
 
             // Col 16 — Input kg a programar (limitado a kgenvprog - kgprog)
             aux_kgprod = aux_kgdisponible;
             aux_text =
-                `<input type="text" name="kgprod[]" id="kgprod${data.id}" class="form-control numerico requerido${data.id}" value="${MASKLA(aux_kgprod,2)}" valor="${aux_kgprod}" valorOriginal="${data.kgprod}" kgenvprog="${aux_kgenvprog}" item="${data.id}" style="width: 100px;text-align:right;" maxlength="15"/>`;
-            $('td', row).eq(16).html(aux_text);
+                `<input type="text" name="kgprod[]" id="kgprod${data.id}" class="form-control numerico requerido${data.id}" value="${MASKLA(aux_kgprod,2)}" valor="${aux_kgprod}" valorOriginal="${data.kgprod}" kgenvprog="${aux_kgenvprog}" item="${data.id}" style="width:100%;text-align:right;" maxlength="15"/>`;
+            $('td', row).eq(17).html(aux_text);
 
 
             aux_clienteBloqueado = validarClienteBloqueadoxModulo(data);
@@ -647,12 +686,12 @@ function configurarTabla(nombreTabla,url,serverSide) {
                 aux_text += `<option value="${i}">${i}</option>`;
             }
             aux_text += `</select>`;
-            $('td', row).eq(19).html(aux_text);
+            $('td', row).eq(20).html(aux_text);
 
             // Col 18 — Textarea Observación
             aux_text =
-                `<textarea name="obs[]" id="obs${data.id}" class="form-control" value="" item="${data.id}" style="width: 150px;" placeholder="Observación" maxlength="100"></textarea>`;
-            $('td', row).eq(18).html(aux_text);
+                `<textarea name="obs[]" id="obs${data.id}" class="form-control" value="" item="${data.id}" style="width:100%;" placeholder="Observación" maxlength="100"></textarea>`;
+            $('td', row).eq(19).html(aux_text);
 
             // Col 20 — Botones acción
             aux_text =
@@ -667,11 +706,11 @@ function configurarTabla(nombreTabla,url,serverSide) {
                         <i class="fa fa-fw fa-close text-danger fa-lg"></i>
                     </a>
                 </div>`;
-            $('td', row).eq(20).html(aux_text);
+            $('td', row).eq(21).html(aux_text);
 
-            $('td', row).eq(24).addClass('updated_at');
-            $('td', row).eq(24).attr('id','updated_at' + data.id);
-            $('td', row).eq(24).attr('name','updated_at' + data.id);
+            $('td', row).eq(25).addClass('updated_at');
+            $('td', row).eq(25).attr('id','updated_at' + data.id);
+            $('td', row).eq(25).attr('name','updated_at' + data.id);
 
             activarLimpiezaCampoRequerido(data.id);
 
@@ -720,7 +759,7 @@ function format(d) {
     let tablaHtml = `
     <div style="display: flex; align-items: flex-start;"> <!-- Contenedor Flex (flecha al principio) -->
         <div style="margin-left: 20px;">&#8627;</div> <!-- Flecha desplazada un poco a la derecha -->
-            <table id='etapaprod${d.id}' name='etapaprod${d.id}' class='table display AllDataTables table-hover table-condensed tablascons' style='width: 50%;'>
+            <table id='etapaprod${d.id}' name='etapaprod${d.id}' class='table display AllDataTables table-hover table-condensed tablascons'>
                 <thead>
                     <tr>
                     <th>Cod</th>
@@ -754,7 +793,7 @@ function format(d) {
                                 <td id="epid${aux_idep}" name="epid${aux_idep}" apsucetapaprod_id="${apsucetapaprod_id}">${apsucetapaprod_id}</td>
                                 <td id="epnombre${aux_idep}" name="epnombre${aux_idep}">${etapaprod_nombre}</td>
                                 <td>${aux_text}</td>
-                                <td><textarea id="epobs${aux_idep}" name="epobs${aux_idep}" class="form-control edit-obs" style="width: 250px;" placeholder="Observación" maxlength="100" fila="${d.id}" nameobsg="aux_obsext">${aux_obsext}</textarea></td>
+                                <td><textarea id="epobs${aux_idep}" name="epobs${aux_idep}" class="form-control edit-obs" style="width: 220px;min-width:220px;" placeholder="Observación" maxlength="100" fila="${d.id}" nameobsg="aux_obsext">${aux_obsext}</textarea></td>
                             </tr>`;
                         //$('.selectpicker').selectpicker();
                     });
