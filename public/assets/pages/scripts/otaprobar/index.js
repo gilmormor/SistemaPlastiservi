@@ -153,11 +153,18 @@ function decodeHtml(html) {
 
 // Formatting function for row details - modify as you need
 function format(d) {
+    // Evita que una observación con < o > se interprete como HTML al inyectarla.
+    // .text() escapa y .html() devuelve el resultado: forma canónica con jQuery.
+    function escaparHtml(t) {
+        return $('<div>').text(t == null ? '' : t).html();
+    }
+
     // Descomponer el campo nvdetalle
     //console.log(d);
     //console.log(d.nvdetalle);
     const detalleArray = decodeHtml(d.nvdetalle).split(';').map(detalle => {
-        const [producto_id, cant, precio,subtotal,kg,producto_nombre,kgprod,id,unidadmedida_nombre,requiere_fabricacion] = detalle.split('|');
+        // obs es el ultimo campo; puede venir vacio o no venir en datos antiguos
+        const [producto_id, cant, precio,subtotal,kg,producto_nombre,kgprod,id,unidadmedida_nombre,requiere_fabricacion,obs] = detalle.split('|');
         return {
             producto_id: parseInt(producto_id),
             cant: parseInt(cant),
@@ -168,7 +175,8 @@ function format(d) {
             subtotal: parseInt(subtotal),
             acuerdotecnico_id: id,
             unidadmedida_nombre : unidadmedida_nombre,
-            requiere_fabricacion: requiere_fabricacion
+            requiere_fabricacion: requiere_fabricacion,
+            obs: obs || ''
         };
     });
     // Generar tabla HTML
@@ -184,6 +192,7 @@ function format(d) {
                         <th style="text-align: center;" title="Unidad Medida">UM</th>
                         <th style="text-align: center;" title="Kg segun formula">Kg</th>
                         <th style="text-align: center;" title="Requiere Fabricación?">ReqFab</th>
+                        <th title="Observación del ítem de la OT">Observación</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -206,6 +215,7 @@ function format(d) {
                 <td style="text-align: center;">${detalle.unidadmedida_nombre}</td>
                 <td style="text-align: right;">${detalle.kg}</td>
                 <td style="text-align: center;">${detalle.requiere_fabricacion === '1' ? 'Sí' : 'No'}</td>
+                <td>${escaparHtml(detalle.obs)}</td>
             </tr>
         `;
     });

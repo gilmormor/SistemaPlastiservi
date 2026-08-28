@@ -285,8 +285,14 @@ class Ot extends Model
         '' as obsdev, '' as rutaeditar,
         otnotaventa.notaventa_id,notaventa.cotizacion_id,comuna.nombre as nombre_comuna,
         otanul.obs as otanul_obs,otanul.created_at as otanulcreated_at,
+        -- otdet.obs va al final para no desplazar los campos que ya se leian.
+        -- IFNULL es imprescindible: CONCAT_WS omite los NULL, y una observacion
+        -- vacia dejaria la fila con un campo menos, corriendo todo el parseo.
+        -- Se le quitan | y ; porque son los separadores de esta cadena: una
+        -- observacion que los trajera partiria el detalle en pedazos.
         GROUP_CONCAT(
-            DISTINCT CONCAT_WS('|', otdet.producto_id, otdet.cant, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),unidadmedida.nombre, otdet.requiere_fabricacion)
+            DISTINCT CONCAT_WS('|', otdet.producto_id, otdet.cant, otdet.preciounit, otdet.subtotal,otdet.kg, otdet.kgprod, if(ISNULL(acuerdotecnico.id),0,acuerdotecnico.id),unidadmedida.nombre, otdet.requiere_fabricacion,
+                     REPLACE(REPLACE(IFNULL(otdet.obs,''), '|', ' '), ';', ' '))
             SEPARATOR ';'
         ) AS nvdetalle
         FROM ot INNER JOIN otdet
@@ -365,9 +371,12 @@ class Ot extends Model
             foreach ($detalleArray as $index => $detalle) {
                 //dd($detalle);
                 $productoarray = Producto::atributosProducto($productoIds[$index]);
-                list($producto_id, $cant, $precio, $subtotal,$kg,$kgprod, $id,$unidadmedida_nombre, $requiere_fabricacion) = explode('|', $detalle);
+                // La observacion es el ultimo campo. Se usa array_pad porque los
+                // registros guardados antes de agregarla vienen con un campo menos.
+                $partes = array_pad(explode('|', $detalle), 10, '');
+                list($producto_id, $cant, $precio, $subtotal,$kg,$kgprod, $id,$unidadmedida_nombre, $requiere_fabricacion, $obs) = $partes;
                 //$producto_nombre = isset($productos[$producto_id]) ? $productos[$producto_id] : 'Desconocido';
-                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $kg, $productoarray["nombre"],$kgprod, $id, $unidadmedida_nombre, $requiere_fabricacion]);
+                $detalleFinal = implode('|', [$producto_id, $cant, $precio, $subtotal, $kg, $productoarray["nombre"],$kgprod, $id, $unidadmedida_nombre, $requiere_fabricacion, $obs]);
                 $detalleArrayFinal[] = $detalleFinal;
             }
             //dd(implode(';', $detalleArrayFinal));
