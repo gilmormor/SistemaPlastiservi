@@ -14,6 +14,10 @@ Guia de despacho
 @endsection
 
 @section('contenido')
+{{-- Permiso para anular la guía, resuelto en el controlador y leído por el JS al
+     armar los botones de cada fila. Va acá y no en los datos de la tabla para que
+     viaje una sola vez y no dependa de que haya filas. --}}
+<input type="hidden" name="staeditar" id="staeditar" value="{{ $tablas['staeditar'] ?? 0 }}">
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')

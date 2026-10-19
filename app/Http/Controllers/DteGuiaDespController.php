@@ -51,7 +51,11 @@ class DteGuiaDespController extends Controller
     public function index()
     {
         can('listar-dte-guia-despacho');
-        return view('dteguiadesp.index');
+        // El permiso de anulacion se resuelve una sola vez aqui y viaja a la vista
+        // en un hidden, no con los datos de la tabla: no depende de que haya filas
+        // ni del orden/paginado de DataTables, y no se reenvia en cada recarga.
+        $tablas['staeditar'] = can('editar-dte-guia-despacho', false) ? 1 : 0;
+        return view('dteguiadesp.index', compact('tablas'));
     }
 
     public function dteguiadesppage(){
@@ -722,6 +726,13 @@ class DteGuiaDespController extends Controller
     public function validarupdated(Request $request)
     {
         //dd($request);
+        if (!can('editar-dte-guia-despacho', false)) {
+            return [
+                'status' => 0,
+                'mensaje'=>'No tienes permisos para anular Guia Despacho, contacta al administrador del sistema.',
+                'tipo_alert' => 'error'
+            ];
+        }
         $dte = Dte::findOrFail($request->guiadesp_id);
         if($request->updated_at == $dte->updated_at){
             return response()->json(['mensaje' => 'ok']);
@@ -736,6 +747,16 @@ class DteGuiaDespController extends Controller
 
     public function guiadespanul(Request $request)
     {
+        // Es el punto donde la guia se anula de verdad. Ocultar el boton en la
+        // pantalla no protege nada: esta ruta se puede llamar directamente, y el
+        // flujo pasa antes por validarupdated, que tiene su propia validacion.
+        if (!can('editar-dte-guia-despacho', false)) {
+            return [
+                'status' => 0,
+                'mensaje'=>'No tienes permisos para anular Guia Despacho, contacta al administrador del sistema.',
+                'tipo_alert' => 'error'
+            ];
+        }
         $dte = Dte::findOrFail($request->guiadesp_id);
         if($request->updated_at != $dte->updated_at){
             /*
@@ -829,6 +850,15 @@ class DteGuiaDespController extends Controller
 
     public function guiadespanulsininv(Request $request)
     {
+        // Misma anulacion pero sin movimiento de inventario: tambien hay que
+        // protegerla, o seria la via para saltarse la validacion de guiadespanul.
+        if (!can('editar-dte-guia-despacho', false)) {
+            return [
+                'status' => 0,
+                'mensaje'=>'No tienes permisos para anular Guia Despacho, contacta al administrador del sistema.',
+                'tipo_alert' => 'error'
+            ];
+        }
         $dte = Dte::findOrFail($request->id);
         if($request->updated_at != $dte->updated_at){
             return [
