@@ -435,6 +435,10 @@ class Dte extends Model
         AND (dte1.foliocontrol_id = 1) 
         AND dtedte1.dte_id NOT IN (SELECT dteanul.dte_id FROM dteanul WHERE isnull(dteanul.deleted_at))) as fact_nombrepdf,
         dteanul.obs as dteanul_obs,dteanul.created_at as dteanulcreated_at,
+        -- Nombre de quien anulo la guia, para el globo de la marca de anulada.
+        -- Alias propio: el JOIN a usuario de mas abajo es el de quien CREO la
+        -- guia, que no tiene por que ser el mismo que la anulo.
+        usuarioanul.nombre as dteanul_usuario,
         dte_rel_guia.id as guiaorigenprecio_id,
         dte_rel_guia.nrodocto as guiaorigenprecio_nrodocto,
         dte.updated_at as dteupdated_at,
@@ -470,6 +474,8 @@ class Dte extends Model
         ON tipoentrega.id = dteguiadesp.tipoentrega_id AND ISNULL(tipoentrega.deleted_at)
         LEFT JOIN dteanul
         ON dteanul.dte_id=dte.id and isnull(dteanul.deleted_at)
+        LEFT JOIN usuario as usuarioanul
+        ON usuarioanul.id = dteanul.usuario_id
         LEFT JOIN dteoc
         ON dteoc.dte_id=dte.id and isnull(dteoc.deleted_at)
         LEFT JOIN dtedte

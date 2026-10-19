@@ -54,8 +54,11 @@ $(document).ready(function () {
                 if (data.dteanul_obs != null) {
                     aux_fecha = new Date(data.dteanulcreated_at);
                     aux_fechaanulgd =  fechaddmmaaaa(aux_fecha) + " " + data.dteanulcreated_at.substr(11, 8);
+                    // Quien anulo (dteanul.usuario_id). Si viniera vacio, no se agrega
+                    // la linea en vez de mostrar "Anulada por: null".
+                    aux_usuarioanul = data.dteanul_usuario ? "\nAnulada por: " + data.dteanul_usuario : "";
                     aux_text = data.id +
-                    "<a class='btn-accion-tabla tooltipsC' title='Anulada " + aux_fechaanulgd + "\nObs:"  + data.dteanul_obs + "'>" +
+                    "<a class='btn-accion-tabla tooltipsC' title='Anulada " + aux_fechaanulgd + aux_usuarioanul + "\nObs:"  + data.dteanul_obs + "'>" +
                         "<small class='label label-danger'>A</small>" +
                     "</a>";
                     $('td', row).eq(0).html(aux_text);
