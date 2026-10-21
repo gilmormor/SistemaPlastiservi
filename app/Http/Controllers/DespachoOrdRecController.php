@@ -61,6 +61,9 @@ class DespachoOrdRecController extends Controller
         return datatables($datas)->toJson();
     }
 
+    /* Codigo muerto: la ruta despachoordrecpageapr estaba declarada dos veces en
+       routes/web.php y la que gana apunta a DespachoOrdRecAprController, de modo
+       que este metodo nunca se ejecuta. Se comenta junto con su ruta.
     public function despachoordrecpageapr(){
         $sql = "SELECT despachoordrec.id,DATE_FORMAT(despachoordrec.fechahora,'%d/%m/%Y %h:%i %p') as fechahora,
                 cliente.razonsocial,despachoord_id,despachoordrec.documento_id,despachoordrec.documento_file,
@@ -81,6 +84,7 @@ class DespachoOrdRecController extends Controller
         $datas = DB::select($sql);
         return datatables($datas)->toJson();
     }
+    */
 
     /**
      * Show the form for creating a new resource.
@@ -173,7 +177,7 @@ class DespachoOrdRecController extends Controller
                 ]);
             }
         }else{
-            return redirect('despachoordrec/consultadespordfact')->with([
+            return redirect()->route('consultadespordfact')->with([
                 'mensaje'=>'No se puede hacer Rechazo, Registro fue eliminado.',
                 'tipo_alert' => 'alert-error'
             ]);
@@ -380,6 +384,11 @@ class DespachoOrdRecController extends Controller
     }
 
     public function consultadespordfact(Request $request){
+        // Era el unico metodo del controlador sin validacion: se llegaba escribiendo
+        // la ruta en el navegador. Se usa el mismo permiso que el listado porque esta
+        // pantalla solo consulta; quien no pueda crear el rechazo igual sera frenado
+        // en crearrec(), que valida crear-rechazo-orden-despacho.
+        can('listar-rechazo-orden-despacho');
         $tablashtml['giros'] = Giro::orderBy('id')->get();
         $tablashtml['areaproduccions'] = AreaProduccion::orderBy('id')->get();
         $tablashtml['tipoentregas'] = TipoEntrega::orderBy('id')->get();
@@ -425,7 +434,7 @@ class DespachoOrdRecController extends Controller
             //dd($clientedirecs);
             return view('despachoordrec.crear', compact('data','detalles','fecha','empresa','aux_sta','aux_statusPant','vendedor_id','despachoordrecmotivos'));
         }else{
-            return redirect('despachoordrec/consultadespordfact')->with([
+            return redirect()->route('consultadespordfact')->with([
                 'mensaje'=>'Orden de despacho Nro.' . $data->id . ' no puede ser rechazada, Nota de venta ' .$data->notaventa_id . '  esta cerrada.',
                 'tipo_alert' => 'alert-error'
             ]);

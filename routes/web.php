@@ -806,7 +806,12 @@ Route::get('notaventatranspage', 'NotaVentaTransController@notaventatranspage')-
 Route::get('despachoordrec', 'DespachoOrdRecController@index')->name('despachoordrec');
 Route::get('despachoordrec/indexapr', 'DespachoOrdRecController@indexapr')->name('indexapr_despachoordrec');
 Route::get('despachoordrecpage', 'DespachoOrdRecController@despachoordrecpage')->name('despachoordrecpage');
+/* Ruta duplicada: la misma URI se registra mas abajo apuntando a
+   DespachoOrdRecAprController@despachoordrecpageapr, que es la que gana (Laravel
+   registra una sola ruta por URI+metodo, la ultima sobrescribe a la anterior).
+   Se comenta para dejar explicito cual es la ruta vigente.
 Route::get('despachoordrecpageapr', 'DespachoOrdRecController@despachoordrecpageapr')->name('despachoordrecpageapr');
+*/
 Route::get('despachoordrec/crear', 'DespachoOrdRecController@crear')->name('crear_despachoordrec');
 Route::post('despachoordrec', 'DespachoOrdRecController@guardar')->name('guardar_despachoordrec');
 Route::get('despachoordrec/{id}/editar', 'DespachoOrdRecController@editar')->name('editar_despachoordrec');
