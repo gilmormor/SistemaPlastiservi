@@ -6,7 +6,13 @@
       "Bash(\"c:/laragon/bin/mysql/mysql-8.0.30-winx64/bin/mysql.exe\" -u root plxrevisarcierregd -e \"SHOW TABLES LIKE 'indtraslado';\")",
       "Read(//c/laragon/bin/mysql//**)",
       "Read(//c/laragon/bin/mysql/**)",
-      "Bash(/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe -u root plxrevisarcierregd -e \"SHOW TABLES LIKE 'indtraslado';\")"
+      "Bash(/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe -u root plxrevisarcierregd -e \"SHOW TABLES LIKE 'indtraslado';\")",
+      "Bash(/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe -uroot -e ' *)",
+      "Bash(\"/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -uroot -e \"CREATE DATABASE plxrevisarcierregd154_144 CHARACTER SET latin1 COLLATE latin1_spanish_ci;\")",
+      "Bash(\"/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -uroot -e \"SELECT schema_name, default_character_set_name, default_collation_name FROM information_schema.schemata WHERE schema_name='plxrevisarcierregd154_144';\")",
+      "Bash(\"/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -uroot plxrevisarcierregd154_144)",
+      "Bash(/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe -uroot --table -e ' *)",
+      "Bash(\"/c/laragon/bin/mysql/mysql-5.7.24-winx64/bin/mysql.exe\" -uroot --table -e \"DESC plxrevisarcierregd154_144.dtetrans;\")"
     ]
   }
 }
