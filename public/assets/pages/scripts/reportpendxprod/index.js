@@ -1,3 +1,18 @@
+/* La columna Stock no se muestra a los vendedores. El controlador resuelve la
+   condicion y la deja en el hidden #ocultarstock; aca se lee en el momento de
+   usarla (no al cargar el archivo) para no depender del orden de carga.
+   Si el input no estuviera -por ejemplo una vista en cache tras un despliegue- se
+   oculta igual: fail-closed. Fallar hacia este lado se nota de inmediato porque a
+   los demas usuarios les falta la columna; fallar hacia el otro filtraria el stock
+   sin que nadie se entere. */
+function stockOculto(){
+    var aux_ocultar = $("#ocultarstock").val();
+    if(aux_ocultar === undefined || aux_ocultar === null || aux_ocultar === ""){
+        return true;
+    }
+    return (aux_ocultar == 1);
+}
+
 $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
 
@@ -565,10 +580,69 @@ $('#tabla-data-consulta').on('draw.dt', function () {
 }
 
 function headRows() {
+    //{ nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+    var aux_head = { nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"};
+    // a los vendedores no se les incluye la columna Stock en el PDF
+    if(stockOculto()){
+        delete aux_head.stock;
+    }
     return [
-      //{ nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", clase: "ClaSello", diam: "Diam Anch", l: "L", pesoesp: "Peso Esp", tu: "TU", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
-      { nv: "NV", oc: "OC", fecha: "Fecha", plazoentrega: "PlazoEnt", razonsocial: "Razón Social", comuna: "Comuna", cod: "Cod", desc: "Descripción", stock: "Stock", picking: "Pick", cant: "Cant", cantdesp: "Cant Desp", cantpend: "Cant Pend", kilos: "Kilos Pend", preciokg: "Precio Kg", pesos: "$"},
+      aux_head,
     ]
+}
+
+/* Anchos del PDF: autoTable los indexa por NUMERO de columna, no por clave, asi
+   que al quitar Stock (indice 8) hay que correr un lugar a la izquierda todos los
+   anchos del 9 al 15, o las columnas de la derecha quedan descuadradas. */
+/* El Excel se arma con arrays posicionales, donde Stock es el indice 15. Esta
+   funcion quita esa celda cuando el usuario es vendedor.
+   aux_esetiqueta indica que la celda de Stock no trae el dato sino un rotulo (las
+   filas Total:/Promedio: lo ponen ahi), en cuyo caso el rotulo se corre un lugar a
+   la izquierda para no perderlo. Se pasa como parametro explicito y no se deduce
+   del tipo de dato, porque si stockbpt llegara como texto numerico se confundiria
+   con un rotulo. */
+var IDX_STOCK_EXCEL = 15;
+function quitarColStockExcel(aux_fila, aux_esetiqueta){
+    if(!stockOculto()){
+        return aux_fila;
+    }
+    if(aux_esetiqueta){
+        aux_fila[IDX_STOCK_EXCEL - 1] = aux_fila[IDX_STOCK_EXCEL];
+    }
+    aux_fila.splice(IDX_STOCK_EXCEL, 1);
+    return aux_fila;
+}
+
+function columnStylesPdf(){
+    var aux_estilos = {
+        0: { cellWidth: 10 },  // Ancho columna
+        1: { cellWidth: 18 },  // Ancho columna
+        2: { cellWidth: 14 },  // Ancho columna
+        3: { cellWidth: 14 },  // Ancho columna
+        4: { cellWidth: 32 },  // Ancho columna
+        5: { cellWidth: 17 },  // Ancho columna
+        6: { cellWidth: 8, halign: 'center'  },  // Ancho columna
+        7: { cellWidth: 58 },  // Ancho columna
+        8: { cellWidth: 12, halign: 'right' },  // Stock
+        9: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        10: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        11: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        12: { cellWidth: 12, halign: 'right' },  // Ancho columna
+        13: { cellWidth: 15, halign: 'right' },  // Ancho columna
+        14: { cellWidth: 15, halign: 'right' },  // Ancho columna
+        15: { cellWidth: 15, halign: 'right' }   // Ancho columna
+    };
+    if(!stockOculto()){
+        return aux_estilos;
+    }
+    var aux_sinstock = {};
+    for(var aux_i = 0; aux_i <= 7; aux_i++){
+        aux_sinstock[aux_i] = aux_estilos[aux_i];
+    }
+    for(var aux_j = 8; aux_j <= 14; aux_j++){
+        aux_sinstock[aux_j] = aux_estilos[aux_j + 1];
+    }
+    return aux_sinstock;
 }
 
 function bodyRows(datos) {
@@ -586,7 +660,7 @@ function bodyRows(datos) {
         aux_plazoentrega = new Date(registro.plazoentrega + " 00:00:00")
         aux_productonomb = registro.nombre.replace(/&quot;/g, '"');
         aux_productonomb = aux_productonomb.replace(/&#039;/g, "'");
-        body.push({
+        aux_fila = {
             nv: registro.notaventa_id,
             oc: registro.oc_id,
             fecha: fechaddmmaaaa(aux_fecha),
@@ -603,7 +677,12 @@ function bodyRows(datos) {
             kilos: MASKLA(registro.kgpend,2),
             preciokg: MASKLA(registro.precioxkilo,2),
             pesos: MASKLA(registro.subtotalplata,0)
-        })
+        };
+        // el dato de Stock no va en el PDF de los vendedores
+        if(stockOculto()){
+            delete aux_fila.stock;
+        }
+        body.push(aux_fila)
         total_sumapicking += registro.picking;
         total_sumacant += registro.cant;
         total_sumacantdesp += registro.cantdesp;
@@ -614,7 +693,9 @@ function bodyRows(datos) {
         aux_contreg++;
     });
     if(total_totalplata > 0){
-        body.push({
+        /* La fila de totales usa la celda de Stock como etiqueta. Si la columna se
+           oculta, la etiqueta se mueve a Descripcion para no perderla. */
+        aux_filatot = {
             nv: "",
             oc: "",
             fecha: "",
@@ -631,12 +712,19 @@ function bodyRows(datos) {
             kilos: MASKLA(total_kgpend,2),
             preciokg: "",
             pesos: MASKLA(total_totalplata,0)
-        })
+        };
+        if(stockOculto()){
+            aux_filatot.desc = aux_filatot.stock;
+            delete aux_filatot.stock;
+        }
+        body.push(aux_filatot)
         prom_precioxkg = total_precioxkilo / aux_contreg;
         prom_precioxkg = parseFloat(prom_precioxkg.toFixed(2));
         prom_precio = total_totalplata / aux_contreg;
         prom_precio = parseFloat(prom_precio.toFixed(0));
-        body.push({
+        /* Mismo caso que la fila de totales: la etiqueta Prom vive en la celda de
+           Stock, asi que al ocultarla se anexa a Descripcion. */
+        aux_filaprom = {
             nv: "",
             oc: "",
             fecha: "",
@@ -653,8 +741,13 @@ function bodyRows(datos) {
             kilos: "",
             preciokg: MASKLA(prom_precioxkg,2),
             pesos: MASKLA(prom_precio,0)
-        })
-    
+        };
+        if(stockOculto()){
+            aux_filaprom.desc = aux_filaprom.desc + " (" + aux_filaprom.stock + ")";
+            delete aux_filaprom.stock;
+        }
+        body.push(aux_filaprom)
+
     }
 
     return body
@@ -694,26 +787,8 @@ function pdfjs(datos) {
         // Asumiendo que la fila que contiene el signo "$" es la primera fila (15)
         15: { halign: 'center' }  // Centrar horizontalmente la primera fila del encabezado en la columna 15
       },
-      columnStyles: {
-        0: { cellWidth: 10 },  // Ancho columna
-        1: { cellWidth: 18 },  // Ancho columna
-        2: { cellWidth: 14 },  // Ancho columna
-        3: { cellWidth: 14 },  // Ancho columna
-        4: { cellWidth: 32 },  // Ancho columna
-        5: { cellWidth: 17 },  // Ancho columna
-        6: { cellWidth: 8, halign: 'center'  },  // Ancho columna
-        7: { cellWidth: 58 },  // Ancho columna
-        8: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        9: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        10: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        11: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        12: { cellWidth: 12, halign: 'right' },  // Ancho columna
-        13: { cellWidth: 15, halign: 'right' },  // Ancho columna
-        14: { cellWidth: 15, halign: 'right' },  // Ancho columna
-        15: { cellWidth: 15, halign: 'right' },  // Ancho columna
-
-        // ... especifica el ancho de las demás columnas
-      },
+      // los anchos se arman aparte porque cambian si se oculta la columna Stock
+      columnStyles: columnStylesPdf(),
       willDrawPage: function (data) {
         // Header
         doc.setFontSize(12)
@@ -854,7 +929,8 @@ function exportarExcel() {
         aux_totalat_kgtotal = 0;
         aux_total_at_kgdesp = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor","MateriaPrima","Peso","KgTotal","KgDesp"]);
+        // encabezado: se le quita Stock si el usuario es vendedor
+        datosExcel.push(quitarColStockExcel(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor","MateriaPrima","Peso","KgTotal","KgDesp"], false));
         data.data.forEach(function(registro) {
             aux_cont++;
             aux_totalPicking += registro.picking;
@@ -924,13 +1000,15 @@ function exportarExcel() {
             ];
             //aux_vendedor_id = registro.vendedor_id;
 
-            datosExcel.push(filaExcel);
+            // fila de datos: la celda 15 trae el stock, no un rotulo
+            datosExcel.push(quitarColStockExcel(filaExcel, false));
         });
         if(aux_totalMonto > 0){
             prom_preciokg = (aux_totalPreciokg/aux_cont);
             prom_Monto = (aux_totalMonto/aux_cont);
-            datosExcel.push(["","","","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto,"","","",aux_totalat_kgtotal,aux_total_at_kgdesp]);
-            datosExcel.push(["","","","","","","","","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto]);
+            // estas dos filas llevan el rotulo en la celda de Stock: se corre a TU
+            datosExcel.push(quitarColStockExcel(["","","","","","","","","","","","","","","","Total:",aux_totalPicking,aux_totalCant,aux_totalCantDesp,aux_totalCantPend,aux_totalkgPend,"",aux_totalMonto,"","","",aux_totalat_kgtotal,aux_total_at_kgdesp], true));
+            datosExcel.push(quitarColStockExcel(["","","","","","","","","","","","","","","","Promedio:","","","","","",prom_preciokg,prom_Monto], true));
         }
 
         createExcel(datosExcel);
