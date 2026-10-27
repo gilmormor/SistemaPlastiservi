@@ -76,7 +76,12 @@
                             @endif
                             >{{$tipotraslado->desc}}</option>
                     @endforeach
-                    @if ($data->despachosol->tipoguiadesp==20)
+                    {{-- Se agrega isset() igual que en las condiciones de arriba (lineas 61 y 69):
+                         esta era la unica linea que accedia a $data->despachosol->tipoguiadesp sin
+                         protegerlo, y reventaba en las rutas donde no existe despachosol
+                         (dteguiadespnv, que viene de una NV) o donde no se pasa $data a la vista
+                         (dteguiadespdir, dtefacturadir, dtefacturaexenta). --}}
+                    @if (isset($data->despachosol->tipoguiadesp) and $data->despachosol->tipoguiadesp==20)
                         <option value="1"
                             {{'selected'}}
                             >Traslado + Precio</option>
