@@ -4234,14 +4234,21 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 $aux_fechaSalida = date('Y-m-d', strtotime($dtetrans->fchsalida));
                 $aux_HoraSalida = date('H:i:s', strtotime($dtetrans->fchsalida));
                 $aux_fchllegada = date('Y-m-d', strtotime($dtetrans->fchllegada));
+                /* Los tags se omiten cuando el dato no existe, en vez de emitirlos
+                   vacios: el SII rechaza un <RUTChofer></RUTChofer> porque valida
+                   formato de RUT, y lo mismo ocurre con la patente. Hoy el
+                   formulario obliga estos campos, asi que el XML generado no
+                   cambia; es una proteccion para cuando la Resolucion 144 permita
+                   emitir con datos "Diferido" o "Sin Dato". */
                 $contenido .= "<Transporte>" .
-                    "<Patente>$dtetrans->patente</Patente>" .
+                    ($dtetrans->patente ? "<Patente>$dtetrans->patente</Patente>" : "") .
                     ($dtetrans->patentecarro ? "<PatenteCarro>$dtetrans->patentecarro</PatenteCarro>" : "") .
                     ($dtetrans->ruttrans ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
+                    (($dtetrans->rutchofer || $dtetrans->nombrechofer) ?
                     "<Chofer>" .
-                        "<RUTChofer>$aux_rutchofer</RUTChofer>" .
-                        "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" .
-                    "</Chofer>" .
+                        ($dtetrans->rutchofer ? "<RUTChofer>$aux_rutchofer</RUTChofer>" : "") .
+                        ($dtetrans->nombrechofer ? "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" : "") .
+                    "</Chofer>" : "") .
                     "<DirDest>$dtetrans->dirdest</DirDest>" .
                     "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
                     "<FchSalida>$aux_fechaSalida</FchSalida>" .
@@ -4398,14 +4405,21 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                 $aux_fechaSalida = date('Y-m-d', strtotime($dtetrans->fchsalida));
                 $aux_HoraSalida = date('H:i:s', strtotime($dtetrans->fchsalida));
                 $aux_fchllegada = date('Y-m-d', strtotime($dtetrans->fchllegada));
+                /* Los tags se omiten cuando el dato no existe, en vez de emitirlos
+                   vacios: el SII rechaza un <RUTChofer></RUTChofer> porque valida
+                   formato de RUT, y lo mismo ocurre con la patente. Hoy el
+                   formulario obliga estos campos, asi que el XML generado no
+                   cambia; es una proteccion para cuando la Resolucion 144 permita
+                   emitir con datos "Diferido" o "Sin Dato". */
                 $contenido .= "<Transporte>" .
-                    "<Patente>$dtetrans->patente</Patente>" .
+                    ($dtetrans->patente ? "<Patente>$dtetrans->patente</Patente>" : "") .
                     ($dtetrans->patentecarro ? "<PatenteCarro>$dtetrans->patentecarro</PatenteCarro>" : "") .
                     ($dtetrans->ruttrans ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
+                    (($dtetrans->rutchofer || $dtetrans->nombrechofer) ?
                     "<Chofer>" .
-                        "<RUTChofer>$aux_rutchofer</RUTChofer>" .
-                        "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" .
-                    "</Chofer>" .
+                        ($dtetrans->rutchofer ? "<RUTChofer>$aux_rutchofer</RUTChofer>" : "") .
+                        ($dtetrans->nombrechofer ? "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" : "") .
+                    "</Chofer>" : "") .
                     "<DirDest>$dtetrans->dirdest</DirDest>" .
                     "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
                     "<FchSalida>$aux_fechaSalida</FchSalida>" .
