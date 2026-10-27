@@ -238,7 +238,24 @@
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->mnttotal ?? '')}}" class="form-control" style="text-align:right;" readonly required>
 </div>
+{{-- Selector de tipo de operacion (Res. Ex. SII N°144, resolutivo 1°): los datos
+     de transporte solo se exigen cuando el documento ampara el traslado de bienes.
+     En una factura de servicio o arriendo no hay traslado, de modo que la seccion
+     completa se oculta y deja de ser obligatoria. El valor por defecto es 1 (venta
+     con traslado), que conserva el comportamiento que tenia el formulario. --}}
+<div class="row">
+    <div class="form-group col-xs-12 col-sm-4">
+        <label for="tipooperacion" class="control-label requerido">Tipo de Operación</label>
+        <select name="tipooperacion" id="tipooperacion" class="form-control" required>
+            <option value="1" {{old('tipooperacion', '1') == '1' ? 'selected' : ''}}>Venta con traslado de bienes</option>
+            <option value="2" {{old('tipooperacion') == '2' ? 'selected' : ''}}>Servicio o arriendo (sin traslado de bienes)</option>
+        </select>
+        <small class="help-block text-muted">En servicios y arriendos no se solicitan los datos de transporte.</small>
+    </div>
+</div>
+<div id="wrap_datostrans">
 @include('generales.datostrans')
+</div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
         <h3 class="box-title">Detalle</h3>

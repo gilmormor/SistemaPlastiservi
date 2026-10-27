@@ -4373,7 +4373,13 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<TipoDTE>$TipoDTE</TipoDTE>" .
             "<Folio>$Folio</Folio>" .
             "<FchEmis>$FchEmis</FchEmis>" .
-            "<TipoDespacho>$dte->tipodespacho</TipoDespacho>" .
+            /* El tag se omite cuando la factura no ampara traslado de bienes
+               (servicios y arriendos, que guardan tipodespacho en null). El
+               Formato DTE 2.5 lo pide asi en la definicion del campo: "No se
+               incluye si el documento no acompaña bienes o se trata de una
+               Factura o Nota correspondiente a la prestacion de servicios", y su
+               obligatoriedad para factura es condicional (codigo 2). */
+            ($dte->tipodespacho ? "<TipoDespacho>$dte->tipodespacho</TipoDespacho>" : "") .
             "<TpoImpresion>N</TpoImpresion>" .
             "<FchPago>$FchVenc</FchPago>" .            
             "<TermPagoGlosa>$formapago_desc</TermPagoGlosa>" .

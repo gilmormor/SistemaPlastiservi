@@ -258,8 +258,19 @@ class DteFacturaExentaController extends Controller
         $dte->ciudad_id = $cliente->ciudad_id;
         $dte->vendedor_id = $request->vendedor_id;
         $dte->obs = $request->obs;
-        $dte->tipodespacho = 2;
-        $dte->indtraslado =  1;
+        /* Res. Ex. SII N°144, resolutivo 1°: los datos de despacho y traslado solo
+           corresponden cuando el documento ampara el traslado de bienes. En una
+           factura de servicio o arriendo (tipooperacion = 2) no hay traslado, de
+           modo que se dejan en null y el XML omite <TipoDespacho>; el Formato DTE
+           2.5 lo indica expresamente en ese campo ("No se incluye si el documento
+           no acompaña bienes o se trata de una Factura o Nota correspondiente a la
+           prestacion de servicios").
+           Cualquier valor distinto de 2 -incluso que el campo no llegue, si el JS
+           no cargo- se trata como venta con traslado, que es el comportamiento que
+           tenia antes y el que exige los datos. */
+        $aux_contraslado = ($request->tipooperacion != 2);
+        $dte->tipodespacho = $aux_contraslado ? 2 : null;
+        $dte->indtraslado = $aux_contraslado ? 1 : null;
         $dte->mntneto = $Tmntneto;
         $dte->kgtotal = $Tkgtotal;
         $dte->centroeconomico_id = $request->centroeconomico_id;
@@ -327,8 +338,13 @@ class DteFacturaExentaController extends Controller
                     $dteguiausadaNew->save();
                 }
 
-                $dteTransService = new DteTransService();
-                $dteTransService->crearDesdeRequest($request, $dteNew->id);
+                /* Sin traslado no se registra dtetrans: el XML arma la seccion
+                   <Transporte> solo si existe ese registro, asi que omitirlo basta
+                   para que la factura de servicio salga sin datos de transporte. */
+                if($aux_contraslado){
+                    $dteTransService = new DteTransService();
+                    $dteTransService->crearDesdeRequest($request, $dteNew->id);
+                }
 
                 DB::commit();
             } catch (\Throwable $e) {
@@ -504,8 +520,12 @@ class DteFacturaExentaController extends Controller
             $dte->ciudad_id = $cliente->ciudad_id;
             $dte->vendedor_id = $request->vendedor_id;
             $dte->obs = $request->obs;
-            $dte->tipodespacho = 2;
-            $dte->indtraslado = 1;
+            /* Misma regla que en guardar(): sin traslado no se declara despacho.
+               Se replica aqui para que el diagnostico refleje lo que realmente
+               ocurre al emitir. */
+            $aux_contraslado = ($request->tipooperacion != 2);
+            $dte->tipodespacho = $aux_contraslado ? 2 : null;
+            $dte->indtraslado = $aux_contraslado ? 1 : null;
             $dte->mntneto = $Tmntneto;
             $dte->kgtotal = $Tkgtotal;
             $dte->centroeconomico_id = $request->centroeconomico_id;
@@ -545,9 +565,13 @@ class DteFacturaExentaController extends Controller
             $pasos[] = ['paso' => 'Crear DteFac', 'ok' => true, 'detalle' => "ID temporal: {$dtefac->id}"];
 
             // PASO 15: DteTransService
-            $dteTransService = new DteTransService();
-            $dteTransService->crearDesdeRequest($request, $dteNew->id);
-            $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Datos de transporte procesados'];
+            if($aux_contraslado){
+                $dteTransService = new DteTransService();
+                $dteTransService->crearDesdeRequest($request, $dteNew->id);
+                $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Datos de transporte procesados'];
+            }else{
+                $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Omitido: operacion sin traslado de bienes'];
+            }
 
             // PASO 16: foliocontrol update (simulado)
             $pasos[] = ['paso' => 'Actualizar foliocontrol', 'ok' => true, 'detalle' => "ultfoliouti sería: {$respuestaFolio['aux_folio']} (NO se actualizó — rollback)"];

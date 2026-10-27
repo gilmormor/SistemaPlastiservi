@@ -1,4 +1,49 @@
 $(document).ready(function(){
+    /* Res. Ex. SII N°144, resolutivo 1°: los datos de transporte solo se exigen
+       cuando el documento ampara el traslado de bienes. Las facturas directas y
+       exentas traen el selector #tipooperacion para distinguir una venta con
+       traslado de un servicio o arriendo; las rutas de guia de despacho no lo
+       traen, porque ahi el traslado siempre existe.
+       Si el selector no esta en la pagina se devuelve false, de modo que todo
+       sigue validandose igual que antes: ante la duda se piden los datos. */
+    function operacionSinTraslado(){
+        var aux_sel = $("#tipooperacion");
+        if(aux_sel.length === 0){
+            return false;
+        }
+        return (aux_sel.val() == "2");
+    }
+
+    /* Oculta o muestra la seccion de transporte. Lo importante es sacar y reponer
+       el atributo required: un campo required dentro de un contenedor oculto
+       impide enviar el formulario y el navegador no alcanza a mostrar el error,
+       de modo que el usuario queda sin saber por que no puede guardar. Se marcan
+       con la clase req_trans para poder devolverlos a su estado original. */
+    function aplicarTipoOperacion(){
+        var aux_wrap = $("#wrap_datostrans");
+        if(aux_wrap.length === 0){
+            return;
+        }
+        if(operacionSinTraslado()){
+            aux_wrap.find("[required]").each(function(){
+                $(this).removeAttr("required").addClass("req_trans");
+            });
+            aux_wrap.find(".is-invalid").removeClass("is-invalid");
+            aux_wrap.hide();
+        }else{
+            aux_wrap.find(".req_trans").each(function(){
+                $(this).attr("required", "required").removeClass("req_trans");
+            });
+            aux_wrap.show();
+        }
+    }
+
+    $("#tipooperacion").change(function(){
+        aplicarTipoOperacion();
+    });
+    // Se aplica al cargar, por si el formulario vuelve con old() tras un error
+    aplicarTipoOperacion();
+
     // Obtener fecha actual para comparar
     let fechaActual = new Date();
     fechaActual.setHours(0, 0, 0, 0);
@@ -443,7 +488,13 @@ $(document).ready(function(){
     // Validación antes de enviar el formulario (ACTUALIZADA)
     $('#form-general').on('submit', function(e) {
         let isValid = true;
-        
+
+        /* En un servicio o arriendo no hay datos de transporte que validar: se
+           sale sin preventDefault para que el formulario siga su curso normal. */
+        if(operacionSinTraslado()){
+            return;
+        }
+
         // Validar tipo de transporte
         let tipoTransporte = $('#tipo_transporte').val();
         if(!tipoTransporte) {
