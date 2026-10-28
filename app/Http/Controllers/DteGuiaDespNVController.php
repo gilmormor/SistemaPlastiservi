@@ -309,6 +309,17 @@ class DteGuiaDespNVController extends Controller
         $dte->vendedor_id = $request->vendedor_id;
         $dte->obs = $request->obs;
         $dte->tipodespacho = $request->tipodespacho;
+        /* El tipo de traslado es obligatorio en toda guia de despacho: el Formato
+           DTE 2.5 lo exige siempre (obligatoriedad 1) y el SII rechaza el documento
+           con "'' no es un valor valido para ...IndTraslado" si llega vacio. Se
+           valida aqui, en el servidor, porque hasta ahora solo lo garantizaba el
+           atributo required de la vista: si el JS no carga o el POST llega por otra
+           via, el folio se consume y el DTE queda rechazado. */
+        $request->validate(
+            ['indtraslado' => 'required|exists:tipotraslado,indtraslado'],
+            ['indtraslado.required' => 'Debe seleccionar el tipo de traslado.',
+             'indtraslado.exists'   => 'El tipo de traslado seleccionado no es valido.']
+        );
         $dte->indtraslado =  $request->indtraslado;
         $dte->mntneto = $Tmntneto;
         $dte->kgtotal = $Tkgtotal;
@@ -467,6 +478,16 @@ class DteGuiaDespNVController extends Controller
             // Paso 6: CentroEconómico
             $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
             $pasos[] = ['paso' => 'Centro Económico', 'ok' => true, 'detalle' => "ID={$centroeconomico->id}"];
+
+            /* Misma validacion que en guardar(): un tipo de traslado vacio hace que
+               el SII rechace el documento, asi que el diagnostico tiene que
+               detectarlo igual que la emision real. */
+            $pasos[] = ['paso' => 'Tipo de traslado', 'ok' => !empty($request->indtraslado),
+                        'detalle' => empty($request->indtraslado) ? 'VACIO: el SII rechazaria el documento' : "indtraslado={$request->indtraslado}"];
+            if (empty($request->indtraslado)) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => 'Debe seleccionar el tipo de traslado.', 'pasos' => $pasos]);
+            }
 
             // Paso 7: Totales
             $Tmntneto = 0;

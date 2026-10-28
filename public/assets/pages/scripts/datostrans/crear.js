@@ -13,11 +13,19 @@ $(document).ready(function(){
         if(aux_sel.length === 0){
             return false;
         }
-        var aux_val = aux_sel.val();
-        if(aux_val === null || aux_val === ""){
-            return true;    // sin despacho: servicio o arriendo
+        return (sinDespacho() || aux_sel.val() == "1");
+    }
+
+    /* Caso distinto del anterior: aqui no hay traslado de ninguna clase, porque la
+       factura es de un servicio o un arriendo. Solo existe en las facturas, que son
+       las unicas que ofrecen la opcion vacia del tipo de despacho. */
+    function sinDespacho(){
+        var aux_sel = $("#tipodespacho");
+        if(aux_sel.length === 0){
+            return false;
         }
-        return (aux_val == "1");    // retira el cliente
+        var aux_val = aux_sel.val();
+        return (aux_val === null || aux_val === "");
     }
 
     /* Oculta o muestra la seccion de transporte. Lo importante es sacar y reponer
@@ -30,13 +38,35 @@ $(document).ready(function(){
         if(aux_wrap.length === 0){
             return;
         }
+        /* El Tipo Traslado vive dentro de este mismo recuadro, pero NO es un dato
+           de transporte: el Formato DTE 2.5 lo exige en toda guia de despacho
+           (obligatoriedad 1, y marca P porque se imprime como glosa). Si se oculta
+           junto con el resto queda sin valor y el XML sale con
+           <IndTraslado></IndTraslado>, que el SII rechaza. Por eso solo se oculta
+           cuando no hay despacho en absoluto, caso que existe unicamente en las
+           facturas de servicio o arriendo. */
+        var aux_grupos = aux_wrap.find(".form-group");
+        var aux_objetivo = sinDespacho() ? aux_grupos :
+                           aux_grupos.not($("#indtraslado").closest(".form-group"));
+
         if(operacionSinTraslado()){
-            aux_wrap.find("[required]").each(function(){
+            aux_objetivo.find("[required]").each(function(){
                 $(this).removeAttr("required").addClass("req_trans");
             });
-            aux_wrap.find(".is-invalid").removeClass("is-invalid");
-            aux_wrap.hide();
+            aux_objetivo.find(".is-invalid").removeClass("is-invalid");
+            aux_objetivo.hide();
+            // Lo que queda fuera del objetivo se repone, por si venia liberado
+            aux_grupos.not(aux_objetivo).show().find(".req_trans").each(function(){
+                $(this).attr("required", "required").removeClass("req_trans");
+            });
+            // El recuadro completo solo desaparece si no queda nada util dentro
+            if(sinDespacho()){
+                aux_wrap.hide();
+            }else{
+                aux_wrap.show();
+            }
         }else{
+            aux_grupos.show();
             aux_wrap.find(".req_trans").each(function(){
                 $(this).attr("required", "required").removeClass("req_trans");
             });

@@ -246,6 +246,17 @@ class DteGuiaDespDirController extends Controller
             $dte->vendedor_id = $request->vendedor_id;
             $dte->obs = $request->obs;
             $dte->tipodespacho = $request->tipodespacho;
+            /* El tipo de traslado es obligatorio en toda guia de despacho: el Formato
+               DTE 2.5 lo exige siempre (obligatoriedad 1) y el SII rechaza el documento
+               con "'' no es un valor valido para ...IndTraslado" si llega vacio. Se
+               valida aqui, en el servidor, porque hasta ahora solo lo garantizaba el
+               atributo required de la vista: si el JS no carga o el POST llega por otra
+               via, el folio se consume y el DTE queda rechazado. */
+            $request->validate(
+                ['indtraslado' => 'required|exists:tipotraslado,indtraslado'],
+                ['indtraslado.required' => 'Debe seleccionar el tipo de traslado.',
+                 'indtraslado.exists'   => 'El tipo de traslado seleccionado no es valido.']
+            );
             $dte->indtraslado =  $request->indtraslado;
             $dte->mntneto = $Tmntneto;
             $dte->kgtotal = $Tkgtotal;
