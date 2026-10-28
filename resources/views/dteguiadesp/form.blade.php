@@ -300,7 +300,11 @@
         </div>
     {{-- </div>     --}}
 </div>
+{{-- Contenedor para que el JS pueda ocultar los datos de transporte cuando el
+     tipo de despacho es 1 (retira el cliente), segun Res. Ex. SII N°144 resolutivo 15°. --}}
+<div id="wrap_datostrans">
 @include('generales.datostrans')
+</div>
 
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">

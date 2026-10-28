@@ -258,19 +258,19 @@ class DteFacturaExentaController extends Controller
         $dte->ciudad_id = $cliente->ciudad_id;
         $dte->vendedor_id = $request->vendedor_id;
         $dte->obs = $request->obs;
-        /* Res. Ex. SII N°144, resolutivo 1°: los datos de despacho y traslado solo
-           corresponden cuando el documento ampara el traslado de bienes. En una
-           factura de servicio o arriendo (tipooperacion = 2) no hay traslado, de
-           modo que se dejan en null y el XML omite <TipoDespacho>; el Formato DTE
-           2.5 lo indica expresamente en ese campo ("No se incluye si el documento
-           no acompaña bienes o se trata de una Factura o Nota correspondiente a la
-           prestacion de servicios").
-           Cualquier valor distinto de 2 -incluso que el campo no llegue, si el JS
-           no cargo- se trata como venta con traslado, que es el comportamiento que
-           tenia antes y el que exige los datos. */
-        $aux_contraslado = ($request->tipooperacion != 2);
-        $dte->tipodespacho = $aux_contraslado ? 2 : null;
-        $dte->indtraslado = $aux_contraslado ? 1 : null;
+        /* El tipo de despacho elegido en el formulario decide todo lo demas:
+             vacio -> servicio o arriendo: no ampara traslado, el XML omite el tag
+                      <TipoDespacho> (asi lo pide el Formato DTE 2.5 en ese campo)
+             1     -> retira el cliente: el tag se emite, pero no se piden los datos
+                      de transporte (Res. Ex. SII N°144, resolutivo 15°)
+             2 o 3 -> despacha la empresa: se piden los datos de transporte
+           Antes el controlador forzaba el valor 2 y el select iba oculto.
+           indtraslado acompaña al tipo de despacho; en facturas es solo dato
+           interno, porque el Formato DTE reserva <IndTraslado> para las guias. */
+        $aux_tipodespacho = $request->tipodespacho;
+        $aux_contraslado = ($aux_tipodespacho == 2 or $aux_tipodespacho == 3);
+        $dte->tipodespacho = ($aux_tipodespacho === '' or $aux_tipodespacho === null) ? null : $aux_tipodespacho;
+        $dte->indtraslado = is_null($dte->tipodespacho) ? null : 1;
         $dte->mntneto = $Tmntneto;
         $dte->kgtotal = $Tkgtotal;
         $dte->centroeconomico_id = $request->centroeconomico_id;
@@ -520,12 +520,12 @@ class DteFacturaExentaController extends Controller
             $dte->ciudad_id = $cliente->ciudad_id;
             $dte->vendedor_id = $request->vendedor_id;
             $dte->obs = $request->obs;
-            /* Misma regla que en guardar(): sin traslado no se declara despacho.
-               Se replica aqui para que el diagnostico refleje lo que realmente
-               ocurre al emitir. */
-            $aux_contraslado = ($request->tipooperacion != 2);
-            $dte->tipodespacho = $aux_contraslado ? 2 : null;
-            $dte->indtraslado = $aux_contraslado ? 1 : null;
+            /* Misma regla que en guardar(), replicada aqui para que el diagnostico
+               refleje lo que realmente ocurre al emitir. */
+            $aux_tipodespacho = $request->tipodespacho;
+            $aux_contraslado = ($aux_tipodespacho == 2 or $aux_tipodespacho == 3);
+            $dte->tipodespacho = ($aux_tipodespacho === '' or $aux_tipodespacho === null) ? null : $aux_tipodespacho;
+            $dte->indtraslado = is_null($dte->tipodespacho) ? null : 1;
             $dte->mntneto = $Tmntneto;
             $dte->kgtotal = $Tkgtotal;
             $dte->centroeconomico_id = $request->centroeconomico_id;

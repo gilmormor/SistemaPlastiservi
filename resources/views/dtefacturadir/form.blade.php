@@ -150,9 +150,26 @@
                 <input type="text" name="notped" id="notped" class="form-control" value="{{old('notped', $data->dtefac->notped ?? '')}}" maxlength="12"/>
             </div>
 
-            <div class="form-group col-xs-12 col-sm-4" style="display:none;">
+            {{-- El select pasa a estar visible (antes iba en un div display:none y el
+                 controlador forzaba el valor 2). El tipo de despacho es el que decide
+                 si se piden los datos de transporte: el Formato DTE 2.5 indica en los
+                 campos Patente, PatenteCarro y RUTTrans "Relevante si Indicador Tipo
+                 de Despacho 2 o 3", y la Res. Ex. SII N°144 (resolutivo 15°) libera de
+                 esos datos cuando el comprador retira los bienes en el establecimiento
+                 del vendedor, que es justamente el tipo 1.
+                 La opcion vacia existe solo en las facturas: una factura de servicio o
+                 arriendo no ampara ningun traslado y en ese caso el tag <TipoDespacho>
+                 no se emite, tal como pide el Formato DTE en la definicion del campo.
+                 En las guias de despacho no se ofrece, porque ahi siempre hay traslado. --}}
+            <div class="form-group col-xs-12 col-sm-4">
                 <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
-                <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($data) ? $data->tipodespacho : ($data->tipodespacho ?? ''))}}" required>
+                <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($data) ? $data->tipodespacho : ($data->tipodespacho ?? ''))}}">
+                    <option
+                        value=""
+                        @if (old('tipodespacho') === '')
+                            {{'selected'}}
+                        @endif
+                        >Sin despacho (servicio o arriendo)</option>
                     <option 
                         value="1"
                         @if (isset($data) and ($data->tipodespacho=="1"))
@@ -229,23 +246,7 @@
         </div>
     </div>
 </div>
-{{-- Selector de tipo de operacion (Res. Ex. SII N°144, resolutivo 1°): los datos
-     de transporte solo se exigen cuando el documento ampara el traslado de bienes.
-     En una factura de servicio o arriendo no hay traslado, de modo que la seccion
-     completa se oculta y deja de ser obligatoria. El valor por defecto es 1 (venta
-     con traslado), que conserva el comportamiento que tenia el formulario. --}}
-<div class="row">
-    <div class="form-group col-xs-12 col-sm-4">
-        <label for="tipooperacion" class="control-label requerido">Tipo de Operación</label>
-        <select name="tipooperacion" id="tipooperacion" class="form-control" required>
-            <option value="1" {{old('tipooperacion', '1') == '1' ? 'selected' : ''}}>Venta con traslado de bienes</option>
-            <option value="2" {{old('tipooperacion') == '2' ? 'selected' : ''}}>Servicio o arriendo (sin traslado de bienes)</option>
-        </select>
-        <small class="help-block text-muted">En servicios y arriendos no se solicitan los datos de transporte.</small>
-    </div>
-</div>
-<div id="wrap_datostrans">
-@include('generales.datostrans')
+<div id="wrap_datostrans">@include('generales.datostrans')
 </div>
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>

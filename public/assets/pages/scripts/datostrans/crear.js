@@ -1,17 +1,23 @@
 $(document).ready(function(){
-    /* Res. Ex. SII N°144, resolutivo 1°: los datos de transporte solo se exigen
-       cuando el documento ampara el traslado de bienes. Las facturas directas y
-       exentas traen el selector #tipooperacion para distinguir una venta con
-       traslado de un servicio o arriendo; las rutas de guia de despacho no lo
-       traen, porque ahi el traslado siempre existe.
-       Si el selector no esta en la pagina se devuelve false, de modo que todo
-       sigue validandose igual que antes: ante la duda se piden los datos. */
+    /* El tipo de despacho decide si se piden los datos de transporte. El Formato
+       DTE 2.5 lo dice en los campos Patente, PatenteCarro y RUTTrans: "Relevante
+       si Indicador Tipo de Despacho 2 o 3". Con el tipo 1 (por cuenta del receptor
+       del documento) el comprador retira los bienes con su propio vehiculo, y la
+       Res. Ex. SII N°144, resolutivo 15°, libera expresamente de informar esos
+       datos. El valor vacio existe solo en las facturas de servicio o arriendo,
+       que no amparan ningun traslado.
+       Si el select no esta en la pagina se devuelve false y todo se valida igual
+       que antes: ante la duda se piden los datos. */
     function operacionSinTraslado(){
-        var aux_sel = $("#tipooperacion");
+        var aux_sel = $("#tipodespacho");
         if(aux_sel.length === 0){
             return false;
         }
-        return (aux_sel.val() == "2");
+        var aux_val = aux_sel.val();
+        if(aux_val === null || aux_val === ""){
+            return true;    // sin despacho: servicio o arriendo
+        }
+        return (aux_val == "1");    // retira el cliente
     }
 
     /* Oculta o muestra la seccion de transporte. Lo importante es sacar y reponer
@@ -38,7 +44,9 @@ $(document).ready(function(){
         }
     }
 
-    $("#tipooperacion").change(function(){
+    /* Delegado en document porque el select usa select2: select2 dispara el change
+       sobre el elemento original, pero lo reemplaza en el DOM al inicializarse. */
+    $(document).on("change", "#tipodespacho", function(){
         aplicarTipoOperacion();
     });
     // Se aplica al cargar, por si el formulario vuelve con old() tras un error

@@ -370,8 +370,15 @@ class DteGuiaDespNVController extends Controller
                 $notaventa->updated_at = date("Y-m-d H:i:s");//ACTUALIZO LA FECHA DE MODIFICACION PARA VALIDAR EN OTRAS PANTALLAS, CON ESTE CAMPO VALIDO SI EL REGISTRO FUE MODIFICADO POR OTRO USUARIO
                 $notaventa->save();
 
-                $dteTransService = new DteTransService();
-                $dteTransService->crearDesdeRequest($request, $dteNew->id);
+                /* Con tipo de despacho 1 el comprador retira los bienes en el
+                   establecimiento del vendedor y la Res. Ex. SII N°144, resolutivo 15°,
+                   no exige los datos de transporte, de modo que no se registra dtetrans
+                   y el XML omite la seccion <Transporte>. Cualquier otro valor -o que el
+                   campo no llegue, si el JS no cargo- entra por el camino de siempre. */
+                if($request->tipodespacho != 1){
+                    $dteTransService = new DteTransService();
+                    $dteTransService->crearDesdeRequest($request, $dteNew->id);
+                }
 
                 DB::commit();
             } catch (\Throwable $e) {
@@ -548,8 +555,15 @@ class DteGuiaDespNVController extends Controller
             $pasos[] = ['paso' => 'Crear DteGuiaDespNV', 'ok' => true, 'detalle' => "ID={$dteguiadespnv->id}"];
 
             // Paso 13: DteTransService
-            $dteTransService = new DteTransService();
-            $dteTransService->crearDesdeRequest($request, $dteNew->id);
+            /* Con tipo de despacho 1 el comprador retira los bienes en el
+               establecimiento del vendedor y la Res. Ex. SII N°144, resolutivo 15°,
+               no exige los datos de transporte, de modo que no se registra dtetrans
+               y el XML omite la seccion <Transporte>. Cualquier otro valor -o que el
+               campo no llegue, si el JS no cargo- entra por el camino de siempre. */
+            if($request->tipodespacho != 1){
+                $dteTransService = new DteTransService();
+                $dteTransService->crearDesdeRequest($request, $dteNew->id);
+            }
             $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Datos de transporte procesados OK'];
 
         } catch (\Exception $e) {

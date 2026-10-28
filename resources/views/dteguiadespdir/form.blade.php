@@ -263,7 +263,11 @@
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->mnttotal ?? '')}}" class="form-control" style="text-align:right;" readonly required>
 </div>
+{{-- Contenedor para que el JS pueda ocultar los datos de transporte cuando el
+     tipo de despacho es 1 (retira el cliente), segun Res. Ex. SII N°144 resolutivo 15°. --}}
+<div id="wrap_datostrans">
 @include('generales.datostrans')
+</div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
         <h3 class="box-title">Detalle</h3>
