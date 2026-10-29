@@ -145,7 +145,7 @@
                                     >Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)</option>
                             </select>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-3">
+                        {{-- <div class="form-group col-xs-12 col-sm-3">
                             <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                             <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', $data->guiadesp ? $data->guiadesp->indtraslado : ($data->indtraslado ?? ''))}}" required>
                                 <option 
@@ -165,7 +165,7 @@
                                     @endif
                                     >Otros traslados no venta</option>
                             </select>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-3">

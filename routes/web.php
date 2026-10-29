@@ -1139,6 +1139,7 @@ Route::get('dteguiadesp/totalizarindex', 'DteGuiaDespController@totalizarindex')
 //Route::get('dteguiadesp/{id}/crear', 'DteGuiaDespController@crear')->name('crear_dteguiadesp');
 Route::get('dteguiadesp/{id}/{updated_at}/crear', 'DteGuiaDespController@crear')->name('crear_dteguiadesp');
 Route::post('dteguiadesp', 'DteGuiaDespController@guardar')->name('guardar_dteguiadesp');
+Route::post('dteguiadesp/diagnosticar', 'DteGuiaDespController@diagnosticar')->name('diagnosticar_dteguiadesp');
 Route::get('dteguiadesp/{id}/editar', 'DteGuiaDespController@editar')->name('editar_dteguiadesp');
 Route::put('dteguiadesp/{id}', 'DteGuiaDespController@actualizar')->name('actualizar_dteguiadesp');
 Route::delete('dteguiadesp/{id}', 'DteGuiaDespController@eliminar')->name('eliminar_dteguiadesp');
@@ -1174,6 +1175,7 @@ Route::get('dtefacturapage', 'DteFacturaController@dtefacturapage')->name('dtefa
 Route::get('dtefactura/totalizarindex', 'DteFacturaController@totalizarindex')->name('dtefactura_totalizarindex');
 Route::get('dtefactura/crear', 'DteFacturaController@crear')->name('crear_dtefactura');
 Route::post('dtefactura', 'DteFacturaController@guardar')->name('guardar_dtefactura');
+Route::post('dtefactura/diagnosticar', 'DteFacturaController@diagnosticar')->name('diagnosticar_dtefactura');
 Route::get('dtefactura/{id}/editar', 'DteFacturaController@editar')->name('editar_dtefactura');
 Route::put('dtefactura/{id}', 'DteFacturaController@actualizar')->name('actualizar_dtefactura');
 Route::delete('dtefactura/{id}', 'DteFacturaController@eliminar')->name('eliminar_dtefactura');
@@ -1277,6 +1279,7 @@ Route::get('dtefacturadirpage', 'DteFacturaDirController@dtefacturadirpage')->na
 Route::get('dtefacturadir/totalizarindex', 'DteFacturaDirController@totalizarindex')->name('dtefacturadir_totalizarindex');
 Route::get('dtefacturadir/crear', 'DteFacturaDirController@crear')->name('crear_dtefacturadir');
 Route::post('dtefacturadir', 'DteFacturaDirController@guardar')->name('guardar_dtefacturadir');
+Route::post('dtefacturadir/diagnosticar', 'DteFacturaDirController@diagnosticar')->name('diagnosticar_dtefacturadir');
 Route::get('dtefacturadir/{id}/editar', 'DteFacturaDirController@editar')->name('editar_dtefacturadir');
 Route::put('dtefacturadir/{id}', 'DteFacturaDirController@actualizar')->name('actualizar_dtefacturadir');
 Route::delete('dtefacturadir/{id}', 'DteFacturaDirController@eliminar')->name('eliminar_dtefacturadir');
@@ -1299,6 +1302,7 @@ Route::get('dtefacturaexentapage', 'DteFacturaExentaController@dtefacturaexentap
 Route::get('dtefacturaexenta/totalizarindex', 'DteFacturaExentaController@totalizarindex')->name('dtefacturaexenta_totalizarindex');
 Route::get('dtefacturaexenta/crear', 'DteFacturaExentaController@crear')->name('crear_dtefacturaexenta');
 Route::post('dtefacturaexenta', 'DteFacturaExentaController@guardar')->name('guardar_dtefacturaexenta');
+Route::post('dtefacturaexenta/diagnosticar', 'DteFacturaExentaController@diagnosticar')->name('diagnosticar_dtefacturaexenta');
 Route::get('dtefacturaexenta/{id}/editar', 'DteFacturaExentaController@editar')->name('editar_dtefacturaexenta');
 Route::put('dtefacturaexenta/{id}', 'DteFacturaExentaController@actualizar')->name('actualizar_dtefacturaexenta');
 Route::delete('dtefacturaexenta/{id}', 'DteFacturaExentaController@eliminar')->name('eliminar_dtefacturaexenta');
@@ -1321,6 +1325,8 @@ Route::get('dteguiadespdirpage', 'DteGuiaDespDirController@dteguiadespdirpage')-
 Route::get('dteguiadespdir/totalizarindex', 'DteGuiaDespDirController@totalizarindex')->name('dteguiadespdir_totalizarindex');
 Route::get('dteguiadespdir/crear', 'DteGuiaDespDirController@crear')->name('crear_dteguiadespdir');
 Route::post('dteguiadespdir', 'DteGuiaDespDirController@guardar')->name('guardar_dteguiadespdir');
+// Prueba el guardado con folio ficticio y rollback; el boton que la usa solo aparece en local
+Route::post('dteguiadespdir/diagnosticar', 'DteGuiaDespDirController@diagnosticar')->name('diagnosticar_dteguiadespdir');
 Route::get('dteguiadespdir/{id}/editar', 'DteGuiaDespDirController@editar')->name('editar_dteguiadespdir');
 Route::put('dteguiadespdir/{id}', 'DteGuiaDespDirController@actualizar')->name('actualizar_dteguiadespdir');
 Route::delete('dteguiadespdir/{id}', 'DteGuiaDespDirController@eliminar')->name('eliminar_dteguiadespdir');
@@ -1421,6 +1427,7 @@ Route::get('dteguiadespnv/totalizarindex', 'DteGuiaDespNVController@totalizarind
 //Route::get('dteguiadespnv/crear', 'DteGuiaDespNVController@crear')->name('crear_dteguiadespnv');
 Route::get('dteguiadespnv/{id}/crear', 'DteGuiaDespNVController@crear')->name('crear_dteguiadespnv');
 Route::post('dteguiadespnv', 'DteGuiaDespNVController@guardar')->name('guardar_dteguiadespnv');
+Route::post('dteguiadespnv/diagnosticar', 'DteGuiaDespNVController@diagnosticar')->name('diagnosticar_dteguiadespnv');
 Route::get('dteguiadespnv/{id}/editar', 'DteGuiaDespNVController@editar')->name('editar_dteguiadespnv');
 Route::put('dteguiadespnv/{id}', 'DteGuiaDespNVController@actualizar')->name('actualizar_dteguiadespnv');
 Route::delete('dteguiadespnv/{id}', 'DteGuiaDespNVController@eliminar')->name('eliminar_dteguiadespnv');
@@ -1679,6 +1686,14 @@ Route::put('tipocosto/{id}', 'TipoCostoController@actualizar')->name('actualizar
 Route::delete('tipocosto/{id}', 'TipoCostoController@eliminar')->name('eliminar_tipocosto');
 
 /*RUTAS Insumo*/
+Route::get('tipotraslado', 'TipoTrasladoController@index')->name('tipotraslado');
+Route::get('tipoTrasladoPage', 'TipoTrasladoController@tipoTrasladoPage')->name('tipoTrasladoPage');
+Route::get('tipotraslado/crear', 'TipoTrasladoController@crear')->name('crear_tipotraslado');
+Route::post('tipotraslado', 'TipoTrasladoController@guardar')->name('guardar_tipotraslado');
+Route::get('tipotraslado/{id}/editar', 'TipoTrasladoController@editar')->name('editar_tipotraslado');
+Route::put('tipotraslado/{id}', 'TipoTrasladoController@actualizar')->name('actualizar_tipotraslado');
+Route::delete('tipotraslado/{id}', 'TipoTrasladoController@eliminar')->name('eliminar_tipotraslado');
+
 Route::get('insumo', 'InsumoController@index')->name('insumo');
 Route::get('insumopage', 'InsumoController@insumopage')->name('insumopage');
 Route::get('insumo/crear', 'InsumoController@crear')->name('crear_insumo');
@@ -1689,8 +1704,24 @@ Route::delete('insumo/{id}', 'InsumoController@eliminar')->name('eliminar_insumo
 Route::post('insumo/buscarUnInsumo', 'InsumoController@buscarUnInsumo')->name('buscarUnInsumo');
 Route::get('insumobuscarpage', 'InsumoController@insumobuscarpage')->name('insumobuscarpage');
 
+
 /*RUTAS DTE ND NC EDITAR*/
 Route::get('dtendnceditar', 'DteNdNcEditarController@index')->name('dtendnceditar');
 Route::get('dtendnceditar/dtendnceditarpage', 'DteNdNcEditarController@dtendnceditarpage')->name('dtendnceditarpage');
 Route::get('dtendnceditar/{id}/editar', 'DteNdNcEditarController@editar')->name('editar_dtendnceditar');
 Route::put('dtendnceditar/{id}', 'DteNdNcEditarController@actualizar')->name('actualizar_dtendnceditar');
+
+
+// Dentro de tu grupo de rutas autenticadas
+Route::group(['middleware' => ['auth']], function () {
+    // ... tus rutas existentes ...
+    
+    // Rutas para búsqueda de datos de transporte
+    Route::post('buscar-transportista', 'TransController@buscarTransportista')->name('buscar.transportista');
+    Route::post('buscar-chofer', 'TransController@buscarChofer')->name('buscar.chofer');
+    Route::post('validar-patente', 'TransController@validarPatente')->name('validar.patente');
+});
+
+Route::post('trans/buscarTransportista', 'TransController@buscarTransportista')->name('buscarTransportista');
+Route::post('trans/buscarChofer', 'TransController@buscarChofer')->name('buscarChofer');
+Route::post('trans/buscarPatente', 'TransController@buscarPatente')->name('buscarPatente');

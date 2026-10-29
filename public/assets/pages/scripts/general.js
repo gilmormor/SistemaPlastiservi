@@ -552,20 +552,40 @@ function blanquearcamposrequeridos(){
 	$(".selectpicker").selectpicker('refresh');
 }
 
-function dgv(T)    //digito verificador
-{  
-      var M=0,S=1;
-	  for(;T;T=Math.floor(T/10))
-      S=(S+T%10*(9-M++%6))%11;
-	  //return S?S-1:'k';
-      
-	  aux_digver=(S?S-1:'K');
-	  var str = $("#rut").val(); 
-	  aux_ultdig=(str.charAt(str.length - 1));
-	  if(aux_digver==aux_ultdig){
-		  return true;
-	  }
-	  return false;
+function dgv(T,elemento)    //digito verificador
+{
+	var M=0,S=1;
+	for(;T;T=Math.floor(T/10))
+	S=(S+T%10*(9-M++%6))%11;
+	//return S?S-1:'k';
+
+	aux_digver=(S?S-1:'K');
+	//var str = $("#rut").val(); 
+    // Determinar qué valor usar para la validación
+    var str;
+    if (elemento) {
+        if (typeof elemento === 'string') {
+            // Si es un string, usarlo directamente
+            str = elemento;
+        } else if (elemento.val && typeof elemento.val === 'function') {
+            // Si es un objeto jQuery con método val()
+            str = elemento.val();
+        } else if (elemento.value !== undefined) {
+            // Si es un elemento DOM
+            str = elemento.value;
+        } else {
+            // Fallback al elemento #rut
+            str = $("#rut").val();
+        }
+    } else {
+        // Si no se proporcionó elemento, usar el valor por defecto de #rut
+        str = $("#rut").val();
+    }
+	aux_ultdig=(str.charAt(str.length - 1));
+	if(aux_digver==aux_ultdig){
+		return true;
+	}
+	return false;
  }
 
 

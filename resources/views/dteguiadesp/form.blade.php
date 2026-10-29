@@ -13,7 +13,7 @@
 <input type="hidden" name="cliente_id" id="cliente_id" value="{{old('cliente_id', $data->notaventa->cliente_id ?? '')}}">
 
 <div class="row">
-    <div class="col-xs-12 col-sm-12">
+    {{-- <div class="col-xs-12 col-sm-12"> --}}
         <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
             <div class="box-header with-border">
                 <div class="box-body">
@@ -171,7 +171,7 @@
                             </select>
                         </div>
                         <div class="form-group col-xs-12 col-sm-5">
-                            <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
+                            <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Despacho</label>
                             <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($dteguiadesp) ? $dteguiadesp->tipodespacho : ($data->tipodespacho ?? ''))}}" required>
                                 <option 
                                     value="1"
@@ -197,8 +197,7 @@
                                     >Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)</option>
                             </select>
                         </div>
-                        <!--
-                        <div class="form-group col-xs-12 col-sm-3">
+                        {{-- <div class="form-group col-xs-12 col-sm-3">
                             <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                             <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($dteguiadesp) ? $dteguiadesp->indtraslado : ($data->indtraslado ?? ''))}}" required>
                                 <option value="">Seleccione...</option>
@@ -217,8 +216,7 @@
                                     @endif
                                     >Otros traslados no venta</option>
                             </select>
-                        </div>
-                        -->
+                        </div> --}}
                         <?php 
                             $despachosol = $data->despachosol;
                         ?>
@@ -257,7 +255,7 @@
                         </div>-->
                     </div>
                     <div class="row">
-                        <div class="form-group col-xs-12 col-sm-2">
+{{--                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
                             <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->lugarentrega : ($data->lugarentrega ?? ''))}}" required placeholder="Lugar de Entrega"/>
                         </div>
@@ -279,7 +277,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group col-xs-12 col-sm-4">
+ --}}                        <div class="form-group col-xs-12 col-sm-4">
                             <label for="obsdespord" class="control-label">Observación Orden Despacho</label>
                             <textarea class="form-control" name="obsdespord" id="obsdespord" value="{{old('obsdespord', isset($dteguiadesp) ? $dteguiadesp->obs : ($data->observacion ?? ''))}}" placeholder="Observación" readonly disabled></textarea>
                         </div>
@@ -300,7 +298,12 @@
                 </div>
             </div>
         </div>
-    </div>    
+    {{-- </div>     --}}
+</div>
+{{-- Contenedor para que el JS pueda ocultar los datos de transporte cuando el
+     tipo de despacho es 1 (retira el cliente), segun Res. Ex. SII N°144 resolutivo 15°. --}}
+<div id="wrap_datostrans">
+@include('generales.datostrans')
 </div>
 
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">

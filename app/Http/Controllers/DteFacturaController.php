@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DocInsumoDetService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\ValidarDTE;
 use App\Http\Requests\ValidarDTEFac;
 use App\Models\AreaProduccion;
@@ -349,104 +351,129 @@ class DteFacturaController extends Controller
         //HASTA AQUI LA VALIDACION 
 
         $respuesta = Dte::dteSolicitarFolio($dte);
-        //dd($respuesta["aux_folio"]);
+        //$respuesta = Dte::generardteprueba($dte);
         /* $respuesta = [
-                    'id' => 1,
-                    'aux_folio' => '1234'
+            'id' => 1,
+            'aux_folio' => 723,
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
-            $dte->fchemisgen = date("Y-m-d H:i:s");
-            $dte->nrodocto = $respuesta["aux_folio"];
-            $dteNew = Dte::create($dte->toArray());
-            foreach ($dte->dtedets as $dtedet) {
-                $dtedet->dte_id = $dteNew->id;
-                if($dtedet->despachoorddet_id){
-                    $despachoorddet_id = $dtedet->despachoorddet_id;
-                    $notaventadetalle_id = $dtedet->notaventadetalle_id;    
+            $dispatcher = DteDet::getEventDispatcher();
+            DteDet::unsetEventDispatcher();
+            $dtedetCreados = [];
+            DB::beginTransaction();
+            try {
+                $dte->fchemisgen = date("Y-m-d H:i:s");
+                $dte->nrodocto = $respuesta["aux_folio"];
+                $dteNew = Dte::create($dte->toArray());
+                foreach ($dte->dtedets as $dtedet) {
+                    $dtedet->dte_id = $dteNew->id;
+                    if($dtedet->despachoorddet_id){
+                        $despachoorddet_id = $dtedet->despachoorddet_id;
+                        $notaventadetalle_id = $dtedet->notaventadetalle_id;
+                    }
+                    $aux_dtedet = $dtedet->toArray();
+                    if($dtedet->despachoorddet_id){
+                        unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet
+                        unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet
+                    }
+
+                    $dtedetNew = DteDet::create($aux_dtedet);
+                    $dtedetCreados[] = $dtedetNew;
+                    $dtedet_id = $dtedetNew->id;
+                    if($dtedet->despachoorddet_id){
+                        $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
+                        $dtedet_despachoorddet->dtedet_id = $dtedet_id;
+                        $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
+                        $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
+                        $dtedet_despachoorddet->save();
+                    }
                 }
-                $aux_dtedet = $dtedet->toArray();
-                if($dtedet->despachoorddet_id){
-                    unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet
-                    unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INSERTAR A DteDet    
+
+                $dtefac->dte_id = $dteNew->id;
+                $dtefac->save();
+
+                foreach ($dte->dtedtes as $dtedte) {
+                    $dtedteNew = new DteDte();
+                    $dtedteNew->dte_id = $dteNew->id;
+                    $dtedteNew->dter_id = $dtedte->dter_id;
+                    $dtedteNew->dtefac_id = $dteNew->id; 
+                    $dtedteNew->save();
+                    //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
+                    if($dtedte->dter->foliocontrol_id == 2 and $dtedte->dteguiadesp->despachoord_id){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2 Y LA GUIA DESP TENGA ORDEN DE DESPACHO
+                        //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
+                        DespachoOrd::guardarfactdesp($dtedteNew);
+                    }
                 }
-    
-                $dtedetNew = DteDet::create($aux_dtedet);
-                $dtedet_id = $dtedetNew->id;
-                if($dtedet->despachoorddet_id){
-                    $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
-                    $dtedet_despachoorddet->dtedet_id = $dtedet_id;
-                    $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
-                    $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
-                    $dtedet_despachoorddet->save();    
+
+                foreach ($dte->dteguiausadas as $dteguiausada) {
+                    $dteguiausadaNew = new DteGuiaUsada();
+                    $dteguiausadaNew->dte_id = $dteguiausada->dte_id;
+                    $dteguiausadaNew->usuario_id = auth()->id();
+                    $dteguiausadaNew->save();    
                 }
+
+                if(isset($request->ocnv_id) and $request->notaventa_id){
+                    //En comentario para evitar que cambie la OC de la NV 22/04/2025
+                    //Esto ha traido problemas ya que cuando en facturacion cambian el numero de OC de la NV, se cambia la OC de NV Original y eso acarrea dudas en la Nota de Venta
+                    /* $notaventa = NotaVenta::findOrFail($request->notaventa_id);
+                    $notaventa->oc_id = $request->ocnv_id;
+                    $notaventa->save(); */
+                }
+                /*
+                if($dteguiadesp->dteoc){
+                    $dteoc->dte_id = $dteNew->id;
+                    $dteoc->save();
+                }else{
+                    if(isset($request->oc_id) and !is_null($request->oc_id)){
+                        if(isset($dteoc)){
+                            if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                                $dteoc->dte_id = $dteNew->id;
+                                $dteoc->oc_file = $foto;
+                                $dteoc->save();
+                            }
+                        }
+                    }    
+                }
+                */
+                //SI LAS OC VIENEN DE LA GUIA DESPACHO, SIEMPRE Y CUANDO LAS GUIAS TENGAS OC
+                foreach ($dte->dteocs as $dteoc) {
+                    $dteoc->dte_id = $dteNew->id;
+                    $dteoc->save();
+                }
+                //SI LA OC VIENE DIRECTAMENTE DE LA FACTURA, ES DECIR LA(S) GUIA(S) NO TIENE(N) OC, Y SE CARGO LA OC EN LA FACTURA
+                if(isset($request->oc_id) and !is_null($request->oc_id)){
+                    $dteoc->dte_id = "";
+                    $dteoc->oc_id = $request->oc_id;
+                    $dteoc->oc_folder = "oc";
+                    if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                        $dteoc->dte_id = $dteNew->id;
+                        $dteoc->oc_file = $foto;
+                        $dteoc->save();
+                    }
+                }
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                DteDet::setEventDispatcher($dispatcher);
+                Log::error('DteFactura guardar error: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return redirect()->back()->with([
+                    'mensaje' => 'Error al guardar factura: ' . $e->getMessage(),
+                    'tipo_alert' => 'alert-error'
+                ])->withInput();
             }
-
-            $dtefac->dte_id = $dteNew->id;
-            $dtefac->save();
-
-            foreach ($dte->dtedtes as $dtedte) {
-                $dtedteNew = new DteDte();
-                $dtedteNew->dte_id = $dteNew->id;
-                $dtedteNew->dter_id = $dtedte->dter_id;
-                $dtedteNew->dtefac_id = $dteNew->id; 
-                $dtedteNew->save();
-                //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
-                if($dtedte->dter->foliocontrol_id == 2 and $dtedte->dteguiadesp->despachoord_id){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2 Y LA GUIA DESP TENGA ORDEN DE DESPACHO
-                    //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
-                    DespachoOrd::guardarfactdesp($dtedteNew);
-                }
+            DteDet::setEventDispatcher($dispatcher);
+            foreach ($dtedetCreados as $det) {
+                DocInsumoDetService::syncFromDetalle($det, 'DTE');
             }
-
-            foreach ($dte->dteguiausadas as $dteguiausada) {
-                $dteguiausadaNew = new DteGuiaUsada();
-                $dteguiausadaNew->dte_id = $dteguiausada->dte_id;
-                $dteguiausadaNew->usuario_id = auth()->id();
-                $dteguiausadaNew->save();    
-            }
-
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
-            if(isset($request->ocnv_id) and $request->notaventa_id){
-                //En comentario para evitar que cambie la OC de la NV 22/04/2025
-                //Esto ha traido problemas ya que cuando en facturacion cambian el numero de OC de la NV, se cambia la OC de NV Original y eso acarrea dudas en la Nota de Venta
-                /* $notaventa = NotaVenta::findOrFail($request->notaventa_id);
-                $notaventa->oc_id = $request->ocnv_id;
-                $notaventa->save(); */
-            }
-            /*
-            if($dteguiadesp->dteoc){
-                $dteoc->dte_id = $dteNew->id;
-                $dteoc->save();
-            }else{
-                if(isset($request->oc_id) and !is_null($request->oc_id)){
-                    if(isset($dteoc)){
-                        if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                            $dteoc->dte_id = $dteNew->id;
-                            $dteoc->oc_file = $foto;
-                            $dteoc->save();
-                        }
-                    }
-                }    
-            }
-            */
-            //SI LAS OC VIENEN DE LA GUIA DESPACHO, SIEMPRE Y CUANDO LAS GUIAS TENGAS OC
-            foreach ($dte->dteocs as $dteoc) {
-                $dteoc->dte_id = $dteNew->id;
-                $dteoc->save();
-            }
-            //SI LA OC VIENE DIRECTAMENTE DE LA FACTURA, ES DECIR LA(S) GUIA(S) NO TIENE(N) OC, Y SE CARGO LA OC EN LA FACTURA
-            if(isset($request->oc_id) and !is_null($request->oc_id)){
-                $dteoc->dte_id = "";
-                $dteoc->oc_id = $request->oc_id;
-                $dteoc->oc_folder = "oc";
-                if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                    $dteoc->dte_id = $dteNew->id;
-                    $dteoc->oc_file = $foto;
-                    $dteoc->save();
-                }
-            }
+
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
@@ -475,7 +502,6 @@ class DteFacturaController extends Controller
                 'mensaje'=> $aux_mensaje,
                 'tipo_alert' => $aux_tipo_alert
             ]);
-
         }else{
             /* $foliocontrol->bloqueo = 0;
             $foliocontrol->save(); */
@@ -484,6 +510,196 @@ class DteFacturaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+    }
+
+    public function diagnosticar(Request $request)
+    {
+        can('guardar-dte-factura-gd');
+
+        $pasos = [];
+        DB::beginTransaction();
+        try {
+            // Paso 1: Guías seleccionadas
+            $aux_arrayselgd = explode(",", $request->selectguiadesp ?? '');
+            $aux_arrayselgd = array_filter($aux_arrayselgd);
+            $pasos[] = ['paso' => 'Guías de Despacho seleccionadas', 'ok' => count($aux_arrayselgd) > 0, 'detalle' => 'IDs: ' . implode(', ', $aux_arrayselgd)];
+            if (count($aux_arrayselgd) === 0) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => 'Sin guías seleccionadas.', 'pasos' => $pasos]);
+            }
+
+            // Paso 2: updated_at de cada guía
+            foreach ($aux_arrayselgd as $valor) {
+                $indice = array_search($valor, $request->dte_idGD ?? [], false);
+                $dteguiadesp = Dte::findOrFail($valor);
+                $updatedOk = ($request->updated_atGD[$indice] == $dteguiadesp->updated_at);
+                $pasos[] = ['paso' => "updated_at guía ID=$valor", 'ok' => $updatedOk, 'detalle' => "Request: {$request->updated_atGD[$indice]} | BD: {$dteguiadesp->updated_at}"];
+                if (!$updatedOk) {
+                    DB::rollBack();
+                    return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => 'Registro modificado por otro usuario.', 'pasos' => $pasos]);
+                }
+            }
+
+            // Paso 3: Items y foliocontrol
+            $cont_producto = count($request->producto_id ?? []);
+            $foliocontrol  = Foliocontrol::findOrFail(1);
+            $overMax = $cont_producto > $foliocontrol->maxitemxdoc;
+            $pasos[] = ['paso' => 'Items y foliocontrol', 'ok' => $cont_producto > 0 && !$overMax, 'detalle' => "Items=$cont_producto, max={$foliocontrol->maxitemxdoc}, foliocontrol_id=1"];
+            if ($cont_producto <= 0 || $overMax) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => '', 'pasos' => $pasos]);
+            }
+
+            // Paso 4: Tipo documento
+            $tipoOk = ($request->foliocontrol_id == 1);
+            $pasos[] = ['paso' => 'Tipo documento', 'ok' => $tipoOk, 'detalle' => "foliocontrol_id enviado: {$request->foliocontrol_id} — debe ser 1 (Factura)"];
+            if (!$tipoOk) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => '', 'pasos' => $pasos]);
+            }
+
+            // Paso 5: Cliente
+            $cliente = Cliente::findOrFail($request->cliente_id);
+            $pasos[] = ['paso' => 'Cliente', 'ok' => true, 'detalle' => "ID={$cliente->id}, {$cliente->razonsocial}"];
+
+            // Paso 6: Acumular totales desde guías
+            $empresa     = Empresa::findOrFail(1);
+            $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+            $Tmntneto    = 0;
+            $Tkgtotal    = 0;
+            $aux_nrolindet = 0;
+            $dtedtes_info = [];
+            $dteocs_ids   = [];
+
+            foreach ($aux_arrayselgd as $dter_id) {
+                $dteguia = Dte::findOrFail($dter_id);
+                foreach ($dteguia->dtedets as $dtedetguia) {
+                    $aux_nrolindet++;
+                    $Tmntneto += $dtedetguia->montoitem;
+                    $Tkgtotal += $dtedetguia->itemkg;
+                }
+                $dtedtes_info[] = $dter_id;
+                if (isset($dteguia->dteoc->oc_id) && $dteguia->dteoc->oc_id && !in_array($dteguia->dteoc->oc_id, $dteocs_ids)) {
+                    $dteocs_ids[] = $dteguia->dteoc->oc_id;
+                }
+            }
+            $Tiva      = round(($empresa->iva / 100) * $Tmntneto);
+            $Tmnttotal = round((($empresa->iva / 100) + 1) * $Tmntneto);
+            $pasos[] = ['paso' => 'Totales desde guías', 'ok' => $Tmntneto > 0, 'detalle' => "Neto=$Tmntneto, IVA=$Tiva, Total=$Tmnttotal, Items=$aux_nrolindet"];
+            if ($Tmntneto <= 0) {
+                DB::rollBack();
+                return response()->json(['ok' => false, 'resultado' => 'Diagnóstico fallido', 'nota' => '', 'pasos' => $pasos]);
+            }
+
+            // Paso 7: Mock folio
+            $pasos[] = ['paso' => 'Solicitar folio (simulado)', 'ok' => true, 'detalle' => 'Folio ficticio 9999 — no consume folios reales'];
+
+            // Paso 8: Crear DTE
+            $hoy = date("Y-m-d H:i:s");
+            $dteNew = Dte::create([
+                'foliocontrol_id'    => 1,
+                'nrodocto'           => 9999,
+                'fchemis'            => date('Y-m-d'),
+                'fchemisgen'         => $hoy,
+                'fechahora'          => $hoy,
+                'sucursal_id'        => $centroeconomico->sucursal_id,
+                'cliente_id'         => $cliente->id,
+                'comuna_id'          => $cliente->comunap_id,
+                'ciudad_id'          => $cliente->ciudad_id,
+                'vendedor_id'        => $request->vendedor_id,
+                'obs'                => $request->obs,
+                'tipodespacho'       => 2,
+                'indtraslado'        => 1,
+                'mntneto'            => $Tmntneto,
+                'tasaiva'            => $empresa->iva,
+                'iva'                => $Tiva,
+                'mnttotal'           => $Tmnttotal,
+                'kgtotal'            => $Tkgtotal,
+                'centroeconomico_id' => $request->centroeconomico_id,
+                'usuario_id'         => $request->usuario_id,
+            ]);
+            $pasos[] = ['paso' => 'Crear DTE', 'ok' => true, 'detalle' => "DTE ID={$dteNew->id} (ficticio, rollback al final)"];
+
+            // Paso 9: DteDet desde guías
+            $aux_nrolindet = 0;
+            foreach ($aux_arrayselgd as $dter_id) {
+                $dteguia = Dte::findOrFail($dter_id);
+                foreach ($dteguia->dtedets as $dtedetguia) {
+                    $aux_nrolindet++;
+                    $dtedetNew = DteDet::create([
+                        'dte_id'          => $dteNew->id,
+                        'dtedet_id'       => $dtedetguia->id,
+                        'producto_id'     => $dtedetguia->producto_id,
+                        'nrolindet'       => $aux_nrolindet,
+                        'vlrcodigo'       => $dtedetguia->vlrcodigo,
+                        'nmbitem'         => $dtedetguia->nmbitem,
+                        'dscitem'         => $dtedetguia->dscitem,
+                        'qtyitem'         => $dtedetguia->qtyitem,
+                        'unmditem'        => $dtedetguia->unmditem,
+                        'unidadmedida_id' => $dtedetguia->unidadmedida_id,
+                        'prcitem'         => $dtedetguia->prcitem,
+                        'montoitem'       => $dtedetguia->montoitem,
+                        'obsdet'          => $dtedetguia->obsdet,
+                        'itemkg'          => $dtedetguia->itemkg,
+                    ]);
+                    if ($dtedetguia->dtedet_despachoorddet) {
+                        DteDet_DespachoOrdDet::create([
+                            'dtedet_id'           => $dtedetNew->id,
+                            'despachoorddet_id'   => $dtedetguia->dtedet_despachoorddet->despachoorddet_id,
+                            'notaventadetalle_id' => $dtedetguia->dtedet_despachoorddet->notaventadetalle_id,
+                        ]);
+                    }
+                }
+            }
+            $pasos[] = ['paso' => 'Crear DteDet', 'ok' => true, 'detalle' => "$aux_nrolindet item(s) procesados desde " . count($aux_arrayselgd) . " guía(s)"];
+
+            // Paso 10: DteFac
+            $dtefac = DteFac::create([
+                'dte_id'       => $dteNew->id,
+                'hep'          => $request->hep,
+                'notped'       => $request->notped,
+                'formapago_id' => $cliente->formapago_id,
+                'fchvenc'      => date('Y-m-d', strtotime(date('Y-m-d') . "+ " . $cliente->plazopago->dias . " days")),
+            ]);
+            $pasos[] = ['paso' => 'Crear DteFac', 'ok' => true, 'detalle' => "ID={$dtefac->id}"];
+
+            // Paso 11: DteDte (relación guía→factura)
+            foreach ($aux_arrayselgd as $dter_id) {
+                DteDte::create([
+                    'dte_id'    => $dteNew->id,
+                    'dter_id'   => $dter_id,
+                    'dtefac_id' => $dteNew->id,
+                ]);
+            }
+            $pasos[] = ['paso' => 'Crear DteDte', 'ok' => true, 'detalle' => count($aux_arrayselgd) . " relación(es) guía→factura"];
+
+            // Paso 12: DteGuiaUsada
+            foreach ($aux_arrayselgd as $dter_id) {
+                DteGuiaUsada::create([
+                    'dte_id'    => $dter_id,
+                    'usuario_id' => auth()->id(),
+                ]);
+            }
+            $pasos[] = ['paso' => 'Crear DteGuiaUsada', 'ok' => true, 'detalle' => count($aux_arrayselgd) . " registro(s)"];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $pasos[] = ['paso' => 'Excepción', 'ok' => false, 'detalle' => $e->getMessage()];
+            return response()->json([
+                'ok'        => false,
+                'resultado' => 'Error en diagnóstico',
+                'nota'      => 'Se hizo rollback. No se guardó nada.',
+                'pasos'     => $pasos,
+            ]);
+        }
+
+        DB::rollBack();
+        return response()->json([
+            'ok'        => true,
+            'resultado' => 'Diagnóstico exitoso',
+            'nota'      => 'Todos los pasos OK. Rollback aplicado — no se guardó nada ni se consumieron folios reales.',
+            'pasos'     => $pasos,
+        ]);
     }
 
     /**
@@ -1229,7 +1445,7 @@ class DteFacturaController extends Controller
 
     public function volverSubirDteSisCob(Request $request){
         $dte = Dte::findOrFail($request->dte_id);
-        $respuesta = Dte::subirSisCobranza($dte);
+        $respuesta = Dte::subirSisCobranza($dte,1);
         return $respuesta;
     }
 

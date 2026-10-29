@@ -126,8 +126,12 @@ class EstadisticaVentaController extends Controller
                 $aux_totaldiferenciakilos += $data->diferenciakilos;
                 $aux_totalvalorcosto += $data->valorcosto;
             }
-
-            $aux_promprecioxkilo = round($aux_totalsubtotal / $aux_totalkilos,2);
+            if ($aux_totalkilos > 0) {
+                $aux_promprecioxkilo = round($aux_totalsubtotal / $aux_totalkilos, 2);
+            } else {
+                $aux_promprecioxkilo = 0; // o null según tu lógica de negocio
+            }
+            //$aux_promprecioxkilo = round($aux_totalsubtotal / $aux_totalkilos,2);
             $aux_promvalorcosto = round($aux_totalvalorcosto / $i ,2);
             $aux_diferenciaprecio = $aux_promprecioxkilo - $aux_promvalorcosto;
             $aux_totaldiferenciaval = $aux_totalkilos * $aux_diferenciaprecio;

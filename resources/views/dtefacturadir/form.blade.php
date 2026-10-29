@@ -150,9 +150,26 @@
                 <input type="text" name="notped" id="notped" class="form-control" value="{{old('notped', $data->dtefac->notped ?? '')}}" maxlength="12"/>
             </div>
 
-            <div class="form-group col-xs-12 col-sm-4" style="display:none;">
-                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
-                <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($data) ? $data->tipodespacho : ($data->tipodespacho ?? ''))}}" required>
+            {{-- El select pasa a estar visible (antes iba en un div display:none y el
+                 controlador forzaba el valor 2). El tipo de despacho es el que decide
+                 si se piden los datos de transporte: el Formato DTE 2.5 indica en los
+                 campos Patente, PatenteCarro y RUTTrans "Relevante si Indicador Tipo
+                 de Despacho 2 o 3", y la Res. Ex. SII N°144 (resolutivo 15°) libera de
+                 esos datos cuando el comprador retira los bienes en el establecimiento
+                 del vendedor, que es justamente el tipo 1.
+                 La opcion vacia existe solo en las facturas: una factura de servicio o
+                 arriendo no ampara ningun traslado y en ese caso el tag <TipoDespacho>
+                 no se emite, tal como pide el Formato DTE en la definicion del campo.
+                 En las guias de despacho no se ofrece, porque ahi siempre hay traslado. --}}
+            <div class="form-group col-xs-12 col-sm-6">
+                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Despacho</label>
+                <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($data) ? $data->tipodespacho : ($data->tipodespacho ?? ''))}}">
+                    <option
+                        value=""
+                        @if (old('tipodespacho') === '')
+                            {{'selected'}}
+                        @endif
+                        >Sin despacho (servicio o arriendo)</option>
                     <option 
                         value="1"
                         @if (isset($data) and ($data->tipodespacho=="1"))
@@ -177,7 +194,7 @@
                         >Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3" style="display:none;">
+            {{-- <div class="form-group col-xs-12 col-sm-3" style="display:none;">
                 <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                 <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($data) ? $data->indtraslado : ($data->indtraslado ?? ''))}}" required>
                     <option 
@@ -197,8 +214,8 @@
                         @endif
                         >Otros traslados no venta</option>
                 </select>
-            </div>
-            <div class="form-group col-xs-12 col-sm-5">
+            </div> --}}
+            <div class="form-group col-xs-12 col-sm-6">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control validar-texto-xml" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
             </div>
@@ -228,6 +245,8 @@
             </div>
         </div>
     </div>
+</div>
+<div id="wrap_datostrans">@include('generales.datostrans', ['esfactura' => true])
 </div>
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>

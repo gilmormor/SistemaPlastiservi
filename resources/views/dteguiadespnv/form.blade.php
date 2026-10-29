@@ -120,7 +120,7 @@
                 <input type="text" name="ot" id="ot" class="form-control pull-right numerico" value="{{old('ot', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->ot : '')}}" maxlength="5"/>
             </div>
             <div class="form-group col-xs-12 col-sm-5">
-                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
+                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Despacho</label>
                 <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($dteguiadesp) ? $dteguiadesp->tipodespacho : ($data->tipodespacho ?? ''))}}" required>
                     <option 
                         value="1"
@@ -146,7 +146,7 @@
                         >Despacho por cuenta del emisor a otras instalaciones (Ejemplo: entrega en Obra)</option>
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3">
+            {{-- <div class="form-group col-xs-12 col-sm-3">
                 <label for="indtraslado" class="control-label requerido">Tipo Traslado</label>
                 <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($dteguiadesp) ? $dteguiadesp->indtraslado : ($data->indtraslado ?? ''))}}" required>
                     <option 
@@ -166,7 +166,7 @@
                         @endif
                         >Otros traslados no venta</option>
                 </select>
-            </div>
+            </div> --}}
             <!--
             <div class="form-group col-xs-12 col-sm-3">
                 <label for="btnfotooc" class="control-label">Cargar OrdenCompra</label>
@@ -201,7 +201,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group col-xs-12 col-sm-3">
+            {{-- <div class="form-group col-xs-12 col-sm-3">
                 <label for="lugarentrega" class="control-label requerido">Lugar de Entrega</label>
                 <input type="text" name="lugarentrega" id="lugarentrega" class="form-control" value="{{old('lugarentrega', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->lugarentrega : ($data->lugarentrega ?? ''))}}" required placeholder="Lugar de Entrega"/>
             </div>
@@ -215,7 +215,7 @@
                             >{{$comuna->nombre}}</option>
                     @endforeach
                 </select>
-            </div>
+            </div> --}}
             <div class="form-group col-xs-12 col-sm-3">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control validar-texto-xml" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
@@ -250,6 +250,11 @@
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->neto ?? '')}}" class="form-control" style="text-align:right;" readonly required>
+</div>
+{{-- Contenedor para que el JS pueda ocultar los datos de transporte cuando el
+     tipo de despacho es 1 (retira el cliente), segun Res. Ex. SII N°144 resolutivo 15°. --}}
+<div id="wrap_datostrans">
+@include('generales.datostrans')
 </div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
