@@ -59,9 +59,52 @@ $(document).ready(function(){
     }
 
     function reponerGrupos(aux_grupos){
-        aux_grupos.show().find(".req_trans").each(function(){
+        /* El RUT del transportista se excluye del show: su visibilidad no depende del
+           tipo de despacho sino del tipo de transporte, y solo corresponde con
+           EXTERNO. Al mostrarlo aqui se borraba el display:none con que nace en la
+           vista y el campo aparecia con cualquier tipo de despacho 2 o 3, aunque el
+           transporte fuera interno. El required si se repone, como en los demas. */
+        aux_grupos.not("#div_rut_transportista").show();
+        aux_grupos.find(".req_trans").each(function(){
             $(this).attr("required", "required").removeClass("req_trans");
         });
+    }
+
+    /* Deja el RUT del transportista visible solo con transporte EXTERNO. Hace falta
+       ademas del handler de #tipo_transporte, porque ese handler no toca el div
+       cuando el valor esta vacio, que es el estado inicial del formulario. */
+    function sincronizarRutTrans(){
+        var aux_tt = $("#tipo_transporte");
+        if(aux_tt.length === 0){
+            return;
+        }
+        /* stop(true, true) descarta las animaciones encoladas y termina la que este
+           corriendo: el handler de #tipo_transporte usa fadeIn/fadeOut, que duran
+           400 ms, y sin esto un cambio rapido de los selectores podia dejar el campo
+           visible porque la animacion anterior terminaba despues de este show/hide. */
+        var aux_div = $("#div_rut_transportista").stop(true, true);
+        if(aux_tt.val() === "EXTERNO"){
+            aux_div.show();
+            $("#ruttrans").prop("required", true);
+        }else{
+            aux_div.hide();
+            /* El required se quita tambien con el valor vacio: el handler de
+               #tipo_transporte solo lo limpia en su rama del else, de modo que al
+               volver de EXTERNO a "Seleccione..." el campo quedaba obligatorio y
+               oculto a la vez, lo que impide enviar el formulario. */
+            $("#ruttrans").prop("required", false).removeClass("is-invalid is-valid");
+        }
+    }
+
+    /* Vacia los datos del transportista. Se usa al pasar a un tipo de despacho que no
+       los admite -1, retira el cliente, y el vacio de servicio o arriendo-, porque
+       ocultar un campo no impide que se envie: un input oculto viaja igual en el POST
+       y el servicio lo guardaria. No se tocan las fechas ni el destino, que con el
+       tipo 1 siguen siendo obligatorios, ni se limpia nada al pasar entre 2 y 3,
+       donde los datos pedidos son los mismos. */
+    function limpiarTransportista(){
+        $(SEL_TRANSPORTISTA).val("").removeClass("is-invalid is-valid");
+        $("#nombre_transportista").html("");
     }
 
     /* Tres escenarios, segun el tipo de despacho:
@@ -75,9 +118,11 @@ $(document).ready(function(){
         }
         var aux_grupos = aux_wrap.find(".form-group");
         if(sinDespacho()){
+            limpiarTransportista();
             liberarGrupos(aux_grupos);
             aux_wrap.hide();
         }else if(retiraCliente()){
+            limpiarTransportista();
             // Se repone todo primero, para no arrastrar el estado del valor anterior
             reponerGrupos(aux_grupos);
             liberarGrupos(aux_wrap.find(SEL_TRANSPORTISTA).closest(".form-group"));
@@ -85,6 +130,7 @@ $(document).ready(function(){
         }else{
             reponerGrupos(aux_grupos);
             aux_wrap.show();
+            sincronizarRutTrans();
         }
     }
 

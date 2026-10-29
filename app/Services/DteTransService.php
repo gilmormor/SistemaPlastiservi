@@ -76,9 +76,20 @@ class DteTransService
         $aux_comuna = Comuna::findOrFail($request->comunaentrega_id);
         $usuarioId = auth()->id();
 
+        /* Los datos del transportista se ignoran cuando el tipo de despacho no los
+           admite. Ocultar un campo en el formulario no impide que se envie: un input
+           oculto viaja igual en el POST, de modo que si el usuario cargaba patente y
+           chofer con tipo 2 y despues cambiaba a 1, esos datos se guardaban y salian
+           en el XML, al reves de lo que corresponde cuando retira el cliente. El JS
+           ademas los limpia, pero la garantia tiene que estar aqui: si el JS no carga
+           o el POST llega por otra via, el resultado debe ser igual de correcto.
+           Se reutiliza $aux_contransportista, la misma condicion con que se validan
+           mas arriba, para que el modo de prueba 'completo' siga emitiendo patente y
+           chofer con tipo de despacho 1, que es justamente lo que va a probar. */
+
         // Empresa transportista — solo si tipo_transporte es EXTERNO y viene el rut
         $aux_ruttrans = null;
-        if ($request->tipo_transporte === 'EXTERNO') {
+        if ($aux_contransportista and $request->tipo_transporte === 'EXTERNO') {
             $aux_ruttrans = limpiarRut($request->ruttrans);
             if (!empty($aux_ruttrans)) {
                 TransEmp::firstOrCreate(
@@ -89,16 +100,17 @@ class DteTransService
         }
 
         // Chofer — si vienen rut y nombre
-        $aux_rutchofer = limpiarRut($request->rutchofer1);
-        if (!empty($aux_rutchofer) && !empty($request->nombrechofer)) {
+        $aux_rutchofer = $aux_contransportista ? limpiarRut($request->rutchofer1) : null;
+        $aux_nombrechofer = $aux_contransportista ? $request->nombrechofer : null;
+        if (!empty($aux_rutchofer) && !empty($aux_nombrechofer)) {
             TransChofer::firstOrCreate(
                 ['rut' => $aux_rutchofer],
-                ['nombre' => $request->nombrechofer, 'usuario_id' => $usuarioId]
+                ['nombre' => $aux_nombrechofer, 'usuario_id' => $usuarioId]
             );
         }
 
         // Vehículo principal — si viene la patente
-        $aux_patente = strtoupper(trim($request->patente ?? ''));
+        $aux_patente = $aux_contransportista ? strtoupper(trim($request->patente ?? '')) : '';
         if (!empty($aux_patente)) {
             TransVeh::firstOrCreate(
                 ['patente' => $aux_patente],
@@ -107,7 +119,7 @@ class DteTransService
         }
 
         // Carro / remolque — opcional
-        $aux_patentecarro = strtoupper(trim($request->patentecarro ?? ''));
+        $aux_patentecarro = $aux_contransportista ? strtoupper(trim($request->patentecarro ?? '')) : '';
         if (!empty($aux_patentecarro)) {
             TransVeh::firstOrCreate(
                 ['patente' => $aux_patentecarro],
@@ -124,7 +136,7 @@ class DteTransService
             "dirdest"       => $request->lugarentrega,
             "ruttrans"      => $aux_ruttrans ?: null,
             "rutchofer"     => $aux_rutchofer ?: null,
-            "nombrechofer"  => $request->nombrechofer,
+            "nombrechofer"  => $aux_nombrechofer ?: null,
             "patente"       => $aux_patente ?: null,
             "patentecarro"  => $aux_patentecarro ?: null,
         ]);
