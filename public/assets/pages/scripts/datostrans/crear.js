@@ -178,17 +178,21 @@ $(document).ready(function(){
         } else {
             errorSpan.hide();
             $(this).removeClass('is-invalid').addClass('is-valid');
-            
-            if(valor === 'EXTERNO'){
-                $('#div_rut_transportista').fadeIn();
-                $('#ruttrans').prop('required', true);
-            } else {
-                $('#div_rut_transportista').fadeOut();
-                $('#ruttrans').prop('required', false);
-                $('#ruttrans').val('');
-                $('#nombre_transportista').html('');
-            }
         }
+
+        /* La visibilidad del RUT del transportista y su required se resuelven en un
+           solo lugar, sincronizarRutTrans, y fuera del if: antes vivian dentro de la
+           rama del else, de modo que al volver de EXTERNO a "Seleccione..." no se
+           ejecutaba nada y el campo quedaba obligatorio y oculto a la vez, lo que
+           impide enviar el formulario sin que el navegador pueda mostrar el error.
+           Se cambio ademas fadeIn/fadeOut por show/hide: la animacion era solo
+           estetica y duraba 400 ms, tiempo durante el cual un segundo cambio podia
+           dejar el campo en un estado que no correspondia. */
+        if(valor !== 'EXTERNO'){
+            $('#ruttrans').val('');
+            $('#nombre_transportista').html('');
+        }
+        sincronizarRutTrans();
     }).trigger('change');
 
     // ============================================
