@@ -1,4 +1,9 @@
 {{-- resources/views/general/datostrans.blade.php --}}
+{{-- Prueba temporal con BES: se expone el modo al JS para que, en modo
+     'completo', el formulario siga pidiendo los datos del transportista aunque
+     retire el cliente. Con la constante en false la variable vale "" y el JS se
+     comporta exactamente como siempre. Ver Dte::BES_MODO_TRANSPORTE_RETIRO. --}}
+<script>var BES_MODO_TRANSPORTE_RETIRO = "{{ \App\Models\Dte::BES_MODO_TRANSPORTE_RETIRO }}";</script>
 <div class="box box-info" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
         <h3 class="box-title">Datos de Transporte (Res. Ex. SII N°144)</h3>

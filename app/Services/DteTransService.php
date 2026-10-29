@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use App\Models\Dte;
 use App\Models\DteTrans;
 use App\Models\Comuna;
 use App\Models\TransEmp;
@@ -33,7 +34,12 @@ class DteTransService
            formato es "Obligatorio para documentos que acompañan traslado de bienes"
            y no depende del tipo de despacho: una guia con retiro del cliente
            tambien ampara un traslado. */
-        $aux_contransportista = ($request->tipodespacho == 2 or $request->tipodespacho == 3);
+        /* El modo 'completo' es una prueba temporal con BES (ver la constante en
+           el modelo Dte): hace que con tipo de despacho 1 tambien se exijan y se
+           emitan la patente y el chofer, para distinguir si BES falla por la
+           ausencia de esos datos o por el tipo de despacho en si. */
+        $aux_contransportista = ($request->tipodespacho == 2 or $request->tipodespacho == 3
+            or (Dte::BES_MODO_TRANSPORTE_RETIRO === 'completo' and $request->tipodespacho == 1));
 
         $reglas = [
             'fchsalida' => 'required|date_format:d/m/Y',
