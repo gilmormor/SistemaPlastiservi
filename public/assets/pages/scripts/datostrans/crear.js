@@ -13,13 +13,6 @@ $(document).ready(function(){
         if(aux_sel.length === 0){
             return false;
         }
-        /* Prueba temporal con BES: en modo 'completo' se piden los datos del
-           transportista tambien cuando retira el cliente, asi que aqui se
-           responde que no, para que no se oculte ni se libere ningun campo.
-           Con la constante en false o en 'omitir' esto no cambia nada. */
-        if(typeof BES_MODO_TRANSPORTE_RETIRO !== "undefined" && BES_MODO_TRANSPORTE_RETIRO === "completo"){
-            return false;
-        }
         return (aux_sel.val() == "1");
     }
 

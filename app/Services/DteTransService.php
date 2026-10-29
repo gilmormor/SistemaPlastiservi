@@ -2,7 +2,6 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use App\Models\Dte;
 use App\Models\DteTrans;
 use App\Models\Comuna;
 use App\Models\TransEmp;
@@ -34,12 +33,7 @@ class DteTransService
            formato es "Obligatorio para documentos que acompañan traslado de bienes"
            y no depende del tipo de despacho: una guia con retiro del cliente
            tambien ampara un traslado. */
-        /* El modo 'completo' es una prueba temporal con BES (ver la constante en
-           el modelo Dte): hace que con tipo de despacho 1 tambien se exijan y se
-           emitan la patente y el chofer, para distinguir si BES falla por la
-           ausencia de esos datos o por el tipo de despacho en si. */
-        $aux_contransportista = ($request->tipodespacho == 2 or $request->tipodespacho == 3
-            or (Dte::BES_MODO_TRANSPORTE_RETIRO === 'completo' and $request->tipodespacho == 1));
+        $aux_contransportista = ($request->tipodespacho == 2 or $request->tipodespacho == 3);
 
         $reglas = [
             'fchsalida' => 'required|date_format:d/m/Y',
@@ -84,8 +78,7 @@ class DteTransService
            ademas los limpia, pero la garantia tiene que estar aqui: si el JS no carga
            o el POST llega por otra via, el resultado debe ser igual de correcto.
            Se reutiliza $aux_contransportista, la misma condicion con que se validan
-           mas arriba, para que el modo de prueba 'completo' siga emitiendo patente y
-           chofer con tipo de despacho 1, que es justamente lo que va a probar. */
+           mas arriba. */
 
         // Empresa transportista — solo si tipo_transporte es EXTERNO y viene el rut
         $aux_ruttrans = null;

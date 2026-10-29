@@ -25,25 +25,6 @@ use Illuminate\Support\Facades\Log;
 
 class Dte extends Model
 {
-    /* TEMPORAL - prueba con BES, octubre 2026. Dejar en false al terminar.
-       BES no logra generar el PDF cuando el XML lleva <Transporte> sin patente
-       ni chofer, que es lo que corresponde cuando retira el cliente: responde
-       "Referencia a objeto no establecida como instancia de un objeto" (folio
-       804, guia de despacho directa). El documento se carga bien, el error es
-       solo al generar el PDF, y ya esta reportado a BES.
-       Esta constante permite probar las dos hipotesis, y solo actua cuando el
-       tipo de despacho es 1:
-         false      -> comportamiento normal, el que exige el Formato DTE 2.5
-         'omitir'   -> el XML no lleva la seccion <Transporte>
-         'completo' -> se piden y se emiten tambien la patente y el chofer
-       El Formato DTE 2.5 exige enviar DirDest, CmnaDest, FchSalida, HraSalida y
-       FchLlegada en todo documento que ampare traslado, sin importar el tipo de
-       despacho, y los marca de impresion obligatoria. Por eso ningun modo
-       distinto de false puede quedar activo en produccion: desde el 01/11/2026
-       el documento quedaria sin datos exigidos. En todos los modos dtetrans se
-       sigue guardando completo en la base; lo unico que cambia es el XML. */
-    const BES_MODO_TRANSPORTE_RETIRO = 'omitir';
-
     use SoftDeletes;
     protected $table = "dte";
     protected $fillable = [
@@ -4278,11 +4259,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<CmnaRecep>$CmnaRecep</CmnaRecep>" .
             "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
             "</Receptor>";
-            /* Prueba temporal con BES: ver Dte::BES_MODO_TRANSPORTE_RETIRO. Con el
-               modo 'omitir' el XML sale sin la seccion <Transporte> cuando retira
-               el cliente. Con false o 'completo' la condicion es la de siempre. */
-            $aux_omitirtrans = (Dte::BES_MODO_TRANSPORTE_RETIRO === 'omitir' and $dte->tipodespacho == 1);
-            if(isset($dte->dtetrans) and !$aux_omitirtrans){
+            if(isset($dte->dtetrans)){
                 $dtetrans = $dte->dtetrans;
                 $aux_ruttrans = formatearRUT($dtetrans->ruttrans);
                 $aux_rutchofer = formatearRUT($dtetrans->rutchofer);
@@ -4459,11 +4436,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<CmnaRecep>$CmnaRecep</CmnaRecep>" .
             "<CiudadRecep>$CiudadRecep</CiudadRecep>" .
             "</Receptor>";
-            /* Prueba temporal con BES: ver Dte::BES_MODO_TRANSPORTE_RETIRO. Con el
-               modo 'omitir' el XML sale sin la seccion <Transporte> cuando retira
-               el cliente. Con false o 'completo' la condicion es la de siempre. */
-            $aux_omitirtrans = (Dte::BES_MODO_TRANSPORTE_RETIRO === 'omitir' and $dte->tipodespacho == 1);
-            if(isset($dte->dtetrans) and !$aux_omitirtrans){
+            if(isset($dte->dtetrans)){
                 $dtetrans = $dte->dtetrans;
                 $aux_ruttrans = formatearRUT($dtetrans->ruttrans);
                 $aux_rutchofer = formatearRUT($dtetrans->rutchofer);
