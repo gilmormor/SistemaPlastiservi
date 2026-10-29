@@ -1305,6 +1305,8 @@ Route::get('dteguiadespdirpage', 'DteGuiaDespDirController@dteguiadespdirpage')-
 Route::get('dteguiadespdir/totalizarindex', 'DteGuiaDespDirController@totalizarindex')->name('dteguiadespdir_totalizarindex');
 Route::get('dteguiadespdir/crear', 'DteGuiaDespDirController@crear')->name('crear_dteguiadespdir');
 Route::post('dteguiadespdir', 'DteGuiaDespDirController@guardar')->name('guardar_dteguiadespdir');
+// Prueba el guardado con folio ficticio y rollback; el boton que la usa solo aparece en local
+Route::post('dteguiadespdir/diagnosticar', 'DteGuiaDespDirController@diagnosticar')->name('diagnosticar_dteguiadespdir');
 Route::get('dteguiadespdir/{id}/editar', 'DteGuiaDespDirController@editar')->name('editar_dteguiadespdir');
 Route::put('dteguiadespdir/{id}', 'DteGuiaDespDirController@actualizar')->name('actualizar_dteguiadespdir');
 Route::delete('dteguiadespdir/{id}', 'DteGuiaDespDirController@eliminar')->name('eliminar_dteguiadespdir');
