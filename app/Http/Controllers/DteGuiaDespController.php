@@ -452,15 +452,14 @@ class DteGuiaDespController extends Controller
             $pasos[] = ['paso' => 'Crear DteOC', 'ok' => true, 'detalle' => "OC ID=" . ($despachoord->notaventa->oc_id ?? 'null')];
 
             // Paso 13: DteTransService
-            /* Con tipo de despacho 1 el comprador retira los bienes en el
-               establecimiento del vendedor y la Res. Ex. SII N°144, resolutivo 15°,
-               no exige los datos de transporte, de modo que no se registra dtetrans
-               y el XML omite la seccion <Transporte>. Cualquier otro valor -o que el
-               campo no llegue, si el JS no cargo- entra por el camino de siempre. */
-            if($request->tipodespacho != 1){
-                $dteTransService = new DteTransService();
-                $dteTransService->crearDesdeRequest($request, $dteNew->id);
-            }
+            /* Se registra dtetrans siempre que el documento ampare un traslado,
+               tambien cuando retira el cliente: la fila guarda las fechas de salida
+               y llegada y la direccion y comuna de destino, que son de impresion
+               obligatoria y no dependen del tipo de despacho. El servicio deja en
+               nulo el chofer y la patente cuando el tipo de despacho es 1, y el XML
+               omite esos tags al estar vacios. */
+            $dteTransService = new DteTransService();
+            $dteTransService->crearDesdeRequest($request, $dteNew->id);
             $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Datos de transporte procesados OK'];
 
         } catch (\Exception $e) {
@@ -1713,15 +1712,14 @@ function guardarDTE(Request $request,$aux_indtraslado,$cont_producto){
                 //Event(new GuardarGuiaDespacho($despachoord,$dteNew));
             }
 
-            /* Con tipo de despacho 1 el comprador retira los bienes en el
-               establecimiento del vendedor y la Res. Ex. SII N°144, resolutivo 15°,
-               no exige los datos de transporte, de modo que no se registra dtetrans
-               y el XML omite la seccion <Transporte>. Cualquier otro valor -o que el
-               campo no llegue, si el JS no cargo- entra por el camino de siempre. */
-            if($request->tipodespacho != 1){
-                $dteTransService = new DteTransService();
-                $dteTransService->crearDesdeRequest($request, $dteNew->id);
-            }
+            /* Se registra dtetrans siempre que el documento ampare un traslado,
+               tambien cuando retira el cliente: la fila guarda las fechas de salida
+               y llegada y la direccion y comuna de destino, que son de impresion
+               obligatoria y no dependen del tipo de despacho. El servicio deja en
+               nulo el chofer y la patente cuando el tipo de despacho es 1, y el XML
+               omite esos tags al estar vacios. */
+            $dteTransService = new DteTransService();
+            $dteTransService->crearDesdeRequest($request, $dteNew->id);
 
             DB::commit();
         } catch (\Throwable $e) {

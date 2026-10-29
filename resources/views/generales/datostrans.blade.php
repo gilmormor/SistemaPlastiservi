@@ -1,7 +1,7 @@
 {{-- resources/views/general/datostrans.blade.php --}}
 <div class="box box-info" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
-        <h3 class="box-title">Datos de Transporte (Res. Ex. SII N°154)</h3>
+        <h3 class="box-title">Datos de Transporte (Res. Ex. SII N°144)</h3>
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
         </div>

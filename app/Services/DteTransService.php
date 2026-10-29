@@ -23,16 +23,32 @@ class DteTransService
            lugar y no repartido entre la vista y el JS.
            ruttrans sigue la misma regla que el JS: obligatorio solo si el
            transporte es EXTERNO. */
-        $data = $request->validate([
+        /* Los datos del transportista se exigen solo cuando el despacho corre por
+           cuenta de la empresa (tipo de despacho 2 o 3). Con el tipo 1 el comprador
+           retira los bienes en el establecimiento del vendedor y la Resolucion
+           Ex. SII N°144, resolutivo 15°, no exige esos datos; el Formato DTE 2.5 lo
+           dice igual en los campos Patente, PatenteCarro y RUTTrans: "Relevante si
+           Indicador Tipo de Despacho 2 o 3".
+           Las fechas y el destino se exigen siempre, porque su condicion en el
+           formato es "Obligatorio para documentos que acompañan traslado de bienes"
+           y no depende del tipo de despacho: una guia con retiro del cliente
+           tambien ampara un traslado. */
+        $aux_contransportista = ($request->tipodespacho == 2 or $request->tipodespacho == 3);
+
+        $reglas = [
             'fchsalida' => 'required|date_format:d/m/Y',
             'hrasalida' => 'required|date_format:H:i',
             'fchllegada' => 'required|date_format:d/m/Y',
-            'tipo_transporte' => 'required|in:INTERNO,EXTERNO',
-            'rutchofer1' => 'required',
-            'nombrechofer' => 'required',
-            'patente' => 'required',
-            'ruttrans' => 'required_if:tipo_transporte,EXTERNO',
-        ], [
+        ];
+        if ($aux_contransportista) {
+            $reglas['tipo_transporte'] = 'required|in:INTERNO,EXTERNO';
+            $reglas['rutchofer1'] = 'required';
+            $reglas['nombrechofer'] = 'required';
+            $reglas['patente'] = 'required';
+            $reglas['ruttrans'] = 'required_if:tipo_transporte,EXTERNO';
+        }
+
+        $data = $request->validate($reglas, [
             'tipo_transporte.required' => 'Debe seleccionar el tipo de transporte.',
             'tipo_transporte.in' => 'El tipo de transporte debe ser INTERNO o EXTERNO.',
             'rutchofer1.required' => 'Debe ingresar el RUT del chofer.',

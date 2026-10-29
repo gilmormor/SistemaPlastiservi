@@ -261,14 +261,15 @@ class DteFacturaExentaController extends Controller
         /* El tipo de despacho elegido en el formulario decide todo lo demas:
              vacio -> servicio o arriendo: no ampara traslado, el XML omite el tag
                       <TipoDespacho> (asi lo pide el Formato DTE 2.5 en ese campo)
-             1     -> retira el cliente: el tag se emite, pero no se piden los datos
-                      de transporte (Res. Ex. SII N°144, resolutivo 15°)
-             2 o 3 -> despacha la empresa: se piden los datos de transporte
+             1     -> retira el cliente: el tag se emite y se registra dtetrans con
+                      las fechas y el destino, pero sin chofer ni patente
+                      (Res. Ex. SII N°144, resolutivo 15°)
+             2 o 3 -> despacha la empresa: se piden todos los datos de transporte
            Antes el controlador forzaba el valor 2 y el select iba oculto.
            indtraslado acompaña al tipo de despacho; en facturas es solo dato
            interno, porque el Formato DTE reserva <IndTraslado> para las guias. */
         $aux_tipodespacho = $request->tipodespacho;
-        $aux_contraslado = ($aux_tipodespacho == 2 or $aux_tipodespacho == 3);
+        $aux_contraslado = !($aux_tipodespacho === '' or $aux_tipodespacho === null);
         $dte->tipodespacho = ($aux_tipodespacho === '' or $aux_tipodespacho === null) ? null : $aux_tipodespacho;
         $dte->indtraslado = is_null($dte->tipodespacho) ? null : 1;
         $dte->mntneto = $Tmntneto;
@@ -523,7 +524,7 @@ class DteFacturaExentaController extends Controller
             /* Misma regla que en guardar(), replicada aqui para que el diagnostico
                refleje lo que realmente ocurre al emitir. */
             $aux_tipodespacho = $request->tipodespacho;
-            $aux_contraslado = ($aux_tipodespacho == 2 or $aux_tipodespacho == 3);
+            $aux_contraslado = !($aux_tipodespacho === '' or $aux_tipodespacho === null);
             $dte->tipodespacho = ($aux_tipodespacho === '' or $aux_tipodespacho === null) ? null : $aux_tipodespacho;
             $dte->indtraslado = is_null($dte->tipodespacho) ? null : 1;
             $dte->mntneto = $Tmntneto;

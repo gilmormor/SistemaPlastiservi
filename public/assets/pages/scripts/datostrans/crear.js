@@ -8,12 +8,12 @@ $(document).ready(function(){
        que no amparan ningun traslado.
        Si el select no esta en la pagina se devuelve false y todo se valida igual
        que antes: ante la duda se piden los datos. */
-    function operacionSinTraslado(){
+    function retiraCliente(){
         var aux_sel = $("#tipodespacho");
         if(aux_sel.length === 0){
             return false;
         }
-        return (sinDespacho() || aux_sel.val() == "1");
+        return (aux_sel.val() == "1");
     }
 
     /* Caso distinto del anterior: aqui no hay traslado de ninguna clase, porque la
@@ -28,48 +28,55 @@ $(document).ready(function(){
         return (aux_val === null || aux_val === "");
     }
 
-    /* Oculta o muestra la seccion de transporte. Lo importante es sacar y reponer
-       el atributo required: un campo required dentro de un contenedor oculto
-       impide enviar el formulario y el navegador no alcanza a mostrar el error,
-       de modo que el usuario queda sin saber por que no puede guardar. Se marcan
-       con la clase req_trans para poder devolverlos a su estado original. */
+    /* Los campos propios del transportista, que son los unicos que se ocultan
+       cuando retira el cliente. Todo lo demas que vive en este mismo recuadro -el
+       tipo de traslado, la comuna y el lugar de entrega, y las fechas de salida y
+       llegada- sigue siendo obligatorio: su condicion en el Formato DTE 2.5 es
+       "Obligatorio para documentos que acompañan traslado de bienes" y no depende
+       del tipo de despacho, y ademas comunaentrega_id y lugarentrega son NOT NULL
+       en dteguiadesp. */
+    /* Ojo con el RUT del chofer: su name es rutchofer1 pero su id es rutchofer, de
+       modo que aqui va por el id. */
+    var SEL_TRANSPORTISTA = "#tipo_transporte, #ruttrans, #rutchofer, #nombrechofer, #patente, #patentecarro";
+
+    /* Oculta los grupos y les quita el required. Un campo required dentro de un
+       contenedor oculto impide enviar el formulario y el navegador no alcanza a
+       mostrar el error, de modo que el usuario queda sin saber por que no puede
+       guardar. Se marcan con req_trans para devolverlos a su estado original. */
+    function liberarGrupos(aux_grupos){
+        aux_grupos.find("[required]").each(function(){
+            $(this).removeAttr("required").addClass("req_trans");
+        });
+        aux_grupos.find(".is-invalid").removeClass("is-invalid");
+        aux_grupos.hide();
+    }
+
+    function reponerGrupos(aux_grupos){
+        aux_grupos.show().find(".req_trans").each(function(){
+            $(this).attr("required", "required").removeClass("req_trans");
+        });
+    }
+
+    /* Tres escenarios, segun el tipo de despacho:
+         vacio -> factura de servicio o arriendo: no hay traslado, se oculta todo
+         1     -> retira el cliente: se ocultan solo los datos del transportista
+         2 o 3 -> despacha la empresa: todo visible y obligatorio */
     function aplicarTipoOperacion(){
         var aux_wrap = $("#wrap_datostrans");
         if(aux_wrap.length === 0){
             return;
         }
-        /* El Tipo Traslado vive dentro de este mismo recuadro, pero NO es un dato
-           de transporte: el Formato DTE 2.5 lo exige en toda guia de despacho
-           (obligatoriedad 1, y marca P porque se imprime como glosa). Si se oculta
-           junto con el resto queda sin valor y el XML sale con
-           <IndTraslado></IndTraslado>, que el SII rechaza. Por eso solo se oculta
-           cuando no hay despacho en absoluto, caso que existe unicamente en las
-           facturas de servicio o arriendo. */
         var aux_grupos = aux_wrap.find(".form-group");
-        var aux_objetivo = sinDespacho() ? aux_grupos :
-                           aux_grupos.not($("#indtraslado").closest(".form-group"));
-
-        if(operacionSinTraslado()){
-            aux_objetivo.find("[required]").each(function(){
-                $(this).removeAttr("required").addClass("req_trans");
-            });
-            aux_objetivo.find(".is-invalid").removeClass("is-invalid");
-            aux_objetivo.hide();
-            // Lo que queda fuera del objetivo se repone, por si venia liberado
-            aux_grupos.not(aux_objetivo).show().find(".req_trans").each(function(){
-                $(this).attr("required", "required").removeClass("req_trans");
-            });
-            // El recuadro completo solo desaparece si no queda nada util dentro
-            if(sinDespacho()){
-                aux_wrap.hide();
-            }else{
-                aux_wrap.show();
-            }
+        if(sinDespacho()){
+            liberarGrupos(aux_grupos);
+            aux_wrap.hide();
+        }else if(retiraCliente()){
+            // Se repone todo primero, para no arrastrar el estado del valor anterior
+            reponerGrupos(aux_grupos);
+            liberarGrupos(aux_wrap.find(SEL_TRANSPORTISTA).closest(".form-group"));
+            aux_wrap.show();
         }else{
-            aux_grupos.show();
-            aux_wrap.find(".req_trans").each(function(){
-                $(this).attr("required", "required").removeClass("req_trans");
-            });
+            reponerGrupos(aux_grupos);
             aux_wrap.show();
         }
     }
@@ -529,19 +536,23 @@ $(document).ready(function(){
 
         /* En un servicio o arriendo no hay datos de transporte que validar: se
            sale sin preventDefault para que el formulario siga su curso normal. */
-        if(operacionSinTraslado()){
+        if(sinDespacho()){
             return;
         }
 
-        // Validar tipo de transporte
+        /* Cuando retira el cliente no hay transportista que validar, pero las
+           fechas de salida y llegada se siguen exigiendo mas abajo. */
         let tipoTransporte = $('#tipo_transporte').val();
-        if(!tipoTransporte) {
-            $('#error_tipo_transporte').show();
-            $('#tipo_transporte').addClass('is-invalid');
-            isValid = false;
-        } else {
-            $('#error_tipo_transporte').hide();
-            $('#tipo_transporte').removeClass('is-invalid').addClass('is-valid');
+        if(!retiraCliente()) {
+            // Validar tipo de transporte
+            if(!tipoTransporte) {
+                $('#error_tipo_transporte').show();
+                $('#tipo_transporte').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#error_tipo_transporte').hide();
+                $('#tipo_transporte').removeClass('is-invalid').addClass('is-valid');
+            }
         }
         
         // Validar fecha de salida
@@ -614,8 +625,8 @@ $(document).ready(function(){
             isValid = false;
         } */
         
-        // Validar RUT transportista si es externo
-        if(tipoTransporte === 'EXTERNO') {
+        // Validar RUT transportista si es externo (no aplica si retira el cliente)
+        if(!retiraCliente() && tipoTransporte === 'EXTERNO') {
             let rutTrans = $('#ruttrans').val();
             if(!rutTrans) {
                 alertify.warning('Debe ingresar el RUT del transportista para transporte externo.');
