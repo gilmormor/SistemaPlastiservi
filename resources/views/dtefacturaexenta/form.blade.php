@@ -162,7 +162,7 @@
                  arriendo no ampara ningun traslado y en ese caso el tag <TipoDespacho>
                  no se emite, tal como pide el Formato DTE en la definicion del campo.
                  En las guias de despacho no se ofrece, porque ahi siempre hay traslado. --}}
-            <div class="form-group col-xs-12 col-sm-4">
+            <div class="form-group col-xs-12 col-sm-6">
                 <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
                 <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($data) ? $data->tipodespacho : ($data->tipodespacho ?? ''))}}">
                     <option
@@ -216,7 +216,7 @@
                         >Otros traslados no venta</option>
                 </select>
             </div> --}}
-            <div class="form-group col-xs-12 col-sm-5">
+            <div class="form-group col-xs-12 col-sm-6">
                 <label for="obs" class="control-label">Observaciones</label>
                 <textarea class="form-control validar-texto-xml" name="obs" id="obs" value="{{old('obs', $data->obs ?? '')}}" placeholder="Observación" maxlength="90"></textarea>
             </div>
