@@ -246,7 +246,7 @@
         </div>
     </div>
 </div>
-<div id="wrap_datostrans">@include('generales.datostrans')
+<div id="wrap_datostrans">@include('generales.datostrans', ['esfactura' => true])
 </div>
 <div class="form-group col-xs-4 col-sm-4" style="display:none;">
     <label name="lblitemcompletos" id="lblitemcompletos" for="itemcompletos" class="control-label requerido" data-toggle='tooltip' title="Complete valores item">Complete valores item 1</label>

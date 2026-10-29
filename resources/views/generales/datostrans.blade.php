@@ -61,11 +61,26 @@
                     if(isset($data->despachosol->tipoguiadesp)){
                         $aux_tipotrasladodisabled = 'disabled';
                     }
+                    /* En las facturas (directa y exenta) el tipo de traslado es siempre 1,
+                       "Operacion constituye venta", porque la factura documenta la venta
+                       misma. Se deja preseleccionado y deshabilitado para que el usuario no
+                       pueda cambiarlo. Deshabilitarlo no altera lo que se guarda: los dos
+                       controladores ya fijan $dte->indtraslado = 1 sin leer el request.
+                       Las vistas de guia de despacho no pasan esta bandera, asi que ahi el
+                       select sigue funcionando igual que antes. */
+                    $aux_esfactura = (isset($esfactura) and $esfactura);
+                    if($aux_esfactura){
+                        $aux_tipotrasladodisabled = 'disabled';
+                    }
                 ?>
                 <select name="indtraslado" id="indtraslado" class="form-control select2  indtraslado" data-live-search='true' value="{{old('indtraslado', isset($data) ? $data->indtraslado : ($data->indtraslado ?? ''))}}" required {{$aux_tipotrasladodisabled}}>
                     <option value="">Seleccione...</option>
                     @foreach($tablas['tipotraslado'] as $tipotraslado)
                         <option value="{{$tipotraslado->indtraslado}}"
+                            {{-- En factura queda fija la opcion 1, "Operacion constituye venta" --}}
+                            @if($aux_esfactura and $tipotraslado->indtraslado == 1)
+                                {{'selected'}}
+                            @endif
                             @if(isset($data->despachosol->tipoguiadesp))
                                 @if($tipotraslado->indtraslado == $data->despachosol->tipoguiadesp)
                                     {{'selected'}}

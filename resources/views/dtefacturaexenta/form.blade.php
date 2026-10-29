@@ -255,7 +255,7 @@
     <label for="total" class="control-label requerido" data-toggle='tooltip' title="Total Documento">Total Documento</label>
     <input type="hidden" name="total" id="total" value="{{old('total', $data->mnttotal ?? '')}}" class="form-control" style="text-align:right;" readonly required>
 </div>
-<div id="wrap_datostrans">@include('generales.datostrans')
+<div id="wrap_datostrans">@include('generales.datostrans', ['esfactura' => true])
 </div>
 <div class="box box-danger" style="margin-bottom: 0px;margin-top: 2px;">
     <div class="box-header with-border">
