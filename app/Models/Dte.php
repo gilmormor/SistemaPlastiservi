@@ -1803,6 +1803,14 @@ class Dte extends Model
             if($Estado_DTE->EstadoDTE == 0 and $Estado_DTE->Estatus == 3){ // EN ESTE CASO EL DOCUMENTO NO EXISTE EN LA PLATAFORMA BES, ESO QUIERE DECIR QUE FUE ELIMINADO PREVIAMENTE
                 $aux_folio = $dte->nrodocto;
             }else{ //PERO SI NO HA SIDO ELIMINADO EN PLATAFORMA BES NO DEJA VOLVER A GENERAR EL DTE
+                /* Se libera el folio antes de salir por error. La funcion lo bloquea al entrar
+                   y hasta ahora ningun return lo soltaba: dependia de que cada llamador se
+                   acordara de hacerlo. volverGenDTE si lo hace, y por eso no se notaba, pero
+                   las demas llamadas a esta funcion estan comentadas y al reactivarlas el
+                   folio quedaria bloqueado al primer error, dejando el tipo de documento sin
+                   poder emitir. Mismo patron que dteSolicitarFolio. */
+                $foliocontrol->bloqueo = 0;
+                $foliocontrol->save();
                 return [
                     'id' => 0,
                     'stasubsii' => 0,
@@ -1842,6 +1850,9 @@ class Dte extends Model
                             $bandNoExisteFolio = false;
                             $aux_folio = $Solicitar_Folio->Folio;
                         }else{ //PERO SI NO HA SIDO ELIMINADO EN PLATAFORMA BES NO DEJA VOLVER A GENERAR EL DTE
+                            /* Se libera el folio antes de salir por error, igual que arriba. */
+                            $foliocontrol->bloqueo = 0;
+                            $foliocontrol->save();
                             return [
                                 'id' => 0,
                                 'stasubsii' => 0,
@@ -1857,6 +1868,9 @@ class Dte extends Model
                         }
                     }else{
                         //dd($Solicitar_Folio);
+                        /* Se libera el folio antes de salir por error, igual que arriba. */
+                        $foliocontrol->bloqueo = 0;
+                        $foliocontrol->save();
                         return [
                             'id' => 0,
                             'titulo' =>'Error', 
@@ -1865,6 +1879,9 @@ class Dte extends Model
                         ];
                     }
                 }else{
+                    /* Se libera el folio antes de salir por error, igual que arriba. */
+                    $foliocontrol->bloqueo = 0;
+                    $foliocontrol->save();
                     return [
                         'id' => 0,
                         'titulo' =>'Error:', 
@@ -1916,6 +1933,9 @@ class Dte extends Model
                 
 
             }else{
+                /* Se libera el folio antes de salir por error, igual que arriba. */
+                $foliocontrol->bloqueo = 0;
+                $foliocontrol->save();
                 return [
                     'id' => 0,
                     'titulo' => '',
@@ -1931,6 +1951,9 @@ class Dte extends Model
                 'tipo_alert' => "error"
             ]; */
             //Event(new ErrorCrearDTE($dte,$ArchivoTXT,$Carga_TXTDTE,$aux_folio));
+            /* Se libera el folio antes de salir por error, igual que arriba. */
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->save();
             return [
                 'id' => 0,
                 'titulo' => '',

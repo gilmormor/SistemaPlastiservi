@@ -1080,7 +1080,20 @@ class DteGuiaDespController extends Controller
     public function volverGenDTE(Request $request){
         $dte = Dte::findOrFail($request->dte_id);
         $dteini = Dte::findOrFail($request->dte_id);
-        $respuesta = Dte::generardteprueba($dte);
+        /* El try/finally cubre el unico caso que la liberacion dentro de
+           generardteprueba no alcanza: si esa llamada lanza una excepcion -un
+           SoapFault de BES, un error de base de datos- la ejecucion sale de aqui
+           sin pasar por ninguna de las dos lineas que liberan el folio, y el tipo
+           de documento queda bloqueado hasta corregirlo a mano en la base.
+           El finally no altera el flujo: la excepcion se sigue propagando igual
+           que antes y el resto del metodo no cambia. */
+        try {
+            $respuesta = Dte::generardteprueba($dte);
+        } finally {
+            $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
+            $foliocontrol->bloqueo = 0;
+            $foliocontrol->save();
+        }
         $dtec = Dte::findOrFail($request->dte_id);
         //dd($respuesta);
         /*
@@ -1088,9 +1101,9 @@ class DteGuiaDespController extends Controller
             'id' => 1
         ]);
         */
-        $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
-        $foliocontrol->bloqueo = 0;
-        $foliocontrol->save();
+        /* El folio ya se libero en el finally de arriba, que cubre tambien el caso
+           de la excepcion. $foliocontrol queda cargado desde alli, para la llamada
+           a guardarPdfXmlSii que mas abajo esta comentada. */
         if($respuesta["id"] == 1){
             $dteini->nrodocto = $dte->nrodocto;
             $dteini->stasubsii = 1;
