@@ -22,7 +22,6 @@ class DteTrans extends Model
         'nombrechofer', 
         'patente',
         'patentecarro',
-        'indtraslado',
     ];
 
     // Relaciones
@@ -34,14 +33,5 @@ class DteTrans extends Model
     public function comuna()
     {
         return $this->belongsTo(Comuna::class, 'comuna_id');
-    }
-
-    /**
-     * Indicador de traslado al que pertenece este registro.
-     * La unión es por el campo indtraslado (no por id).
-     */
-    public function indtrasladoRel()
-    {
-        return $this->belongsTo(TipoTraslado::class, 'indtraslado', 'indtraslado');
     }
 }
