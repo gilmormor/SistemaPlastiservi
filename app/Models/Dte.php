@@ -193,7 +193,7 @@ class Dte extends Model
         return $this->hasOne(DteGuiaDespNV::class);
     }
 
-    //RELACION de uno a uno dtetrans (Res. Ex. SII N°154)
+    //RELACION de uno a uno dtetrans (Res. Ex. SII N°144)
     public function dtetrans()
     {
         return $this->hasOne(DteTrans::class, 'dte_id');
@@ -1788,7 +1788,13 @@ class Dte extends Model
                     'id' => 0,
                     'stasubsii' => 0,
                     'titulo' => 'No fue procesado el folio ' . $dte->nrodocto,
-                    'mensaje'=>'Error: #' . $Estado_DTE->Estatus . " " . $Estado_DTE->MsgEstatus,
+                    /* El mensaje se armaba con Estatus y MsgEstatus, que son el resultado de la
+                       *consulta* a BES: cuando la consulta responde bien valen 0 y "", y el usuario
+                       veia literalmente "Error: #0", sin ninguna informacion. El estado real del
+                       documento viene en EstadoDTE y DescEstado (por ejemplo 4 / "Documento
+                       empaquetado"), que es lo que explica por que no se puede regenerar. Se deja
+                       Estatus/MsgEstatus solo como detalle, y unicamente si traen algo. */
+                    'mensaje'=>'El folio ' . $dte->nrodocto . ' ya existe en la plataforma de BES, estado ' . $Estado_DTE->EstadoDTE . ': ' . $Estado_DTE->DescEstado . '. Para volver a generar el DTE primero debe eliminarse en BES.' . ((isset($Estado_DTE->MsgEstatus) && $Estado_DTE->MsgEstatus != "") ? ' Detalle: #' . $Estado_DTE->Estatus . ' ' . $Estado_DTE->MsgEstatus : ''),
                     'tipo_alert' => 'error',
                     'stasubcob' => $dte->stasubcob,
                     'updated_at' => $dte->updated_at
@@ -1821,7 +1827,10 @@ class Dte extends Model
                                 'id' => 0,
                                 'stasubsii' => 0,
                                 'titulo' => 'No fue procesado el folio ' . $Solicitar_Folio->Folio,
-                                'mensaje'=>'Error: #' . $Estado_DTE->Estatus . " " . $Estado_DTE->MsgEstatus,
+                                /* Mismo caso que arriba: aqui el folio que BES acaba de entregar ya
+                                   tiene un documento asociado, y el motivo esta en EstadoDTE y
+                                   DescEstado, no en Estatus (que vale 0 porque la consulta fue bien). */
+                                'mensaje'=>'El folio ' . $Solicitar_Folio->Folio . ' que entrego BES ya tiene un documento asociado, estado ' . $Estado_DTE->EstadoDTE . ': ' . $Estado_DTE->DescEstado . '.' . ((isset($Estado_DTE->MsgEstatus) && $Estado_DTE->MsgEstatus != "") ? ' Detalle: #' . $Estado_DTE->Estatus . ' ' . $Estado_DTE->MsgEstatus : ''),
                                 'tipo_alert' => 'error',
                                 'stasubcob' => $dte->stasubcob,
                                 'updated_at' => $dte->updated_at
