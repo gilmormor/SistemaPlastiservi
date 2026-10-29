@@ -160,7 +160,7 @@
         <div class="row">
             {{-- Div para RUT Transportista (Externo) --}}
             <div class="form-group col-xs-12 col-sm-3" id="div_rut_transportista" style="display: none;">
-                <label for="ruttrans" class="control-label">RUT Transportista (Empresa)</label>
+                <label for="ruttrans" class="control-label requerido">RUT Transportista (Empresa)</label>
                 <input type="text" name="ruttrans" id="ruttrans" class="form-control rut" placeholder="Ej: 761234567" onkeyup="llevarMayus(this);"  maxlength="12" oninput="validarInputRut(event)" onkeyup="llevarMayus(this);">
                 <span id="nombre_transportista" class="help-block" style="font-size: 11px;"></span>
                 {{-- <div class="input-group"> --}}
