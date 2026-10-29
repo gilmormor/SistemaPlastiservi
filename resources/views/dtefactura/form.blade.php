@@ -142,7 +142,7 @@
             </div>
 
             <div class="form-group col-xs-12 col-sm-4" style="display:none;">
-                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
+                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Despacho</label>
                 <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($data) ? $data->tipodespacho : ($data->tipodespacho ?? ''))}}" required>
                     <option 
                         value="1"

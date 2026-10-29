@@ -120,7 +120,7 @@
                 <input type="text" name="ot" id="ot" class="form-control pull-right numerico" value="{{old('ot', isset($dteguiadesp) ? $dteguiadesp->dteguiadesp->ot : '')}}" maxlength="5"/>
             </div>
             <div class="form-group col-xs-12 col-sm-5">
-                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Desp</label>
+                <label for="tipodespacho" class="control-label requerido" data-toggle='tooltip' title="Tipo Despacho">Tipo Despacho</label>
                 <select name="tipodespacho" id="tipodespacho" class="form-control select2  tipodespacho" data-live-search='true' value="{{old('tipodespacho', isset($dteguiadesp) ? $dteguiadesp->tipodespacho : ($data->tipodespacho ?? ''))}}" required>
                     <option 
                         value="1"
