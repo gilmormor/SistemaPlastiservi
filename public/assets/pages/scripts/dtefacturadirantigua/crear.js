@@ -24,7 +24,7 @@ $(document).ready(function () {
     //alert(aux_nfilas);
 	$("#agregar_reg").click(function()
     {
-        agregarFila(2);
+        agregarFila(false);
     });
 	fieldHTML = "<input type='hidden' name='itemAct' id='itemAct'>" //Creo input con campo itemAct=item actual
 	$("#DivVerTodosProd").append(fieldHTML);
@@ -256,7 +256,7 @@ $("#rut").blur(function(){
 							$("#fchvenc").val("");
 							//$("#fchemis").change();
 							$("#ids").val("1");
-							agregarFila();
+							agregarFila(false); // sin foco: el usuario sigue en la cabecera
 							
 							$('#additem').show();
 							cargardatospantprod();
@@ -352,7 +352,12 @@ function blanquearDatos(){
 }
 
 
-function agregarFila() {
+/* aux_enfocar: dejar el cursor en el codigo de la fila nueva. Solo se pide desde
+   el boton de agregar item, que es donde el usuario quiere escribir enseguida.
+   Al cargar la pantalla y al traer el cliente por el RUT no se pide: ahi el foco
+   saltaba a la grilla y arrastraba la pantalla, dejando atras los campos de la
+   cabecera que todavia faltan por llenar. */
+function agregarFila(aux_enfocar) {
 	//aux_num=parseInt($("#tabla-data >tbody >tr").length);
 	aux_nroitem=parseInt($("#tabla-data >tbody >tr").length) + 1;
     aux_num=parseInt($("#ids").val());
@@ -421,7 +426,9 @@ function agregarFila() {
     $('#tabla-data tbody').append(htmlTags);
 	activarClases();
 	totalizar();
-	$("#vlrcodigo" + aux_nfila).focus();
+	if(aux_enfocar){
+		$("#vlrcodigo" + aux_nfila).focus();
+	}
 	$("unmditem" + aux_nfila).select2({
 		tags: true
 	  });
@@ -448,7 +455,7 @@ function agregarEliminar(fila){
         $("#agregar_reg"+fila).attr("data-original-title", "Eliminar");
         $("#agregar_reg"+fila).attr("title", "Eliminar");
 		$("#itemcompletos").val(""); //AL AGREGAR ITEM ASIGNO "" PARA VALIDAR QUE ESTA VACIO EL ITEN INSERTADO
-        agregarFila(fila);
+        agregarFila(true); // el cursor va al codigo del item recien agregado
     }
 }
 
