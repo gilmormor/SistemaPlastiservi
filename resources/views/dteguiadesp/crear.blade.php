@@ -11,7 +11,15 @@
     <script>
     $(document).ready(function() {
         $('#btndiagnosticar').on('click', function() {
-            if (!$('#form-general').valid()) return;
+            /* #auxeditcampoN es el input del modal de kilos: esta oculto pero es
+               required, y la validacion del formulario revisa tambien los ocultos,
+               de modo que bloquea con "Falta: Valor" si el modal nunca se abrio.
+               Al guardar se sortea asignandole un 1; aqui se libera y se repone,
+               para no inventarle un valor a un campo que no se uso. */
+            var $aux_campomodal = $('#auxeditcampoN').removeAttr('required');
+            var aux_valido = $('#form-general').valid();
+            $aux_campomodal.attr('required', 'required');
+            if (!aux_valido) return;
             var $btn = $(this);
             $btn.prop('disabled', true).text('Procesando...');
             $('#modalDiagnosticoBody').html('<p><i class="fa fa-spinner fa-spin"></i> Ejecutando diagnóstico...</p>');
