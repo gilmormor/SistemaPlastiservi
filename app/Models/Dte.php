@@ -4297,6 +4297,13 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                     "</Chofer>" : "") .
                     "<DirDest>$dtetrans->dirdest</DirDest>" .
                     "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
+                    /* <CiudadDest> es el campo 73 del Formato DTE 2.5 y va justo despues
+                       de la comuna. No se guarda en dtetrans: la ciudad se deriva de la
+                       comuna de entrega, que ya esta en comuna_id (cada comuna pertenece
+                       a una sola ciudad). Se omite si no se puede resolver, igual que los
+                       demas tags: para el SII es opcional. */
+                    (optional(optional($dtetrans->comuna)->ciudad)->nombre
+                        ? "<CiudadDest>" . $dtetrans->comuna->ciudad->nombre . "</CiudadDest>" : "") .
                     "<FchSalida>$aux_fechaSalida</FchSalida>" .
                     "<HraSalida>$aux_HoraSalida</HraSalida>" .
                     "<FchLlegada>$aux_fchllegada</FchLlegada>" .
@@ -4474,6 +4481,13 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                     "</Chofer>" : "") .
                     "<DirDest>$dtetrans->dirdest</DirDest>" .
                     "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
+                    /* <CiudadDest> es el campo 73 del Formato DTE 2.5 y va justo despues
+                       de la comuna. No se guarda en dtetrans: la ciudad se deriva de la
+                       comuna de entrega, que ya esta en comuna_id (cada comuna pertenece
+                       a una sola ciudad). Se omite si no se puede resolver, igual que los
+                       demas tags: para el SII es opcional. */
+                    (optional(optional($dtetrans->comuna)->ciudad)->nombre
+                        ? "<CiudadDest>" . $dtetrans->comuna->ciudad->nombre . "</CiudadDest>" : "") .
                     "<FchSalida>$aux_fechaSalida</FchSalida>" .
                     "<HraSalida>$aux_HoraSalida</HraSalida>" .
                     "<FchLlegada>$aux_fchllegada</FchLlegada>" .
