@@ -6,6 +6,7 @@ use App\Events\XMLCargaDocManager;
 use App\Models\Dte;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use SoapClient;
 use SoapFault;
 
@@ -195,6 +196,7 @@ class SoapController extends Controller
             }
             
         }catch(Exception $e){
+            Log::info('Error: #' . $e->getMessage());
             return $e->getMessage();
         }
     }

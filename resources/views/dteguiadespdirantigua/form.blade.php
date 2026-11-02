@@ -211,7 +211,7 @@
     <div class="box-header with-border">
         <h3 class="box-title">Detalle</h3>
         <div class="box-tools pull-right">
-            <a onclick="agregarFila()" id="additem" name="additem" class="btn btn-block btn-success btn-sm">
+            <a onclick="agregarFila(true)" id="additem" name="additem" class="btn btn-block btn-success btn-sm">
                 <i class="fa fa-fw fa-plus-circle"></i>Agregar item
             </a>
         </div>

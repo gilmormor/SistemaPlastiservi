@@ -39,20 +39,55 @@ var Biblioteca = function(){
                     label.closest('.form-group').removeClass('has-error');
                 },
                 errorPlacement: function(error,element){
+                    /* Un campo con pull-right flota a la derecha y sale del flujo, de modo
+                       que el mensaje se dibujaba a su izquierda en la misma linea en vez de
+                       debajo. El clear lo baja sin alterar el resto del formulario: solo
+                       afecta al span del error y solo en los campos que llevan esa clase. */
+                    if (element.hasClass('pull-right')){
+                        error.css('clear','both');
+                    }
                     if ($(element).is('select') && element.hasClass('bs-select')) {
                         error.insertAfter(element);
                     } else if ($(element).is('select') && element.hasClass('select2-hidden-accessible')){
                         element.next().after(error);
-                    } else if (element.attr("date-error-container")){
-                        error.appenTo(element.attr("data-error-container"));
+                    } else if ($(element).is('select') && element.hasClass('selectpicker')){
+                        /* bootstrap-select mete el select original como PRIMER hijo de su
+                           envoltorio .bootstrap-select, antes del boton que es lo que se ve
+                           en pantalla. Por eso insertar el error despues del select lo
+                           dibujaba encima del control: aqui se inserta despues de todo el
+                           envoltorio, para que quede debajo igual que en los demas campos.
+                           Si bootstrap-select no llego a inicializarse no hay envoltorio, y
+                           entonces se mantiene el comportamiento anterior. */
+                        var aux_wrapbs = element.closest('.bootstrap-select');
+                        if(aux_wrapbs.length){
+                            aux_wrapbs.after(error);
+                        }else{
+                            error.insertAfter(element);
+                        }
+                    } else if (element.attr("data-error-container")){
+                        /* Se corrigen dos errores de esta rama, que hasta ahora nunca se
+                           ejecutaba porque ninguna vista usa el atributo: la condicion leia
+                           "date-error-container" en vez de "data-error-container", y appenTo
+                           no existe en jQuery, el metodo es appendTo. */
+                        error.appendTo(element.attr("data-error-container"));
+                    } else if (element.closest('.input-group').length){
+                        /* En Bootstrap 3 el .input-group se dibuja como una tabla y sus hijos
+                           como celdas, de modo que insertar el error despues del input lo
+                           dejaba como una celda mas, a la derecha y en la misma linea del
+                           boton o del addon. Se inserta despues de todo el grupo para que
+                           quede debajo, igual que en un input suelto. */
+                        element.closest('.input-group').after(error);
                     } else {
                         error.insertAfter(element);
                     }
                 },
                 invalidHandler: function(event, validator) {
-
+                    // Cuando hay errores de validación, el botón se mantiene activo
+                    $("#btnguardargen").prop("disabled", false);
                 },
                 submitHandler: function(form){
+                    // Solo cuando TODAS las validaciones (incluyendo las de transporte) pasan
+                    // se deshabilita el botón y se envía el formulario
                     $("#btnguardargen").prop("disabled", true);
                     return true;
                 }

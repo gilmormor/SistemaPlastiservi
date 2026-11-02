@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\GuardarDteND;
+use App\Services\DocInsumoDetService;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\ValidarDTEND;
 use App\Models\CentroEconomico;
 use App\Models\ClienteDesBloqueado;
@@ -209,18 +211,41 @@ class DteNDFacturaController extends Controller
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
-            $dte->fchemisgen = date("Y-m-d H:i:s");
-            $dte->nrodocto = $respuesta["aux_folio"];
-            $dteNew = Dte::create($dte->toArray());
-            foreach ($dte->dtedets as $dtedet) {
-                //dd($dtedet->toArray());
-                $dtedet->dte_id = $dteNew->id;
-                DteDet::create($dtedet->toArray());
+            $dispatcher = DteDet::getEventDispatcher();
+            DteDet::unsetEventDispatcher();
+            $dtedetCreados = [];
+            DB::beginTransaction();
+            try {
+                $dte->fchemisgen = date("Y-m-d H:i:s");
+                $dte->nrodocto = $respuesta["aux_folio"];
+                $dteNew = Dte::create($dte->toArray());
+                foreach ($dte->dtedets as $dtedet) {
+                    //dd($dtedet->toArray());
+                    $dtedet->dte_id = $dteNew->id;
+                    $dtedetNew = DteDet::create($dtedet->toArray());
+                    $dtedetCreados[] = $dtedetNew;
+                }
+                $dtedte->dte_id = $dteNew->id;
+                $dtedte->save();
+                $dtencnd->dte_id = $dteNew->id;
+                $dtencnd->save();
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                DteDet::setEventDispatcher($dispatcher);
+                Log::error('DteNDFactura guardar error: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
+                return redirect()->back()->with([
+                    'mensaje' => 'Error: ' . $e->getMessage(),
+                    'tipo_alert' => 'alert-error'
+                ])->withInput();
             }
-            $dtedte->dte_id = $dteNew->id;
-            $dtedte->save();
-            $dtencnd->dte_id = $dteNew->id;
-            $dtencnd->save();
+            DteDet::setEventDispatcher($dispatcher);
+            foreach ($dtedetCreados as $det) {
+                DocInsumoDetService::syncFromDetalle($det, 'DTE');
+            }
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
@@ -234,7 +259,7 @@ class DteNDFacturaController extends Controller
             return redirect('dtendfactura')->with([
                 'mensaje'=>'Nota de Debito creada con exito.',
                 'tipo_alert' => 'alert-success'
-            ]);    
+            ]);
         }else{
             /* $foliocontrol->bloqueo = 0;
             $foliocontrol->save(); */

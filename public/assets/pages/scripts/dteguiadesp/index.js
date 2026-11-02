@@ -146,10 +146,19 @@ $(document).ready(function () {
             bntaproord_text = 
             `<a ${aux_displaybtnac} id="bntaproord${data.id}" name="bntaproord${data.id}" class="btn-accion-tabla btn-sm tooltipsC botonac${data.id}" onclick="procesarDTEGuiaDesp(${data.id})" title="Enviar a procesados">
                 <span class="glyphicon glyphicon-floppy-save" style="bottom: 0px;top: 2px;"></span>
-            </a> | 
+            </a>`;
+
+            // El boton de anular solo se dibuja si el usuario tiene el permiso
+            // editar-dte-guia-despacho. El valor lo deja el controlador en el hidden
+            // #staeditar al cargar la pantalla, asi que se lee una sola vez y no viene
+            // con los datos de cada fila. Ocultarlo es solo comodidad: la proteccion
+            // real esta en el servidor (validarupdated, guiadespanul, guiadespanulsininv).
+            if ($("#staeditar").val() == 1) {
+                bntaproord_text += ` | 
             <a onclick="anularguiafact(${data.id},${data.despachoord_id},'dteguiadesp')" class="btn-accion-tabla btn-sm tooltipsC" title="Anular registro y devolver a Orden de Despacho" data-toggle="tooltip">
                 <span class="glyphicon glyphicon-remove text-danger"></span>
             </a>`;
+            }
             //$('td',row).eq(17).attr('bntaproord',bntaproord_text);
 
             aux_text = 

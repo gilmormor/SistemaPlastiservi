@@ -160,6 +160,34 @@ Menú - Rol
     min-width: 150px;
 }
 
+/* --- Desplazamiento horizontal con muchos roles ---
+   Con 44 roles seleccionados la fila de checkboxes mide unos 4.500px contra los
+   ~1.230 visibles. No llegaba a envolverse porque .checks-rol-container tiene
+   flex-shrink:0 (toma todo el ancho que necesita, así que su flex-wrap nunca
+   actúa), y ningún contenedor tenía overflow-x, de modo que las columnas de la
+   derecha quedaban fuera de alcance.
+   Se habilita el scroll horizontal y se deja el nombre del menú fijo a la
+   izquierda: sin eso, al desplazarse se pierde la referencia de qué menú se está
+   marcando, que es justamente lo que hace falta al asignar permisos. */
+#arbol-menu {
+    overflow-x: auto;
+}
+#arbol-menu .menu-fila {
+    flex-wrap: nowrap;      /* todo en una línea; el scroll hace el resto */
+    width: max-content;
+    min-width: 100%;        /* para que el fondo del nivel cubra todo el ancho */
+}
+#arbol-menu .menu-nombre-wrap {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: inherit;    /* conserva el color de fondo de su nivel */
+    box-shadow: 2px 0 3px -1px rgba(0,0,0,.12);
+    padding-right: 10px;
+    flex: 0 0 320px;        /* ancho fijo: el sticky necesita una medida estable */
+    min-width: 320px;
+}
+
 /* --- Checkboxes por rol --- */
 .checks-rol-container {
     display: flex;

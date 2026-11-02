@@ -978,6 +978,7 @@ if (!function_exists('formatearRUTSinCerosIzq')) {
         return $rutFormateado;
     }
 }
+
 if (!function_exists('saldoPicking')) {
     function saldoPicking($despachosoldet_id){
         $despachosoldet = DespachoSolDet::find($despachosoldet_id);
@@ -1039,4 +1040,17 @@ if (!function_exists('convertirNumeroLatinoaUS')) {
     }
 }
 
+
+
+if (!function_exists('limpiarRut')) {
+    function limpiarRut($rut) {
+        // Verificar si es null, vacío o solo espacios
+        if (is_null($rut) || trim($rut) === '') {
+            return '';
+        }
+        
+        // Eliminar puntos y guiones
+        return str_replace(['.', '-'], '', $rut);
+    }
+}
 ?>

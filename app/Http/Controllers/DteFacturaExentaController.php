@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CentroEconomico;
 use App\Models\Cliente;
+use App\Models\Comuna;
 use App\Models\DataCobranza;
 use App\Models\DespachoOrd;
 use App\Models\Dte;
@@ -17,10 +18,14 @@ use App\Models\Empresa;
 use App\Models\Foliocontrol;
 use App\Models\Seguridad\Usuario;
 use App\Models\Sucursal;
+use App\Models\TipoTraslado;
 use App\Models\UnidadMedida;
 use App\Models\Vendedor;
+use App\Services\DocInsumoDetService;
+use App\Services\DteTransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DteFacturaExentaController extends Controller
 {
@@ -60,6 +65,11 @@ class DteFacturaExentaController extends Controller
             ->whereIn('sucursal.id', $sucurArray)
             ->get();
         $tablas['centroeconomicos'] = CentroEconomico::orderBy('id')->get();
+        $tablas['comunas'] = Comuna::orderBy('id')->get();
+        $tablas['tipotraslado'] = TipoTraslado::orderBy('id')
+                                ->where('activo', '=', 1)
+                                ->get();
+
         return view('dtefacturaexenta.crear',compact('tablas'));
 
     }
@@ -248,8 +258,20 @@ class DteFacturaExentaController extends Controller
         $dte->ciudad_id = $cliente->ciudad_id;
         $dte->vendedor_id = $request->vendedor_id;
         $dte->obs = $request->obs;
-        $dte->tipodespacho = 2;
-        $dte->indtraslado =  1;
+        /* El tipo de despacho elegido en el formulario decide todo lo demas:
+             vacio -> servicio o arriendo: no ampara traslado, el XML omite el tag
+                      <TipoDespacho> (asi lo pide el Formato DTE 2.5 en ese campo)
+             1     -> retira el cliente: el tag se emite y se registra dtetrans con
+                      las fechas y el destino, pero sin chofer ni patente
+                      (Res. Ex. SII N°144, resolutivo 15°)
+             2 o 3 -> despacha la empresa: se piden todos los datos de transporte
+           Antes el controlador forzaba el valor 2 y el select iba oculto.
+           indtraslado acompaña al tipo de despacho; en facturas es solo dato
+           interno, porque el Formato DTE reserva <IndTraslado> para las guias. */
+        $aux_tipodespacho = $request->tipodespacho;
+        $aux_contraslado = !($aux_tipodespacho === '' or $aux_tipodespacho === null);
+        $dte->tipodespacho = ($aux_tipodespacho === '' or $aux_tipodespacho === null) ? null : $aux_tipodespacho;
+        $dte->indtraslado = is_null($dte->tipodespacho) ? null : 1;
         $dte->mntneto = $Tmntneto;
         $dte->kgtotal = $Tkgtotal;
         $dte->centroeconomico_id = $request->centroeconomico_id;
@@ -258,69 +280,103 @@ class DteFacturaExentaController extends Controller
         $respuesta = Dte::dteSolicitarFolio($dte);
         /* $respuesta = [
                     'id' => 1,
-                    'aux_folio' => 1234,
+                    'aux_folio' => 10000,
         ]; */
         $foliocontrol = Foliocontrol::findOrFail($dte->foliocontrol_id);
         if($respuesta["id"] == 1){
-            $dte->fchemisgen = date("Y-m-d H:i:s");
-            $dte->nrodocto = $respuesta["aux_folio"];
-            $dteNew = Dte::create($dte->toArray());
-            if(isset($dteoc)){
-                if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
-                    $dteoc->dte_id = $dteNew->id;
-                    $dteoc->oc_file = $foto;
-                    $dteoc->save();
-                }    
-            }
-            foreach ($dte->dtedets as $dtedet) {
-                $dtedet->dte_id = $dteNew->id;
-                $despachoorddet_id = $dtedet->despachoorddet_id;
-                $notaventadetalle_id = $dtedet->notaventadetalle_id;
-                $aux_dtedet = $dtedet->toArray();
-                unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
-                unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
-                $dtedetNew = DteDet::create($aux_dtedet);
-                $dtedet_id = $dtedetNew->id;
-                $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
-                $dtedet_despachoorddet->dtedet_id = $dtedet_id;
-                $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
-                $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
-                $dtedet_despachoorddet->save();
-            }
-
-            $dtefac->dte_id = $dteNew->id;
-            $dtefac->save();
-
-            foreach ($dte->dtedtes as $dtedte) {
-                $dtedteNew = new DteDte();
-                $dtedteNew->dte_id = $dteNew->id;
-                $dtedteNew->dter_id = $dtedte->dter_id;
-                $dtedteNew->dtefac_id = $dteNew->id; 
-                $dtedteNew->save();
-                //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS 
-                if($dtedte->dter->foliocontrol_id == 2){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2
-                    //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA 
-                    DespachoOrd::guardarfactdesp($dtedteNew);
+            $dispatcher = DteDet::getEventDispatcher();
+            DteDet::unsetEventDispatcher();
+            $dtedetCreados = [];
+            DB::beginTransaction();
+            try {
+                $dte->fchemisgen = date("Y-m-d H:i:s");
+                $dte->nrodocto = $respuesta["aux_folio"];
+                $dteNew = Dte::create($dte->toArray());
+                if(isset($dteoc)){
+                    if ($foto = Dte::setFoto($request->oc_file,$dteNew->id,$request,"DTE",$dteoc->oc_folder)){ //2 ultimos parametros son origen de orden de compra FC Factura y la carpeta donde se guarda la OC
+                        $dteoc->dte_id = $dteNew->id;
+                        $dteoc->oc_file = $foto;
+                        $dteoc->save();
+                    }
                 }
-            }
+                foreach ($dte->dtedets as $dtedet) {
+                    $dtedet->dte_id = $dteNew->id;
+                    $despachoorddet_id = $dtedet->despachoorddet_id;
+                    $notaventadetalle_id = $dtedet->notaventadetalle_id;
+                    $aux_dtedet = $dtedet->toArray();
+                    unset($aux_dtedet["despachoorddet_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
+                    unset($aux_dtedet["notaventadetalle_id"]); //ELIMINO PARA EVITAR EL ERROR AL INTERTAR A DteDet
+                    $dtedetNew = DteDet::create($aux_dtedet);
+                    $dtedetCreados[] = $dtedetNew;
+                    $dtedet_id = $dtedetNew->id;
+                    $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
+                    $dtedet_despachoorddet->dtedet_id = $dtedet_id;
+                    $dtedet_despachoorddet->despachoorddet_id = $despachoorddet_id;
+                    $dtedet_despachoorddet->notaventadetalle_id = $notaventadetalle_id;
+                    $dtedet_despachoorddet->save();
+                }
 
-            foreach ($dte->dteguiausadas as $dteguiausada) {
-                $dteguiausadaNew = new DteGuiaUsada();
-                $dteguiausadaNew->dte_id = $dteguiausada->dte_id;
-                $dteguiausadaNew->usuario_id = auth()->id();
-                $dteguiausadaNew->save();    
-            }
+                $dtefac->dte_id = $dteNew->id;
+                $dtefac->save();
 
+                foreach ($dte->dtedtes as $dtedte) {
+                    $dtedteNew = new DteDte();
+                    $dtedteNew->dte_id = $dteNew->id;
+                    $dtedteNew->dter_id = $dtedte->dter_id;
+                    $dtedteNew->dtefac_id = $dteNew->id;
+                    $dtedteNew->save();
+                    //RECORRO TODAS LAS GUIAS DE DESPACHO INVOLUCRADAS
+                    if($dtedte->dter->foliocontrol_id == 2){ //ASEGURO QUE EL DTE SEA GUIA DE DESPACHO foliocontrol_id==2
+                        //FUNCION QUE ASIGNA A CADA ORDEN DE DESPACHO EL NUMERO, FECHA Y FECHAHORA DE EMISION DE FACTURA
+                        DespachoOrd::guardarfactdesp($dtedteNew);
+                    }
+                }
+
+                foreach ($dte->dteguiausadas as $dteguiausada) {
+                    $dteguiausadaNew = new DteGuiaUsada();
+                    $dteguiausadaNew->dte_id = $dteguiausada->dte_id;
+                    $dteguiausadaNew->usuario_id = auth()->id();
+                    $dteguiausadaNew->save();
+                }
+
+                /* Sin traslado no se registra dtetrans: el XML arma la seccion
+                   <Transporte> solo si existe ese registro, asi que omitirlo basta
+                   para que la factura de servicio salga sin datos de transporte. */
+                if($aux_contraslado){
+                    $dteTransService = new DteTransService();
+                    $dteTransService->crearDesdeRequest($request, $dteNew->id);
+                }
+
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                DteDet::setEventDispatcher($dispatcher);
+                Log::error('DteFacturaExenta guardar error: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
+                return redirect()->back()->with([
+                    'mensaje' => 'Error al guardar factura: ' . $e->getMessage(),
+                    'tipo_alert' => 'alert-error'
+                ])->withInput();
+            }
+            DteDet::setEventDispatcher($dispatcher);
+            foreach ($dtedetCreados as $det) {
+                DocInsumoDetService::syncFromDetalle($det, 'DTE');
+            }
             $foliocontrol->bloqueo = 0;
             $foliocontrol->ultfoliouti = $dteNew->nrodocto;
             $foliocontrol->save();
             $aux_foliosdisp = $foliocontrol->ultfoliohab - $foliocontrol->ultfoliouti;
+            // Llamadas a servicios externos FUERA de la transacción
+            // El DTE ya está guardado en BD; si falla la subida al SII queda pendiente
             $dte = Dte::findOrFail($dteNew->id);
             $respuesta = Dte::subirDteSii($dte);
             /* if($respuesta["id"] == 1){
                 Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
             } */
             Dte::subirSisCobranza($dte);
+
             if($aux_foliosdisp <= $foliocontrol->folmindisp){
                 $aux_mensaje = "Factura creada con exito. Quedan $aux_foliosdisp folios disponibles!";
                 $aux_tipo_alert = 'alert-error';
@@ -332,7 +388,6 @@ class DteFacturaExentaController extends Controller
                 'mensaje'=> $aux_mensaje,
                 'tipo_alert' => $aux_tipo_alert
             ]);
-
         }else{
             /* $foliocontrol->bloqueo = 0;
             $foliocontrol->save(); */
@@ -341,6 +396,202 @@ class DteFacturaExentaController extends Controller
                 'tipo_alert' => 'alert-error'
             ]);
         }
+
+    }
+
+    /**
+     * Diagnóstico del formulario de factura exenta.
+     * Ejecuta TODA la lógica de guardar() con un folio ficticio (9999)
+     * pero siempre hace ROLLBACK al final — no guarda nada, no consume folios reales.
+     * Devuelve JSON con el detalle de cada paso.
+     */
+    public function diagnosticar(Request $request)
+    {
+        can('guardar-dte-factura-exenta');
+
+        $pasos = [];
+        $ok = true;
+
+        try {
+            // PASO 1: Validar cantidad de productos
+            $cont_producto = count($request->producto_id ?? []);
+            if ($cont_producto <= 0) {
+                return response()->json(['ok' => false, 'pasos' => [['paso' => 'Productos', 'ok' => false, 'detalle' => 'No hay ítems en el formulario']]]);
+            }
+            $pasos[] = ['paso' => 'Productos', 'ok' => true, 'detalle' => "Cantidad de ítems: $cont_producto"];
+
+            // PASO 2: Validar foliocontrol maxitem (exenta = 7)
+            $foliocontrol = Foliocontrol::findOrFail(7);
+            if ($cont_producto > $foliocontrol->maxitemxdoc) {
+                $pasos[] = ['paso' => 'Max ítems', 'ok' => false, 'detalle' => "Items: $cont_producto, Máximo: {$foliocontrol->maxitemxdoc}"];
+                return response()->json(['ok' => false, 'pasos' => $pasos]);
+            }
+            $pasos[] = ['paso' => 'Max ítems', 'ok' => true, 'detalle' => "OK (max: {$foliocontrol->maxitemxdoc})"];
+
+            // PASO 3: Validar cliente
+            $cliente = Cliente::findOrFail($request->cliente_id);
+            $pasos[] = ['paso' => 'Cliente', 'ok' => true, 'detalle' => "ID: {$cliente->id} | {$cliente->razonsocial}"];
+
+            // PASO 4: Cliente bloqueado
+            foreach ($cliente->clientebloqueados as $bloqueo) {
+                $pasos[] = ['paso' => 'Bloqueo cliente', 'ok' => false, 'detalle' => $bloqueo->descripcion];
+                return response()->json(['ok' => false, 'pasos' => $pasos]);
+            }
+            $pasos[] = ['paso' => 'Bloqueo cliente', 'ok' => true, 'detalle' => 'Sin bloqueos'];
+
+            // PASO 5: Armar objeto DTE
+            $dte = new Dte();
+            $dtefac = new DteFac();
+            $dtefac->hep = $request->hep;
+            $dtefac->notped = $request->notped;
+            $dtefac->formapago_id = $cliente->formapago_id;
+            $dtefac->fchvenc = date('Y-m-d', strtotime(date('Y-m-d') . "+ " . $cliente->plazopago->dias . " days"));
+            $dte->dtefac = $dtefac;
+            $pasos[] = ['paso' => 'Armar DTE', 'ok' => true, 'detalle' => "formapago_id: {$dtefac->formapago_id} | fchvenc: {$dtefac->fchvenc}"];
+
+            // PASO 6: OC (si aplica)
+            if (!is_null($request->oc_id)) {
+                $dteoc = new DteOC();
+                $dteoc->dte_id = "";
+                $dteoc->oc_id = $request->oc_id;
+                $dteoc->oc_folder = "oc";
+                $dteoc->oc_file = $request->oc_file;
+                $dte->dteocs[] = $dteoc;
+                $pasos[] = ['paso' => 'OC', 'ok' => true, 'detalle' => "oc_id: {$request->oc_id}"];
+            } else {
+                $pasos[] = ['paso' => 'OC', 'ok' => true, 'detalle' => 'Sin OC'];
+            }
+
+            // PASO 7: Ítems / DteDet
+            $Tmntneto = 0;
+            $Tkgtotal = 0;
+            for ($i = 0; $i < $cont_producto; $i++) {
+                if (is_null($request->producto_id[$i]) == false && is_null($request->qtyitem[$i]) == false) {
+                    $unidadmedida = UnidadMedida::findOrFail($request->unmditem[$i]);
+                    $dtedet = new DteDet();
+                    $dtedet->producto_id = $request->producto_id[$i];
+                    $dtedet->nrolindet = ($i + 1);
+                    $dtedet->vlrcodigo = $request->producto_id[$i];
+                    $dtedet->nmbitem = $request->nmbitem[$i];
+                    $dtedet->qtyitem = $request->qtyitem[$i];
+                    $dtedet->unmditem = substr($unidadmedida->nombre, 0, 4);
+                    $dtedet->unidadmedida_id = $request->unmditem[$i];
+                    $dtedet->prcitem = $request->prcitem[$i];
+                    $dtedet->montoitem = round($dtedet->qtyitem * $dtedet->prcitem, 0);
+                    $aux_itemkg = is_numeric($request->itemkg[$i]) ? $request->itemkg[$i] : 0;
+                    if ($aux_itemkg == 0 && $dtedet->unidadmedida_id == 7) {
+                        $aux_itemkg = $dtedet->qtyitem;
+                    }
+                    $dtedet->itemkg = $aux_itemkg;
+                    $dte->dtedets[] = $dtedet;
+                    $Tmntneto += $dtedet->montoitem;
+                    $Tkgtotal += $aux_itemkg;
+                    $pasos[] = ['paso' => "Ítem " . ($i + 1), 'ok' => true, 'detalle' => "{$dtedet->nmbitem} | qty: {$dtedet->qtyitem} | precio: {$dtedet->prcitem} | monto: {$dtedet->montoitem}"];
+                }
+            }
+
+            // PASO 8: Neto > 0
+            if ($Tmntneto <= 0) {
+                $pasos[] = ['paso' => 'Neto total', 'ok' => false, 'detalle' => "Neto: $Tmntneto — debe ser mayor a cero"];
+                return response()->json(['ok' => false, 'pasos' => $pasos]);
+            }
+            $pasos[] = ['paso' => 'Neto total', 'ok' => true, 'detalle' => "Neto: $Tmntneto | KG: $Tkgtotal"];
+
+            // PASO 9: Validar tipo de documento exento (foliocontrol_id debe ser 7)
+            if ($request->foliocontrol_id != 7) {
+                $pasos[] = ['paso' => 'Tipo documento', 'ok' => false, 'detalle' => "foliocontrol_id: {$request->foliocontrol_id} — debe ser 7 (exento)"];
+                return response()->json(['ok' => false, 'pasos' => $pasos]);
+            }
+            $dte->tasaiva = 0;
+            $dte->iva = 0;
+            $dte->mnttotal = $Tmntneto;
+            $pasos[] = ['paso' => 'Tipo documento', 'ok' => true, 'detalle' => "Exento OK | IVA: 0 | Total: $Tmntneto"];
+
+            // PASO 10: Campos DTE cabecera
+            $centroeconomico = CentroEconomico::findOrFail($request->centroeconomico_id);
+            $hoy = date("Y-m-d H:i:s");
+            $dte->foliocontrol_id = $request->foliocontrol_id;
+            $dte->nrodocto = "";
+            $dte->fchemis = date('Y-m-d');
+            $dte->fchemisgen = $hoy;
+            $dte->fechahora = $hoy;
+            $dte->sucursal_id = $centroeconomico->sucursal_id;
+            $dte->cliente_id = $cliente->id;
+            $dte->comuna_id = $cliente->comunap_id;
+            $dte->ciudad_id = $cliente->ciudad_id;
+            $dte->vendedor_id = $request->vendedor_id;
+            $dte->obs = $request->obs;
+            /* Misma regla que en guardar(), replicada aqui para que el diagnostico
+               refleje lo que realmente ocurre al emitir. */
+            $aux_tipodespacho = $request->tipodespacho;
+            $aux_contraslado = !($aux_tipodespacho === '' or $aux_tipodespacho === null);
+            $dte->tipodespacho = ($aux_tipodespacho === '' or $aux_tipodespacho === null) ? null : $aux_tipodespacho;
+            $dte->indtraslado = is_null($dte->tipodespacho) ? null : 1;
+            $dte->mntneto = $Tmntneto;
+            $dte->kgtotal = $Tkgtotal;
+            $dte->centroeconomico_id = $request->centroeconomico_id;
+            $dte->usuario_id = $request->usuario_id;
+            $pasos[] = ['paso' => 'Cabecera DTE', 'ok' => true, 'detalle' => "sucursal_id: {$dte->sucursal_id} | foliocontrol_id: {$dte->foliocontrol_id} | cliente_id: {$dte->cliente_id}"];
+
+            // PASO 11: Folio (SIMULADO — no llama al webservice real)
+            $respuestaFolio = ['id' => 1, 'aux_folio' => 9999];
+            $pasos[] = ['paso' => 'Solicitar folio (SIMULADO)', 'ok' => true, 'detalle' => "Folio ficticio: {$respuestaFolio['aux_folio']} — NO se consumió folio real"];
+
+            // PASO 12: BEGIN TRANSACTION — insertar en BD (se hace rollback al final)
+            DB::beginTransaction();
+
+            $dte->fchemisgen = date("Y-m-d H:i:s");
+            $dte->nrodocto = $respuestaFolio["aux_folio"];
+            $dteNew = Dte::create($dte->toArray());
+            $pasos[] = ['paso' => 'Crear DTE en BD', 'ok' => true, 'detalle' => "ID temporal (rollback): {$dteNew->id} | nrodocto: {$dteNew->nrodocto}"];
+
+            // PASO 13: Insertar DteDet
+            foreach ($dte->dtedets as $dtedet) {
+                $dtedet->dte_id = $dteNew->id;
+                $aux_dtedet = $dtedet->toArray();
+                unset($aux_dtedet["despachoorddet_id"]);
+                unset($aux_dtedet["notaventadetalle_id"]);
+                $dtedetNew = DteDet::create($aux_dtedet);
+                $dtedet_despachoorddet = new DteDet_DespachoOrdDet();
+                $dtedet_despachoorddet->dtedet_id = $dtedetNew->id;
+                $dtedet_despachoorddet->despachoorddet_id = $dtedet->despachoorddet_id ?? null;
+                $dtedet_despachoorddet->notaventadetalle_id = $dtedet->notaventadetalle_id ?? null;
+                $dtedet_despachoorddet->save();
+                $pasos[] = ['paso' => "Crear DteDet ítem {$dtedet->nrolindet}", 'ok' => true, 'detalle' => "ID temporal: {$dtedetNew->id} | {$dtedet->nmbitem}"];
+            }
+
+            // PASO 14: DteFac
+            $dtefac->dte_id = $dteNew->id;
+            $dtefac->save();
+            $pasos[] = ['paso' => 'Crear DteFac', 'ok' => true, 'detalle' => "ID temporal: {$dtefac->id}"];
+
+            // PASO 15: DteTransService
+            if($aux_contraslado){
+                $dteTransService = new DteTransService();
+                $dteTransService->crearDesdeRequest($request, $dteNew->id);
+                $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Datos de transporte procesados'];
+            }else{
+                $pasos[] = ['paso' => 'DteTransService', 'ok' => true, 'detalle' => 'Omitido: operacion sin traslado de bienes'];
+            }
+
+            // PASO 16: foliocontrol update (simulado)
+            $pasos[] = ['paso' => 'Actualizar foliocontrol', 'ok' => true, 'detalle' => "ultfoliouti sería: {$respuestaFolio['aux_folio']} (NO se actualizó — rollback)"];
+
+        } catch (\Exception $e) {
+            $pasos[] = ['paso' => 'EXCEPCIÓN', 'ok' => false, 'detalle' => $e->getMessage() . ' | Archivo: ' . $e->getFile() . ':' . $e->getLine()];
+            $ok = false;
+        } finally {
+            // Siempre rollback — nunca guardamos nada real
+            DB::rollBack();
+        }
+
+        $resultado = $ok ? '✓ Todos los pasos OK — el formulario guardaría correctamente' : '✗ Se detectó un error (ver paso marcado)';
+        return response()->json([
+            'ok' => $ok,
+            'resultado' => $resultado,
+            'pasos' => $pasos,
+            'nota' => 'ROLLBACK ejecutado — no se guardó nada en BD, no se consumió folio real'
+        ], 200, ['Content-Type' => 'application/json'], JSON_PRETTY_PRINT);
     }
 
     public function procesar(Request $request)

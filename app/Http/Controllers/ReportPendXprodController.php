@@ -44,6 +44,20 @@ class ReportPendXprodController extends Controller
             //dd($vendedor);
         }
         $tablashtml['categoriaprod'] = CategoriaProd::categoriasxUsuario();
+        /* La columna Stock no se muestra a los vendedores (ni en pantalla, ni en el
+           PDF, ni en el Excel). El camino es usuario -> persona -> vendedor, con la
+           FK en persona.usuario_id, y no se filtra vendedor.sta_activo: si la
+           persona esta registrada como vendedor se le oculta igual, activo o no.
+           Se resuelve con un count propio y no con Vendedor::vendedor_id() porque
+           ese metodo, cuando el usuario no es vendedor, trae ademas el pluck de
+           todos los cliente_id, que aca no se necesita. */
+        $esvendedor = DB::select('SELECT COUNT(*) AS contador
+                FROM vendedor INNER JOIN persona
+                ON vendedor.persona_id = persona.id AND ISNULL(persona.deleted_at)
+                INNER JOIN usuario
+                ON persona.usuario_id = usuario.id AND ISNULL(usuario.deleted_at)
+                WHERE ISNULL(vendedor.deleted_at) AND usuario.id = ?', [auth()->id()]);
+        $tablashtml['ocultarstock'] = ($esvendedor[0]->contador > 0) ? 1 : 0;
         $user = Usuario::findOrFail(auth()->id());
         $tablashtml['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablashtml['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablashtml['sucurArray'])->get();

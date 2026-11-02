@@ -20,6 +20,21 @@ Pendiente x Producto
 @endsection
 
 @section('contenido')
+{{-- Indica si hay que ocultar la columna Stock (el usuario es vendedor). Se
+     resuelve en el controlador y viaja una sola vez en este hidden, no en los
+     datos de la tabla, porque el PDF y el Excel se pueden pedir sin que haya
+     filas cargadas en pantalla. --}}
+<input type="hidden" name="ocultarstock" id="ocultarstock" value="{{ $tablashtml['ocultarstock'] ?? 1 }}">
+@if ( ($tablashtml['ocultarstock'] ?? 1) == 1 )
+    {{-- Se oculta por CSS y no con visible:false de DataTables: esa opcion no crea
+         el <td>, con lo que todos los $('td',row).eq(n) del createdRow se correrian
+         un lugar y el reporte quedaria desarmado. Asi la celda sigue existiendo y
+         los indices no se mueven. La clase stock ya la reciben las <td> en el JS. --}}
+    <style>
+        #tabla-data-consulta th.stock,
+        #tabla-data-consulta td.stock { display: none; }
+    </style>
+@endif
 <div class="row">
     <div class="col-lg-12">
         @include('includes.mensaje')
@@ -322,7 +337,9 @@ Pendiente x Producto
                             <th>Largo</th>
                             <th>Peso<br>Espesor</th>
                             <th>TU</th>
-                            <th style='text-align:right'>Stock</th>
+                            {{-- clase stock: la misma que el JS pone en las <td>, para que el
+                                 CSS de arriba oculte encabezado y datos a la vez --}}
+                            <th style='text-align:right' class='stock'>Stock</th>
                             <th style='text-align:right'>Picking</th>
                             <th style='text-align:right'>Cant</th>
                             <th style='text-align:right' class='tooltipsC' title='Cantidad Despachada'>Cant<br>Desp</th>
@@ -337,7 +354,9 @@ Pendiente x Producto
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="16" style="text-align:right">TOTALES</th>
+                            {{-- colspan 15 cuando se oculta Stock: si quedara en 16 abarcaria
+                                 una columna de mas y todos los totales se correrian un lugar --}}
+                            <th colspan="{{ ($tablashtml['ocultarstock'] ?? 1) == 1 ? 15 : 16 }}" style="text-align:right">TOTALES</th>
                             <th id="subpicking" name="subpicking" style="text-align:right" class="tooltipsC" title="Total Picking">0</th>
                             <th id="subcant" name="subcant" style="text-align:right" class="tooltipsC" title="Cantidad">0</th>
                             <th id="subsumacantdesp" name="subsumacantdesp" style="text-align:right" class="tooltipsC" title="Cantidad Despachada">0</th>
@@ -347,7 +366,8 @@ Pendiente x Producto
                             <th id="subtotalplata" name="subtotalplata" style="text-align:right" class="tooltipsC" title="Total $">0</th>
                         </tr>
                         <tr>
-                            <th colspan="16" style="text-align:right">PROMEDIO</th>
+                            {{-- mismo ajuste de colspan que la fila TOTALES --}}
+                            <th colspan="{{ ($tablashtml['ocultarstock'] ?? 1) == 1 ? 15 : 16 }}" style="text-align:right">PROMEDIO</th>
                             <th colspan="5" style="text-align:right"></th>
                             <th id="prom_precioxkilo" name="prom_precioxkilo" style="text-align:right" class="tooltipsC" title="Precio Kg Promedio">0</th>
                             <th id="prom_totalplata" name="prom_totalplata" style="text-align:right" class="tooltipsC" title="Total $ (Precio promedio)">0</th>
