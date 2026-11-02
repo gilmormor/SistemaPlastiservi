@@ -80,12 +80,17 @@ class DteTransService
            Se reutiliza $aux_contransportista, la misma condicion con que se validan
            mas arriba. */
 
+        /* De los maestros ahora se guarda el id, no el texto: dtetrans se vincula con
+           transemp, transchofer y transveh en vez de repetir el RUT, el nombre y la
+           patente. El XML los lee desde esas relaciones, y el nombre de la comuna
+           desde comuna_id, que ya estaba. */
+
         // Empresa transportista — solo si tipo_transporte es EXTERNO y viene el rut
-        $aux_ruttrans = null;
+        $aux_transemp = null;
         if ($aux_contransportista and $request->tipo_transporte === 'EXTERNO') {
             $aux_ruttrans = limpiarRut($request->ruttrans);
             if (!empty($aux_ruttrans)) {
-                TransEmp::firstOrCreate(
+                $aux_transemp = TransEmp::firstOrCreate(
                     ['rut' => $aux_ruttrans],
                     ['usuario_id' => $usuarioId]
                 );
@@ -93,28 +98,31 @@ class DteTransService
         }
 
         // Chofer — si vienen rut y nombre
+        $aux_transchofer = null;
         $aux_rutchofer = $aux_contransportista ? limpiarRut($request->rutchofer1) : null;
         $aux_nombrechofer = $aux_contransportista ? $request->nombrechofer : null;
         if (!empty($aux_rutchofer) && !empty($aux_nombrechofer)) {
-            TransChofer::firstOrCreate(
+            $aux_transchofer = TransChofer::firstOrCreate(
                 ['rut' => $aux_rutchofer],
                 ['nombre' => $aux_nombrechofer, 'usuario_id' => $usuarioId]
             );
         }
 
         // Vehículo principal — si viene la patente
+        $aux_transveh = null;
         $aux_patente = $aux_contransportista ? strtoupper(trim($request->patente ?? '')) : '';
         if (!empty($aux_patente)) {
-            TransVeh::firstOrCreate(
+            $aux_transveh = TransVeh::firstOrCreate(
                 ['patente' => $aux_patente],
                 ['usuario_id' => $usuarioId]
             );
         }
 
         // Carro / remolque — opcional
+        $aux_transvehcarro = null;
         $aux_patentecarro = $aux_contransportista ? strtoupper(trim($request->patentecarro ?? '')) : '';
         if (!empty($aux_patentecarro)) {
-            TransVeh::firstOrCreate(
+            $aux_transvehcarro = TransVeh::firstOrCreate(
                 ['patente' => $aux_patentecarro],
                 ['usuario_id' => $usuarioId]
             );
@@ -124,14 +132,12 @@ class DteTransService
             "dte_id"        => $dteId,
             "fchsalida"     => $fechaHoraSalida,
             "fchllegada"    => $fechaLlegada,
-            "comuna_id"     => $request->comunaentrega_id,
-            "cmnadest"      => $aux_comuna->nombre,
-            "dirdest"       => $request->lugarentrega,
-            "ruttrans"      => $aux_ruttrans ?: null,
-            "rutchofer"     => $aux_rutchofer ?: null,
-            "nombrechofer"  => $aux_nombrechofer ?: null,
-            "patente"       => $aux_patente ?: null,
-            "patentecarro"  => $aux_patentecarro ?: null,
+            "comuna_id"        => $request->comunaentrega_id,
+            "dirdest"          => $request->lugarentrega,
+            "transemp_id"      => optional($aux_transemp)->id,
+            "transchofer_id"   => optional($aux_transchofer)->id,
+            "transveh_id"      => optional($aux_transveh)->id,
+            "transvehcarro_id" => optional($aux_transvehcarro)->id,
         ]);
     }
 }

@@ -16,12 +16,10 @@ class DteTrans extends Model
         'fchllegada', 
         'dirdest', 
         'comuna_id', 
-        'cmnadest',
-        'ruttrans', 
-        'rutchofer', 
-        'nombrechofer', 
-        'patente',
-        'patentecarro',
+        'transemp_id',
+        'transchofer_id',
+        'transveh_id',
+        'transvehcarro_id',
     ];
 
     // Relaciones
@@ -33,5 +31,28 @@ class DteTrans extends Model
     public function comuna()
     {
         return $this->belongsTo(Comuna::class, 'comuna_id');
+    }
+
+    /* Los datos del transportista viven en sus maestros: dtetrans solo los vincula.
+       El XML lee de aqui el RUT de la empresa, el RUT y nombre del chofer y las
+       patentes del vehiculo y del carro. */
+    public function transemp()
+    {
+        return $this->belongsTo(TransEmp::class, 'transemp_id');
+    }
+
+    public function transchofer()
+    {
+        return $this->belongsTo(TransChofer::class, 'transchofer_id');
+    }
+
+    public function transveh()
+    {
+        return $this->belongsTo(TransVeh::class, 'transveh_id');
+    }
+
+    public function transvehcarro()
+    {
+        return $this->belongsTo(TransVeh::class, 'transvehcarro_id');
     }
 }

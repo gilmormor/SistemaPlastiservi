@@ -4275,8 +4275,15 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "</Receptor>";
             if(isset($dte->dtetrans)){
                 $dtetrans = $dte->dtetrans;
-                $aux_ruttrans = formatearRUT($dtetrans->ruttrans);
-                $aux_rutchofer = formatearRUT($dtetrans->rutchofer);
+                /* Los datos del transportista se leen de sus maestros: dtetrans solo
+                   guarda el vinculo (transemp_id, transchofer_id, transveh_id y
+                   transvehcarro_id), en vez de repetir el RUT, el nombre y la patente. */
+                $aux_transemp = $dtetrans->transemp;
+                $aux_transchofer = $dtetrans->transchofer;
+                $aux_transveh = $dtetrans->transveh;
+                $aux_transvehcarro = $dtetrans->transvehcarro;
+                $aux_ruttrans = formatearRUT(optional($aux_transemp)->rut);
+                $aux_rutchofer = formatearRUT(optional($aux_transchofer)->rut);
                 $aux_fechaSalida = date('Y-m-d', strtotime($dtetrans->fchsalida));
                 $aux_HoraSalida = date('H:i:s', strtotime($dtetrans->fchsalida));
                 $aux_fchllegada = date('Y-m-d', strtotime($dtetrans->fchllegada));
@@ -4287,16 +4294,17 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                    cambia; es una proteccion para cuando la Resolucion 144 permita
                    emitir con datos "Diferido" o "Sin Dato". */
                 $contenido .= "<Transporte>" .
-                    ($dtetrans->patente ? "<Patente>$dtetrans->patente</Patente>" : "") .
-                    ($dtetrans->patentecarro ? "<PatenteCarro>$dtetrans->patentecarro</PatenteCarro>" : "") .
-                    ($dtetrans->ruttrans ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
-                    (($dtetrans->rutchofer || $dtetrans->nombrechofer) ?
+                    (optional($aux_transveh)->patente ? "<Patente>" . $aux_transveh->patente . "</Patente>" : "") .
+                    (optional($aux_transvehcarro)->patente ? "<PatenteCarro>" . $aux_transvehcarro->patente . "</PatenteCarro>" : "") .
+                    (optional($aux_transemp)->rut ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
+                    ((optional($aux_transchofer)->rut || optional($aux_transchofer)->nombre) ?
                     "<Chofer>" .
-                        ($dtetrans->rutchofer ? "<RUTChofer>$aux_rutchofer</RUTChofer>" : "") .
-                        ($dtetrans->nombrechofer ? "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" : "") .
+                        (optional($aux_transchofer)->rut ? "<RUTChofer>$aux_rutchofer</RUTChofer>" : "") .
+                        (optional($aux_transchofer)->nombre ? "<NombreChofer>" . $aux_transchofer->nombre . "</NombreChofer>" : "") .
                     "</Chofer>" : "") .
                     "<DirDest>$dtetrans->dirdest</DirDest>" .
-                    "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
+                    /* El nombre de la comuna se deriva de comuna_id, igual que la ciudad */
+                    "<CmnaDest>" . optional($dtetrans->comuna)->nombre . "</CmnaDest>" .
                     /* <CiudadDest> es el campo 73 del Formato DTE 2.5 y va justo despues
                        de la comuna. No se guarda en dtetrans: la ciudad se deriva de la
                        comuna de entrega, que ya esta en comuna_id (cada comuna pertenece
@@ -4459,8 +4467,15 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "</Receptor>";
             if(isset($dte->dtetrans)){
                 $dtetrans = $dte->dtetrans;
-                $aux_ruttrans = formatearRUT($dtetrans->ruttrans);
-                $aux_rutchofer = formatearRUT($dtetrans->rutchofer);
+                /* Los datos del transportista se leen de sus maestros: dtetrans solo
+                   guarda el vinculo (transemp_id, transchofer_id, transveh_id y
+                   transvehcarro_id), en vez de repetir el RUT, el nombre y la patente. */
+                $aux_transemp = $dtetrans->transemp;
+                $aux_transchofer = $dtetrans->transchofer;
+                $aux_transveh = $dtetrans->transveh;
+                $aux_transvehcarro = $dtetrans->transvehcarro;
+                $aux_ruttrans = formatearRUT(optional($aux_transemp)->rut);
+                $aux_rutchofer = formatearRUT(optional($aux_transchofer)->rut);
                 $aux_fechaSalida = date('Y-m-d', strtotime($dtetrans->fchsalida));
                 $aux_HoraSalida = date('H:i:s', strtotime($dtetrans->fchsalida));
                 $aux_fchllegada = date('Y-m-d', strtotime($dtetrans->fchllegada));
@@ -4471,16 +4486,17 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
                    cambia; es una proteccion para cuando la Resolucion 144 permita
                    emitir con datos "Diferido" o "Sin Dato". */
                 $contenido .= "<Transporte>" .
-                    ($dtetrans->patente ? "<Patente>$dtetrans->patente</Patente>" : "") .
-                    ($dtetrans->patentecarro ? "<PatenteCarro>$dtetrans->patentecarro</PatenteCarro>" : "") .
-                    ($dtetrans->ruttrans ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
-                    (($dtetrans->rutchofer || $dtetrans->nombrechofer) ?
+                    (optional($aux_transveh)->patente ? "<Patente>" . $aux_transveh->patente . "</Patente>" : "") .
+                    (optional($aux_transvehcarro)->patente ? "<PatenteCarro>" . $aux_transvehcarro->patente . "</PatenteCarro>" : "") .
+                    (optional($aux_transemp)->rut ? "<RUTTrans>$aux_ruttrans</RUTTrans>" : "") .
+                    ((optional($aux_transchofer)->rut || optional($aux_transchofer)->nombre) ?
                     "<Chofer>" .
-                        ($dtetrans->rutchofer ? "<RUTChofer>$aux_rutchofer</RUTChofer>" : "") .
-                        ($dtetrans->nombrechofer ? "<NombreChofer>$dtetrans->nombrechofer</NombreChofer>" : "") .
+                        (optional($aux_transchofer)->rut ? "<RUTChofer>$aux_rutchofer</RUTChofer>" : "") .
+                        (optional($aux_transchofer)->nombre ? "<NombreChofer>" . $aux_transchofer->nombre . "</NombreChofer>" : "") .
                     "</Chofer>" : "") .
                     "<DirDest>$dtetrans->dirdest</DirDest>" .
-                    "<CmnaDest>$dtetrans->cmnadest</CmnaDest>" .
+                    /* El nombre de la comuna se deriva de comuna_id, igual que la ciudad */
+                    "<CmnaDest>" . optional($dtetrans->comuna)->nombre . "</CmnaDest>" .
                     /* <CiudadDest> es el campo 73 del Formato DTE 2.5 y va justo despues
                        de la comuna. No se guarda en dtetrans: la ciudad se deriva de la
                        comuna de entrega, que ya esta en comuna_id (cada comuna pertenece
