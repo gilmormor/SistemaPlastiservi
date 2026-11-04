@@ -159,11 +159,22 @@ function consultarpage(aux_data){
             $('td', row).eq(12).attr('style','text-align:right');
             $('td', row).eq(13).attr('style','text-align:right');
 
+            // Un documento anulado no aporta cantidad ni monto: se muestra en 0 y no
+            // se le pone la clase subtotalmonto, asi eventFired() no lo suma. Mismo
+            // criterio que el Excel, donde la fila anulada va con Cant, Kg y Neto en 0.
+            aux_anulada = data.dteanul_obs != null;
+            if(aux_anulada){
+                $('td', row).eq(10).attr('data-order',0);
+                $('td', row).eq(10).html(0);
+            }
+
             $('td', row).eq(14).attr('style','text-align:right');
-            $('td', row).eq(14).attr('data-order',data.montoitem);
-            $('td', row).eq(14).attr('data-search',data.montoitem);
-            $('td', row).eq(14).html(MASKLA(data.montoitem,0));
-            $('td', row).eq(14).addClass('subtotalmonto');
+            $('td', row).eq(14).attr('data-order', aux_anulada ? 0 : data.montoitem);
+            $('td', row).eq(14).attr('data-search', aux_anulada ? 0 : data.montoitem);
+            $('td', row).eq(14).html(MASKLA(aux_anulada ? 0 : data.montoitem, 0));
+            if(!aux_anulada){
+                $('td', row).eq(14).addClass('subtotalmonto');
+            }
             /*
             $('td', row).eq(9).attr('style','text-align:center');
             $('td', row).eq(9).attr('data-order',data.porc_comision);

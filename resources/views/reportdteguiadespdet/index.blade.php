@@ -199,11 +199,11 @@ Guia Despacho Detalle
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan="14" style='text-align:right'>Total página</th>
+                            <th colspan="13" style='text-align:right'>Total página</th>
                             <th id='subtotalmonto' name='subtotalmonto' style='text-align:right'>0</th>
                         </tr>
                         <tr>
-                            <th colspan="14" style='text-align:right'>TOTAL GENERAL</th>
+                            <th colspan="13" style='text-align:right'>TOTAL GENERAL</th>
                             <th id='totalmonto' name='totalmonto' style='text-align:right'>0</th>
                         </tr>
                     </tfoot>

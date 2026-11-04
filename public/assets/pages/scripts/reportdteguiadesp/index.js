@@ -737,8 +737,10 @@ function exportarExcel() {
         datosExcel.push(["","","","","","","","",""]);
         datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC","NV","Fact","Usuario"]);
         data.data.forEach(function(registro) {
-            aux_totalkgtotal += registro.kgtotal;
-            aux_totalmnttotal += registro.mnttotal;
+            // Una guia anulada va en 0 y no suma en los totales
+            aux_anulada = registro.dteanul_obs != null;
+            aux_totalkgtotal += aux_anulada ? 0 : registro.kgtotal;
+            aux_totalmnttotal += aux_anulada ? 0 : registro.mnttotal;
             filainifusionar++;
             aux_fecha = new Date(registro.fchemis + " 00:00:00");
 
@@ -762,8 +764,8 @@ function exportarExcel() {
                 registro.rut, //"RUT",
                 registro.razonsocial, //"Cliente",
                 registro.comunanombre, //"CodProd",
-                registro.kgtotal, //"Producto",
-                registro.mnttotal, //"Ancho"
+                aux_anulada ? 0 : registro.kgtotal, //"Producto",
+                aux_anulada ? 0 : registro.mnttotal, //"Ancho"
                 aux_estado, //,"Largo"
                 registro.oc_id, //,"Espesor",
                 registro.notaventa_id,
@@ -1056,8 +1058,10 @@ function exportarExcelDTEDet() {
 
             }
 
-            aux_totalkgtotal += registro.kgtotal;
-            aux_totalmnttotal += registro.mnttotal;
+            // Una guia anulada va en 0 y no suma en los totales
+            aux_anulada = registro.dteanul_obs != null;
+            aux_totalkgtotal += aux_anulada ? 0 : registro.kgtotal;
+            aux_totalmnttotal += aux_anulada ? 0 : registro.mnttotal;
             filainifusionar++;
             filaTituloDet++;
 
@@ -1065,11 +1069,11 @@ function exportarExcelDTEDet() {
                 aux_ln++, //"Ln",
                 registro.producto_id, //"CodPro",
                 registro.nmbitem, //"Producto",
-                registro.qtyitem, //"Cant",
+                aux_anulada ? 0 : registro.qtyitem, //"Cant",
                 registro.unmditem, //"Unid",
-                registro.itemkg, //"Kg",
+                aux_anulada ? 0 : registro.itemkg, //"Kg",
                 registro.prcitem, //"P/U"
-                registro.montoitem, //"Monto"
+                aux_anulada ? 0 : registro.montoitem, //"Monto"
                 "" //,"Desc",
             ];
             aux_nrodocto = registro.nrodocto;
