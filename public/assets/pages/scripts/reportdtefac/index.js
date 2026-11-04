@@ -1193,9 +1193,9 @@ function exportarExcelDTEDet() {
                                 registro.rut + " " + registro.razonsocial.substring(0, 35),
                                 registro.notaventa_id,
                                 registro.comuna_nombre,
-                                registro.kgtotal,
+                                registro.dteanul_obs != null ? 0 : registro.kgtotal,
                                 "",
-                                registro.mnttotal,
+                                registro.dteanul_obs != null ? 0 : registro.mnttotal,
                                 aux_estado,
                                 registro.oc_id,
                                 registro.vendedor_rut + " - " + registro.vendedor_nombre
