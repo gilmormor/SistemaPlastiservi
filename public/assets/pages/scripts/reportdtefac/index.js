@@ -890,10 +890,8 @@ function exportarExcel() {
         datosExcel.push(["","","","","","","","",""]);
         datosExcel.push(["NDoc","Fecha","RUT","Razon Social","Comuna","Kg","Monto","Estado","OC","NV"]);
         data.data.forEach(function(registro) {
-            // Una guia anulada va en 0 y no suma en los totales
-            aux_anulada = registro.dteanul_obs != null;
-            aux_totalkgtotal += aux_anulada ? 0 : registro.kgtotal;
-            aux_totalmnttotal += aux_anulada ? 0 : registro.mnttotal;
+            aux_totalkgtotal += registro.kgtotal;
+            aux_totalmnttotal += registro.mnttotal;
             filainifusionar++;
             aux_fecha = new Date(registro.fchemis + " 00:00:00");
 
@@ -917,8 +915,8 @@ function exportarExcel() {
                 registro.rut, //"RUT",
                 registro.razonsocial, //"Cliente",
                 registro.nombre_comuna, //"CodProd",
-                aux_anulada ? 0 : registro.kgtotal, //"Producto",
-                aux_anulada ? 0 : registro.mnttotal, //"Ancho"
+                registro.kgtotal, //"Producto",
+                registro.mnttotal, //"Ancho"
                 aux_estado, //,"Largo"
                 registro.oc_id, //,"Espesor",
                 registro.notaventa_id
@@ -1193,9 +1191,9 @@ function exportarExcelDTEDet() {
                                 registro.rut + " " + registro.razonsocial.substring(0, 35),
                                 registro.notaventa_id,
                                 registro.comuna_nombre,
-                                registro.dteanul_obs != null ? 0 : registro.kgtotal,
+                                registro.kgtotal,
                                 "",
-                                registro.dteanul_obs != null ? 0 : registro.mnttotal,
+                                registro.mnttotal,
                                 aux_estado,
                                 registro.oc_id,
                                 registro.vendedor_rut + " - " + registro.vendedor_nombre
@@ -1206,10 +1204,8 @@ function exportarExcelDTEDet() {
 
             }
 
-            // Una guia anulada va en 0 y no suma en los totales
-            aux_anulada = registro.dteanul_obs != null;
-            aux_totalkgtotal += aux_anulada ? 0 : registro.kgtotal;
-            aux_totalmnttotal += aux_anulada ? 0 : registro.mnttotal;
+            aux_totalkgtotal += registro.kgtotal;
+            aux_totalmnttotal += registro.mnttotal;
             filainifusionar++;
             filaTituloDet++;
 
@@ -1217,11 +1213,11 @@ function exportarExcelDTEDet() {
                 aux_ln++, //"Ln",
                 registro.producto_id, //"CodPro",
                 registro.nmbitem, //"Producto",
-                aux_anulada ? 0 : registro.qtyitem, //"Cant",
+                registro.qtyitem, //"Cant",
                 registro.unmditem, //"Unid",
-                aux_anulada ? 0 : registro.itemkg, //"Kg",
+                registro.itemkg, //"Kg",
                 registro.prcitem, //"P/U"
-                aux_anulada ? 0 : registro.montoitem, //"Monto"
+                registro.montoitem, //"Monto"
                 "" //,"Desc",
             ];
             aux_nrodocto = registro.nrodocto;
