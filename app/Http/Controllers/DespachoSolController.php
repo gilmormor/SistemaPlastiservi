@@ -88,13 +88,16 @@ class DespachoSolController extends Controller
             $aux_totaldinero += ($data->subtotalsoldesp - $data->subtotaldesp);
             $nuevoOrdDesp = [];
             if($request->sololectura == "0"){
-                // use precomputed count from the main query when available
+                // OJO: no usar $data->contorddesp. La variante del SQL que alimenta esta
+                // pantalla no devuelve esa columna, con lo que el conteo quedaria en 0 y
+                // apareceria el boton de cerrar o devolver en solicitudes que ya tienen
+                // orden de despacho. Para evitar estas consultas hay que agregar antes
+                // contorddesp a esa variante de consultasoldesp.
                 $cont = DespachoSol::findOrFail($data->id)
                             ->despachoords()
                             ->whereNull('deleted_at')
                             ->whereDoesntHave('despachoordanul')
                             ->count();
-                //$cont = isset($data->contorddesp) ? (int)$data->contorddesp : 0;
                 $nuevoOrdDesp1 = [
                     "a_href" => "/despachosol/cerrarsoldesp",
                     "a_class" => "btn-accion-tabla tooltipsC btncerrarsol",
