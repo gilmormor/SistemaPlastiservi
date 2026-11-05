@@ -122,7 +122,7 @@ function consultainvmov($request){
     if(!empty($request->buscarxdesc)){
         $aux_condbuscarxdesc = "invmov.desc LIKE '%$request->buscarxdesc%'";
     }
-    $sql = "SELECT invmov.id,invmovdet.id as invmovdet_id,
+    $sql = "SELECT STRAIGHT_JOIN invmov.id,invmovdet.id as invmovdet_id,
             usuario.usuario,
             invmov.fechahora,invmov.annomes,invmov.desc,invmov.obs,invbodegaproducto.producto_id,
             invmov.idmovmod,invmovmodulo.nombre as invmovmodulo_nombre,
@@ -150,7 +150,7 @@ function consultainvmov($request){
             INNER JOIN usuario
             ON usuario.id = invmov.usuario_id and isnull(usuario.deleted_at)
             INNER JOIN unidadmedida
-            ON unidadmedida.id = categoriaprod.unidadmedidafact_id and isnull(unidadmedida.deleted_at)
+            ON unidadmedida.id = invmovdet.unidadmedida_id and isnull(unidadmedida.deleted_at)
             WHERE $aux_condannomes
             and $aux_condsucursal_id
             and $aux_condFecha
