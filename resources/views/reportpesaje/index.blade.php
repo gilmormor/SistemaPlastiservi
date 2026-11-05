@@ -4,6 +4,9 @@ Pesaje
 @endsection
 
 @section("scripts")
+    <!-- Necesarios para exportar a Excel la pestana Periodo, igual que en reportinvstock -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/reportpesaje/index.js")}}" type="text/javascript"></script>
@@ -151,6 +154,7 @@ Pesaje
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1" data-toggle="tab"  id="tab1" name="tab1">Producto</a></li>
             <li><a href="#tab_2" data-toggle="tab" id="tab2" name="tab2">Fecha</a></li>
+            <li><a href="#tab_3" data-toggle="tab" id="tab3" name="tab3">Periodo</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -256,6 +260,66 @@ Pesaje
                                             <th id='totalFecpesotubo' name='totalFecpesotubo' style='text-align:right'>0</th>
                                             <th id='totalFecDifKg' name='totalFecDifKg' style='text-align:right'>0</th>
                                             <th id='totalFecVar' name='totalFecVar' style='text-align:right'>0</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="tab_3">
+                <div class="col-lg-12">
+                    <div class="box box-danger">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Periodo</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" id="btnexportarExcelPer" name="btnexportarExcelPer" class="btn btn-success btn-sm tooltipsC" title="Exportar Excel" onclick="exportarExcelPeriodo()">
+                                    <i class="fa fa-fw fa-file-excel-o"></i>Excel
+                                </button>
+                                <a id="btnpdfPer" name="btnpdfPer" class="btn btn-success btn-sm tooltipsC" title="Ver PDF">
+                                    <i class="fa fa-fw fa-file-pdf-o"></i>PDF
+                                </a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover" id="tabla-data-reporte-pesaje-periodo" data-page-length="25">
+                                    <thead>
+                                        <tr>
+                                            <th class="width40 tooltipsC" title="Id Pesaje" style='text-align:center'>Id</th>
+                                            <th class="width70 tooltipsC" title="Fecha del Pesaje" style='text-align:center'>Fecha</th>
+                                            <th class="width70 tooltipsC" title="Codigo Producto" style='text-align:center'>Cod</th>
+                                            <th>Producto</th>
+                                            <th class="width20 tooltipsC" title="Peso Norma" style="text-align:right;">PN</th>
+                                            <th class="width50 tooltipsC" title="Linea">Linea</th>
+                                            <th class="width50 tooltipsC" title="Turno">Turno</th>
+                                            <th class="width70 tooltipsC" title="Carro">Carro</th>
+                                            <th class="width30 tooltipsC" title="Peso Carro">Tara</th>
+                                            <th class="width60" style="text-align:right;">Cant</th>
+                                            <th class="width70 tooltipsC" title="Peso Balanza" style="text-align:right;">PesoBal</th>
+                                            <th class="width20 tooltipsC" title="Peso promedio Unitario Balanza" style="text-align:right;">PUB</th>
+                                            <th class="width70 tooltipsC" title="Peso Total Norma" style="text-align:right;">Nominal</th>
+                                            <th class="width70 tooltipsC" title="Peso Total Producto en Balanza" style="text-align:right;">PesoTubo</th>
+                                            <th class="width70 tooltipsC" title="Diferencia Kg" style="text-align:right;">DifKg</th>
+                                            <th class="width70 tooltipsC" title="Var %" style="text-align:right;">Var%</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                        </tr>
+                                        <tr>
+                                            <th colspan='8' style='text-align:right' id='PerTotalPeriodo' name='PerTotalPeriodo'>Total periodo:</th>
+                                            <th id='PerTotalTara' name='PerTotalTara' style='text-align:right'>0</th>
+                                            <th></th>
+                                            <th id='PerTotalPesoBal' name='PerTotalPesoBal' style='text-align:right'>0</th>
+                                            <th></th>
+                                            <th id='PerTotalPesoTotalNorma' name='PerTotalPesoTotalNorma' style='text-align:right'>0</th>
+                                            <th id='PerTotalPesoTotalProdBal' name='PerTotalPesoTotalProdBal' style='text-align:right'>0</th>
+                                            <th id='PerTotalDifKg' name='PerTotalDifKg' style='text-align:right'>0</th>
+                                            <th id='PerTotalVar' name='PerTotalVar' style='text-align:right'>0</th>
                                         </tr>
                                     </tfoot>
                                 </table>

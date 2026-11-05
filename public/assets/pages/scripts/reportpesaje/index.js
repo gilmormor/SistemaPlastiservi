@@ -201,6 +201,124 @@ $(document).ready(function () {
         }
     });
 
+    data = datospesaje(1,0,1); //TODO EL PERIODO, AGRUPADO IGUAL QUE LA PESTANA PRODUCTO
+    $("#tabla-data-reporte-pesaje-periodo").DataTable({
+        'paging'      : true,
+        'lengthChange': true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : false,
+        'processing'  : true,
+        'serverSide'  : true,
+        'ajax'        : "reportpesajepage/" + data.data2,
+        "order": [], //sin orden inicial: respeta el de la consulta (fecha y detalle)
+        'columns'     : [
+            {data: 'pesaje_id'},
+            {data: 'fechahora'},
+            {data: 'producto_id'},
+            {data: 'producto_nombre'},
+            {data: 'pesounitnom'},
+            {data: 'areaproduccionsuclinea_nombre'},
+            {data: 'turno_nombre'},
+            {data: 'pesajecarro_nombre'},
+            {data: 'sumtara'},
+            {data: 'cant'},
+            {data: 'sumpesobaltotal'},
+            {data: 'pesopromunibal'},
+            {data: 'pesototalnorma'},
+            {data: 'pesototalprodbal'},
+            {data: 'difkg'},
+            {data: 'difkg'}
+        ],
+        "language": {
+            "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        },
+        "createdRow": function ( row, data, index ) {
+            //Id del pesaje, con enlace a su PDF
+            $('td', row).eq(0).attr('style','text-align:center');
+            $('td', row).eq(0).attr('data-order',data.pesaje_id);
+            $('td', row).eq(0).html(
+                `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Ver PDF Pesaje Id:${data.pesaje_id}' onclick='genpdfPESAJE(${data.pesaje_id},1)'>
+                        ${data.pesaje_id}
+                    </a>`);
+
+            //Fecha del pesaje en dd/mm/aaaa, ordenando por el valor original
+            $('td', row).eq(1).attr('style','text-align:center');
+            $('td', row).eq(1).attr('data-order',data.fechahora);
+            aux_fechaper = new Date(data.fechahora);
+            $('td', row).eq(1).html(fechaddmmaaaa(aux_fechaper));
+
+            $('td', row).eq(2).attr('style','text-align:center');
+            aux_text =
+                    `<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='Ver PDF Pesaje Id: ${data.pesaje_id}' onclick='genpdfPESAJE(${data.pesaje_id},1)'>
+                        ${data.producto_id}
+                    </a>`;
+            $('td', row).eq(2).html(aux_text);
+
+            $('td', row).eq(5).attr('style','text-align:center');
+            $('td', row).eq(6).attr('style','text-align:center');
+
+            $aux_nombreprod = data.producto_nombre + " D:" + data.diametro + " C:" + data.cla_nombre + " L:" + data.long + " TU:" + data.tipounion;
+            $('td', row).eq(3).attr('style','text-align:left');
+            $('td', row).eq(3).attr('data-search',$aux_nombreprod);
+            $('td', row).eq(3).attr('data-order',$aux_nombreprod);
+            $('td', row).eq(3).html($aux_nombreprod);
+
+            aux_carro = data.pesajecarro_nombre;
+            aux_carro = aux_carro.substring(6);
+            $('td', row).eq(7).attr('style','text-align:center');
+            $('td', row).eq(7).attr('data-search',aux_carro);
+            $('td', row).eq(7).attr('data-order',aux_carro);
+            $('td', row).eq(7).html(aux_carro);
+
+            $('td', row).eq(4).attr('style','text-align:right');
+            $('td', row).eq(4).attr('data-search',data.pesounitnom);
+            $('td', row).eq(4).attr('data-order',data.pesounitnom);
+            $('td', row).eq(4).html(MASKLA(data.pesounitnom,3));
+
+            $('td', row).eq(8).attr('style','text-align:right');
+            $('td', row).eq(8).attr('data-search',data.sumtara);
+            $('td', row).eq(8).attr('data-order',data.sumtara);
+            $('td', row).eq(8).html(MASKLA(data.sumtara,2));
+
+            $('td', row).eq(9).attr('style','text-align:right');
+            $('td', row).eq(9).attr('data-search',data.cant);
+            $('td', row).eq(9).attr('data-order',data.cant);
+            $('td', row).eq(9).html(data.cant,2);
+
+            $('td', row).eq(10).attr('style','text-align:right');
+            $('td', row).eq(10).attr('data-search',data.sumpesobaltotal);
+            $('td', row).eq(10).attr('data-order',data.sumpesobaltotal);
+            $('td', row).eq(10).html(MASKLA(data.sumpesobaltotal,2));
+
+            $('td', row).eq(11).attr('style','text-align:right');
+            $('td', row).eq(11).attr('data-search',data.pesopromunibal);
+            $('td', row).eq(11).attr('data-order',data.pesopromunibal);
+            $('td', row).eq(11).html(MASKLA(data.pesopromunibal,2));
+
+            $('td', row).eq(12).attr('style','text-align:right');
+            $('td', row).eq(12).attr('data-search',data.pesototalnorma);
+            $('td', row).eq(12).attr('data-order',data.pesototalnorma);
+            $('td', row).eq(12).html(MASKLA(data.pesototalnorma,2));
+
+            $('td', row).eq(13).attr('style','text-align:right');
+            $('td', row).eq(13).attr('data-search',data.pesototalprodbal);
+            $('td', row).eq(13).attr('data-order',data.pesototalprodbal);
+            $('td', row).eq(13).html(MASKLA(data.pesototalprodbal,2));
+
+            $('td', row).eq(14).attr('style','text-align:right');
+            $('td', row).eq(14).attr('data-search',data.difkg);
+            $('td', row).eq(14).attr('data-order',data.difkg);
+            $('td', row).eq(14).html(MASKLA(data.difkg,2));
+
+            aux_var = (data.difkg / data.pesototalnorma) * 100;
+            $('td', row).eq(15).attr('style','text-align:right');
+            $('td', row).eq(15).attr('data-search',aux_var);
+            $('td', row).eq(15).attr('data-order',aux_var);
+            $('td', row).eq(15).html(MASKLA(aux_var.toFixed(5),5));
+        }
+    });
+
     totalizar();
 
     $("#btnconsultar").click(function()
@@ -211,6 +329,9 @@ $(document).ready(function () {
         $("#tabla-data-reporte-pesaje-sin-agrupar").DataTable().ajax.url( "reportpesajepage/" + data.data2 ).load();
         data = datospesaje(1,1);
         $("#tabla-data-reporte-pesaje-por-fecha").DataTable().ajax.url( "reportpesajepage/" + data.data2 ).load();
+        data = datospesaje(1,0,1); //pestana Periodo: todo el rango, agrupado por producto
+        $("#PerTotalPeriodo").html("");
+        $("#tabla-data-reporte-pesaje-periodo").DataTable().ajax.url( "reportpesajepage/" + data.data2 ).load();
         totalizar();
     });
 
@@ -259,6 +380,15 @@ function totalizar(){
             $("#TotalVar").html(MASKLA(aux_subtotalVar.toFixed(5),5));
             $("#TotalPeriodo").html("Total período: " + $("#fechad").val() + " al " + $("#fechah").val())
 
+            //Mismos totales en el pie de la pestana Periodo
+            $("#PerTotalTara").html(MASKLA(datos.subtotalTara,2));
+            $("#PerTotalPesoBal").html(MASKLA(datos.subtotalPesoBal,2));
+            $("#PerTotalPesoTotalNorma").html(MASKLA(datos.subtotalPesoTotalNorma,2));
+            $("#PerTotalPesoTotalProdBal").html(MASKLA(datos.subtotalPesoTotalProdBal,2));
+            $("#PerTotalDifKg").html(MASKLA(datos.subtotalDifKg,2));
+            $("#PerTotalVar").html(MASKLA(aux_subtotalVar.toFixed(5),5));
+            $("#PerTotalPeriodo").html("Total período: " + $("#fechad").val() + " al " + $("#fechah").val())
+
             $("#totalFecnominal").html(MASKLA(datos.subtotalPesoTotalNorma,2));
             $("#totalFecpesotubo").html(MASKLA(datos.subtotalPesoTotalProdBal,2));
             $("#totalFecDifKg").html(MASKLA(datos.subtotalDifKg,2));
@@ -279,8 +409,9 @@ var eventFired = function ( type ) {
     $("#subtotalkg").html(MASKLA(total,2))
 }
 
-function datospesaje(aux_statusSumPeriodo,agruFecha){
+function datospesaje(aux_statusSumPeriodo,agruFecha,aux_detperiodo = 0){
     var data1 = {
+        detperiodo        : aux_detperiodo, //1 solo en la pestana Periodo
         statusSumPeriodo  : aux_statusSumPeriodo,
         fechad            : $("#fechad").val(),
         fechah            : $("#fechah").val(),
@@ -297,7 +428,8 @@ function datospesaje(aux_statusSumPeriodo,agruFecha){
         _token            : $("input[name=_token]").val()
     };
 
-    var data2 = "?mesanno="+data1.mesanno +
+    var data2 = "?detperiodo="+data1.detperiodo +
+    "&mesanno="+data1.mesanno +
     "&statusSumPeriodo="+data1.statusSumPeriodo +
     "&fechad="+data1.fechad +
     "&fechah="+data1.fechah +
@@ -358,6 +490,14 @@ $("#btnpdf").click(function(event){
 	$("#myModalpdf").modal('show')
 });
 
+$("#btnpdfPer").click(function(event){
+    data = datospesaje(1,0,1); //todo el periodo, con el formato de la pestana Producto
+    //detperiodo viaja en los parametros y distingue este PDF del de la pestana
+    //Producto: exportPdf() pisa statusSumPeriodo con 1 en ambos casos
+    $('#contpdf').attr('src', '/reportpesaje/exportPdf/'+data.data2);
+    $("#myModalpdf").modal('show')
+});
+
 $("#btnpdfFec").click(function(event){
     data = datospesaje(1,1);
     //alert(cadena);
@@ -365,3 +505,131 @@ $("#btnpdfFec").click(function(event){
     //$('#contpdf').attr('src', '/notaventa/'+id+'/'+stareport+'/exportPdf');
 	$("#myModalpdf").modal('show')
 });
+
+
+//Exporta a Excel el detalle de todo el periodo (pestana Periodo).
+function exportarExcelPeriodo() {
+    aux_data = datospesaje(1,0,1);
+    $.ajax({
+        url: "reportpesajepage/" + aux_data.data2,
+        type: 'GET',
+        dataType: 'json',
+        success: function(respuesta) {
+            if(!respuesta.data || respuesta.data.length == 0){
+                swal({
+                    title: 'Informacion no encontrada!',
+                    text: "",
+                    icon: 'warning',
+                    buttons: { confirm: "Aceptar" },
+                });
+                return 0;
+            }
+            var datosExcel = [];
+            aux_sucursalNombre = $("#sucursal_id option:selected").html();
+            aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val();
+            datosExcel.push(["Pesaje por Periodo","","","","","","","","","","","","","","",fechaactual()]);
+            datosExcel.push(["Sucursal: " + aux_sucursalNombre + "   Periodo: " + aux_rangofecha,"","","","","","","","","","","","","",""]);
+            datosExcel.push(["","","","","","","","","","","","","","","",""]);
+            datosExcel.push(["Id","Fecha","Cod","Producto","PN","Linea","Turno","Carro","Tara","Cant","PesoBal","PUB","Nominal","PesoTubo","DifKg","Var%"]);
+
+            aux_totTara = 0; aux_totCant = 0; aux_totPesoBal = 0;
+            aux_totNominal = 0; aux_totPesoTubo = 0; aux_totDifKg = 0;
+
+            respuesta.data.forEach(function(registro) {
+                //Mismos calculos que la grilla, para que Excel y pantalla coincidan
+                aux_nombreprodx = registro.producto_nombre + " D:" + registro.diametro + " C:" + registro.cla_nombre + " L:" + registro.long + " TU:" + registro.tipounion;
+                aux_carrox = registro.pesajecarro_nombre ? registro.pesajecarro_nombre.substring(6) : "";
+                aux_varx = registro.pesototalnorma > 0 ? (registro.difkg / registro.pesototalnorma) * 100 : 0;
+
+                aux_totTara += Number(registro.sumtara);
+                aux_totCant += Number(registro.cant);
+                aux_totPesoBal += Number(registro.sumpesobaltotal);
+                aux_totNominal += Number(registro.pesototalnorma);
+                aux_totPesoTubo += Number(registro.pesototalprodbal);
+                aux_totDifKg += Number(registro.difkg);
+
+                aux_fechaexc = fechaddmmaaaa(new Date(registro.fechahora));
+                datosExcel.push([
+                    registro.pesaje_id,
+                    aux_fechaexc,
+                    registro.producto_id,
+                    aux_nombreprodx,
+                    Number(registro.pesounitnom),
+                    registro.areaproduccionsuclinea_nombre,
+                    registro.turno_nombre,
+                    aux_carrox,
+                    Number(registro.sumtara),
+                    Number(registro.cant),
+                    Number(registro.sumpesobaltotal),
+                    Number(registro.pesopromunibal),
+                    Number(registro.pesototalnorma),
+                    Number(registro.pesototalprodbal),
+                    Number(registro.difkg),
+                    Number(aux_varx.toFixed(5))
+                ]);
+            });
+
+            aux_totVar = aux_totNominal > 0 ? (aux_totDifKg / aux_totNominal) * 100 : 0;
+            datosExcel.push(["","","","","","","","Total periodo:",aux_totTara,aux_totCant,aux_totPesoBal,"",aux_totNominal,aux_totPesoTubo,aux_totDifKg,Number(aux_totVar.toFixed(5))]);
+
+            createExcelPesajePeriodo(datosExcel);
+        },
+        error: function(xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+
+function createExcelPesajePeriodo(datosExcel) {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Datos");
+    worksheet.addRows(datosExcel);
+
+    ajustarcolumnaexcel(worksheet,"B");
+    ajustarcolumnaexcel(worksheet,"D");
+    ajustarcolumnaexcel(worksheet,"F");
+    ajustarcolumnaexcel(worksheet,"G");
+    ajustarcolumnaexcel(worksheet,"H");
+
+    //Negrita en la fila de titulos de columna (fila 4) y en la de totales
+    const filaTitulos = worksheet.getRow(4);
+    for (let i = 1; i <= 16; i++) {
+        filaTitulos.getCell(i).font = { bold: true };
+    }
+    const filaTotales = worksheet.getRow(datosExcel.length);
+    for (let i = 1; i <= 16; i++) {
+        filaTotales.getCell(i).font = { bold: true };
+    }
+
+    //Formato numerico de las columnas de pesos y cantidades
+    [5,9,11,12,13,14,15].forEach(function(nrocol){
+        worksheet.getColumn(nrocol).eachCell({ includeEmpty: true }, (cell) => {
+            if (cell.value !== null && typeof cell.value === "number") {
+                cell.numFmt = "#,##0.00";
+            }
+        });
+    });
+    worksheet.getColumn(10).eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+            cell.numFmt = "#,##0";
+        }
+    });
+    worksheet.getColumn(16).eachCell({ includeEmpty: true }, (cell) => {
+        if (cell.value !== null && typeof cell.value === "number") {
+            cell.numFmt = "#,##0.00000";
+        }
+    });
+
+    const row1 = worksheet.getRow(1);
+    row1.getCell(1).font = { bold: true, size: 14 };
+
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "PesajePeriodo.xlsx";
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+}
