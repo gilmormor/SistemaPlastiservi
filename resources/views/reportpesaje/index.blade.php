@@ -69,9 +69,7 @@ Pesaje
                                                 @if ( $sucursal->id == $sucursal_id )
                                                     {{'selected'}}
                                                 @endif
-                                            >
-                                                {{$sucursal->nombre}}
-                                            </option>
+                                            >{{$sucursal->nombre}}</option>
                                         @endforeach
                                     </select>
                                 </div>

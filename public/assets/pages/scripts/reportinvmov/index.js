@@ -381,7 +381,7 @@ function exportarExcel() {
         // Crear una matriz para los datos de Excel
             var datosExcel = [];
 
-            datosExcel.push(["ID","Usuario","ID Detalle","ID Origen","FechaHora","Descripción","Obs","ID Producto","Nombre Producto","Módulo Origen","Bodega","Cantidad"]);
+            datosExcel.push(["ID","Usuario","ID Detalle","ID Origen","FechaHora","Descripción","Obs","ID Producto","Nombre Producto","Módulo Origen","Bodega","Cantidad","Cant Kg","UniMed"]);
 
             // Agregar los datos de la tabla al arreglo
             data.data.forEach(function(registro) {
@@ -430,7 +430,9 @@ function exportarExcel() {
                     registro.producto_nombre,
                     registro.invmovmodulo_nombre,
                     registro.invbodega_nombre,
-                    registro.cant
+                    registro.cant,
+                    registro.cantkg,
+                    registro.unidadmedida_nombre
                 ];
                 datosExcel.push(filaExcel);
             });

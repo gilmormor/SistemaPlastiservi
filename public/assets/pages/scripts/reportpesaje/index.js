@@ -528,9 +528,9 @@ function exportarExcelPeriodo() {
             aux_sucursalNombre = $("#sucursal_id option:selected").html();
             aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val();
             datosExcel.push(["Pesaje por Periodo","","","","","","","","","","","","","","",fechaactual()]);
-            datosExcel.push(["Sucursal: " + aux_sucursalNombre + "   Periodo: " + aux_rangofecha,"","","","","","","","","","","","","",""]);
+            datosExcel.push(["Sucursal: " + aux_sucursalNombre + "  Periodo: " + aux_rangofecha,"","","","","","","","","","","","","",""]);
             datosExcel.push(["","","","","","","","","","","","","","","",""]);
-            datosExcel.push(["Id","Fecha","Cod","Producto","PN","Linea","Turno","Carro","Tara","Cant","PesoBal","PUB","Nominal","PesoTubo","DifKg","Var%"]);
+            datosExcel.push(["Id","Fecha","CodProd","Producto","PN","Linea","Turno","Carro","Tara","Cant","PesoBal","PUB","Nominal","PesoTubo","DifKg","Var%"]);
 
             aux_totTara = 0; aux_totCant = 0; aux_totPesoBal = 0;
             aux_totNominal = 0; aux_totPesoTubo = 0; aux_totDifKg = 0;
@@ -622,6 +622,14 @@ function createExcelPesajePeriodo(datosExcel) {
 
     const row1 = worksheet.getRow(1);
     row1.getCell(1).font = { bold: true, size: 14 };
+
+    //Fusionar celdas de Titulo
+    const startCol = 0;
+    const endCol = 14;
+    worksheet.mergeCells(1, startCol, 1, endCol);
+
+    //Fusionar celdas de Titulo
+    worksheet.mergeCells(2, startCol, 2, endCol);
 
     workbook.xlsx.writeBuffer().then(function(buffer) {
         const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
