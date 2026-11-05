@@ -4670,7 +4670,7 @@ function dtefacturaprueba($dte,$Folio,$tipoArch){
             "<TipoDTE>$TipoDocto</TipoDTE>" .
             "<Folio>$Folio</Folio>" .
             "<FchEmis>$FchEmis</FchEmis>" .
-            "<TipoDespacho>$dte->tipodespacho</TipoDespacho>" .
+            ((is_null($dte->tipodespacho) or $dte->tipodespacho === '') ? "" : "<TipoDespacho>$dte->tipodespacho</TipoDespacho>") .
             "<TpoImpresion>N</TpoImpresion>";
             if($dte->foliocontrol_id == 1 or $dte->foliocontrol_id == 7){
                 $contenido .= "<TermPagoGlosa>$formapago_desc</TermPagoGlosa>" .
