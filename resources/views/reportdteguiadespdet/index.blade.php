@@ -176,9 +176,10 @@ Guia Despacho Detalle
                 <table class="table table-striped table-bordered table-hover" id="tabla-data-consulta" data-page-length="25">
                     <thead>
                         <tr>
-                            <th class="width20 tooltipsC" title='Id'>ID</th>
-                            <th class='width60 tooltipsC' title='Orden de Compra'>OC</th>
                             <th class='width60 tooltipsC' title='Guia Despacho'>GuiaDesp</th>
+                            <th class='width60 tooltipsC' title='Nota de Venta'>NV</th>
+                            <th class="width20 tooltipsC ocultar" title='Id'>ID</th>
+                            <th class='width60 tooltipsC' title='Orden de Compra'>OC</th>
                             <th class='width60 tooltipsC' title='Factura'>Fact</th>
                             <th class='width30 tooltipsC' title='Fecha'>Fecha</th>
                             <th class='width40'>RUT</th>

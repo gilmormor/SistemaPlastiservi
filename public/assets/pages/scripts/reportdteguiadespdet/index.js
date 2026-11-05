@@ -39,20 +39,22 @@ function consultarpage(aux_data){
         "order"       : [[ 0, "asc" ]],
         'ajax'        : "/reportdteguiadespdet/reportdteguiadespdetpage/" + aux_data.data2, //$("#annomes").val() + "/sucursal/" + $("#sucursal_id").val(),
         'columns'     : [
-            {data: 'id'},     // 0
-            {data: 'oc_id'}, // 1
-            {data: 'nrodocto'}, // 2
-            {data: 'fact_nrodocto'}, // 3
-            {data: 'fechahora'}, // 4
-            {data: 'rut'}, // 5
-            {data: 'razonsocial'}, // 6
-            {data: 'producto_id'}, // 7
-            {data: 'nmbitem'}, // 8
-            {data: 'qtyitem'}, // 9
-            {data: 'pickingIni'}, // 10
-            {data: 'saldoPicking'}, // 11
-            {data: 'prcitem'}, // 12
-            {data: 'montoitem'}, // 13
+            {data: 'nrodocto'}, // 0 - GuiaDesp, ahora primera columna
+            // NV: la consulta ya trae notaventa_id; el enlace al PDF lo arma createdRow
+            {data: 'notaventa_id', defaultContent: ''}, // 1
+            {data: 'id', className: "ocultar"},     // 2 - oculta: la celda sigue en el DOM para no correr los eq()
+            {data: 'oc_id'}, // 3
+            {data: 'fact_nrodocto'}, // 4
+            {data: 'fechahora'}, // 5
+            {data: 'rut'}, // 6
+            {data: 'razonsocial'}, // 7
+            {data: 'producto_id'}, // 8
+            {data: 'nmbitem'}, // 9
+            {data: 'qtyitem'}, // 10
+            {data: 'pickingIni'}, // 11
+            {data: 'saldoPicking'}, // 12
+            {data: 'prcitem'}, // 13
+            {data: 'montoitem'}, // 14
         ],
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -68,9 +70,9 @@ function consultarpage(aux_data){
                 "<a class='btn-accion-tabla tooltipsC' title='Anulada " + fechaddmmaaaa(aux_fecha) + " Obs: " + data.dteanul_obs + "'>" +
                     "<small class='label label-danger'>A</small>" +
                 "</a>";
-                $('td', row).eq(0).html(aux_text);
+                $('td', row).eq(2).html(aux_text);
             }
-            $('td', row).eq(0).attr('data-order',data.id);
+            $('td', row).eq(2).attr('data-order',data.id);
 
             aux_text = "";
             if(data.oc_id != null){
@@ -79,7 +81,7 @@ function consultarpage(aux_data){
                     ${data.oc_id}
                 </a>`;
             }
-            $('td', row).eq(1).html(aux_text);
+            $('td', row).eq(3).html(aux_text);
 
             aux_text = "";
             if(data.nrodocto != null){
@@ -96,7 +98,26 @@ function consultarpage(aux_data){
                     </a>`;
                 }
             }
-            $('td', row).eq(2).html(aux_text);
+            $('td', row).eq(0).html(aux_text);
+
+            // La marca de anulada se repite aqui porque la columna ID quedo oculta
+            if (data.dteanul_obs != null) {
+                aux_fecha = new Date(data.dteanulcreated_at);
+                $('td', row).eq(0).append(
+                    "<a class='btn-accion-tabla tooltipsC' title='Anulada " + fechaddmmaaaa(aux_fecha) + " Obs: " + data.dteanul_obs + "'>" +
+                        "<small class='label label-danger'>A</small>" +
+                    "</a>");
+            }
+
+            // NV: enlace al PDF de la nota de venta; vacia en las guias directas sin nota de venta
+            aux_text = "";
+            if(data.notaventa_id != null){
+                aux_text =
+                `<a style="padding-left: 0px;" class="btn-accion-tabla btn-sm tooltipsC" title="Nota de Venta ${data.notaventa_id}" onclick="genpdfNV(${data.notaventa_id},1)">
+                    ${data.notaventa_id}
+                </a>`;
+            }
+            $('td', row).eq(1).html(aux_text);
 
             aux_text = "";
             if(data.fact_nrodocto != null){
@@ -113,36 +134,47 @@ function consultarpage(aux_data){
                     </a>`;
                 }
             }
-            $('td', row).eq(3).html(aux_text);
+            $('td', row).eq(4).html(aux_text);
 
 
 
-            $('td', row).eq(4).attr('data-order',data.fechahora);
+            $('td', row).eq(5).attr('data-order',data.fechahora);
             aux_fecha = new Date(data.fechahora);
-            $('td', row).eq(4).html(fechaddmmaaaa(aux_fecha));
+            $('td', row).eq(5).html(fechaddmmaaaa(aux_fecha));
 
-            $('td', row).eq(7).attr('style','text-align:center');
+            $('td', row).eq(8).attr('style','text-align:center');
 
             aux_diametro = data.diametro == "0" || data.diametro == "" ? "" : " D:" + data.diametro;
             aux_cla_nombre = data.cla_nombre == "0" || data.cla_nombre == "" ? "" : " C:" + data.cla_nombre;
             aux_long = data.long == "0" || data.long == "" ? "" : " L:" + data.long;
             aux_tipounion = data.tipounion == "0" || data.tipounion == "" ? "" : " TU:" + data.tipounion;
             aux_nombreprod = data.nmbitem; // + aux_diametro + aux_cla_nombre + aux_long + aux_tipounion;
-            $('td', row).eq(8).attr('style','text-align:left');
-            $('td', row).eq(8).attr('data-search',aux_nombreprod);
-            $('td', row).eq(8).attr('data-order',aux_nombreprod);
-            $('td', row).eq(8).html(aux_nombreprod);
+            $('td', row).eq(9).attr('style','text-align:left');
+            $('td', row).eq(9).attr('data-search',aux_nombreprod);
+            $('td', row).eq(9).attr('data-order',aux_nombreprod);
+            $('td', row).eq(9).html(aux_nombreprod);
 
-            $('td', row).eq(9).attr('style','text-align:right');
             $('td', row).eq(10).attr('style','text-align:right');
             $('td', row).eq(11).attr('style','text-align:right');
             $('td', row).eq(12).attr('style','text-align:right');
-
             $('td', row).eq(13).attr('style','text-align:right');
-            $('td', row).eq(13).attr('data-order',data.montoitem);
-            $('td', row).eq(13).attr('data-search',data.montoitem);
-            $('td', row).eq(13).html(MASKLA(data.montoitem,0));
-            $('td', row).eq(13).addClass('subtotalmonto');
+
+            // Un documento anulado no aporta cantidad ni monto: se muestra en 0 y no
+            // se le pone la clase subtotalmonto, asi eventFired() no lo suma. Mismo
+            // criterio que el Excel, donde la fila anulada va con Cant, Kg y Neto en 0.
+            aux_anulada = data.dteanul_obs != null;
+            if(aux_anulada){
+                $('td', row).eq(10).attr('data-order',0);
+                $('td', row).eq(10).html(0);
+            }
+
+            $('td', row).eq(14).attr('style','text-align:right');
+            $('td', row).eq(14).attr('data-order', aux_anulada ? 0 : data.montoitem);
+            $('td', row).eq(14).attr('data-search', aux_anulada ? 0 : data.montoitem);
+            $('td', row).eq(14).html(MASKLA(aux_anulada ? 0 : data.montoitem, 0));
+            if(!aux_anulada){
+                $('td', row).eq(14).addClass('subtotalmonto');
+            }
             /*
             $('td', row).eq(9).attr('style','text-align:center');
             $('td', row).eq(9).attr('data-order',data.porc_comision);
@@ -361,12 +393,12 @@ function exportarExcelSantaEster() {
         //console.log(data);
         aux_sucursalNombre = $("#sucursal_id option:selected").html();
         aux_rangofecha = $("#fechad").val() + " al " + $("#fechah").val()
-        datosExcel.push(["Guia Despacho Detalle","","","","","","","","","","","","","","","",data.fechaact]);
+        datosExcel.push(["Guia Despacho Detalle","","","","","","","","","","","","","","","","",data.fechaact]);
         datosExcel.push(["Centro Economico: " + aux_sucursalNombre + " Entre: " + aux_rangofecha,"","","","","","","","","","","","",""]);
         aux_totalMonto = 0;
         aux_totalComision = 0;
         datosExcel.push(["","","","","","","","","","","","","","",""]);
-        datosExcel.push(["OC","N° Guia","TipoTras","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto","Pick IniCant","Pick IniKg","Saldo PickCant","Saldo Pickkg"]);
+        datosExcel.push(["N° Guia","NV","OC","TipoTras","N° Fact","Fecha","RUT","Cliente","CodProd","Producto","Ancho","Largo","Espesor","MateriaPrima","Cant","Kg","P/U","Neto","Pick IniCant","Pick IniKg","Saldo PickCant","Saldo Pickkg"]);
         //console.log(data);
         data.datos.forEach(function(registro) {
             aux_indtra = indtrasladoObj(registro.indtraslado);
@@ -396,8 +428,9 @@ function exportarExcelSantaEster() {
                 aux_fact_nrodocto = "Guia Anulada";
             }
             var filaExcel = [
-                registro.oc_id,
                 registro.nrodocto,
+                registro.notaventa_id == null ? "" : registro.notaventa_id, // NV: vacia en guias sin nota de venta
+                registro.oc_id,
                 aux_indtra.letra,
                 aux_fact_nrodocto,
                 fechaddmmaaaa(aux_fecha),
@@ -427,7 +460,7 @@ function exportarExcelSantaEster() {
         /* if(aux_totalMonto != 0){
             datosExcel.push(["","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
         } */
-        datosExcel.push(["","","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
+        datosExcel.push(["","","","","","","","","","","","","","","","","Total: ",aux_totalMonto]);
 
         createExcelSantaEster(datosExcel);
 
@@ -469,13 +502,12 @@ function createExcelSantaEster(datosExcel) {
 
     // Ajustar automáticamente el ancho de la columna B al contenido
     //ajustarcolumnaexcel(worksheet,"A");
-    ajustarcolumnaexcel(worksheet,"D");
     ajustarcolumnaexcel(worksheet,"E");
     ajustarcolumnaexcel(worksheet,"F");
     ajustarcolumnaexcel(worksheet,"G");
     ajustarcolumnaexcel(worksheet,"H");
     ajustarcolumnaexcel(worksheet,"I");
-    ajustarcolumnaexcel(worksheet,"P");
+    ajustarcolumnaexcel(worksheet,"J");
     ajustarcolumnaexcel(worksheet,"Q");
     ajustarcolumnaexcel(worksheet,"R");
     ajustarcolumnaexcel(worksheet,"S");
@@ -483,16 +515,17 @@ function createExcelSantaEster(datosExcel) {
     ajustarcolumnaexcel(worksheet,"U");
     ajustarcolumnaexcel(worksheet,"V");
     ajustarcolumnaexcel(worksheet,"W");
+    ajustarcolumnaexcel(worksheet,"X");
 
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 21; i++) {
+    for (let i = 1; i <= 22; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
     }
 
 
     // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnG = worksheet.getColumn(17);
+    const columnG = worksheet.getColumn(18);
     columnG.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -500,27 +533,27 @@ function createExcelSantaEster(datosExcel) {
     });
 
     // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnR = worksheet.getColumn(18);
+    const columnR = worksheet.getColumn(19);
     columnR.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
     // Recorrer la columna 7 y dar formato con punto para separar los miles
-    const columnS = worksheet.getColumn(19);
+    const columnS = worksheet.getColumn(20);
     columnS.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
 
-    const columnT = worksheet.getColumn(20);
+    const columnT = worksheet.getColumn(21);
     columnT.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
         }
     });
-    const columnU = worksheet.getColumn(21);
+    const columnU = worksheet.getColumn(22);
     columnU.eachCell({ includeEmpty: true }, (cell) => {
         if (cell.value !== null && typeof cell.value === "number") {
         cell.numFmt = "#,##0";
@@ -530,24 +563,24 @@ function createExcelSantaEster(datosExcel) {
 
     // Establecer el formato de centrado horizontal y vertical para las celdas de la columna 8 desde la fila 4 hasta la fila 58
     for (let i = 4; i <= datosExcel.length; i++) {
-        /* const cell8 = worksheet.getCell(i, 8);
+        /* const cell8 = worksheet.getCell(i, 9);
         cell8.alignment = { horizontal: "center", vertical: "middle" }; */
-        const cell10 = worksheet.getCell(i, 10);
+        const cell10 = worksheet.getCell(i, 11);
         cell10.alignment = { horizontal: "center", vertical: "middle" };
-        const cell11 = worksheet.getCell(i, 11);
+        const cell11 = worksheet.getCell(i, 12);
         cell11.alignment = { horizontal: "center", vertical: "middle" };
-        const cell12 = worksheet.getCell(i, 12);
+        const cell12 = worksheet.getCell(i, 13);
         cell12.alignment = { horizontal: "center", vertical: "middle" };
 
-        const cell14 = worksheet.getCell(i, 14);
+        const cell14 = worksheet.getCell(i, 15);
         cell14.alignment = { horizontal: "center", vertical: "middle" };
-        const cell18 = worksheet.getCell(i, 18);
+        const cell18 = worksheet.getCell(i, 19);
         cell18.alignment = { horizontal: "right", vertical: "middle" };
-        const cell19 = worksheet.getCell(i, 19);
+        const cell19 = worksheet.getCell(i, 20);
         cell19.alignment = { horizontal: "right", vertical: "middle" };
-        const cell20 = worksheet.getCell(i, 20);
+        const cell20 = worksheet.getCell(i, 21);
         cell20.alignment = { horizontal: "right", vertical: "middle" };
-        const cell21 = worksheet.getCell(i, 21);
+        const cell21 = worksheet.getCell(i, 22);
         cell21.alignment = { horizontal: "right", vertical: "middle" };
     }
 
@@ -573,13 +606,13 @@ function createExcelSantaEster(datosExcel) {
 
     //Fecha Reporte
     const row2 = worksheet.getRow(1);
-    cell = row2.getCell(17);
+    cell = row2.getCell(18);
     cell.alignment = { horizontal: "center", vertical: "middle" };
 
 
     //Fusionar celdas de Titulo
     const startCol = 0;
-    const endCol = 16;
+    const endCol = 17;
     worksheet.mergeCells(1, startCol, 1, endCol);
 
     //Negrita Columna Sucursal
@@ -589,12 +622,12 @@ function createExcelSantaEster(datosExcel) {
     
     //Fusionar celdas Sucursal
     const startCol1 = 0;
-    const endCol1 = 16;
+    const endCol1 = 17;
     worksheet.mergeCells(2, startCol1, 2, endCol1);
 
     // Establecer negrita a totales
     row = worksheet.getRow(datosExcel.length);
-    for (let i = 1; i <= 21; i++) {
+    for (let i = 1; i <= 22; i++) {
         cell = row.getCell(i);
         cell.font = { bold: true };
         cell.alignment = { horizontal: "right" };

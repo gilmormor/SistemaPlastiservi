@@ -412,7 +412,7 @@ function exportarExcel() {
         // Crear una matriz para los datos de Excel
             var datosExcel = [];
 
-            datosExcel.push(["NroNV","Fecha","Rut","Cliente","Comuna","OC","TotalKg","Total","Prom","EstadoNV"]);
+            datosExcel.push(["NroNV","Fecha","Rut","Cliente","Comuna","OC","TotalKg","Total","Prom","EstadoNV","Motivo Cierre","Usuario Cierre","Fecha Cierre"]);
 
             //datosExcel.push(encabezadosExcel);
 
@@ -428,7 +428,10 @@ function exportarExcel() {
                     registro.totalkilos,
                     registro.subtotal,
                     Math.round(registro.subtotal / (registro.totalkilos ? registro.totalkilos : 1) * 100) / 100,
-                    htmlToText(registro.estadoNV)
+                    htmlToText(registro.estadoNV),
+                    registro.motivocierre, // los tres quedan vacios en las NV que no estan cerradas
+                    registro.usuariocierre,
+                    registro.fechacierre
                 ];
                 datosExcel.push(filaExcel);
             });

@@ -443,7 +443,30 @@ class NotaVenta extends Model
             IFNULL(vista_datacobranza.tfac,0) AS datacobranza_tfac,
             IFNULL(vista_datacobranza.tdeuda,0) AS datacobranza_tdeuda,
             IFNULL(vista_datacobranza.tdeudafec,0) AS datacobranza_tdeudafec,
-            IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu
+            IFNULL(vista_datacobranza.nrofacdeu,'') AS datacobranza_nrofacdeu,
+            /* Motivo del cierre de la NV. Va como subconsulta y no como JOIN a proposito:
+               la consulta agrupa y calcula sumas, y una NV puede tener mas de un cierre
+               -la 3659 tiene dos-, con lo que un JOIN le duplicaria las filas y le
+               inflaria todos los totales. Se toma el cierre mas reciente. */
+            (SELECT codigodet.descdet
+                FROM notaventacerrada
+                INNER JOIN codigodet
+                ON codigodet.id = notaventacerrada.codigodet_id
+                WHERE notaventacerrada.notaventa_id = notaventa.id
+                AND ISNULL(notaventacerrada.deleted_at)
+                ORDER BY notaventacerrada.id DESC LIMIT 1) AS motivocierre,
+            (SELECT usuario.nombre
+                FROM notaventacerrada
+                INNER JOIN usuario
+                ON usuario.id = notaventacerrada.usuario_id
+                WHERE notaventacerrada.notaventa_id = notaventa.id
+                AND ISNULL(notaventacerrada.deleted_at)
+                ORDER BY notaventacerrada.id DESC LIMIT 1) AS usuariocierre,
+            (SELECT DATE_FORMAT(notaventacerrada.created_at,'%d/%m/%Y %H:%i')
+                FROM notaventacerrada
+                WHERE notaventacerrada.notaventa_id = notaventa.id
+                AND ISNULL(notaventacerrada.deleted_at)
+                ORDER BY notaventacerrada.id DESC LIMIT 1) AS fechacierre
             FROM notaventa INNER JOIN notaventadetalle
             ON notaventa.id=notaventadetalle.notaventa_id
             INNER JOIN producto
