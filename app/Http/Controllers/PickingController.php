@@ -334,11 +334,9 @@ class PickingController extends Controller
                 ->where('sucursal_id', $despachosol->notaventa->sucursal_id)
                 ->where('status', 0)
                 ->exists()) {
-            return response()->json([
-                'status'     => 0,
-                'tipmen'     => 'error',
-                'mensaje'    => 'El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
-                'tipo_alert' => 'error'
+            return redirect('/')->with([
+                'mensaje'    => 'Picking: El período de inventario ' . $annomesHoy . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',
+                'tipo_alert' => 'alert-error'
             ]);
         }
         $statusSalPicking = false;

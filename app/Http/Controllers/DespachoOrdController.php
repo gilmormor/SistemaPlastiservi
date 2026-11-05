@@ -1288,6 +1288,7 @@ class DespachoOrdController extends Controller
                     ->where('status', 0)
                     ->exists()) {
                 return response()->json([
+                    'error'      => 1, // el JS decide por esta clave: sin ella muestra el aviso generico
                     'status'     => 0,
                     'tipmen'     => 'error',
                     'mensaje'    => 'El período de inventario ' . $annomes . ' no está aperturado para esta sucursal. Debe aperturar el mes en Inventario antes de registrar movimientos.',

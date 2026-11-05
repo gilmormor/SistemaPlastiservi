@@ -1788,7 +1788,7 @@ function guardarDTE(Request $request,$aux_indtraslado,$cont_producto){
         $foliocontrol->save();
         Event(new GuardarGuiaDespacho($despachoord,$dteNew));
         $dte = Dte::findOrFail($dteNew->id);
-        //$respuesta = Dte::subirDteSii($dte);
+        $respuesta = Dte::subirDteSii($dte);
         /* if($respuesta["id"] == 1){
             Dte::guardarPdfXmlSii($dte->nrodocto,$foliocontrol,$respuesta["Carga_TXTDTE"]);
         } */
