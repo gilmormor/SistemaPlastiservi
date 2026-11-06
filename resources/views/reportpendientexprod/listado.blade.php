@@ -89,6 +89,15 @@
 						$aux_totalprecio = 0;
 						$aux_totalpicking = 0;
 						$i = 0;
+						/* Las cantidades solicitada y despachada de todos los items se piden de
+						   una vez. Antes se consultaba vista_sumsoldespdet y
+						   vista_sumorddespxnvdetid dentro del bucle, una vez por fila, y como
+						   MySQL 5.7 materializa completa una vista con GROUP BY al filtrarla,
+						   cada fila costaba unos 6,4 s: este reporte, que trae cerca de 800
+						   filas, habria tardado mas de una hora en generar el PDF. */
+						$aux_sumas = \App\Models\NotaVentaDetalle::sumasDespachoPorItem(
+						    collect($datas)->pluck('id')->all()
+						);
 					?>
 					@foreach($datas as $data)
 						<?php
@@ -102,29 +111,18 @@
 
 							//SUMA TOTAL DE SOLICITADO
 							/*************************/
-							$sql = "SELECT cantsoldesp
-							FROM vista_sumsoldespdet
-							WHERE notaventadetalle_id=$data->id";
-							$datasuma = DB::select($sql);
-							
-							if(empty($datasuma)){
-								$sumacantsoldesp= 0;
-							}else{
-								$sumacantsoldesp= $datasuma[0]->cantsoldesp;
-							}
+							// viene de la precarga de arriba; sin movimientos, 0, como antes
+							$sumacantsoldesp = isset($aux_sumas['cantsoldesp'][$data->id])
+							                    ? $aux_sumas['cantsoldesp'][$data->id]
+							                    : 0;
 							/*************************/
 							//SUMA TOTAL DESPACHADO
 							/*************************/
-							$sql = "SELECT cantdesp
-								FROM vista_sumorddespxnvdetid
-								WHERE notaventadetalle_id=$data->id";
-							$datasumadesp = DB::select($sql);
 							//dd($datasumadesp);
-							if(empty($datasumadesp)){
-								$sumacantdesp= 0;
-							}else{
-								$sumacantdesp= $datasumadesp[0]->cantdesp;
-							}
+							// viene de la precarga de arriba; sin movimientos, 0, como antes
+							$sumacantdesp = isset($aux_sumas['cantdesp'][$data->id])
+							                 ? $aux_sumas['cantdesp'][$data->id]
+							                 : 0;
 							//$aux_totalkg += $data->saldokg; // ($data->totalkilos - $data->kgsoldesp);
 							//$aux_totalplata += $data->saldoplata; // ($data->subtotal - $data->subtotalsoldesp);
 							$aux_cantsaldo = $data->cant-$sumacantdesp;
