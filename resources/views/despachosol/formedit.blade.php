@@ -433,6 +433,18 @@
                             <?php 
                                 $aux_nfila = 0; $i = 0;
                                 $cantsolTotal = 0;
+                                /* Las cantidades solicitada y despachada de todos los items se
+                                   piden de una vez. Antes se consultaba vista_sumsoldespdet y
+                                   vista_sumorddespxnvdetid dentro del bucle, una vez por item, y
+                                   como MySQL 5.7 materializa completa una vista con GROUP BY al
+                                   filtrarla, cada item costaba unos 6,4 s: esta pantalla tardaba
+                                   casi 4 minutos con una solicitud de 30 items.
+                                   Aqui $detalles son despachosoldet, asi que el id del item de la
+                                   nota de venta es notaventadetalle_id. */
+                                $aux_sumas = \App\Models\NotaVentaDetalle::sumasDespachoPorItem(
+                                    collect($detalles)->pluck('notaventadetalle_id')->all()
+                                );
+
                             ?>
                             @foreach($detalles as $detalle)
                                 <?php 
@@ -444,26 +456,16 @@
                                         $notaventadetalleext = $detalle->notaventadetalle->notaventadetalleext;
                                         $aux_cant = $detalle->notaventadetalle->cant + $notaventadetalleext->cantext;
                                     }
-                                    $sql = "SELECT cantsoldesp
-                                            FROM vista_sumsoldespdet
-                                            WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
-                                    $datasuma = DB::select($sql);
-                                    if(empty($datasuma)){
-                                        $sumacantsoldesp= 0;
-                                    }else{
-                                        $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-                                    }
+                                    // viene de la precarga de arriba; sin movimientos, 0, como antes
+                                    $sumacantsoldesp = isset($aux_sumas['cantsoldesp'][$detalle->notaventadetalle_id])
+                                                        ? $aux_sumas['cantsoldesp'][$detalle->notaventadetalle_id]
+                                                        : 0;
                                     //SUMA TOTAL DESPACHADO
                                     /*************************/
-                                    $sql = "SELECT cantdesp
-                                        FROM vista_sumorddespxnvdetid
-                                        WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
-                                    $datasumadesp = DB::select($sql);
-                                    if(empty($datasumadesp)){
-                                        $sumacantdesp= 0;
-                                    }else{
-                                        $sumacantdesp= $datasumadesp[0]->cantdesp;
-                                    }
+                                    // viene de la precarga de arriba; sin movimientos, 0, como antes
+                                    $sumacantdesp = isset($aux_sumas['cantdesp'][$detalle->notaventadetalle_id])
+                                                     ? $aux_sumas['cantdesp'][$detalle->notaventadetalle_id]
+                                                     : 0;
                                     /*************************/
 
                                     $aux_saldo = $aux_cant - $sumacantsoldesp;
