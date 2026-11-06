@@ -2865,6 +2865,26 @@ function consulta($request,$aux_sql,$orden){
         $newDatas = [];
         $aux_totalkgPend = 0;
         $aux_totalDineroPend = 0;
+
+        /* Precarga de los productos con sus bodegas. Antes, dentro del bucle se hacia
+           un Producto::findOrFail por cada item de cada nota de venta, y al recorrer
+           sus invbodegaproductos cada acceso a ->invbodega y a ->invbodega->sucursal
+           disparaba otra consulta: 3.354 consultas para 451 notas de venta. Aqui se
+           recogen todos los producto_id de una sola pasada y se cargan con sus
+           relaciones en una consulta. La logica del bucle no cambia: lee del mapa lo
+           que antes pedia a la base de uno en uno. */
+        $aux_productoIdsTodos = [];
+        foreach ($datas as $aux_data) {
+            foreach (explode(';', $aux_data->nvdetalle) as $aux_detalle) {
+                $aux_pid = explode('|', $aux_detalle)[0];
+                // solo ids numericos: el detalle puede venir vacio o incompleto
+                if (is_numeric($aux_pid)) { $aux_productoIdsTodos[(int) $aux_pid] = true; }
+            }
+        }
+        $aux_mapaProductos = Producto::with('invbodegaproductos.invbodega.sucursal')
+                                ->whereIn('id', array_keys($aux_productoIdsTodos))
+                                ->get()->keyBy('id');
+
         foreach ($datas as &$data) {
             //dd($data->nvdetalle);
             $aux_totalkgPend += ($data->totalkilos - $data->totalkgsoldesp);
@@ -2891,7 +2911,11 @@ function consulta($request,$aux_sql,$orden){
             $aux_ContProd = 0;
             foreach ($detalleArray as $index => $detalle) {
                 //$productoarray = Producto::atributosProducto($productoIds[$index]);
-                $producto = Producto::findOrFail($productoIds[$index]);
+                /* Se lee del mapa precargado. Si el id no estuviera, se llama igual a
+                   findOrFail, para que lance la misma excepcion que antes. */
+                $producto = isset($aux_mapaProductos[$productoIds[$index]])
+                            ? $aux_mapaProductos[$productoIds[$index]]
+                            : Producto::findOrFail($productoIds[$index]);
                 $productoarray["nombre"] = $producto->glosa;
                 //dd($producto->invbodegaproductos);
                 //Esta linea me estaba dando error porque a veces no venian los 8 elementos 
