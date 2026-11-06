@@ -88,6 +88,14 @@
 					$totalSubtotalItem = 0;
 					$aux_totalkgItem = 0;
 					$aux_sumtotalkilos1 = 0;
+					/* Las cantidades solicitada y despachada de todos los items se piden de
+					   una vez. Antes se consultaba vista_sumsoldespdet y
+					   vista_sumorddespxnvdetid dentro del bucle, una vez por item, y como
+					   MySQL 5.7 materializa completa una vista con GROUP BY al filtrarla,
+					   cada item costaba unos 6,4 s. */
+					$aux_sumas = \App\Models\NotaVentaDetalle::sumasDespachoPorItem(
+					    collect($notaventaDetalles)->pluck('id')->all()
+					);
 				?>
 				@foreach($notaventaDetalles as $notaventaDetalle)
 					<?php
@@ -104,28 +112,18 @@
 						//$aux_promPonderadoPrecioxkilo += (($notaventaDetalle->totalkilos * 100) / $aux_sumtotalkilos) ;
 						//SUMA TOTAL DE SOLICITADO
 						/*************************/
-						$sql = "SELECT cantsoldesp
-							FROM vista_sumsoldespdet
-							WHERE notaventadetalle_id=$notaventaDetalle->id";
-						$datasuma = DB::select($sql);
+						// viene de la precarga de arriba; sin movimientos, 0, como antes
+						$sumacantsoldesp = isset($aux_sumas['cantsoldesp'][$notaventaDetalle->id])
+						                    ? $aux_sumas['cantsoldesp'][$notaventaDetalle->id]
+						                    : 0;
 						$peso = $notaventaDetalle->totalkilos/$notaventaDetalle->cant;
-						if(empty($datasuma)){
-							$sumacantsoldesp= 0;
-						}else{
-							$sumacantsoldesp= $datasuma[0]->cantsoldesp;
-						}
 						/*************************/
 						//SUMA TOTAL DESPACHADO
 						/*************************/
-						$sql = "SELECT cantdesp
-							FROM vista_sumorddespxnvdetid
-							WHERE notaventadetalle_id=$notaventaDetalle->id";
-						$datasumadesp = DB::select($sql);
-						if(empty($datasumadesp)){
-							$sumacantdesp= 0;
-						}else{
-							$sumacantdesp= $datasumadesp[0]->cantdesp;
-						}
+						// viene de la precarga de arriba; sin movimientos, 0, como antes
+						$sumacantdesp = isset($aux_sumas['cantdesp'][$notaventaDetalle->id])
+						                 ? $aux_sumas['cantdesp'][$notaventaDetalle->id]
+						                 : 0;
 						/*************************/
 
 						/* $aux_ancho = $notaventaDetalle->producto->diametro;
