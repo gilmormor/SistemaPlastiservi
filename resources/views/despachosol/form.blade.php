@@ -419,6 +419,17 @@
                     </thead>
                     <tbody>
                         @if ($aux_sta==2 or $aux_sta==3)
+                            <?php
+                                /* Se precargan las cantidades solicitada y despachada de todos los
+                                   items de una vez. Antes se consultaba vista_sumsoldespdet y
+                                   vista_sumorddespxnvdetid dentro del bucle, una vez por item, y como
+                                   MySQL 5.7 materializa completa una vista con GROUP BY al filtrarla,
+                                   cada item costaba unos 6,4 s: esta pantalla tardaba 15 s con dos
+                                   items y habria tardado minutos con una nota de venta grande. */
+                                $aux_sumas = \App\Models\NotaVentaDetalle::sumasDespachoPorItem(
+                                    collect($detalles)->pluck('id')->all()
+                                );
+                            ?>
                             <?php $aux_nfila = 0; $i = 0;?>
                             @foreach($detalles as $detalle)
                                 <?php
@@ -432,27 +443,17 @@
                                     /*************************/
                                     //SUMA TOTAL SOLICITADO
                                     /*************************/
-                                    $sql = "SELECT cantsoldesp
-                                            FROM vista_sumsoldespdet
-                                            WHERE notaventadetalle_id=$detalle->id";
-                                    $datasuma = DB::select($sql);
-                                    if(empty($datasuma)){
-                                        $sumacantsoldesp= 0;
-                                    }else{
-                                        $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-                                    }
+                                    // viene de la precarga de arriba; sin movimientos, 0, como antes
+                                    $sumacantsoldesp = isset($aux_sumas['cantsoldesp'][$detalle->id])
+                                                        ? $aux_sumas['cantsoldesp'][$detalle->id]
+                                                        : 0;
                                     /*************************/
                                     //SUMA TOTAL DESPACHADO
                                     /*************************/
-                                    $sql = "SELECT cantdesp
-                                        FROM vista_sumorddespxnvdetid
-                                        WHERE notaventadetalle_id=$detalle->id";
-                                    $datasumadesp = DB::select($sql);
-                                    if(empty($datasumadesp)){
-                                        $sumacantdesp= 0;
-                                    }else{
-                                        $sumacantdesp= $datasumadesp[0]->cantdesp;
-                                    }
+                                    // viene de la precarga de arriba; sin movimientos, 0, como antes
+                                    $sumacantdesp = isset($aux_sumas['cantdesp'][$detalle->id])
+                                                     ? $aux_sumas['cantdesp'][$detalle->id]
+                                                     : 0;
                                     /*************************/
                                     $peso = round($detalle->totalkilos/$aux_cant,3);
 
