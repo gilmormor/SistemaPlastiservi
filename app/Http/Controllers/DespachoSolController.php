@@ -228,12 +228,11 @@ class DespachoSolController extends Controller
 
         $clienteDirec = $data->clientedirec()->get();
         $fecha = date("d/m/Y", strtotime($data->fechahora));
-        $formapagos = FormaPago::orderBy('id')->get();
-        $plazopagos = PlazoPago::orderBy('id')->get();
-        $vendedores = Vendedor::orderBy('id')->get();
+        //$formapagos = FormaPago::orderBy('id')->get();
+        //$vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
+        /* $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
             $user = Usuario::findOrFail(auth()->id());
             $sucurArray = $user->sucursales->pluck('id')->toArray();
             $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
@@ -249,11 +248,10 @@ class DespachoSolController extends Controller
                 'persona.nombre',
                 'persona.apellido'
             ])
-            ->get();
+            ->get(); */
 
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $giros = Giro::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
@@ -261,7 +259,7 @@ class DespachoSolController extends Controller
         $user = Usuario::findOrFail(auth()->id());
         $tablas['sucurArray'] = $user->sucursales->pluck('id')->toArray(); //$clientesArray['sucurArray'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
-        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','aux_sta','aux_statusPant','array_bodegasmodulo','tablas'));
+        return view('despachosol.crear', compact('data','clienteselec','clienteDirec','detalles','comunas','plazopagos','fecha','empresa','tipoentregas','aux_sta','aux_statusPant','array_bodegasmodulo','tablas'));
     }
 
     /**
@@ -474,29 +472,8 @@ class DespachoSolController extends Controller
 
 
         $fecha = date("d/m/Y", strtotime($data->fechahora));
-        $formapagos = FormaPago::orderBy('id')->get();
-        $plazopagos = PlazoPago::orderBy('id')->get();
-        $vendedores = Vendedor::orderBy('id')->get();
         $comunas = Comuna::orderBy('id')->get();
 
-        $vendedores1 = Usuario::join('sucursal_usuario', function ($join) {
-            $user = Usuario::findOrFail(auth()->id());
-            $sucurArray = $user->sucursales->pluck('id')->toArray();
-            $join->on('usuario.id', '=', 'sucursal_usuario.usuario_id')
-            ->whereIn('sucursal_usuario.sucursal_id', $sucurArray);
-                    })
-            ->join('persona', 'usuario.id', '=', 'persona.usuario_id')
-            ->join('vendedor', function ($join) {
-                $join->on('persona.id', '=', 'vendedor.persona_id')
-                    ->where('vendedor.sta_activo', '=', 1);
-            })
-            ->select([
-                'vendedor.id',
-                'persona.nombre',
-                'persona.apellido'
-            ])
-            ->get();
-        
         /* $request = new Request();
         $request->merge(['modulo_id' => 5]);
         $request->request->set('modulo_id', 5);
@@ -511,7 +488,6 @@ class DespachoSolController extends Controller
         } */
         $empresa = Empresa::findOrFail(1);
         $tipoentregas = TipoEntrega::orderBy('id')->get();
-        $giros = Giro::orderBy('id')->get();
         $aux_sta=2;
         $aux_statusPant = 0;
         $invmovmodulo = InvMovModulo::where("cod","=","SOLDESP")->get();
@@ -521,7 +497,7 @@ class DespachoSolController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
 
         //dd($clientedirecs);
-        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','aux_sta','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
+        return view('despachosol.editar', compact('data','clienteselec','detalles','comunas','fecha','empresa','tipoentregas','aux_sta','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
   
     }
 

@@ -84,7 +84,9 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="comuna_idD" class="control-label requerido">Comuna</label>
-                            <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
+                            <input type="text" name="comunanombre" id="comunanombre" class="form-control" value="{{old('comunanombre', $data->comuna->nombre ?? '')}}" required readonly/>
+                            <input type="hidden" name="comuna_idD" id="comuna_idD" class="form-control" value="{{old('comuna_idD', $data->comuna_id ?? '')}}"/>
+                            {{-- <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
                                 <option value="">Seleccione...</option>
                                 @foreach($comunas as $comuna)
                                     <option
@@ -96,7 +98,7 @@
                                         {{$comuna->nombre}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
                     </div>
@@ -104,7 +106,9 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
-                            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required readonly disabled>
+                            <input type="text" name="vendedornombre" id="vendedornombre" class="form-control" value="{{old('vendedornombre', $data->vendedor->persona->nombre . ' ' . $data->vendedor->persona->apellido ?? '')}}" required readonly/>
+                            <input type="hidden" name="vendedor_idD" id="vendedor_idD" class="form-control" value="{{old('vendedor_idD', $data->vendedor_id ?? '')}}"/>
+                            {{-- <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required readonly disabled>
                                 <option value="">Seleccione...</option>
                                 @foreach($vendedores1 as $vendedor)
                                     <option
@@ -119,11 +123,13 @@
                                         {{$vendedor->nombre}} {{$vendedor->apellido}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="plazopago_idD" class="control-label requerido">Plazo</label>
-                            <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
+                            <input type="text" name="plazodesc" id="plazodesc" class="form-control" value="{{old('plazodesc', $data->plazopago->descripcion ?? '')}}" required readonly/>
+                            <input type="hidden" name="plazopago_idD" id="plazopago_idD" class="form-control" value="{{old('plazopago_idD', $data->plazopago_id ?? '')}}"/>
+                            {{-- <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
                                 <option value=''>Seleccione...</option>
                                 @foreach($plazopagos as $plazopago)
                                     <option
@@ -135,12 +141,14 @@
                                         {{$plazopago->descripcion}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="formapago_idD" class="control-label requerido">Forma de Pago</label>
-                            <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
+                            <input type="text" name="formapagodesc" id="formapagodesc" class="form-control" value="{{old('formapagodesc', $data->formapago->descripcion ?? '')}}" required readonly/>
+                            <input type="hidden" name="formapago_idD" id="formapago_idD" class="form-control" value="{{old('formapago_idD', $data->formapago_id ?? '')}}"/>                            
+                            {{-- <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
                                 <option value=''>Seleccione...</option>
                                 @foreach($formapagos as $formapago)
                                     <option
@@ -152,14 +160,16 @@
                                         {{$formapago->descripcion}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
             
             
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="giro_idD" class="control-label requerido">Giro</label>
-                            <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
+                            <input type="text" name="girodes" id="girodes" class="form-control" value="{{old('girodes', $data->giro->descripcion ?? '')}}" required readonly/>
+                            <input type="hidden" name="giro_idD" id="giro_idD" class="form-control" value="{{old('giro_idD', $data->giro_id ?? '')}}"/>
+                            {{-- <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
                                 <option value=''>Seleccione...</option>
                                 @foreach($giros as $giro)
                                     <option
@@ -171,7 +181,7 @@
                                         {{$giro->nombre}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
                         <div class="form-group col-xs-12 col-sm-2">
