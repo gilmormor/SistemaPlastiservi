@@ -32,6 +32,10 @@
 		<table id="factura_detalle">
 			<thead>
 				<tr>
+					@if($request->detperiodo == 1)
+					<th width="20px">Id</th>
+					<th width="40px">Fecha</th>
+					@endif
 					<th width="20px">Cod</th>
 					<th width="90px">Producto</th>
 					<th width="30px">PNorm</th>
@@ -66,6 +70,10 @@
 						$aux_nombreprod = $pesajedet->producto_nombre . " D:" . $pesajedet->diametro . " C:" . $pesajedet->cla_nombre . " L:" . $pesajedet->long . " TU:" . $pesajedet->tipounion
 					?>
 					<tr class="headt" style="height:150%;">
+						@if($request->detperiodo == 1)
+						<td class="textcenter">{{$pesajedet->pesaje_id}}</td>
+						<td class="textcenter">{{date("d/m/Y", strtotime($pesajedet->fechahora))}}</td>
+						@endif
 						<td class="textcenter">{{$pesajedet->producto_id}}</td>
 						<td class="textleft">{{$aux_nombreprod}}</td>
 						<td class="textcenter">{{number_format($pesajedet->pesounitnom, 3, ",", ".")}}</td>
@@ -84,6 +92,7 @@
 				@endforeach
 			</tbody>
 			<tfoot id="detalle_totales">
+				@if($request->detperiodo != 1)
 				<tr>
 					<th colspan='5' style='text-align:right'>Total: {{$request->fechah}}</th>
 					<th></th>
@@ -96,8 +105,9 @@
 					<th style='text-align:right'>{{number_format($total_difkg, 2, ",", ".")}}</th>
 					<th class="textcenter">{{number_format((($total_difkg / $total_pesototalnorma) * 100), 6, ",", ".")}}&nbsp;</th>
 				</tr>
+				@endif
 				<tr>
-					<th colspan='5' style='text-align:right'>Total período: {{$request->fechad}} al {{$request->fechah}}</th>
+					<th colspan='{{$request->detperiodo == 1 ? 7 : 5}}' style='text-align:right'>Total período: {{$request->fechad}} al {{$request->fechah}}</th>
 					<th></th>
 					<th style='text-align:right'>{{number_format($totalesPeriodo["subtotalTara"], 2, ",", ".")}}</th>
 					<th></th>

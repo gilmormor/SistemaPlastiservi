@@ -153,6 +153,7 @@ class DespachoSol extends Model
         IFNULL(clientedesbloqueadopro.obs,'') AS clientedesbloqueadopro_obs,
         (SELECT COUNT(*) FROM despachoord
             WHERE despachoord.despachosol_id = despachosol.id
+            AND ISNULL(despachoord.deleted_at)
             AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
         ) AS contorddesp
         FROM despachosol INNER JOIN notaventa
@@ -379,8 +380,8 @@ class DespachoSol extends Model
         $aux_sqlsumdesp = "SELECT cantdesp
                             FROM vista_sumorddespdet
                             WHERE despachosoldet_id=despachosoldet.id";
-        $aux_condactivas = "if((if(isnull(($aux_sqlsumdesp)),0,($aux_sqlsumdesp))
-                        ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
+        $aux_condactivas = "if(IFNULL(($aux_sqlsumdesp),0)
+                        >= despachosoldet.cantsoldesp,FALSE,TRUE)
                         AND $aux_notinNullSoldesp";
         //$aux_condactivas = "true";
     
@@ -390,6 +391,7 @@ class DespachoSol extends Model
                 despachosol.notaventa_id,despachosol.fechaestdesp,tipoentrega.nombre as tipentnombre,tipoentrega.icono,
                 (SELECT COUNT(*) FROM despachoord
                     WHERE despachoord.despachosol_id = despachosol.id
+                    AND ISNULL(despachoord.deleted_at)
                     AND despachoord.id NOT IN (SELECT despachoordanul.despachoord_id FROM despachoordanul WHERE ISNULL(despachoordanul.deleted_at))
                 ) AS contorddesp,
                 IFNULL(vista_despordxdespsoltotales.totalkilos,0) as totalkilosdesp,
@@ -678,8 +680,8 @@ class DespachoSol extends Model
         $aux_sqlsumdesp = "SELECT cantdesp
                             FROM vista_sumorddespdet
                             WHERE despachosoldet_id=despachosoldet.id";
-        $aux_condactivas = "if((if(isnull(($aux_sqlsumdesp)),0,($aux_sqlsumdesp))
-                        ) >= despachosoldet.cantsoldesp,FALSE,TRUE)
+        $aux_condactivas = "if(IFNULL(($aux_sqlsumdesp),0)
+                        >= despachosoldet.cantsoldesp,FALSE,TRUE)
                         AND $aux_notinNullSoldesp";
         //$aux_condactivas = "true";
     

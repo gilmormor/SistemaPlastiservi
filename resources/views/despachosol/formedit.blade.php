@@ -85,7 +85,9 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="comuna_idD" class="control-label requerido">Comuna</label>
-                            <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
+                            <input type="text" name="comunanombre" id="comunanombre" class="form-control" value="{{old('comunanombre', $data->notaventa->comuna->nombre ?? '')}}" required readonly/>
+                            <input type="hidden" name="comuna_idD" id="comuna_idD" class="form-control" value="{{old('comuna_idD', $data->notaventa->comuna_id ?? '')}}"/>
+                            {{-- <select name="comuna_idD" id="comuna_idD" class="selectpicker form-control comuna_idD" data-live-search='true' required readonly disabled>
                                 <option value="">Seleccione...</option>
                                 @foreach($comunas as $comuna)
                                     <option
@@ -97,7 +99,7 @@
                                         {{$comuna->nombre}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
                     </div>
@@ -105,7 +107,9 @@
                     <div class="row">
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="vendedor_idD" class="control-label requerido">Vendedor</label>
-                            <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required readonly disabled>
+                            <input type="text" name="vendedornombre" id="vendedornombre" class="form-control" value="{{old('vendedornombre', $data->notaventa->vendedor->persona->nombre . ' ' . $data->notaventa->vendedor->persona->apellido ?? '')}}" required readonly/>
+                            <input type="hidden" name="vendedor_idD" id="vendedor_idD" class="form-control" value="{{old('vendedor_idD', $data->notaventa->vendedor_id ?? '')}}"/>
+                            {{-- <select name="vendedor_idD" id="vendedor_idD" class="form-control select2 vendedor_idD" required readonly disabled>
                                 <option value="">Seleccione...</option>
                                 @foreach($vendedores1 as $vendedor)
                                     <option
@@ -120,11 +124,13 @@
                                         {{$vendedor->nombre}} {{$vendedor->apellido}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="plazopago_idD" class="control-label requerido">Plazo</label>
-                            <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
+                            <input type="text" name="plazodesc" id="plazodesc" class="form-control" value="{{old('plazodesc', $data->notaventa->plazopago->descripcion ?? '')}}" required readonly/>
+                            <input type="hidden" name="plazopago_idD" id="plazopago_idD" class="form-control" value="{{old('plazopago_idD', $data->notaventa->plazopago_id ?? '')}}"/>
+                            {{-- <select name="plazopago_idD" id="plazopago_idD" class="form-control selectpicker plazopago_idD" required readonly disabled>
                                 <option value=''>Seleccione...</option>
                                 @foreach($plazopagos as $plazopago)
                                     <option
@@ -136,12 +142,14 @@
                                         {{$plazopago->descripcion}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="formapago_idD" class="control-label requerido">Forma de Pago</label>
-                            <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
+                            <input type="text" name="formapagodesc" id="formapagodesc" class="form-control" value="{{old('formapagodesc', $data->notaventa->formapago->descripcion ?? '')}}" required readonly/>
+                            <input type="hidden" name="formapago_idD" id="formapago_idD" class="form-control" value="{{old('formapago_idD', $data->notaventa->formapago_id ?? '')}}"/>                            
+                            {{-- <select name="formapago_idD" id="formapago_idD" class="form-control selectpicker formapago_idD" required readonly disabled>
                                 <option value=''>Seleccione...</option>
                                 @foreach($formapagos as $formapago)
                                     <option
@@ -153,14 +161,16 @@
                                         {{$formapago->descripcion}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
             
             
                         <div class="form-group col-xs-12 col-sm-2">
                             <label for="giro_idD" class="control-label requerido">Giro</label>
-                            <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
+                            <input type="text" name="girodes" id="girodes" class="form-control" value="{{old('girodes', $data->notaventa->giro->descripcion ?? '')}}" required readonly/>
+                            <input type="hidden" name="giro_idD" id="giro_idD" class="form-control" value="{{old('giro_idD', $data->notaventa->giro_id ?? '')}}"/>
+                            {{-- <select name="giro_idD" id="giro_idD" class="form-control selectpicker giro_idD" required readonly disabled>
                                 <option value=''>Seleccione...</option>
                                 @foreach($giros as $giro)
                                     <option
@@ -172,7 +182,7 @@
                                         {{$giro->nombre}}
                                     </option>
                                 @endforeach
-                            </select>
+                            </select> --}}
                         </div>
             
                         <div class="form-group col-xs-12 col-sm-2">
@@ -423,6 +433,18 @@
                             <?php 
                                 $aux_nfila = 0; $i = 0;
                                 $cantsolTotal = 0;
+                                /* Las cantidades solicitada y despachada de todos los items se
+                                   piden de una vez. Antes se consultaba vista_sumsoldespdet y
+                                   vista_sumorddespxnvdetid dentro del bucle, una vez por item, y
+                                   como MySQL 5.7 materializa completa una vista con GROUP BY al
+                                   filtrarla, cada item costaba unos 6,4 s: esta pantalla tardaba
+                                   casi 4 minutos con una solicitud de 30 items.
+                                   Aqui $detalles son despachosoldet, asi que el id del item de la
+                                   nota de venta es notaventadetalle_id. */
+                                $aux_sumas = \App\Models\NotaVentaDetalle::sumasDespachoPorItem(
+                                    collect($detalles)->pluck('notaventadetalle_id')->all()
+                                );
+
                             ?>
                             @foreach($detalles as $detalle)
                                 <?php 
@@ -434,26 +456,16 @@
                                         $notaventadetalleext = $detalle->notaventadetalle->notaventadetalleext;
                                         $aux_cant = $detalle->notaventadetalle->cant + $notaventadetalleext->cantext;
                                     }
-                                    $sql = "SELECT cantsoldesp
-                                            FROM vista_sumsoldespdet
-                                            WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
-                                    $datasuma = DB::select($sql);
-                                    if(empty($datasuma)){
-                                        $sumacantsoldesp= 0;
-                                    }else{
-                                        $sumacantsoldesp= $datasuma[0]->cantsoldesp;
-                                    }
+                                    // viene de la precarga de arriba; sin movimientos, 0, como antes
+                                    $sumacantsoldesp = isset($aux_sumas['cantsoldesp'][$detalle->notaventadetalle_id])
+                                                        ? $aux_sumas['cantsoldesp'][$detalle->notaventadetalle_id]
+                                                        : 0;
                                     //SUMA TOTAL DESPACHADO
                                     /*************************/
-                                    $sql = "SELECT cantdesp
-                                        FROM vista_sumorddespxnvdetid
-                                        WHERE notaventadetalle_id=$detalle->notaventadetalle_id";
-                                    $datasumadesp = DB::select($sql);
-                                    if(empty($datasumadesp)){
-                                        $sumacantdesp= 0;
-                                    }else{
-                                        $sumacantdesp= $datasumadesp[0]->cantdesp;
-                                    }
+                                    // viene de la precarga de arriba; sin movimientos, 0, como antes
+                                    $sumacantdesp = isset($aux_sumas['cantdesp'][$detalle->notaventadetalle_id])
+                                                     ? $aux_sumas['cantdesp'][$detalle->notaventadetalle_id]
+                                                     : 0;
                                     /*************************/
 
                                     $aux_saldo = $aux_cant - $sumacantsoldesp;

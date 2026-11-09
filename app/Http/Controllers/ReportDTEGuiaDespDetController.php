@@ -100,6 +100,8 @@ class ReportDTEGuiaDespDetController extends Controller
         $datas = Dte::consultadtedet($request);
         $aux_total = 0;
         foreach ($datas as $data) {
+            // Los documentos anulados no suman, mismo criterio que el Excel y que la grilla
+            if (!is_null($data->dteanul_obs)) { continue; }
             $aux_total += $data->montoitem;
         }
         $respuesta['aux_total'] = $aux_total;

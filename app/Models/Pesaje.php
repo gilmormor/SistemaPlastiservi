@@ -97,6 +97,14 @@ class Pesaje extends Model
                 $aux_orderby = "ORDER BY categoriaprodgrupo.id ASC";
             }
         }
+        /* Pestana Periodo: se ordena por la fecha del pesaje y por el detalle. Se exige
+           que el agrupamiento sea el de detalle -GROUP BY pesajedet.id- para no ordenar
+           por una columna que no forma parte del grupo si el usuario eligio agrupar por
+           producto o por grupo de categoria. No se usa statusSumPeriodo porque exportPdf
+           lo pisa con 1 y dejaria tambien a la pestana Producto con este orden. */
+        if(isset($request->detperiodo) and $request->detperiodo == 1 and $aux_groupby == "GROUP BY pesajedet.id"){
+            $aux_orderby = "ORDER BY pesaje.fechahora ASC, pesajedet.id ASC";
+        }
         $aux_campopesaje_id = "";
         if($request->agruFecha == 1){
             $aux_groupby = "GROUP BY pesaje.fechahora";

@@ -255,7 +255,16 @@ class InvMov extends Model
             $aux_nombre = "GROUP_CONCAT(DISTINCT invbodega.nombre ORDER BY invbodega.orden SEPARATOR ', ')";
         }
 
-        $sql = "SELECT invbodegaproducto.producto_id, producto.glosa as producto_nombre, 
+        /* El orden de union se fija a mano. MySQL elegia empezar por invmovtipo y
+           los demas catalogos con Block Nested Loop, y dejaba para el final los
+           filtros selectivos (invmov.annomes y el producto), con lo que la consulta
+           tardaba entre 9 y 24 segundos. Poniendo invmov primero -el ON es simetrico,
+           asi que el resultado no cambia- y con STRAIGHT_JOIN para que respete ese
+           orden, baja a menos de 1 segundo. Verificado sobre una copia de produccion
+           en 20 combinaciones de filtros y en las dos formas de agrupar
+           (invbodegaproducto_id y producto.id): mismo resultado, salvo ruido de
+           punto flotante en stockkg del orden de 1e-10. */
+        $sql = "SELECT STRAIGHT_JOIN invbodegaproducto.producto_id, producto.glosa as producto_nombre, 
         REPLACE(REPLACE(if(isnull(acuerdotecnico.id),producto.diametro,at_ancho), '\"', ''), '\'', '') as diametro,
         if(isnull(acuerdotecnico.id),producto.long,at_largo) as largo,
         if(isnull(acuerdotecnico.id),producto.peso,at_espesor) as peso,
@@ -268,7 +277,7 @@ class InvMov extends Model
         SUM(if(invbodega.tipo=2,cant,0)) as stockBodProdTerm, SUM(if(invbodega.tipo=1,cant,0)) as stockPiking, 
         SUM(cantkg) as stockkg, 0000000.000 as cantpend, 0000000.000 as difcantpend,
         acuerdotecnico.id as acuerdotecnico_id,at_ancho,at_largo,at_espesor
-        from invmovdet inner join invmov 
+        from invmov inner join invmovdet 
         on invmovdet.invmov_id = invmov.id and isnull(invmovdet.deleted_at) and isnull(invmov.deleted_at)
         inner join invbodegaproducto 
         on invmovdet.invbodegaproducto_id = invbodegaproducto.id and isnull(invbodegaproducto.deleted_at)
