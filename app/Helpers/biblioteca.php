@@ -657,29 +657,63 @@ if (!function_exists('ordenarArrayxCampo')) {
 }
 
 // Funcion que me calcula el peso unitario de un producto en la tabla acuerdo tecnico
+/* Capas de lamina que lleva una unidad del producto.
+
+   Una bolsa se hace con la lamina doblada, asi que pesa dos capas; una
+   lamina -categoria 13- va sola y pesa una. No hay un campo que lo diga:
+   se deduce de la categoria del producto, primero la del acuerdo tecnico y
+   si no esta, la del detalle de cotizacion que le dio origen.
+
+   Estaba repetido dentro de cada funcion de peso unitario; se saca aparte
+   para que las formulas de los campos por etapa puedan usar el mismo
+   criterio en vez de llevar un 2 escrito a mano. */
+if (!function_exists('factorlaminaat')) {
+    function factorlaminaat($at) {
+        if(isset($at->producto->categoriaprod_id) and $at->producto->categoriaprod_id == 13){
+            return 1;
+        }
+        if(isset($at->cotizaciondetalle->producto->categoriaprod_id) and $at->cotizaciondetalle->producto->categoriaprod_id == 13){
+            return 1;
+        }
+        return 2;
+    }
+}
 if (!function_exists('pesoUnitAT')) {
     function pesounitat($at) {
-        $aux_doble = 2;
-        if(isset($at->producto->categoriaprod_id) and $at->producto->categoriaprod_id == 13){
-            $aux_doble = 1;
-        }else{
-            if(isset($at->cotizaciondetalle->producto->categoriaprod_id) and $at->cotizaciondetalle->producto->categoriaprod_id == 13){
-                $aux_doble = 1;
-            }
-        }
+        /* La formula quedo en pesounitatesp(); aqui se usa el espesor del
+           acuerdo tecnico, que es el comprometido con el cliente. El
+           resultado es el mismo de siempre para quienes ya la llamaban. */
+        return pesounitatesp($at, null);
+    }
+}
+
+/* Peso unitario calculado con un espesor dado.
+   Produccion fabrica con un espesor menor al comprometido (otdet.espesorprod)
+   y con un espesor mas fino el mismo kilo rinde mas unidades: 100 kg de un
+   producto de 0,070 son 786 unidades y de 0,060 son 917. Por eso el calculo
+   necesita recibir el espesor en vez de leer siempre el del AT. */
+if (!function_exists('pesounitatesp')) {
+    function pesounitatesp($at, $aux_espesor = null) {
+        // misma regla de siempre, ahora en un solo lugar
+        $aux_doble = factorlaminaat($at);
         if($at->at_formatofilm > 0 ){
             return $at->at_formatofilm;
         }
         if($at->at_unidadmedida_id == 7 ){
             return 1;
         }
-        if($at->at_espesor == 0 or $at->at_peso > 0){
+        // sin espesor recibido manda el del acuerdo tecnico
+        $aux_espesorAt = ($aux_espesor === null or $aux_espesor <= 0);
+        if($aux_espesorAt){
+            $aux_espesor = $at->at_espesor;
+        }
+        /* at_peso es el peso ya calculado con el espesor del AT: solo sirve
+           cuando se esta pidiendo ese mismo espesor. Con el espesor de
+           produccion hay que recalcular. */
+        if($aux_espesor == 0 or ($at->at_peso > 0 and $aux_espesorAt)){
             return $at->at_peso;
         }
-        /* if($at->at_unidadmedida_id != 5 ){
-            return 0;
-        } */
-        return round((($at->at_ancho * $at->at_largo * $at->at_espesor * $at->materiaprima->pe) / 1000) * $aux_doble,10 );
+        return round((($at->at_ancho * $at->at_largo * $aux_espesor * $at->materiaprima->pe) / 1000) * $aux_doble,10 );
     }
 }
 

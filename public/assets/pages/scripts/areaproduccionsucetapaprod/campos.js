@@ -5,6 +5,7 @@
 
 var _apsucetapaprod_id_actual = null;
 var _camposCache = {}; // cache de campos cargados, para editarCampo(id) sin pasar JSON por el onclick
+var _variablesCache = []; // nombres que se pueden usar en una formula de esta etapa
 
 /**
  * Abre el modal y carga los campos de la etapa indicada.
@@ -22,6 +23,8 @@ function abrirModalCampos(apsucetapaprod_id) {
         type: 'GET',
         success: function (resp) {
             $('#modalCamposEtapaNombre').text(resp.etapa_nombre);
+            _variablesCache = resp.variables || [];
+            renderizarVariables();
             renderizarTablaCampos(resp.campos);
         },
         error: function () {
@@ -243,6 +246,9 @@ function recargarCampos(apsucetapaprod_id) {
         url    : '/etapaprodcampo/' + apsucetapaprod_id + '/listar',
         type   : 'GET',
         success: function (resp) {
+            // un campo recien creado ya se puede nombrar en otra formula
+            _variablesCache = resp.variables || [];
+            renderizarVariables();
             renderizarTablaCampos(resp.campos);
             // Actualizar resumen en la tabla de la página
             var $resumen = $('#resumen-campos-' + apsucetapaprod_id);
@@ -254,6 +260,75 @@ function recargarCampos(apsucetapaprod_id) {
             }
         }
     });
+}
+
+/**
+ * Dibuja los nombres que se pueden usar en una fórmula de esta etapa.
+ * Se separan en dos grupos porque no son lo mismo: unos vienen del producto
+ * y del formulario, y los otros son campos configurados en esta misma etapa,
+ * que cambian cuando se agrega o se borra uno.
+ */
+function renderizarVariables() {
+    if (!_variablesCache.length) {
+        $('#listaVariablesFormula').html('<span class="text-muted">Sin variables disponibles.</span>');
+        return;
+    }
+
+    var html = '';
+    var hayPropias = false;
+
+    $.each(_variablesCache, function (i, v) {
+        if (v.propia) { hayPropias = true; return; }
+        html += botonVariable(v, '#3c8dbc');
+    });
+
+    if (hayPropias) {
+        html += '<div style="margin-top:6px;"><small class="text-muted">Campos de esta etapa:</small><br>';
+        $.each(_variablesCache, function (i, v) {
+            if (!v.propia) return;
+            html += botonVariable(v, '#00a65a');
+        });
+        html += '</div>';
+    }
+
+    $('#listaVariablesFormula').html(html);
+}
+
+/**
+ * Un nombre clicable. El title lleva la explicación para no llenar el modal.
+ */
+function botonVariable(v, color) {
+    return '<button type="button" class="btn btn-xs btn-var-formula" ' +
+           'style="margin:2px;font-family:monospace;border:1px solid ' + color + ';color:' + color + ';background:#fff;" ' +
+           'title="' + htmlEscape(v.desc || '') + '" ' +
+           'data-var="' + htmlEscape(v.nombre) + '">' +
+           htmlEscape(v.nombre) + '</button>';
+}
+
+/* El nombre viaja en data-var y no en un onclick: los botones se dibujan
+   cada vez que se recarga la lista, asi que el evento va delegado. */
+$(document).on('click', '.btn-var-formula', function () {
+    insertarVariable($(this).data('var'));
+});
+
+/**
+ * Inserta un nombre en la fórmula, en la posición del cursor, para no tener
+ * que escribirlo a mano ni equivocarse en una letra.
+ */
+function insertarVariable(nombre) {
+    var $f = $('#campo_formula');
+    var el = $f.get(0);
+    var txt = $f.val() || '';
+    var ini = (el && typeof el.selectionStart === 'number') ? el.selectionStart : txt.length;
+    var fin = (el && typeof el.selectionEnd === 'number') ? el.selectionEnd : txt.length;
+
+    $f.val(txt.substring(0, ini) + nombre + txt.substring(fin));
+
+    // dejar el cursor justo después de lo insertado
+    if (el && el.setSelectionRange) {
+        el.focus();
+        el.setSelectionRange(ini + nombre.length, ini + nombre.length);
+    }
 }
 
 /**

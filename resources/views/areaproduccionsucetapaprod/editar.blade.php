@@ -399,11 +399,26 @@
                         </select>
                     </div>
                 </div>
+                {{-- Formula: ademas del campo, la lista de lo que se puede nombrar.
+                     Sin esta ayuda hay que adivinar los nombres y un error recien
+                     se nota cuando el operario registra produccion. --}}
                 <div class="row" id="filaFormula" style="display:none;">
                     <div class="form-group col-sm-12">
                         <label>Fórmula <span class="text-danger">*</span></label>
                         <input type="text" id="campo_formula" class="form-control" maxlength="300"
                                placeholder="Ej: cantidad_sacos * unidades_por_saco"/>
+                        <small class="text-muted">
+                            Solo números, los nombres de abajo y los signos
+                            <code>+</code> <code>-</code> <code>*</code> <code>/</code> <code>(</code> <code>)</code>.
+                        </small>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="well well-sm" style="padding:8px 10px;margin-bottom:10px;">
+                            <strong style="font-size:12px;">
+                                <i class="fa fa-info-circle"></i> Se puede usar (clic para insertar):
+                            </strong>
+                            <div id="listaVariablesFormula" style="margin-top:6px;"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -422,6 +437,9 @@
                             <option value="cantprod">cantprod (Cantidad producida)</option>
                             <option value="kgprod">kgprod (Kg producción)</option>
                             <option value="kgscrap">kgscrap (Kg scrap)</option>
+                            {{-- Unidades que representan los kilos, cuando la etapa
+                                 entrega en kilos y el producto se cuenta aparte --}}
+                            <option value="cantunid">cantunid (Cantidad en unidades)</option>
                         </select>
                     </div>
                     <div class="form-group col-sm-2">
