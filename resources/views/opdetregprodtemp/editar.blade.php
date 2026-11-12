@@ -4,6 +4,14 @@
 @endsection
 
 @section('scripts')
+    <script>
+        // Mismas constantes que en crear: la pantalla de editar no las tenia y
+        // el JS caia a los valores por defecto.
+        const ETAPA_UM_SALIDA_ID       = {{ $tablas['um']['sal_id'] ?? 'null' }};
+        const ETAPA_UM_SALIDA_NOMBRE   = "{{ $tablas['um']['sal_nombre'] ?? '' }}";
+        const ETAPA_UM_ENTRADA_NOMBRE  = "{{ $tablas['um']['ent_nombre'] ?? '' }}";
+        const PRODUCTO_PESO_UNITARIO   = {{ $opdet->op->otdet->producto->peso_unitario ?? 0 }};
+    </script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/opdetregprodtemp/crear.js")}}" type="text/javascript"></script>
     <script>
@@ -40,4 +48,8 @@
         </div>
     </div>
 </div>
+{{-- Modal de etiqueta de lote: lo abre el numero de lote del panel de origen.
+     modalpdf aporta el hidden #venmodant que usa la funcion compartida. --}}
+@include('generales.modalpdf')
+@include('generales.modaletiquetaetapa')
 @endsection

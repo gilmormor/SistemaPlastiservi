@@ -6,9 +6,10 @@
 @section("scripts")
     <script>
         // Datos de la etapa para conversión kg ↔ cant y validaciones JS
-        const ETAPA_UM_SALIDA_ID       = {{ $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? 'null' }};
-        const ETAPA_UM_SALIDA_NOMBRE   = "{{ $opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? '' }}";
-        const ETAPA_UM_ENTRADA_NOMBRE  = "{{ $opdet->areaproduccionsucetapaprod->unidadmedida_entrada_nombre ?? '' }}";
+        // Unidades de ESTE producto en esta etapa (acuerdotecnicoapsucetapaprod)
+        const ETAPA_UM_SALIDA_ID       = {{ $tablas['um']['sal_id'] ?? 'null' }};
+        const ETAPA_UM_SALIDA_NOMBRE   = "{{ $tablas['um']['sal_nombre'] ?? '' }}";
+        const ETAPA_UM_ENTRADA_NOMBRE  = "{{ $tablas['um']['ent_nombre'] ?? '' }}";
         const ETAPA_REQUIERE_KG        = {{ (int)($opdet->areaproduccionsucetapaprod->requiere_kg ?? 1) }};
         const ETAPA_REQUIERE_CC        = {{ (int)($opdet->areaproduccionsucetapaprod->requiere_cc ?? 0) }};
         const ETAPA_USA_MATPRIMA       = {{ (int)($opdet->areaproduccionsucetapaprod->usa_matprima ?? 0) }};
@@ -50,4 +51,6 @@
     </div>
 </div> 
 @include('generales.modalpdf')
+{{-- Modal de etiqueta de lote: lo abre el numero de lote del panel de origen --}}
+@include('generales.modaletiquetaetapa')
 @endsection

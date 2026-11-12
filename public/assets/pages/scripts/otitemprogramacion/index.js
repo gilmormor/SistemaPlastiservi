@@ -1452,38 +1452,74 @@ function editaretapasprod(acuerdotecnico_id, otdet_id) {
                 return;
             }
 
-            // Construir select multiple tipo selectpicker (Bootstrap Select),
-            // igual al usado en los filtros de esta misma pantalla.
-            // data-actions-box añade los botones "Seleccionar todo / Ninguno".
-            var htmlBody = '<label>Etapas de Producción</label>' +
-                           '<select id="selectEtapasProd" ' +
-                                   'class="selectpicker form-control" ' +
-                                   'multiple ' +
-                                   'data-live-search="true" ' +
-                                   'data-actions-box="true" ' +
-                                   'title="Seleccione las etapas...">' ;
+            // Una fila por etapa: casilla para incluirla y combo con la unidad en
+            // que el producto sale de ella. La unidad es propia del producto: de
+            // Sellado uno puede salir en metros y otro en rollos, aunque los dos
+            // entren en kilos. La unidad de entrada no se pide: es la de salida de
+            // la etapa anterior.
+            /* Guardado para la regla de abajo: contar aparte solo se pide
+               cuando la etapa entrega en kilos. */
+            _unidadKgId = resp.unidad_kg_id;
+
+            var htmlBody = '<p class="text-muted">Marque las etapas por las que pasa el producto e indique en qué unidad sale de cada una.</p>' +
+                           '<table class="table table-condensed table-hover">' +
+                           '<thead><tr>' +
+                           '<th style="width:40px;"></th>' +
+                           '<th>Etapa</th>' +
+                           '<th>Sucursal</th>' +
+                           '<th style="width:170px;">Unidad de salida <span class="text-danger">*</span></th>' +
+                           '<th style="width:190px;">Contar también en' +
+                               ' <i class="fa fa-question-circle text-muted"' +
+                               ' title="Solo cuando la etapa entrega en kilos: anota cuántas unidades hay en esos kilos. Déjelo vacío si no hace falta."></i>' +
+                           '</th>' +
+                           '</tr></thead><tbody>';
 
             resp.etapaprods.forEach(function (e) {
-                // pre-seleccionar las etapas que el producto ya tiene asignadas
-                var selected = (resp.seleccionadas.indexOf(e.areaproduccionsucetapaprod_id) !== -1)
-                               ? 'selected' : '';
-                htmlBody += '<option value="' + e.areaproduccionsucetapaprod_id + '" ' + selected + '>'
-                          + e.etapaprod_nombre + ' — ' + e.sucursal_nombre
-                          + '</option>';
+                var id       = e.areaproduccionsucetapaprod_id;
+                var marcada  = (resp.seleccionadas.indexOf(id) !== -1);
+                // si ya tiene unidad configurada se respeta; si no, se sugiere la de la etapa
+                var unidad   = e.unidadmedidasal_id || e.unidad_etapa_id || '';
+                // la unidad en que se cuenta no se sugiere: o esta configurada o no se pide
+                var unidadCant = e.unidadmedidacant_id || '';
+
+                htmlBody += '<tr>' +
+                    '<td><input type="checkbox" class="chkEtapaProd" value="' + id + '"' +
+                        (marcada ? ' checked' : '') + '></td>' +
+                    '<td>' + e.etapaprod_nombre + '</td>' +
+                    '<td>' + e.sucursal_nombre + '</td>' +
+                    '<td><select class="form-control input-sm selUnidadEtapa" data-etapa="' + id + '">' +
+                        '<option value="">Seleccione...</option>';
+
+                resp.unidades.forEach(function (um) {
+                    htmlBody += '<option value="' + um.id + '"' +
+                                (String(um.id) === String(unidad) ? ' selected' : '') + '>' +
+                                um.nombre + '</option>';
+                });
+
+                htmlBody += '</select></td>';
+
+                /* Segundo combo: en que unidad contar. Arranca vacio porque
+                   la mayoria de las etapas no lo necesitan. */
+                htmlBody += '<td><select class="form-control input-sm selUnidadCant" data-etapa="' + id + '">' +
+                            '<option value="">— No se pide —</option>';
+
+                resp.unidades.forEach(function (um) {
+                    htmlBody += '<option value="' + um.id + '"' +
+                                (String(um.id) === String(unidadCant) ? ' selected' : '') + '>' +
+                                um.nombre + '</option>';
+                });
+
+                htmlBody += '</select></td></tr>';
             });
 
-            htmlBody += '</select>';
+            htmlBody += '</tbody></table>';
 
             $('#modalEtapasProdBody').html(htmlBody);
 
-            // Inicializar el selectpicker después de inyectar el HTML en el DOM
-            //$('#selectEtapasProd').selectpicker();
-            $("#selectEtapasProd").selectpicker({
-                noneSelectedText : "Seleccione...", // by this default "Nothing selected" -->will change to Please Select
-                selectAllText : "Seleccionar todo",
-                deselectAllText : "Borrar todo",
-                noneResultsText: "No se encontraron resultados para {0}", // Texto cuando no hay coincidencias
-                });
+            // dejar cada fila con el combo habilitado o no segun su unidad de salida
+            $('.selUnidadEtapa').each(function () {
+                aplicarReglaContarEn($(this).data('etapa'));
+            });
 
         },
         error: function () {
@@ -1494,6 +1530,37 @@ function editaretapasprod(acuerdotecnico_id, otdet_id) {
     });
 }
 
+/* Id de la unidad Kgs, que llega con los datos del modal. */
+var _unidadKgId = null;
+
+/**
+ * Habilita o no el combo "Contar también en" de una etapa.
+ *
+ * Solo se pide cuando la etapa entrega en kilos: si entrega en unidades, la
+ * cantidad de salida YA son las unidades y no hay nada que contar aparte.
+ * Al deshabilitarlo se limpia, para no dejar configurado algo que no se usa.
+ */
+function aplicarReglaContarEn(etapa_id) {
+    var salida = $('.selUnidadEtapa[data-etapa="' + etapa_id + '"]').val();
+    var $cant  = $('.selUnidadCant[data-etapa="' + etapa_id + '"]');
+
+    if (!$cant.length) { return; }
+
+    var esKg = (_unidadKgId !== null && String(salida) === String(_unidadKgId));
+
+    if (esKg) {
+        $cant.prop('disabled', false).attr('title', '');
+    } else {
+        $cant.val('').prop('disabled', true)
+             .attr('title', 'Solo se pide cuando la etapa entrega en kilos.');
+    }
+}
+
+/* La unidad de salida se puede cambiar despues de dibujado el modal, asi que
+   la regla se vuelve a aplicar en cada cambio. */
+$(document).on('change', '.selUnidadEtapa', function () {
+    aplicarReglaContarEn($(this).data('etapa'));
+});
 /**
  * Handler del botón "Guardar etapas" del modal.
  *
@@ -1503,8 +1570,30 @@ function editaretapasprod(acuerdotecnico_id, otdet_id) {
  * del mismo producto). Si la fila tiene el detalle expandido, lo re-renderiza.
  */
 $('#btnGuardarEtapas').click(function () {
-    // Recoger los IDs de las opciones seleccionadas en el select multiple
-    var ids = $('#selectEtapasProd').val() || [];
+    // Recoger las etapas marcadas y la unidad de salida elegida en cada una
+    var ids = [];
+    var unidades = {};
+    var cantidades = {};   // unidad en que contar, por etapa; vacia = no se pide
+    var sinUnidad = 0;
+
+    $('.chkEtapaProd:checked').each(function () {
+        var id = $(this).val();
+        var um = $('.selUnidadEtapa[data-etapa="' + id + '"]').val();
+        var $cant = $('.selUnidadCant[data-etapa="' + id + '"]');
+        ids.push(id);
+        unidades[id] = um;
+        /* Un combo deshabilitado -la etapa no entrega en kilos- no manda
+           valor: asi no queda configurado algo que no se va a pedir. */
+        cantidades[id] = $cant.prop('disabled') ? '' : ($cant.val() || '');
+        if (!um) { sinUnidad++; }
+    });
+
+    // La unidad es obligatoria: sin ella no se puede saber que ingresa a la
+    // bodega de la etapa ni que se descuenta de la anterior.
+    if (sinUnidad > 0) {
+        Biblioteca.notificaciones('Indique la unidad de salida en las ' + sinUnidad + ' etapa(s) marcadas que no la tienen.', 'Plastiservi', 'error');
+        return;
+    }
 
     // Deshabilitar el botón mientras se guarda para evitar doble clic
     var $btn = $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Guardando...');
@@ -1512,7 +1601,8 @@ $('#btnGuardarEtapas').click(function () {
     $.ajax({
         url  : '/acuerdotecnicoetapaprod/' + _etapasAtId + '/actualizar-ajax',
         type : 'POST',
-        data : { apsucetapaprod_id: ids, _token: $('input[name=_token]').val() },
+        data : { apsucetapaprod_id: ids, unidadmedidasal_id: unidades,
+                 unidadmedidacant_id: cantidades, _token: $('input[name=_token]').val() },
         success: function (resp) {
             $btn.prop('disabled', false).html('<i class="fa fa-save"></i> Guardar etapas');
 

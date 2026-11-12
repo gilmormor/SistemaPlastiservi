@@ -180,9 +180,48 @@ class OpDetRegProdTempOrigen extends Model
 
             $disponible = max((float) $lote->kgprod - $consumidoDef - $reservadoTmp, 0);
 
+            /* Cuantas unidades representan esos kg, en la UM con que el lote
+               salio de su etapa. Es solo informativo: el reparto entre lotes
+               se sigue haciendo en kg. */
+            $dispCant = 0;
+            if ((float) $lote->kgprod > 0) {
+                $dispCant = round($disponible * (float) $lote->cantprod / (float) $lote->kgprod, 2);
+            }
+            $umLote = $lote->unidadmedidasal_id
+                    ? \App\Models\UnidadMedida::find($lote->unidadmedidasal_id)
+                    : null;
+
+            /* Unidades que el operario conto aparte en la etapa anterior
+               (cantunid). Es el dato que sirve cuando esa etapa salio en
+               kilos: ahi cantprod son kilos y dividirlo por kgprod da 1,
+               que no dice nada. Queda en null si el lote no las tenia. */
+            $dispUnid    = null;
+            $unidPorKgCont = null;
+            $umCont      = null;
+            if ((float) $lote->kgprod > 0 and (float) $lote->cantunid > 0) {
+                $unidPorKgCont = round((float) $lote->cantunid / (float) $lote->kgprod, 6);
+                $dispUnid      = round($disponible * $unidPorKgCont, 2);
+                $umCont        = $lote->cantunid_unidadmedida_id
+                               ? \App\Models\UnidadMedida::find($lote->cantunid_unidadmedida_id)
+                               : null;
+            }
+
             return [
                 'id'             => $lote->id,
                 'disponible_kg'  => round($disponible, 2),
+                'disponible_cant'=> $dispCant,
+                /* unidades por kilo del lote: con esto la etapa siguiente sabe
+                   cuantas unidades representa cada kilo que tome de aqui */
+                'unid_por_kg'    => (float) $lote->kgprod > 0
+                                    ? round((float) $lote->cantprod / (float) $lote->kgprod, 6)
+                                    : 0,
+                'um_nombre'      => $umLote ? $umLote->nombre : null,
+                /* Unidades contadas aparte. Separadas de disponible_cant a
+                   proposito: aquella sigue alimentando la sugerencia de
+                   cantidad producida y no debe cambiar de significado. */
+                'disponible_unid'  => $dispUnid,
+                'unid_por_kg_cont' => $unidPorKgCont,
+                'um_cont_nombre'   => $umCont ? $umCont->nombre : null,
                 'registrado_por' => optional($lote->usuario)->nombre,
                 'fecha_hora'     => $lote->aprobfechahora ? date('d/m/Y H:i', strtotime($lote->aprobfechahora)) : ($lote->created_at ? $lote->created_at->format('d/m/Y H:i') : null),
             ];

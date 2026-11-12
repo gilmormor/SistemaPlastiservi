@@ -5,8 +5,14 @@
 <input type="hidden" name="editar_updatednum_at" id="editar_updatednum_at" value="{{old('editar_updatednum_at', isset($data->updated_at) ? (strtotime($data->updated_at) ?? '') : '')}}">
 <input type="hidden" name="cantent" id="cantent" value="{{old('cantent', isset($data) ? ($data->cantent ?? '0') : ($opdet->cant ?? 0))}}"/>
 <input type="hidden" name="cantprod" id="cantprod" value="{{old('cantprod', $data->cantprod ?? '0')}}"/>
-<input type="hidden" name="unidadmedidaent_id" id="unidadmedidaent_id" value="{{old('unidadmedidaent_id', $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? '')}}"/>
-<input type="hidden" name="unidadmedidasal_id" id="unidadmedidasal_id" value="{{old('unidadmedidasal_id', $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? '')}}"/>
+{{-- Unidades que representan los kilos; viaja aparte de cantprod --}}
+<input type="hidden" name="cantunid" id="cantunid" value="{{old('cantunid', $data->cantunid ?? '')}}"/>
+{{-- UM de entrada: la de SALIDA de la etapa anterior de este producto --}}
+<input type="hidden" name="unidadmedidaent_id" id="unidadmedidaent_id" value="{{old('unidadmedidaent_id', $tablas['um']['ent_id'] ?? $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? '')}}"/>
+{{-- UM de salida: la configurada para este producto en acuerdotecnicoapsucetapaprod --}}
+<input type="hidden" name="unidadmedidasal_id" id="unidadmedidasal_id" value="{{old('unidadmedidasal_id', $tablas['um']['sal_id'] ?? $opdet->areaproduccionsucetapaprod->unidadmedida_id ?? '')}}"/>
+{{-- Unidad en que se cuenta ademas de la cantidad; vacia = la etapa no lo pide --}}
+<input type="hidden" name="cantunid_unidadmedida_id" id="cantunid_unidadmedida_id" value="{{old('cantunid_unidadmedida_id', $tablas['um']['cant_id'] ?? '')}}"/>
 <input type="hidden" name="cantrec" id="cantrec" value="{{old('cantrec', $opdet->cantrec ?? 0)}}"/>
 
 <div class="row">
@@ -214,14 +220,28 @@
 <div class="form-group col-xs-12 col-sm-2">
     <div class="row">
         <div class="form-group col-xs-12 col-sm-12">
-            <label for="aux_cantprod" class="control-label requerido" title="Cantidad producida en UM de salida de la etapa">Cant. Producida ({{$opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? 'sin configurar'}})</label>
-            <input type="text" name="aux_cantprod" id="aux_cantprod" class="form-control numerico requerido" valor="{{$data->cantprod  ?? '0'}}" valorOriginal="{{$data->cantprod  ?? '0'}}" value="{{old('cantprod', number_format($data->cantprod ?? '0', 2, ',', '.'))}}" style="text-align:right;" maxlength="10"/>
+            <label for="aux_cantprod" class="control-label requerido" title="Cantidad producida en UM de salida de la etapa">Cant. Producida ({{$tablas['um']['sal_nombre'] ?? $opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? 'sin configurar'}})</label>
+            <input type="text" name="aux_cantprod" id="aux_cantprod" class="form-control numerico requerido" valor="{{$data->cantprod  ?? ''}}" valorOriginal="{{$data->cantprod  ?? '0'}}" value="{{old('cantprod', number_format($data->cantprod ?? '0', 2, ',', '.'))}}" style="text-align:right;" maxlength="10"/>
         </div>
+        {{-- Unidades que representan los kilos producidos. Aparece solo si la
+             etapa lo pide para este producto (acuerdotecnicoapsucetapaprod.
+             unidadmedidacant_id): cuando la etapa entrega en kilos, cant y
+             cantkg quedan iguales y las unidades no tienen donde ir. --}}
+        @if(!empty($tablas['um']['cant_id']))
+        <div class="form-group col-xs-12 col-sm-12">
+            <label for="aux_cantunid" class="control-label" title="Unidades que representan los kilos producidos">Cant. Unidades ({{$tablas['um']['cant_nombre']}})</label>
+            <input type="text" name="aux_cantunid" id="aux_cantunid" class="form-control numerico" valor="{{$data->cantunid ?? ''}}" valorOriginal="{{$data->cantunid ?? '0'}}" value="{{old('cantunid', number_format($data->cantunid ?? '0', 2, ',', '.'))}}" style="text-align:right;" maxlength="10"/>
+        </div>
+        @endif
         <div class="form-group col-xs-12 col-sm-12">
             <label class="control-label" data-toggle='tooltip' title="Unidades de medida configuradas para la etapa">UM Etapa</label>
             <div style="font-size:11px;color:#555;">
-                <strong>Entrada:</strong> {{ $opdet->areaproduccionsucetapaprod->unidadmedida_entrada_nombre ?? '—' }}<br>
-                <strong>Salida:</strong> {{ $opdet->areaproduccionsucetapaprod->unidadmedida->nombre ?? 'sin configurar' }}
+                {{-- Unidades del producto en esta etapa, no las de la etapa --}}
+                <strong>Entrada:</strong> {{ $tablas['um']['ent_nombre'] ?? '—' }}<br>
+                <strong>Salida:</strong> {{ $tablas['um']['sal_nombre'] ?? 'sin configurar' }}
+                @if(!empty($tablas['um']['cant_id']))
+                <br><strong>Se cuenta en:</strong> {{ $tablas['um']['cant_nombre'] }}
+                @endif
             </div>
         </div>
     </div>

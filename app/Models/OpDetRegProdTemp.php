@@ -34,6 +34,9 @@ class OpDetRegProdTemp extends Model
         'kgprod',
         'kgscrap',
         'cantprod',
+        // unidades que representan los kilos, cuando la etapa entrega en kilos
+        'cantunid',
+        'cantunid_unidadmedida_id',
         'unidadmedidasal_id',
         'mtslineal',
         'es_muestra',

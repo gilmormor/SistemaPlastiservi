@@ -199,7 +199,12 @@ class AcuerdoTecnico extends Model
     //RELACION MUCHOS A MUCHOS EtapaProd AreaProduccionSucEtapaProd
     public function apsucetapaprods()
     {
-        return $this->belongsToMany(AreaProduccionSucEtapaProd::class, 'acuerdotecnicoapsucetapaprod','acuerdotecnico_id','apsucetapaprod_id')->withTimestamps();
+        /* withPivot expone unidadmedidasal_id, la unidad en que el producto sale
+           de esta etapa. Es propia de cada producto: de Sellado uno puede salir
+           en metros y otro en rollos. Sin esto, sync() no la guardaria. */
+        return $this->belongsToMany(AreaProduccionSucEtapaProd::class, 'acuerdotecnicoapsucetapaprod','acuerdotecnico_id','apsucetapaprod_id')
+                    ->withPivot('unidadmedidasal_id', 'unidadmedidacant_id')
+                    ->withTimestamps();
     }
 
     public static function buscaratxcampos($request)

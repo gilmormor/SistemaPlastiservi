@@ -459,46 +459,10 @@ class OpDetRegProdTempAprobSupController extends Controller
                                 ? (int) $request->invbodega_id
                                 : $bodegasEtapa->first()->invbodega_id;
 
-                            // ENTRADA: producción de la etapa actual entra a su bodega
-                            $invmovEntrada = InvMov::create([
-                                'fechahora'       => date('Y-m-d H:i:s'),
-                                'annomes'         => $annomesInv,
-                                'desc'            => 'Prod.Etapa OT:'
-                                                     . $opdetregprod->opdet->op->otdet->ot_id
-                                                     . ' OP:' . $opdetregprod->opdet->op_id
-                                                     . ' Reg:' . $opdetregprod->id,
-                                'obs'             => 'Etapa: ' . ($apsucActual->etapaprod->nombre ?? ''),
-                                'invmovmodulo_id' => 9,   // Producción
-                                'idmovmod'        => $opdetregprod->id,
-                                'invmovtipo_id'   => 1,   // Entrada
-                                'sucursal_id'     => $opdetregprodtemp->sucursal_id,
-                                'usuario_id'      => auth()->id(),
-                            ]);
-
-                            $productoEnt = Producto::findOrFail($opdetregprodtemp->producto_id);
-                            $ibpEntrada  = InvBodegaProducto::updateOrCreate(
-                                ['producto_id' => $opdetregprodtemp->producto_id, 'invbodega_id' => $invbodega_id_actual],
-                                ['producto_id' => $opdetregprodtemp->producto_id, 'invbodega_id' => $invbodega_id_actual]
-                            );
-                            $invmovdetEntrada = InvMovDet::create([
-                                'invmov_id'            => $invmovEntrada->id,
-                                'invbodegaproducto_id' => $ibpEntrada->id,
-                                'producto_id'          => $opdetregprodtemp->producto_id,
-                                'invbodega_id'         => $invbodega_id_actual,
-                                'sucursal_id'          => $opdetregprodtemp->sucursal_id,
-                                'unidadmedida_id'      => $opdetregprodtemp->unidadmedidasal_id,
-                                'invmovtipo_id'        => 1,
-                                'cant'                 => $opdetregprodtemp->cantprod,
-                                'cantgrupo'            => $opdetregprodtemp->cantprod,
-                                'cantxgrupo'           => 1,
-                                'peso'                 => $productoEnt->peso ?? 0,
-                                'cantkg'               => $opdetregprodtemp->kgprod,
-                            ]);
-                            InvMovDetOpDetRegProd::create([
-                                'invmovdet_id'    => $invmovdetEntrada->id,
-                                'opdetregprod_id' => $opdetregprod->id,
-                            ]);
-
+                            // El orden importa: primero se descuenta de la bodega de la etapa
+                            // anterior y despues se ingresa lo producido a la bodega de esta
+                            // etapa, para que el movimiento de salida quede registrado antes
+                            // que el de entrada (pedido 2026-11-11).
                             // SALIDA: descontar de la bodega donde estaba el lote origen.
                             // Se basa en la trazabilidad FIFO ($opdetregprodtemp->origenes).
                             // Si el lote anterior no tiene invmovdet (histórico pre-implementación)
@@ -523,11 +487,22 @@ class OpDetRegProdTempAprobSupController extends Controller
                                 // Cantidad proporcional en la UM del lote origen
                                 $prevReg    = OpDetRegProd::find($tempOrigen->opdetregprod_id);
                                 $cantSalida = 0;
+                                /* Unidades que se lleva esta salida, cuando el lote de origen las
+                                   tenia contadas. Se reparten por kilos, igual que la cantidad: si
+                                   consume 40 de los 100 kg del lote, se lleva el 40% de sus
+                                   unidades. En NULL si el lote no las tenia. */
+                                $cantUnidSalida = null;
                                 if ($prevReg && $prevReg->kgprod > 0) {
                                     $cantSalida = round(
                                         ($tempOrigen->kg / $prevReg->kgprod) * ($prevReg->cantprod ?? 0),
                                         4
                                     );
+                                    if ($prevReg->cantunid > 0) {
+                                        $cantUnidSalida = round(
+                                            ($tempOrigen->kg / $prevReg->kgprod) * $prevReg->cantunid,
+                                            2
+                                        );
+                                    }
                                 }
 
                                 $invmovSalida = InvMov::create([
@@ -561,6 +536,9 @@ class OpDetRegProdTempAprobSupController extends Controller
                                     'cantxgrupo'           => 1,
                                     'peso'                 => $prevInvMovDet->peso,
                                     'cantkg'               => -$tempOrigen->kg,
+                                    // unidades consumidas del lote, con la unidad en que estaban contadas
+                                    'cantunid'                 => $cantUnidSalida === null ? null : -$cantUnidSalida,
+                                    'cantunid_unidadmedida_id' => $prevReg ? $prevReg->cantunid_unidadmedida_id : null,
                                 ]);
                                 // Enlazar la salida con el lote origen (del que se descontó)
                                 InvMovDetOpDetRegProd::create([
@@ -568,6 +546,53 @@ class OpDetRegProdTempAprobSupController extends Controller
                                     'opdetregprod_id' => $tempOrigen->opdetregprod_id,
                                 ]);
                             }
+                            // ENTRADA: producción de la etapa actual entra a su bodega
+                            $invmovEntrada = InvMov::create([
+                                'fechahora'       => date('Y-m-d H:i:s'),
+                                'annomes'         => $annomesInv,
+                                'desc'            => 'Prod.Etapa OT:'
+                                                     . $opdetregprod->opdet->op->otdet->ot_id
+                                                     . ' OP:' . $opdetregprod->opdet->op_id
+                                                     . ' Reg:' . $opdetregprod->id,
+                                'obs'             => 'Etapa: ' . ($apsucActual->etapaprod->nombre ?? ''),
+                                'invmovmodulo_id' => 9,   // Producción
+                                'idmovmod'        => $opdetregprod->id,
+                                'invmovtipo_id'   => 1,   // Entrada
+                                'sucursal_id'     => $opdetregprodtemp->sucursal_id,
+                                'usuario_id'      => auth()->id(),
+                            ]);
+
+                            $productoEnt = Producto::findOrFail($opdetregprodtemp->producto_id);
+                            $ibpEntrada  = InvBodegaProducto::updateOrCreate(
+                                ['producto_id' => $opdetregprodtemp->producto_id, 'invbodega_id' => $invbodega_id_actual],
+                                ['producto_id' => $opdetregprodtemp->producto_id, 'invbodega_id' => $invbodega_id_actual]
+                            );
+                            $invmovdetEntrada = InvMovDet::create([
+                                'invmov_id'            => $invmovEntrada->id,
+                                'invbodegaproducto_id' => $ibpEntrada->id,
+                                'producto_id'          => $opdetregprodtemp->producto_id,
+                                'invbodega_id'         => $invbodega_id_actual,
+                                'sucursal_id'          => $opdetregprodtemp->sucursal_id,
+                                // UM de salida del producto en esta etapa; respaldo: la UM
+                                // configurada en la etapa, para registros sin UM guardada
+                                'unidadmedida_id'      => $opdetregprodtemp->unidadmedidasal_id
+                                                          ?: ($apsucActual->unidadmedida_id ?? null),
+                                'invmovtipo_id'        => 1,
+                                'cant'                 => $opdetregprodtemp->cantprod,
+                                'cantgrupo'            => $opdetregprodtemp->cantprod,
+                                'cantxgrupo'           => 1,
+                                'peso'                 => $productoEnt->peso ?? 0,
+                                'cantkg'               => $opdetregprodtemp->kgprod,
+                                /* Unidades que representan esos kilos. Quedan en NULL si la etapa
+                                   no pide contarlas, que es el caso de casi todas. */
+                                'cantunid'                 => $opdetregprodtemp->cantunid,
+                                'cantunid_unidadmedida_id' => $opdetregprodtemp->cantunid_unidadmedida_id,
+                            ]);
+                            InvMovDetOpDetRegProd::create([
+                                'invmovdet_id'    => $invmovdetEntrada->id,
+                                'opdetregprod_id' => $opdetregprod->id,
+                            ]);
+
                         }
                         // ── fin movimiento inventario etapa intermedia ─────────────
 
@@ -640,71 +665,10 @@ class OpDetRegProdTempAprobSupController extends Controller
                             ? (int)$request->invbodega_id
                             : $bodegasProduccion->first()->id;
 
-                        // Crear el movimiento de inventario de entrada
-                        $invmov = InvMov::create([
-                            'fechahora'       => date('Y-m-d H:i:s'),
-                            'annomes'         => $annomes,
-                            'desc'            => 'Ingreso produccion - OT: ' . $opdetregprod->opdet->op->otdet->ot_id . ' OP: ' . $opdetregprod->opdet->op_id . ' RegProdId: ' . $opdetregprod->id,
-                            'obs'             => 'OP: ' . $opdetregprod->opdet->op_id,
-                            'invmovmodulo_id' => 9,               // Producción
-                            'idmovmod'        => $opdetregprod->id, // Trazabilidad → opdetregprod
-                            'invmovtipo_id'   => 1,               // Entrada
-                            'sucursal_id'     => $opdetregprodtemp->sucursal_id,
-                            'usuario_id'      => auth()->id(),
-                        ]);
-
-                        // Buscar o crear el registro InvBodegaProducto
-                        $invbodegaproducto = InvBodegaProducto::updateOrCreate(
-                            [
-                                'producto_id'  => $opdetregprodtemp->producto_id,
-                                'invbodega_id' => $invbodega_id,
-                            ],
-                            [
-                                'producto_id'  => $opdetregprodtemp->producto_id,
-                                'invbodega_id' => $invbodega_id,
-                            ]
-                        );
-
-                        // Crear el detalle del movimiento
-                        $producto = Producto::findOrFail($opdetregprodtemp->producto_id);
-                        $invmovdet = InvMovDet::create([
-                            'invmov_id'            => $invmov->id,
-                            'invbodegaproducto_id' => $invbodegaproducto->id,
-                            'producto_id'          => $opdetregprodtemp->producto_id,
-                            'invbodega_id'         => $invbodega_id,
-                            'sucursal_id'          => $opdetregprodtemp->sucursal_id,
-                            'unidadmedida_id'      => $producto->categoriaprod->unidadmedida_id,
-                            'invmovtipo_id'        => 1,
-                            'cant'                 => $opdetregprodtemp->cantprod,
-                            'cantgrupo'            => $opdetregprodtemp->cantprod,
-                            'cantxgrupo'           => 1,
-                            'peso'                 => $producto->peso,
-                            'cantkg'               => $opdetregprodtemp->kgprod,
-                        ]);
-
-                        // Resolver notaventadetalle_id para trazabilidad NV → bodega producción.
-                        // Cadena: opdetregprodtemp → opdet → op.otdet_id → otdetnvdet → notaventadetalle_id
-                        // (otdet_id está en op, no en opdet)
-                        // NULL cuando la OT no proviene de ninguna NV (producción para stock).
-                        $nvdetIdBodega = null;
-                        $otdetnvdetBodega = OtDetNVDet::where(
-                            'otdet_id', $opdetregprodtemp->opdet->op->otdet_id
-                        )->first();
-                        if ($otdetnvdetBodega) {
-                            $nvdetIdBodega = $otdetnvdetBodega->notaventadetalle_id;
-                        }
-
-                        // Registrar trazabilidad: invmovdet ↔ opdetregprod ↔ notaventadetalle
-                        InvMovDetOpDetRegProd::create([
-                            'invmovdet_id'        => $invmovdet->id,
-                            'opdetregprod_id'     => $opdetregprod->id,
-                            'notaventadetalle_id' => $nvdetIdBodega,
-                        ]);
-                        InvMovDetNVDet::create([
-                            'invmovdet_id'        => $invmovdet->id,
-                            'notaventadetalle_id' => $nvdetIdBodega,
-                        ]);
-
+                        // El orden importa: primero se descuenta de la bodega de la etapa
+                        // anterior y despues se ingresa lo producido a la bodega final,
+                        // para que el movimiento de salida quede registrado antes que el
+                        // de entrada (pedido 2026-11-11).
                         // SALIDA: descontar de la bodega donde estaba el lote origen.
                         // Se basa en la trazabilidad FIFO ($opdetregprodtemp->origenes).
                         // Si el lote anterior no tiene invmovdet (histórico pre-implementación)
@@ -732,11 +696,22 @@ class OpDetRegProdTempAprobSupController extends Controller
                             // Cantidad proporcional en la UM del lote origen
                             $prevReg    = OpDetRegProd::find($tempOrigen->opdetregprod_id);
                             $cantSalida = 0;
+                            /* Unidades que se lleva esta salida, cuando el lote de origen las
+                               tenia contadas. Se reparten por kilos, igual que la cantidad: si
+                               consume 40 de los 100 kg del lote, se lleva el 40% de sus
+                               unidades. En NULL si el lote no las tenia. */
+                            $cantUnidSalida = null;
                             if ($prevReg && $prevReg->kgprod > 0) {
                                 $cantSalida = round(
                                     ($tempOrigen->kg / $prevReg->kgprod) * ($prevReg->cantprod ?? 0),
                                     4
                                 );
+                                if ($prevReg->cantunid > 0) {
+                                    $cantUnidSalida = round(
+                                        ($tempOrigen->kg / $prevReg->kgprod) * $prevReg->cantunid,
+                                        2
+                                    );
+                                }
                             }
 
                             $invmovSalida = InvMov::create([
@@ -770,6 +745,9 @@ class OpDetRegProdTempAprobSupController extends Controller
                                 'cantxgrupo'           => 1,
                                 'peso'                 => $prevInvMovDet->peso,
                                 'cantkg'               => -$tempOrigen->kg,
+                                // unidades consumidas del lote, con la unidad en que estaban contadas
+                                'cantunid'                 => $cantUnidSalida === null ? null : -$cantUnidSalida,
+                                'cantunid_unidadmedida_id' => $prevReg ? $prevReg->cantunid_unidadmedida_id : null,
                             ]);
                             // Enlazar la salida con el lote origen (del que se descontó)
                             InvMovDetOpDetRegProd::create([
@@ -777,6 +755,81 @@ class OpDetRegProdTempAprobSupController extends Controller
                                 'opdetregprod_id' => $tempOrigen->opdetregprod_id,
                             ]);
                         }
+                        // Crear el movimiento de inventario de entrada
+                        $invmov = InvMov::create([
+                            'fechahora'       => date('Y-m-d H:i:s'),
+                            'annomes'         => $annomes,
+                            'desc'            => 'Ingreso produccion - OT: ' . $opdetregprod->opdet->op->otdet->ot_id . ' OP: ' . $opdetregprod->opdet->op_id . ' RegProdId: ' . $opdetregprod->id,
+                            'obs'             => 'OP: ' . $opdetregprod->opdet->op_id,
+                            'invmovmodulo_id' => 9,               // Producción
+                            'idmovmod'        => $opdetregprod->id, // Trazabilidad → opdetregprod
+                            'invmovtipo_id'   => 1,               // Entrada
+                            'sucursal_id'     => $opdetregprodtemp->sucursal_id,
+                            'usuario_id'      => auth()->id(),
+                        ]);
+
+                        // Buscar o crear el registro InvBodegaProducto
+                        $invbodegaproducto = InvBodegaProducto::updateOrCreate(
+                            [
+                                'producto_id'  => $opdetregprodtemp->producto_id,
+                                'invbodega_id' => $invbodega_id,
+                            ],
+                            [
+                                'producto_id'  => $opdetregprodtemp->producto_id,
+                                'invbodega_id' => $invbodega_id,
+                            ]
+                        );
+
+                        // Crear el detalle del movimiento
+                        $producto = Producto::findOrFail($opdetregprodtemp->producto_id);
+                        $invmovdet = InvMovDet::create([
+                            'invmov_id'            => $invmov->id,
+                            'invbodegaproducto_id' => $invbodegaproducto->id,
+                            'producto_id'          => $opdetregprodtemp->producto_id,
+                            'invbodega_id'         => $invbodega_id,
+                            'sucursal_id'          => $opdetregprodtemp->sucursal_id,
+                            // UM de salida configurada para este producto en esta etapa
+                            // (acuerdotecnicoapsucetapaprod). Si el registro no la tiene,
+                            // se cae a unidadmedidafact_id, que es la unidad de facturacion
+                            // e inventario; unidadmedida_id a secas es la de la medida del
+                            // producto (3 = Pulgadas) y no sirve como unidad de inventario.
+                            'unidadmedida_id'      => $opdetregprodtemp->unidadmedidasal_id
+                                                      ?: $producto->categoriaprod->unidadmedidafact_id,
+                            'invmovtipo_id'        => 1,
+                            'cant'                 => $opdetregprodtemp->cantprod,
+                            'cantgrupo'            => $opdetregprodtemp->cantprod,
+                            'cantxgrupo'           => 1,
+                            'peso'                 => $producto->peso,
+                            'cantkg'               => $opdetregprodtemp->kgprod,
+                            /* Unidades que representan esos kilos. Quedan en NULL si la etapa
+                               no pide contarlas, que es el caso de casi todas. */
+                            'cantunid'                 => $opdetregprodtemp->cantunid,
+                            'cantunid_unidadmedida_id' => $opdetregprodtemp->cantunid_unidadmedida_id,
+                        ]);
+
+                        // Resolver notaventadetalle_id para trazabilidad NV → bodega producción.
+                        // Cadena: opdetregprodtemp → opdet → op.otdet_id → otdetnvdet → notaventadetalle_id
+                        // (otdet_id está en op, no en opdet)
+                        // NULL cuando la OT no proviene de ninguna NV (producción para stock).
+                        $nvdetIdBodega = null;
+                        $otdetnvdetBodega = OtDetNVDet::where(
+                            'otdet_id', $opdetregprodtemp->opdet->op->otdet_id
+                        )->first();
+                        if ($otdetnvdetBodega) {
+                            $nvdetIdBodega = $otdetnvdetBodega->notaventadetalle_id;
+                        }
+
+                        // Registrar trazabilidad: invmovdet ↔ opdetregprod ↔ notaventadetalle
+                        InvMovDetOpDetRegProd::create([
+                            'invmovdet_id'        => $invmovdet->id,
+                            'opdetregprod_id'     => $opdetregprod->id,
+                            'notaventadetalle_id' => $nvdetIdBodega,
+                        ]);
+                        InvMovDetNVDet::create([
+                            'invmovdet_id'        => $invmovdet->id,
+                            'notaventadetalle_id' => $nvdetIdBodega,
+                        ]);
+
                     }
                 }
                 $opdet->save();

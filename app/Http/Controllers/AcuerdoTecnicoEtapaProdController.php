@@ -120,7 +120,10 @@ class AcuerdoTecnicoEtapaProdController extends Controller
                     areaproduccionsucetapaprod.orden AS areaproduccionsucetapaprod_orden,
                     areaproduccionsucetapaprod.etapaprod_id,
                     CONCAT(areaproduccionsucetapaprod.orden, ' ', etapaprod.nombre) AS etapaprod_nombre,
-                    sucursal.nombre AS sucursal_nombre
+                    sucursal.nombre AS sucursal_nombre,
+                    areaproduccionsucetapaprod.unidadmedida_id AS unidad_etapa_id,
+                    atep.unidadmedidasal_id AS unidadmedidasal_id,
+                    atep.unidadmedidacant_id AS unidadmedidacant_id
                 FROM acuerdotecnico
                 INNER JOIN producto              ON producto.id = acuerdotecnico.producto_id
                 INNER JOIN categoriaprod         ON categoriaprod.id = producto.categoriaprod_id
@@ -132,6 +135,9 @@ class AcuerdoTecnicoEtapaProdController extends Controller
                                                  ON areaproduccionsucetapaprod.areaproduccionsuc_id = areaproduccionsuc.id
                 INNER JOIN etapaprod             ON etapaprod.id = areaproduccionsucetapaprod.etapaprod_id
                 INNER JOIN sucursal              ON sucursal.id = areaproduccionsuc.sucursal_id
+                LEFT  JOIN acuerdotecnicoapsucetapaprod atep
+                                                 ON atep.apsucetapaprod_id = areaproduccionsucetapaprod.id
+                                                AND atep.acuerdotecnico_id = acuerdotecnico.id
                 WHERE acuerdotecnico.id = $id
                 ORDER BY areaproduccionsucetapaprod.orden";
 
@@ -140,12 +146,30 @@ class AcuerdoTecnicoEtapaProdController extends Controller
         // IDs de las etapas que el AT ya tiene asignadas (para pre-marcar checkboxes)
         $seleccionadas = $data->apsucetapaprods->pluck('id')->toArray();
 
+        /* Solo las unidades marcadas para produccion: las dimensionales -pulgadas,
+           milimetros- miden el producto y no sirven como unidad de inventario. */
+        $unidades = DB::select("SELECT id, nombre, descripcion
+                                  FROM unidadmedida
+                                 WHERE usa_produccion = 1
+                                   AND ISNULL(deleted_at)
+                                 ORDER BY nombre");
+
+        /* Contar aparte solo tiene sentido cuando la etapa entrega en kilos:
+           si ya entrega en unidades, la cantidad de salida ES la cantidad de
+           unidades. Se manda el id de kilos para que el modal lo sepa sin
+           tenerlo escrito en el javascript. */
+        $aux_kg = DB::selectOne("SELECT id FROM unidadmedida
+                                  WHERE nombre = 'Kgs' AND ISNULL(deleted_at)
+                                  LIMIT 1");
+
         return response()->json([
             'at_id'           => $data->id,
             'nombre_producto' => $data->nombre_producto ?? '',
             'producto_id'     => $data->producto_id,
             'etapaprods'      => $etapaprods,
             'seleccionadas'   => $seleccionadas,
+            'unidades'        => $unidades,
+            'unidad_kg_id'    => $aux_kg ? $aux_kg->id : null,
         ]);
     }
 
@@ -164,8 +188,44 @@ class AcuerdoTecnicoEtapaProdController extends Controller
         can('guardar-acuerdo-tecnico-etapa-de-produccion');
 
         $acuerdotecnico = AcuerdoTecnico::findOrFail($id);
+
+        /* Llega una unidad de salida por etapa: la unidad en que el producto sale
+           de esa etapa, que es propia del producto y no de la etapa. Se arma el
+           arreglo que espera sync() para escribir la tabla pivote. */
+        $aux_etapas = $request->apsucetapaprod_id ?? [];
+        $aux_unidades = $request->unidadmedidasal_id ?? [];
+
+        /* Opcional: unidad en que hay que contar ademas de la cantidad, para
+           los productos que se venden en kilos pero igual interesa saber
+           cuantas unidades salieron. Vacia = no se pide nada. */
+        $aux_cantidades = $request->unidadmedidacant_id ?? [];
+
+        $aux_sync = [];
+        $aux_faltan = 0;
+
+        foreach ($aux_etapas as $aux_etapa_id) {
+            $aux_unidad = isset($aux_unidades[$aux_etapa_id]) ? $aux_unidades[$aux_etapa_id] : null;
+            if (empty($aux_unidad)) { $aux_faltan++; continue; }
+
+            $aux_cant = isset($aux_cantidades[$aux_etapa_id]) ? $aux_cantidades[$aux_etapa_id] : null;
+
+            $aux_sync[$aux_etapa_id] = [
+                'unidadmedidasal_id'  => $aux_unidad,
+                'unidadmedidacant_id' => empty($aux_cant) ? null : $aux_cant,
+            ];
+        }
+
+        /* Sin unidad no se guarda: un movimiento de inventario con la unidad
+           equivocada es peor que no poder guardar todavia. */
+        if ($aux_faltan > 0) {
+            return response()->json([
+                'resp'    => 0,
+                'mensaje' => 'Falta indicar la unidad de salida en ' . $aux_faltan . ' etapa(s).',
+            ]);
+        }
+
         // sync acepta array vacío: si no se seleccionó ninguna etapa, las elimina todas
-        $acuerdotecnico->apsucetapaprods()->sync($request->apsucetapaprod_id ?? []);
+        $acuerdotecnico->apsucetapaprods()->sync($aux_sync);
 
         // Reconstruir el detetapaprod_array con el mismo formato que usa el DataTable:
         // "apsucetapaprod_id|etapaprod_id|etapaprod_nombre;..."

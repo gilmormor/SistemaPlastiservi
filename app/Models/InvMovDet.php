@@ -17,6 +17,9 @@ class InvMovDet extends Model
         'cantxgrupo',
         'peso',
         'cantkg',
+        // unidades que representan esos kilos, y en que se cuentan
+        'cantunid',
+        'cantunid_unidadmedida_id',
         'unidadmedida_id',
         'producto_id',
         'invbodega_id',

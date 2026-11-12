@@ -2,11 +2,34 @@ $(document).ready(function () {
     Biblioteca.validacionGeneral('form-general');
     $("#nombre").focus();
 
-    // Si el operario edita aux_cantprod manualmente (caso UM salida != kg sin peso_unitario),
-    // replicamos su valor en el hidden cantprod que es lo que se graba en BD.
+    // Si la unidad de salida del producto es Kg, la cantidad producida es el
+    // mismo valor de Kg Produccion: se muestra calculada y no se vuelve a pedir.
+    if (umSalidaEsKg()) {
+        $("#aux_cantprod").prop("readonly", true)
+                           .css("background-color", "#eee")
+                           .attr("title", "La unidad de salida es Kg: toma el valor de Kg Produccion");
+    }
+
+    /* Unidades que representan los kilos: el operario las escribe y se copian
+       al hidden, igual que la cantidad producida. El campo solo existe en las
+       etapas que piden contar en otra unidad; si no esta, el blur no se dispara
+       y el hidden queda vacio, que es lo correcto. */
+    $("#aux_cantunid").blur(function(){
+        let v = parseFloat($(this).attr("valor")) || 0;
+        $("#cantunid").val(v);
+        // conteo propio del operario: la sugerencia no vuelve a pisarlo
+        $(this).attr("data-tocado", "1");
+    });
+
+    // Si el operario edita aux_cantprod manualmente (caso UM salida != kg),
+    // replicamos su valor en el hidden cantprod que es lo que se graba en BD y
+    // marcamos el campo para que el calculo automatico no lo pise despues.
     $("#aux_cantprod").blur(function(){
         let v = parseFloat($(this).attr("valor")) || 0;
         $("#cantprod").val(v);
+        if (!umSalidaEsKg()) {
+            $(this).attr("data-tocado", "1");
+        }
     });
 
     $(".validarsaldokg").blur(function(e){
@@ -44,6 +67,47 @@ $(document).ready(function () {
         }
     });
 });
+
+/* La unidad de salida manda sobre la cantidad producida. Sale del hidden
+   unidadmedidasal_id, que el servidor llena con la UM configurada para este
+   producto en acuerdotecnicoapsucetapaprod (id 7 = Kgs). */
+/**
+ * Sugiere las unidades del registro a partir de los lotes de origen.
+ *
+ * Cuando la etapa entrega en kilos pero igual se cuentan unidades, esas
+ * unidades ya vienen contadas de la etapa anterior: se toman de los lotes
+ * que el operario asigno, proporcional a los kg que saca de cada uno.
+ *
+ * No se toca nada si el campo no existe -la etapa no pide contar-, si el
+ * operario ya escribio su propio conteo, o si los lotes no traen el dato:
+ * en ese ultimo caso lo escribe el, que es mejor que mostrarle un cero.
+ */
+function sugerirUnidadesContadas() {
+    var $campo = $("#aux_cantunid");
+    if (!$campo.length) { return; }
+    if ($campo.attr("data-tocado") == "1") { return; }
+    if (typeof unidadesContadasDesdeLotesOrigen !== 'function') { return; }
+
+    var total = unidadesContadasDesdeLotesOrigen();
+    if (total === null || !(total > 0)) { return; }
+
+    var v = Math.round(total);
+    $campo.attr("valor", v);
+    $campo.val(MASKLA(v, 2));
+    $("#cantunid").val(v);
+    console.log("unidades sugeridas desde lotes de origen: " + v);
+}
+function umSalidaId(){
+    return parseFloat($("#unidadmedidasal_id").val()) || 0;
+}
+
+function umSalidaEsKg(){
+    return umSalidaId() == 7;
+}
+
+function umEntradaId(){
+    return parseFloat($("#unidadmedidaent_id").val()) || 0;
+}
 
 function sumarkg(){
     // aux_kgprod_opdet = kg ya producidos totales en el opdet (display, no hidden)
@@ -94,18 +158,43 @@ function sumarkg(){
     // aux_suma = lo que se consumirá del saldo = kgent
     let aux_suma = aux_kgent;
 
-    // Calcular cantprod según UM salida
-    if(aux_unidadmedidaent_id == 7){ // UM entrada = kg → cantprod = kgprod
+    // Calcular cantprod segun la UM de SALIDA del producto (antes se miraba la
+    // de entrada: coincidian solo porque ambas salian de la misma etapa).
+    if(umSalidaEsKg()){ // UM salida = kg → cantprod = kgprod, no se pide aparte
         $("#cantent").val(aux_kgent);
         $("#aux_cantprod").attr("valor", aux_kgprod);
         $("#aux_cantprod").val(MASKLA(aux_kgprod, 2));
         $("#cantprod").val(aux_kgprod);
     } else {
+        $("#cantent").val(aux_kgent);
+        /* La cantidad la ingresa el operario. Si ya escribio un valor no se
+           toca; si todavia no, se le sugiere el convertido desde los kg. */
+        if($("#aux_cantprod").attr("data-tocado") == "1"){
+            return {
+                aux_saldo: aux_saldo,
+                aux_kgprod: aux_kgprod,
+                aux_kgscrap: aux_kgscrap,
+                aux_suma: aux_suma
+            };
+        }
         $("#aux_cantprod").attr("valor","");
         $("#aux_cantprod").val("");
         $("#cantprod").val("");
-        $("#cantent").val(aux_kgent);
-        if(aux_unidadmedidaent_id == 5){ // UM entrada = unidades con conversión
+        /* Si la etapa recibe y entrega en la MISMA unidad, las unidades ya
+           vienen contadas de la etapa anterior: se toman de los lotes que el
+           operario asigno, proporcional a los kg que saco de cada uno. El peso
+           unitario del acuerdo tecnico no sirve aca porque es un estimado de
+           fabricacion, no lo que realmente llego. */
+        let aux_desdeLotes = (umEntradaId() == umSalidaId() && typeof unidadesDesdeLotesOrigen === 'function')
+                             ? unidadesDesdeLotesOrigen()
+                             : null;
+        if (aux_desdeLotes !== null && aux_desdeLotes > 0) {
+            let aux_cantlotes = Math.round(aux_desdeLotes);
+            $("#aux_cantprod").attr("valor", aux_cantlotes);
+            $("#aux_cantprod").val(MASKLA(aux_cantlotes, 2));
+            $("#cantprod").val(aux_cantlotes);
+            console.log("cant desde lotes de origen: " + aux_cantlotes);
+        } else if(umSalidaId() == 5){ // salida en unidades: convertir desde los kg
             let aux_cantunidades = 0;
             let peso_unit = (typeof PRODUCTO_PESO_UNITARIO !== 'undefined') ? parseFloat(PRODUCTO_PESO_UNITARIO) : 0;
             if (peso_unit > 0) {

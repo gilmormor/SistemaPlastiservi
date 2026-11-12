@@ -6,6 +6,7 @@ use App\Http\Requests\ValidarOpDetRegProdTemp;
 use App\Models\AcuerdoTecnico;
 use App\Models\EtapaProd;
 use App\Models\EtapaProdCampo;
+use App\Models\AreaProduccionSucEtapaProd;
 use App\Models\OpDet;
 use App\Models\OpDetRegProdTemp;
 use App\Models\OpDetRegProdTempCampoVal;
@@ -285,6 +286,29 @@ public function etapaprod()
         $tablas['campos'] = EtapaProdCampo::where('apsucetapaprod_id', $opdet->apsucetapaprod_id)
                         ->orderBy('orden')->get();
         $tablas['campovals'] = collect(); // sin valores previos en crear
+        /* Unidades de medida de ESTA etapa para ESTE producto: la de salida se
+           configura por producto en acuerdotecnicoapsucetapaprod y la de entrada
+           es la salida de la etapa anterior del mismo producto. */
+        $tablas['um'] = AreaProduccionSucEtapaProd::umProducto(
+            $opdet->op->otdet->producto_id,
+            $opdet->apsucetapaprod_id
+        );
+        /* Datos del producto que las formulas de los campos por etapa pueden
+           nombrar. El espesor es el de PRODUCCION (otdet.espesorprod): con un
+           espesor mas fino el mismo kilo rinde mas unidades, asi que el peso
+           unitario se recalcula con el, no con el comprometido en el AT. */
+        $aux_otdet = $opdet->op->otdet;
+        $aux_at    = $aux_otdet->producto->acuerdotecnico ?? null;
+        $aux_esp   = ($aux_otdet->espesorprod > 0) ? $aux_otdet->espesorprod : null;
+        $tablas['ctxformula'] = [
+            'ancho'         => $aux_at->at_ancho ?? 0,
+            'largo'         => $aux_at->at_largo ?? 0,
+            'espesor'       => $aux_esp ?: ($aux_at->at_espesor ?? 0),
+            'pe'            => $aux_at->materiaprima->pe ?? 0,
+            'peso_unitario' => $aux_at ? pesounitatesp($aux_at, $aux_esp) : 0,
+            // capas de lamina: 2 doblada, 1 lamina. Evita escribirlo a mano
+            'doble'         => $aux_at ? factorlaminaat($aux_at) : 2,
+        ];
         return view('opdetregprodtemp.crear', compact('opdet','tablas'));
     }
 
@@ -398,6 +422,20 @@ public function etapaprod()
                 ]);
             }
         }
+        /* Las unidades se resuelven en el servidor con la configuracion del
+           producto: lo que venga en los hidden del formulario no decide nada. */
+        $umReg = AreaProduccionSucEtapaProd::umProducto(
+            $opdet->op->otdet->producto_id,
+            $opdet->apsucetapaprod_id
+        );
+        $request->merge([
+            'unidadmedidasal_id' => $umReg['sal_id'],
+            'unidadmedidaent_id' => $umReg['ent_id'],
+            /* Vacia cuando la etapa no pide contar aparte: asi no queda un
+               numero sin unidad, que despues no se puede interpretar. */
+            'cantunid_unidadmedida_id' => $umReg['cant_id'],
+            'cantunid'                 => $umReg['cant_id'] ? $request->input('cantunid') : null,
+        ]);
         // kgent = kgprod + kgscrap (invariante). El operario ingresa kgprod y kgscrap.
         $request->merge(['kgent' => $kgentReq]);
 
@@ -428,7 +466,9 @@ public function etapaprod()
             // Se normaliza el separador decimal a "." para evitar problemas al convertir.
             // Si el campo tiene mapea_campo definido, también actualiza el campo estándar
             // del registro (ej: total_unidades → cantprod).
-            $camposEstandarPermitidos = ['cantprod', 'kgprod', 'kgscrap'];
+            /* cantunid incluido: una formula puede calcular las unidades en vez de
+               que el operario las escriba. */
+            $camposEstandarPermitidos = ['cantprod', 'kgprod', 'kgscrap', 'cantunid'];
             if ($request->has('campo_val') && is_array($request->campo_val)) {
                 foreach ($request->campo_val as $campoId => $valor) {
                     $valorLimpio = str_replace(',', '.', $valor);
@@ -441,7 +481,22 @@ public function etapaprod()
                     $campoConfig = EtapaProdCampo::find((int)$campoId);
                     if ($campoConfig && $campoConfig->mapea_campo
                         && in_array($campoConfig->mapea_campo, $camposEstandarPermitidos)) {
-                        $opdetregprodtemp->{$campoConfig->mapea_campo} = (float)$valorLimpio;
+
+                        $aux_destino = $campoConfig->mapea_campo;
+
+                        /* El mapeo se configura por etapa, pero la unidad de salida
+                           es por producto: una misma etapa entrega en kilos para un
+                           producto y en unidades para otro. Cuando entrega en kilos,
+                           cantprod ES kgprod y un campo no puede pisarlo; su valor
+                           son unidades, asi que va a cantunid si la etapa pide
+                           contarlas, y si no se descarta. */
+                        if ($aux_destino === 'cantprod' and $umReg['sal_id'] == 7) {
+                            $aux_destino = $umReg['cant_id'] ? 'cantunid' : null;
+                        }
+
+                        if ($aux_destino) {
+                            $opdetregprodtemp->{$aux_destino} = (float)$valorLimpio;
+                        }
                     }
                 }
                 $opdetregprodtemp->save();
@@ -532,6 +587,29 @@ public function etapaprod()
                         ->orderBy('orden')->get();
         $tablas['campovals'] = OpDetRegProdTempCampoVal::where('opdetregprodtemp_id', $data->id)
                         ->pluck('valor', 'etapaprod_campo_id'); // keyed by campo id
+        /* Unidades de medida de ESTA etapa para ESTE producto: la de salida se
+           configura por producto en acuerdotecnicoapsucetapaprod y la de entrada
+           es la salida de la etapa anterior del mismo producto. */
+        $tablas['um'] = AreaProduccionSucEtapaProd::umProducto(
+            $opdet->op->otdet->producto_id,
+            $opdet->apsucetapaprod_id
+        );
+        /* Datos del producto que las formulas de los campos por etapa pueden
+           nombrar. El espesor es el de PRODUCCION (otdet.espesorprod): con un
+           espesor mas fino el mismo kilo rinde mas unidades, asi que el peso
+           unitario se recalcula con el, no con el comprometido en el AT. */
+        $aux_otdet = $opdet->op->otdet;
+        $aux_at    = $aux_otdet->producto->acuerdotecnico ?? null;
+        $aux_esp   = ($aux_otdet->espesorprod > 0) ? $aux_otdet->espesorprod : null;
+        $tablas['ctxformula'] = [
+            'ancho'         => $aux_at->at_ancho ?? 0,
+            'largo'         => $aux_at->at_largo ?? 0,
+            'espesor'       => $aux_esp ?: ($aux_at->at_espesor ?? 0),
+            'pe'            => $aux_at->materiaprima->pe ?? 0,
+            'peso_unitario' => $aux_at ? pesounitatesp($aux_at, $aux_esp) : 0,
+            // capas de lamina: 2 doblada, 1 lamina. Evita escribirlo a mano
+            'doble'         => $aux_at ? factorlaminaat($aux_at) : 2,
+        ];
         return view('opdetregprodtemp.editar', compact('data','opdet','tablas'));
     }
 
@@ -593,12 +671,29 @@ public function etapaprod()
             // kgent = kgprod + kgscrap (invariante). El operario ingresa kgprod y kgscrap.
             $request->merge(['kgent' => $kgentReq]);
 
+            /* Las unidades se resuelven en el servidor con la configuracion del
+               producto: lo que venga en los hidden del formulario no decide nada. */
+            $umReg = AreaProduccionSucEtapaProd::umProducto(
+                $opdet->op->otdet->producto_id,
+                $opdet->apsucetapaprod_id
+            );
+            $request->merge([
+                'unidadmedidasal_id' => $umReg['sal_id'],
+                'unidadmedidaent_id' => $umReg['ent_id'],
+                /* Vacia cuando la etapa no pide contar aparte: asi no queda un
+                   numero sin unidad, que despues no se puede interpretar. */
+                'cantunid_unidadmedida_id' => $umReg['cant_id'],
+                'cantunid'                 => $umReg['cant_id'] ? $request->input('cantunid') : null,
+            ]);
+
             $opdetregprodtemp->update($request->all());
 
             // Actualizar campos adicionales (reemplazar los existentes).
             // Se normaliza el separador decimal a "." para evitar problemas al convertir.
             // Si el campo tiene mapea_campo definido, también actualiza el campo estándar.
-            $camposEstandarPermitidos = ['cantprod', 'kgprod', 'kgscrap'];
+            /* cantunid incluido: una formula puede calcular las unidades en vez de
+               que el operario las escriba. */
+            $camposEstandarPermitidos = ['cantprod', 'kgprod', 'kgscrap', 'cantunid'];
             if ($request->has('campo_val') && is_array($request->campo_val)) {
                 foreach ($request->campo_val as $campoId => $valor) {
                     $valorLimpio = str_replace(',', '.', $valor);
@@ -610,7 +705,22 @@ public function etapaprod()
                     $campoConfig = EtapaProdCampo::find((int)$campoId);
                     if ($campoConfig && $campoConfig->mapea_campo
                         && in_array($campoConfig->mapea_campo, $camposEstandarPermitidos)) {
-                        $opdetregprodtemp->{$campoConfig->mapea_campo} = (float)$valorLimpio;
+
+                        $aux_destino = $campoConfig->mapea_campo;
+
+                        /* El mapeo se configura por etapa, pero la unidad de salida
+                           es por producto: una misma etapa entrega en kilos para un
+                           producto y en unidades para otro. Cuando entrega en kilos,
+                           cantprod ES kgprod y un campo no puede pisarlo; su valor
+                           son unidades, asi que va a cantunid si la etapa pide
+                           contarlas, y si no se descarta. */
+                        if ($aux_destino === 'cantprod' and $umReg['sal_id'] == 7) {
+                            $aux_destino = $umReg['cant_id'] ? 'cantunid' : null;
+                        }
+
+                        if ($aux_destino) {
+                            $opdetregprodtemp->{$aux_destino} = (float)$valorLimpio;
+                        }
                     }
                 }
                 $opdetregprodtemp->save();

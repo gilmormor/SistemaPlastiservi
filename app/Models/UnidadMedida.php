@@ -13,7 +13,9 @@ class UnidadMedida extends Model
         'nombre',
         'descripcion',
         'mostrarfact',
-        'agrupado'
+        'agrupado',
+        // marca si sirve como unidad de salida de una etapa de produccion
+        'usa_produccion'
     ];
 
     public function acuerdotectempanchos()

@@ -105,12 +105,36 @@ function renderLotesOrigen() {
         var scrapPrev = prev ? prev.scrap : 0;
 
         var $tr = $('<tr></tr>');
-        $tr.append('<td><strong>#' + lote.id + '</strong></td>');
+        /* El numero de lote abre su etiqueta, para que el operario la compare
+           con la que viene pegada en el producto que va a procesar. Usa la
+           misma funcion y el mismo modal que op/seguimiento y las pantallas
+           de CC, con su validacion de permiso. */
+        $tr.append(
+            '<td><a class="btn-accion-tabla tooltipsC" style="cursor:pointer;" ' +
+            'title="Ver la etiqueta de este lote" ' +
+            'onclick="verEtiquetaEtapaConPermiso(' + lote.id + ')">' +
+            '<strong>#' + lote.id + '</strong></a></td>'
+        );
         $tr.append(
             '<td>registrado por ' + (lote.registrado_por || '—') +
             '<br><span style="color:#888;font-size:11px;">aprobado ' + (lote.fecha_hora || '—') + '</span></td>'
         );
-        $tr.append('<td class="text-right lote-origen-disponible-cell">' + MASKLA(lote.disponible_kg, 2) + ' kg</td>');
+        /* Junto a los kg se muestra cuantas unidades llegaron de la etapa
+           anterior, en su propia UM. Informativo: se reparte en kg. */
+        var textoDisp = MASKLA(lote.disponible_kg, 2) + ' kg';
+
+        /* Si la etapa anterior conto unidades aparte, se muestran esas: son
+           el dato real. disponible_cant sale de cantprod/kgprod, que en una
+           etapa que salio en kilos vale 1 y mostraria los kilos otra vez. */
+        if (lote.disponible_unid !== null && lote.disponible_unid !== undefined) {
+            textoDisp += '<br><span style="color:#777;font-size:11px;">' +
+                         MASKLA(lote.disponible_unid, 2) + ' ' +
+                         (lote.um_cont_nombre || 'unid') + '</span>';
+        } else if (lote.um_nombre && String(lote.um_nombre).toLowerCase() !== 'kgs') {
+            textoDisp += '<br><span style="color:#777;font-size:11px;">' +
+                         MASKLA(lote.disponible_cant, 2) + ' ' + lote.um_nombre + '</span>';
+        }
+        $tr.append('<td class="text-right lote-origen-disponible-cell">' + textoDisp + '</td>');
 
         // Estos inputs usan el plugin jquery.numeric configurado con "." como
         // decimal (numeric('.')); su formato de VISUALIZACIÓN es por lo tanto
@@ -119,6 +143,10 @@ function renderLotesOrigen() {
         var $inputProd = $('<input type="text" class="form-control lote-origen-input lote-origen-prod" style="text-align:right;" />')
             .attr('data-lote-id', lote.id)
             .attr('data-disponible', lote.disponible_kg)
+            // relacion unidad/kg del lote, para convertir los kg asignados
+            .attr('data-unidxkg', lote.unid_por_kg || 0)
+            // relacion de las unidades contadas aparte, si el lote las tiene
+            .attr('data-unidxkg-cont', lote.unid_por_kg_cont || 0)
             .val(prodPrev ? prodPrev.toFixed(2) : '');
         var $inputScrap = $('<input type="text" class="form-control lote-origen-input lote-origen-scrap" style="text-align:right;" />')
             .attr('data-lote-id', lote.id)
@@ -197,7 +225,55 @@ function propagarTotalesADemanda() {
     actualizarTotalesLoteOrigen(sumaProd, sumaScrap);
 }
 
+/**
+ * Unidades que representan los kg de produccion asignados a los lotes.
+ * Cada lote aporta sus propias unidades por kilo, porque pueden venir de
+ * registros distintos de la etapa anterior.
+ * Devuelve null si ningun lote tiene la relacion cargada (no hay de donde
+ * calcular y quien llame decidira que hacer).
+ */
+/**
+ * Suma las unidades CONTADAS que aportan los lotes elegidos, segun los kg
+ * que se tomen de cada uno.
+ *
+ * Es la contraparte de unidadesDesdeLotesOrigen() para el campo de unidades
+ * del registro: aquella convierte a la unidad de salida del lote, esta usa
+ * las unidades que el operario conto aparte en la etapa anterior.
+ *
+ * Devuelve null si ningun lote las tiene, para que quien llame no escriba un
+ * cero que parezca un dato.
+ */
+function unidadesContadasDesdeLotesOrigen() {
+    var total = 0;
+    var hayDato = false;
+    $(".lote-origen-prod").each(function () {
+        var kg    = parseNumeroLocal($(this).val());
+        var ratio = parseFloat($(this).attr('data-unidxkg-cont')) || 0;
+        if (ratio > 0) { hayDato = true; }
+        total += kg * ratio;
+    });
+    return hayDato ? total : null;
+}
+
+function unidadesDesdeLotesOrigen() {
+    var total = 0;
+    var hayDato = false;
+    $(".lote-origen-prod").each(function () {
+        var kg    = parseNumeroLocal($(this).val());
+        var ratio = parseFloat($(this).attr('data-unidxkg')) || 0;
+        if (ratio > 0) { hayDato = true; }
+        total += kg * ratio;
+    });
+    return hayDato ? total : null;
+}
+
 function actualizarTotalesLoteOrigen(sumaProd, sumaScrap) {
+    /* Cambio el reparto entre lotes: las unidades que vienen de ellos
+       cambian tambien, asi que se vuelve a sugerir. */
+    if (typeof sugerirUnidadesContadas === 'function') {
+        sugerirUnidadesContadas();
+    }
+
     var kgProdObjetivo = parseFloat($("#aux_kgprod").attr("valor")) || 0;
     var kgScrapObjetivo = parseFloat($("#aux_kgscrap").attr("valor")) || 0;
 
