@@ -631,11 +631,37 @@
                                                 ->having('cant_prod', '>', 0)
                                                 ->get(); */
 
-                                            $stockProdRows = DB::table('invmovdetnvdet as imdnv')
-                                                ->join('invmovdet as imd',   'imd.id',  '=', 'imdnv.invmovdet_id')
+                                            /* Stock por bodega del item.
+
+                                               Antes se sumaba solo lo que cuelga de invmovdetnvdet, pero esa
+                                               tabla la escribe unicamente DespachoSolController: registra la
+                                               entrada de produccion y el traspaso de la solicitud, pero NO la
+                                               salida que hace la orden de despacho. Resultado: la bodega de
+                                               Picking quedaba con la entrada y sin su salida, mostrando stock
+                                               que ya se habia despachado.
+
+                                               La salida de la orden de despacho si queda registrada en
+                                               invmovdet_bodsoldesp (via despachosoldet_invbodegaproducto), asi
+                                               que se suman los movimientos alcanzados por las DOS vias. El UNION
+                                               evita contar dos veces el traspaso, que esta en ambas. Hacen falta
+                                               las dos: bodsoldesp por si sola no ve la entrada de produccion y
+                                               esconderia stock real todavia no solicitado. */
+                                            $stockProdRows = DB::table(DB::raw('('
+                                                    . ' SELECT imd2.id FROM invmovdetnvdet imdnv'
+                                                    . '   JOIN invmovdet imd2 ON imd2.id = imdnv.invmovdet_id'
+                                                    . '  WHERE imdnv.notaventadetalle_id = ' . intval($detalle->id)
+                                                    . '    AND imd2.deleted_at IS NULL'
+                                                    . ' UNION'
+                                                    . ' SELECT imd3.id FROM invmovdet_bodsoldesp b'
+                                                    . '   JOIN despachosoldet_invbodegaproducto z ON z.id = b.despachosoldet_invbodegaproducto_id AND z.deleted_at IS NULL'
+                                                    . '   JOIN despachosoldet dsd ON dsd.id = z.despachosoldet_id AND dsd.deleted_at IS NULL'
+                                                    . '   JOIN despachosol ds ON ds.id = dsd.despachosol_id AND ds.deleted_at IS NULL'
+                                                    . '   JOIN invmovdet imd3 ON imd3.id = b.invmovdet_id'
+                                                    . '  WHERE dsd.notaventadetalle_id = ' . intval($detalle->id)
+                                                    . '    AND imd3.deleted_at IS NULL'
+                                                    . ') as u'))
+                                                ->join('invmovdet as imd',   'imd.id',  '=', 'u.id')
                                                 ->join('invbodega as ib',    'ib.id',   '=', 'imd.invbodega_id')
-                                                ->where('imdnv.notaventadetalle_id', $detalle->id)
-                                                ->whereNull('imd.deleted_at')
                                                 ->select(
                                                     'imd.invbodega_id',
                                                     'imd.invbodegaproducto_id',

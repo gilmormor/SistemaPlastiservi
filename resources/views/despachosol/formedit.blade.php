@@ -625,11 +625,31 @@
                                                 ->having('cant_prod', '>', 0)
                                                 ->get(); */
 
-                                            $stockProdRows = DB::table('invmovdetnvdet as imdnv')
-                                                ->join('invmovdet as imd',   'imd.id',  '=', 'imdnv.invmovdet_id')
+                                            /* Stock por bodega del item. Mismo criterio que despachosol/form.blade.php.
+
+                                               invmovdetnvdet la escribe solo DespachoSolController: tiene la entrada
+                                               de produccion y el traspaso de la solicitud, pero no la salida que hace
+                                               la orden de despacho, asi que Picking quedaba mostrando stock ya
+                                               despachado. Esa salida si esta en invmovdet_bodsoldesp, via
+                                               despachosoldet_invbodegaproducto: se suman las DOS vias con UNION para
+                                               no contar dos veces el traspaso, que aparece en ambas. */
+                                            $aux_nvdet_id = intval(optional($detalle->notaventadetalle)->id);
+                                            $stockProdRows = DB::table(DB::raw('('
+                                                    . ' SELECT imd2.id FROM invmovdetnvdet imdnv'
+                                                    . '   JOIN invmovdet imd2 ON imd2.id = imdnv.invmovdet_id'
+                                                    . '  WHERE imdnv.notaventadetalle_id = ' . $aux_nvdet_id
+                                                    . '    AND imd2.deleted_at IS NULL'
+                                                    . ' UNION'
+                                                    . ' SELECT imd3.id FROM invmovdet_bodsoldesp b'
+                                                    . '   JOIN despachosoldet_invbodegaproducto z ON z.id = b.despachosoldet_invbodegaproducto_id AND z.deleted_at IS NULL'
+                                                    . '   JOIN despachosoldet dsd ON dsd.id = z.despachosoldet_id AND dsd.deleted_at IS NULL'
+                                                    . '   JOIN despachosol ds ON ds.id = dsd.despachosol_id AND ds.deleted_at IS NULL'
+                                                    . '   JOIN invmovdet imd3 ON imd3.id = b.invmovdet_id'
+                                                    . '  WHERE dsd.notaventadetalle_id = ' . $aux_nvdet_id
+                                                    . '    AND imd3.deleted_at IS NULL'
+                                                    . ') as u'))
+                                                ->join('invmovdet as imd',   'imd.id',  '=', 'u.id')
                                                 ->join('invbodega as ib',    'ib.id',   '=', 'imd.invbodega_id')
-                                                ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle->id)
-                                                ->whereNull('imd.deleted_at')
                                                 ->select(
                                                     'imd.invbodega_id',
                                                     'imd.invbodegaproducto_id',
