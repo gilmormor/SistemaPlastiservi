@@ -98,7 +98,7 @@
 					<td class="textcenter">{{$otdet->requiere_fabricacion == 1 ? "Sí" : "No"}}</td>
 					<td class="textright">{{number_format($otdet->kg, 2, ",", ".")}}</td>
 					<td class="textright">{{number_format($otdet->preciounit, 2, ",", ".")}}</td>
-					<td class="textright">{{number_format($otdet->subtotal, 2, ",", ".")}}</td>
+					<td class="textright">{{number_format($otdet->subtotal, 0, ",", ".")}}</td>
 				</tr>
 			@endforeach
 		</tbody>
@@ -107,15 +107,15 @@
 				<td colspan="5" class="textright"><span><strong>Total</strong></span></td>
 				<td class="textright"><span><strong>{{number_format($totalkg, 2, ",", ".")}}</strong></span></td>
 				<td class="textright"><span><strong>NETO</strong></span></td>
-				<td class="textright"><span><strong>{{number_format($ot->neto, 2, ",", ".")}}</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($ot->neto, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textright"><span><strong>IVA {{$ot->otnotaventa->notaventa->piva}}%</strong></span></td>
-				<td class="textright"><span><strong>{{number_format($ot->iva, 2, ",", ".")}}</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($ot->iva, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr>
 				<td colspan="7" class="textright"><span><strong>TOTAL</strong></span></td>
-				<td class="textright"><span><strong>{{number_format($ot->total, 2, ",", ".")}}</strong></span></td>
+				<td class="textright"><span><strong>{{number_format($ot->total, 0, ",", ".")}}</strong></span></td>
 			</tr>
 		</tfoot>
 	</table>
