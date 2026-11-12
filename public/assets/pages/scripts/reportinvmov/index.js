@@ -159,7 +159,9 @@ function consultarpage(data){
             {data: 'producto_nombre'},
             {data: 'invmovmodulo_nombre'},
             {data: 'invbodega_nombre'},
-            {data: 'cant'}
+            {data: 'cant'},
+            // unidad de medida del detalle (invmovdet.unidadmedida_id)
+            {data: 'unidadmedida_nombre'}
         ],
 		"language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -231,7 +233,13 @@ function consultarpage(data){
                     break;
 				case 9:
                     if(data.idmovmod !== null){
-                        aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' title='PDF Registro de Produccion: " + data.idmovmod + "'>" +
+                        // En el modulo Produccion, invmov.idmovmod guarda el opdetregprod_id,
+                        // o sea el lote. El enlace estaba sin onclick y no hacia nada: ahora abre
+                        // la etiqueta de ese lote. Se usa la version con permiso de general.js
+                        // (valida 'ver-etiqueta-regprod' y avisa si el usuario no lo tiene).
+                        // Entrada y salida de una misma aprobacion comparten idmovmod, asi que
+                        // las dos filas abren la etiqueta del mismo lote: es lo correcto.
+                        aux_text = "<a class='btn-accion-tabla btn-sm tooltipsC' style='cursor:pointer;' title='Etiqueta del lote: " + data.idmovmod + "' onclick='verEtiquetaEtapaConPermiso(" + data.idmovmod + ",\"ver-etiqueta-regprod\")'>" +
                             data.idmovmod +
                         "</a>";
                     }

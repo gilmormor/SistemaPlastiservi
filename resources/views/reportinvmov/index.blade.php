@@ -183,6 +183,8 @@ Movimiento de Inventario
                             <th class='tooltipsC' title='Modulo de Origen'>Modulo</th>
                             <th>Bodega</th>
                             <th>Cant</th>
+                            {{-- Unidad de medida del detalle del movimiento --}}
+                            <th class='tooltipsC' title='Unidad de medida del movimiento'>UM</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -191,6 +193,8 @@ Movimiento de Inventario
                         <tr>
                             <th colspan='10' style='text-align:right'>TOTAL</th>
                             <th id='totalcant' name='totalcant' style='text-align:right'>0,00</th>
+                            {{-- celda vacia que empareja el pie con la nueva columna UM --}}
+                            <th></th>
                         </tr>
                     </tfoot>
 
@@ -204,4 +208,7 @@ Movimiento de Inventario
 @include('generales.modalpdf')
 @include('generales.verpdf')
 @include('generales.buscarproductobd')
+{{-- Modal de la etiqueta de lote: lo abre el enlace de la columna Origen cuando
+     el movimiento viene del modulo de Produccion (invmovmodulo_id = 9). --}}
+@include('generales.modaletiquetaetapa')
 @endsection

@@ -38,6 +38,8 @@
 					<th style='text-align:left'>Modulo</th>
 					<th style='text-align:left'>Bodega</th>
 					<th style='text-align:right;white-space:nowrap'>Cant</th>
+					{{-- Unidad de medida del detalle del movimiento --}}
+					<th style='text-align:left;white-space:nowrap'>UM</th>
 				</tr>
 			</thead>
 			<tbody id="detalle_productos">
@@ -55,6 +57,7 @@
 						<td style='text-align:left'>{{$data->invmovmodulo_nombre}}</td>
 						<td style='text-align:left'>{{$data->invbodega_nombre}}</td>
 						<td style='text-align:right;white-space:nowrap'>{{$data->cant}}&nbsp;&nbsp;</td>
+						<td style='text-align:left;white-space:nowrap'>{{$data->unidadmedida_nombre}}</td>
 					</tr>
 					<?php 
 						$aux_total += $data->cant;
@@ -66,6 +69,8 @@
 				<tr>
 					<th colspan='8' style='text-align:right'>TOTAL</th>
 					<th style='text-align:right'>{{number_format($aux_total, 0, ",", ".")}}&nbsp;&nbsp;</th>
+					{{-- celda vacia que empareja el pie con la nueva columna UM --}}
+					<th></th>
 				</tr>
 			</tfoot>
 		</table>
