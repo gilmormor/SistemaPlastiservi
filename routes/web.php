@@ -1986,3 +1986,18 @@ Route::group(['middleware' => ['auth']], function () {
 Route::post('trans/buscarTransportista', 'TransController@buscarTransportista')->name('buscarTransportista');
 Route::post('trans/buscarChofer', 'TransController@buscarChofer')->name('buscarChofer');
 Route::post('trans/buscarPatente', 'TransController@buscarPatente')->name('buscarPatente');
+
+/* ====================================================================
+   ETAPA EXTERNA — planilla y etiquetas del proceso que se ejecuta fuera
+   del sistema entre una etapa de produccion y la siguiente.
+   Modulo independiente: se ancla solo en el lote (opdetregprod) y no
+   interviene en el flujo de registro de produccion.
+   ==================================================================== */
+Route::get('etapaexterna', 'EtapaExternaController@index')->name('etapaexterna');
+Route::get('etapaexterna/lote/{id}', 'EtapaExternaController@buscarLote')->name('etapaexterna_lote');
+Route::post('etapaexterna/planilla', 'EtapaExternaController@guardarPlanilla')->name('etapaexterna_guardar_planilla');
+Route::post('etapaexterna/etiqueta', 'EtapaExternaController@guardarEtiqueta')->name('etapaexterna_guardar_etiqueta');
+Route::get('etapaexterna/planilla/{id}/imprimir', 'EtapaExternaController@imprimirPlanilla')->name('etapaexterna_imprimir_planilla');
+Route::get('etapaexterna/etiqueta/{id}/imprimir', 'EtapaExternaController@imprimirEtiqueta')->name('etapaexterna_imprimir_etiqueta');
+Route::get('etapaexterna/listado', 'EtapaExternaController@listado')->name('etapaexterna_listado');
+Route::get('etapaexterna/listadopage', 'EtapaExternaController@listadopage')->name('etapaexterna_listadopage');
