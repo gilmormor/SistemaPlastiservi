@@ -26,6 +26,9 @@ function buscarTrazabilidad() {
         nrofactura:   $("#nrofactura").val(),
         nroguia:      $("#nroguia").val(),
         notaventa_id: $("#notaventa_id").val(),
+        // OT y OP: entrada para la produccion que no viene de una nota de venta
+        ot_id:       $("#ot_id").val(),
+        op_id:       $("#op_id").val(),
         lote_id:     $("#lote_id").val(),
         producto_id: $("#producto_id").val(),
         fechad:      $("#fechad").val(),
@@ -92,10 +95,36 @@ function renderResultados(items, nvInfo) {
     }
 
     var html = aviso;
-    items.forEach(function (it) {
-        html += renderItem(it);
+    agruparPorOp(items).forEach(function (grupo) {
+        html += renderItem(grupo);
     });
     $cont.html(html);
+}
+
+/* Una orden de producción es UNA trazabilidad, aunque tenga varios puntos de
+   partida. La OP 6 entra con dos lotes de materia prima (34 y 43): son dos
+   ramas del mismo proceso, no dos procesos, y salían como dos tarjetas
+   separadas repitiendo la misma cabecera NV / OT / OP.
+   Aquí se juntan los resultados de una misma OP en una sola tarjeta, con sus
+   raíces como ramas hermanas del árbol. Una OP corresponde a un único ítem de
+   la OT, así que todas comparten producto, OT y nota de venta. */
+function agruparPorOp(items) {
+    var porOp  = {};
+    var orden  = [];
+
+    items.forEach(function (it) {
+        var k = it.op_id;
+        if (!porOp[k]) {
+            // El primero aporta la cabecera; los demás suman sus raíces
+            porOp[k] = $.extend({}, it, { raices: [], kgtotal: 0, canttotal: 0 });
+            orden.push(k);
+        }
+        porOp[k].raices.push(it);
+        porOp[k].kgtotal   += parseFloat(it.kgprod)   || 0;
+        porOp[k].canttotal += parseFloat(it.cantprod) || 0;
+    });
+
+    return orden.map(function (k) { return porOp[k]; });
 }
 
 function fechaCorta(fh) {
@@ -133,23 +162,41 @@ function renderItem(it) {
     '</a>';
     flow += '</div>';
 
-    var html = '<div class="trz-rama">' +
-        '<div class="trz-item-header">' +
-            '<a href="javascript:void(0)" onclick="verEtiquetaEtapa(' + it.lote_id + ')" ' +
+    // .trz-item es la TARJETA del resultado (borde, sombra, fondo blanco), no
+    // una rama del arbol: son clases distintas y no deben confundirse.
+    /* La tarjeta puede agrupar varios puntos de partida de la misma OP. Con uno
+       solo la cabecera sigue mostrando su lote, como siempre; con varios se
+       indica cuántos son, porque un único número de lote seria enganoso. */
+    var raices  = it.raices || [it];
+    var varias  = raices.length > 1;
+    var kgCab   = varias ? it.kgtotal   : it.kgprod;
+    var cantCab = varias ? it.canttotal : it.cantprod;
+
+    var etiqueta;
+    if (varias) {
+        etiqueta = '<span class="lote-tag"><i class="fa fa-tag"></i> ' +
+                   raices.length + ' lotes de inicio</span>';
+    } else {
+        etiqueta = '<a href="javascript:void(0)" onclick="verEtiquetaEtapa(' + it.lote_id + ')" ' +
                 'title="Ver etiqueta — Lote de producción #' + it.lote_id + '" class="lote-tag" style="color:#fff;">' +
                 '<i class="fa fa-tag"></i> Lote-' + it.lote_id +
-            '</a>' +
+            '</a>';
+    }
+
+    var html = '<div class="trz-item">' +
+        '<div class="trz-item-header">' +
+            etiqueta +
             '<span style="font-weight:600;">' + (it.producto_nombre || ('Prod. ' + it.producto_id)) + '</span>' +
             '<span style="color:#8a99aa; font-size:11px;">' + (it.etapa_nombre || '—') + '</span>' +
             '<span style="margin-left:auto; text-align:right; font-size:11px; color:#8a99aa;">' +
-                MASKLA(it.kgprod, 2) + ' kg &nbsp;/&nbsp; ' + MASKLA(it.cantprod, 0) + ' u.<br>' +
+                MASKLA(kgCab, 2) + ' kg &nbsp;/&nbsp; ' + MASKLA(cantCab, 0) + ' u.<br>' +
                 fechaCorta(it.aprobfechahora) +
             '</span>' +
         '</div>' +
         '<div class="trz-item-body">' +
             flow +
             '<div class="trz-lotes-title"><i class="fa fa-industry"></i> Cadena de lotes de producción</div>' +
-            renderCadenaLotes(it) +
+            raices.map(function (r) { return renderCadenaLotes(r); }).join('') +
         '</div>' +
     '</div>';
     return html;

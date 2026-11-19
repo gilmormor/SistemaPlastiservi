@@ -67,6 +67,16 @@ class TrazabilidadDocumentoController extends Controller
             $sets[] = $this->lotesDesdeNotaVenta($request->notaventa_id);
         }
 
+        if (!empty($request->ot_id)) {
+            $usoAlgunFiltro = true;
+            $sets[] = $this->lotesDesdeOt($request->ot_id);
+        }
+
+        if (!empty($request->op_id)) {
+            $usoAlgunFiltro = true;
+            $sets[] = $this->lotesDesdeOp($request->op_id);
+        }
+
         if (!empty($request->lote_id)) {
             $usoAlgunFiltro = true;
             $sets[] = [intval($request->lote_id)];
@@ -89,7 +99,10 @@ class TrazabilidadDocumentoController extends Controller
            devolvia 11 tarjetas para una sola cadena de produccion-. Se dejan
            solo los lotes raiz y de ahi se despliega la ramificacion hacia
            abajo, que ya contiene a todos los demas. */
-        if (!empty($request->notaventa_id)) {
+        /* Lo mismo vale para OT y OP: igual que la nota de venta, son el punto de
+           partida de la cadena y no un lote mas. En una OT sin nota de venta la
+           OT ES el origen de todo el proceso productivo. */
+        if (!empty($request->notaventa_id) || !empty($request->ot_id) || !empty($request->op_id)) {
             $ids = $this->soloRaices($ids);
         }
 
@@ -233,6 +246,52 @@ class TrazabilidadDocumentoController extends Controller
             $ids[] = (int) $r->id;
         }
         return array_values(array_unique($ids));
+    }
+
+    /**
+     * Orden de Trabajo → otdet → op → opdet → opdetregprod.
+     *
+     * Es la entrada natural para las OT que no vienen de una nota de venta
+     * (produccion para stock): ahi la OT es el origen de todo el proceso, y por
+     * NV no se las puede encontrar.
+     *
+     * Trae los lotes de todas las etapas; de ellos la busqueda se queda despues
+     * con los raiz y despliega la ramificacion hacia abajo (ver soloRaices).
+     */
+    private function lotesDesdeOt($ot_id)
+    {
+        $rows = DB::select("
+            SELECT DISTINCT odrp.id
+            FROM   otdet od
+            INNER  JOIN op         ON op.otdet_id = od.id   AND ISNULL(op.deleted_at)
+            INNER  JOIN opdet      ON opdet.op_id = op.id   AND ISNULL(opdet.deleted_at)
+            INNER  JOIN opdetregprod odrp ON odrp.opdet_id = opdet.id
+                                          AND odrp.es_muestra = 0
+                                          AND ISNULL(odrp.deleted_at)
+            WHERE  od.ot_id = ?
+              AND  ISNULL(od.deleted_at)
+        ", [intval($ot_id)]);
+
+        return array_map(function ($r) { return (int) $r->id; }, $rows);
+    }
+
+    /**
+     * Orden de Produccion → opdet → opdetregprod.
+     * Mas acotado que la OT: una OT puede tener varias OP.
+     */
+    private function lotesDesdeOp($op_id)
+    {
+        $rows = DB::select("
+            SELECT DISTINCT odrp.id
+            FROM   opdet
+            INNER  JOIN opdetregprod odrp ON odrp.opdet_id = opdet.id
+                                          AND odrp.es_muestra = 0
+                                          AND ISNULL(odrp.deleted_at)
+            WHERE  opdet.op_id = ?
+              AND  ISNULL(opdet.deleted_at)
+        ", [intval($op_id)]);
+
+        return array_map(function ($r) { return (int) $r->id; }, $rows);
     }
 
     /**

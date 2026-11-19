@@ -101,6 +101,17 @@
             <label>N° Nota de Venta</label>
             <input type="text" class="form-control numerico-entero" id="notaventa_id" placeholder="Ej: 33545"/>
         </div>
+        {{-- OT y OP: para las ordenes de trabajo que no vienen de una nota de
+             venta (produccion para stock), la OT es el origen de todo el proceso
+             productivo y es por donde hay que entrar a consultar. --}}
+        <div class="col-xs-6 col-sm-2">
+            <label>N° OT</label>
+            <input type="text" class="form-control numerico-entero" id="ot_id" placeholder="Ej: 9"/>
+        </div>
+        <div class="col-xs-6 col-sm-2">
+            <label>N° OP</label>
+            <input type="text" class="form-control numerico-entero" id="op_id" placeholder="Ej: 9"/>
+        </div>
         <div class="col-xs-6 col-sm-2">
             <label>N° Guía</label>
             <input type="text" class="form-control numerico-entero" id="nroguia" placeholder="Ej: 176662"/>
