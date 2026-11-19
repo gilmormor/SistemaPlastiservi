@@ -96,4 +96,12 @@ class OpDetRegProd extends Model
     {
         return $this->hasMany(OpDetRegProdOrigen::class, 'opdetregprod_origen_id');
     }
+
+    /* Maquina en la que se produjo este lote. La elige el operario al registrar
+       (puede no ser la programada en la OP) y pasa de opdetregprodtempmaq a
+       opdetregprodmaq al aprobar. La etiqueta del lote la lee de aqui. */
+    public function opdetregprodmaq()
+    {
+        return $this->hasOne(OpDetRegProdMaq::class, 'opdetregprod_id');
+    }
 }

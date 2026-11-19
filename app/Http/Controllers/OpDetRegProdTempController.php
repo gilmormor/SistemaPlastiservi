@@ -174,10 +174,18 @@ public function etapaprod()
                 ON opdetregprodtemp.etapaprod_id=etapaprod.id
                 INNER JOIN opdet
                 ON opdetregprodtemp.opdet_id=opdet.id
+                /* Maquina del registro: la que eligio el operario al registrar la
+                   produccion (opdetregprodtempmaq). Antes se mostraba la programada
+                   en la OP (opdetmaquina) y el cambio de maquina en planta no se veia.
+                   El join a opdetmaquina queda como respaldo para los registros que
+                   no tienen maquina propia: etapas sin maquina y registros anteriores
+                   a este cambio. */
+                LEFT JOIN opdetregprodtempmaq
+                ON opdetregprodtempmaq.opdetregprodtemp_id=opdetregprodtemp.id
                 LEFT JOIN opdetmaquina
                 ON opdetmaquina.opdet_id=opdet.id
                 LEFT JOIN maquina
-                ON maquina.id=opdetmaquina.maquina_id
+                ON maquina.id=IFNULL(opdetregprodtempmaq.maquina_id, opdetmaquina.maquina_id)
                 LEFT JOIN unidadmedida AS unidadmedidasal
                 ON unidadmedidasal.id=opdetregprodtemp.unidadmedidasal_id
                 INNER JOIN op
@@ -253,6 +261,96 @@ public function etapaprod()
 
 
     /**
+     * Maquinas entre las que el operario puede elegir al registrar produccion,
+     * mas la que quedo programada en la OP (informativa).
+     *
+     * Se listan las maquinas de ESTA etapa (maquinaetapaprod) que estan en una
+     * sucursal del usuario. La programada se agrega aunque sea de otra sucursal:
+     * si no, una maquina mal configurada dejaria al operario sin poder guardar.
+     * Las etapas sin maquinas (Mezclado, Distribucion) devuelven lista vacia y el
+     * formulario no muestra el bloque.
+     */
+    private function maquinasParaRegistro(OpDet $opdet)
+    {
+        $aux_etapaprod_id = $opdet->areaproduccionsucetapaprod->etapaprod_id;
+
+        // Maquina asignada en la programacion (opdetmaquina): puede no existir.
+        $aux_prog = DB::table('opdetmaquina')
+            ->join('maquina', 'maquina.id', '=', 'opdetmaquina.maquina_id')
+            ->where('opdetmaquina.opdet_id', $opdet->id)
+            ->select('maquina.id', 'maquina.nombre')
+            ->first();
+
+        // La etapa usa maquina si tiene alguna asignada, sin importar la sucursal.
+        $aux_usamaquina = DB::table('maquinaetapaprod')
+            ->where('etapaprod_id', $aux_etapaprod_id)
+            ->exists();
+
+        $aux_sucursales = Usuario::findOrFail(auth()->id())->sucursales->pluck('id')->toArray();
+        if (count($aux_sucursales) == 0) {
+            $aux_sucursales = [0];   // sin sucursales asignadas: whereIn no puede ir vacio
+        }
+
+        $aux_maquinas = DB::table('maquina as m')
+            ->join('maquinaetapaprod as mep', 'mep.maquina_id', '=', 'm.id')
+            ->where('mep.etapaprod_id', $aux_etapaprod_id)
+            ->whereNull('m.deleted_at')
+            ->where(function ($q) use ($aux_sucursales, $aux_prog) {
+                $q->whereIn('m.sucursal_id', $aux_sucursales);
+                if ($aux_prog) {
+                    $q->orWhere('m.id', $aux_prog->id);
+                }
+            })
+            ->select('m.id', 'm.nombre')
+            ->orderBy('m.nombre')
+            ->get();
+
+        return [
+            'maquinas'     => $aux_maquinas,
+            'maquina_prog' => $aux_prog,
+            'usamaquina'   => $aux_usamaquina,
+        ];
+    }
+
+    /**
+     * Resuelve la maquina que se guarda en el registro de produccion.
+     *
+     * Antes se copiaba ciegamente la programada en la OP. Ahora manda la que
+     * selecciono el operario, porque la programada puede estar ocupada y terminar
+     * produciendo en otra. Se valida contra maquinaetapaprod: el required del
+     * formulario no alcanza, puede llegar cualquier maquina_id por POST.
+     * En etapas sin maquinas se conserva el comportamiento anterior (copiar la
+     * programada si existe), para no romper Mezclado ni Distribucion.
+     */
+    private function resolverMaquinaRegistro(OpDet $opdet, $maquina_id)
+    {
+        $aux_etapaprod_id = $opdet->areaproduccionsucetapaprod->etapaprod_id;
+        $aux_usamaquina = DB::table('maquinaetapaprod')
+            ->where('etapaprod_id', $aux_etapaprod_id)
+            ->exists();
+
+        if (!$aux_usamaquina) {
+            $aux_prog = DB::table('opdetmaquina')->where('opdet_id', $opdet->id)->first();
+            return $aux_prog ? $aux_prog->maquina_id : null;
+        }
+
+        if (!$maquina_id) {
+            throw new \Exception('Debe seleccionar la maquina en la que se realizo la produccion.');
+        }
+
+        $aux_valida = DB::table('maquina as m')
+            ->join('maquinaetapaprod as mep', 'mep.maquina_id', '=', 'm.id')
+            ->where('mep.etapaprod_id', $aux_etapaprod_id)
+            ->where('m.id', (int) $maquina_id)
+            ->whereNull('m.deleted_at')
+            ->exists();
+        if (!$aux_valida) {
+            throw new \Exception('La maquina seleccionada no pertenece a esta etapa de produccion.');
+        }
+
+        return (int) $maquina_id;
+    }
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -286,6 +384,10 @@ public function etapaprod()
         $tablas['campos'] = EtapaProdCampo::where('apsucetapaprod_id', $opdet->apsucetapaprod_id)
                         ->orderBy('orden')->get();
         $tablas['campovals'] = collect(); // sin valores previos en crear
+        /* Maquinas para el select del formulario. En crear queda en blanco: el
+           operario tiene que elegir en cual produjo (ver maquinasParaRegistro). */
+        $tablas = array_merge($tablas, $this->maquinasParaRegistro($opdet));
+        $tablas['maquina_sel'] = null;
         /* Unidades de medida de ESTA etapa para ESTE producto: la de salida se
            configura por producto en acuerdotecnicoapsucetapaprod y la de entrada
            es la salida de la etapa anterior del mismo producto. */
@@ -455,6 +557,18 @@ public function etapaprod()
             }
         }
 
+        /* Maquina real del registro: la elige el operario en el formulario. Se
+           resuelve y valida ANTES de abrir la transaccion, igual que la seleccion
+           de lotes, para poder devolver el mensaje sin dejar nada a medias. */
+        try {
+            $aux_maquina_id = $this->resolverMaquinaRegistro($opdet, $request->input('maquina_id'));
+        } catch (\Exception $e) {
+            return redirect('opdetregprodtemp/listaropdet')->with([
+                'mensaje' => $e->getMessage(),
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         DB::beginTransaction();
         try {
             $opdet->updated_at = date("Y-m-d H:i:s");
@@ -510,12 +624,14 @@ public function etapaprod()
                 OpDetRegProdTempOrigen::asignarManual($opdetregprodtemp, $seleccionLotes);
             }
 
-            // Guardar máquina asociada al opdet (si la etapa usa máquina).
-            $opdetMaq = DB::table('opdetmaquina')->where('opdet_id', $opdetregprodtemp->opdet_id)->first();
-            if ($opdetMaq) {
+            /* Maquina del registro: la que eligio el operario (ya validada arriba).
+               Antes se copiaba la programada en opdetmaquina, asi que un cambio de
+               maquina en planta no quedaba en ningun lado. En etapas sin maquinas
+               resolverMaquinaRegistro devuelve la programada o null, igual que antes. */
+            if ($aux_maquina_id) {
                 OpDetRegProdTempMaq::create([
                     'opdetregprodtemp_id' => $opdetregprodtemp->id,
-                    'maquina_id'          => $opdetMaq->maquina_id,
+                    'maquina_id'          => $aux_maquina_id,
                 ]);
             }
 
@@ -587,6 +703,12 @@ public function etapaprod()
                         ->orderBy('orden')->get();
         $tablas['campovals'] = OpDetRegProdTempCampoVal::where('opdetregprodtemp_id', $data->id)
                         ->pluck('valor', 'etapaprod_campo_id'); // keyed by campo id
+        /* Maquinas para el select. Al editar se precarga la que ya quedo guardada
+           en opdetregprodtempmaq, no la programada: si no, una edicion de los kilos
+           borraria el cambio de maquina que hizo el operario. */
+        $tablas = array_merge($tablas, $this->maquinasParaRegistro($opdet));
+        $aux_maqtemp = OpDetRegProdTempMaq::where('opdetregprodtemp_id', $data->id)->first();
+        $tablas['maquina_sel'] = $aux_maqtemp ? $aux_maqtemp->maquina_id : null;
         /* Unidades de medida de ESTA etapa para ESTE producto: la de salida se
            configura por producto en acuerdotecnicoapsucetapaprod y la de entrada
            es la salida de la etapa anterior del mismo producto. */
@@ -662,6 +784,17 @@ public function etapaprod()
             }
         }
 
+        /* Misma resolucion de maquina que en guardar: se valida antes de la
+           transaccion para devolver el mensaje sin tocar nada. */
+        try {
+            $aux_maquina_id = $this->resolverMaquinaRegistro($opdetPrevio, $request->input('maquina_id'));
+        } catch (\Exception $e) {
+            return redirect()->route('opdetregprodtemp_index01')->with([
+                'mensaje' => $e->getMessage(),
+                'tipo_alert' => 'alert-error'
+            ]);
+        }
+
         DB::beginTransaction();
         try {
             $opdet = OpDet::findOrFail($opdetregprodtemp->opdet_id);
@@ -732,13 +865,13 @@ public function etapaprod()
                 OpDetRegProdTempOrigen::asignarManual($opdetregprodtemp, $seleccionLotes);
             }
 
-            // Actualizar máquina: reemplazar el registro previo con el actual del opdet.
-            $opdetMaq = DB::table('opdetmaquina')->where('opdet_id', $opdetregprodtemp->opdet_id)->first();
+            /* Maquina del registro: se reemplaza por la que eligio el operario en
+               esta edicion (ya validada arriba), no por la programada. */
             OpDetRegProdTempMaq::where('opdetregprodtemp_id', $opdetregprodtemp->id)->delete();
-            if ($opdetMaq) {
+            if ($aux_maquina_id) {
                 OpDetRegProdTempMaq::create([
                     'opdetregprodtemp_id' => $opdetregprodtemp->id,
-                    'maquina_id'          => $opdetMaq->maquina_id,
+                    'maquina_id'          => $aux_maquina_id,
                 ]);
             }
 
@@ -985,6 +1118,17 @@ function consultaopdet($request){
         $aux_condot_id = "ot.id = " . intval($request->ot_id);
     }
 
+    /* Filtro por OP. El campo existe en la pantalla y el javascript lo manda en
+       la consulta desde siempre, pero aqui no se leia: escribir el numero de OP
+       no filtraba nada. Coincidencia exacta -no LIKE- para que pedir la OP 6 no
+       traiga tambien la 16 ni la 60. intval() por la misma razon que en OT: la
+       consulta se arma concatenando. */
+    if(empty($request->op_id)){
+        $aux_condop_id = " true";
+    }else{
+        $aux_condop_id = "opdet.op_id = " . intval($request->op_id);
+    }
+
     $aux_condproducto_id = " true";
     if(!empty($request->producto_id)){
         /*
@@ -1106,6 +1250,7 @@ function consultaopdet($request){
             AND $aux_condrut
             AND $aux_condnotaventa_id
             AND $aux_condot_id
+            AND $aux_condop_id
             AND $aux_condproducto_id
             AND $aux_condmaquina_id
             AND $aux_condlote_id

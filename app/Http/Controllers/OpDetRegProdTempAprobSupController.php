@@ -157,10 +157,18 @@ class OpDetRegProdTempAprobSupController extends Controller
                 ON opdetregprodtemp.etapaprod_id=etapaprod.id
                 INNER JOIN opdet
                 ON opdetregprodtemp.opdet_id=opdet.id
+                /* Maquina del registro: la que eligio el operario al registrar la
+                   produccion (opdetregprodtempmaq). Antes se mostraba la programada
+                   en la OP (opdetmaquina) y el cambio de maquina en planta no se veia.
+                   El join a opdetmaquina queda como respaldo para los registros que
+                   no tienen maquina propia: etapas sin maquina y registros anteriores
+                   a este cambio. */
+                LEFT JOIN opdetregprodtempmaq
+                ON opdetregprodtempmaq.opdetregprodtemp_id=opdetregprodtemp.id
                 LEFT JOIN opdetmaquina
                 ON opdetmaquina.opdet_id=opdet.id
                 LEFT JOIN maquina
-                ON maquina.id=opdetmaquina.maquina_id
+                ON maquina.id=IFNULL(opdetregprodtempmaq.maquina_id, opdetmaquina.maquina_id)
                 LEFT JOIN unidadmedida AS unidadmedidasal
                 ON unidadmedidasal.id=opdetregprodtemp.unidadmedidasal_id
                 INNER JOIN op
@@ -957,11 +965,23 @@ class OpDetRegProdTempAprobSupController extends Controller
         $operario = \App\Models\Operario::find($produccion->operario_id);
         $operarioNombre = $operario ? $operario->nombre : '—';
 
-        // Máquina asociada al opdet (si existe)
+        /* Maquina del lote: la que el operario registro en opdetregprodmaq, que es
+           donde queda la maquina real del registro de produccion (puede no ser la
+           programada: la asignada estaba ocupada y produjeron en otra). Antes se
+           leia opdetmaquina, la de la programacion, y la etiqueta que se pega en el
+           rollo no reflejaba el cambio. Si el lote no tiene maquina registrada
+           -lotes anteriores a este cambio, o etapas sin maquina- se cae a la
+           programada, como antes. */
         $maquina = null;
         $maquinaNombre = '—';
-        if ($opdet->opdetmaquina && $opdet->opdetmaquina->maquina) {
+        $aux_maqreg = OpDetRegProdMaq::where('opdetregprod_id', $produccion->id)->first();
+        if ($aux_maqreg) {
+            $maquina = Maquina::find($aux_maqreg->maquina_id);
+        }
+        if (!$maquina && $opdet->opdetmaquina && $opdet->opdetmaquina->maquina) {
             $maquina = $opdet->opdetmaquina->maquina;
+        }
+        if ($maquina) {
             $maquinaNombre = $maquina->nombre;
         }
 

@@ -144,6 +144,50 @@
         </div>
     </div>
 </div>
+{{-- Maquina del registro de produccion.
+
+     Se muestra la maquina en la que se programo el item (informativa, bloqueada) y
+     un select para que el operario indique en cual produjo realmente: la programada
+     puede estar ocupada y terminar produciendo en otra. Queda en blanco a proposito,
+     para que el operario la elija, y es obligatoria.
+
+     Solo aparece en etapas que tienen maquinas asignadas (maquinaetapaprod). En
+     Mezclado, Distribucion y las demas sin maquinas no hay nada que elegir y el
+     bloque no se muestra, igual que antes de este cambio. --}}
+@if($tablas['usamaquina'] ?? false)
+<div class="form-group col-xs-12 col-sm-2">
+    <div class="row">
+        <div class="form-group col-xs-12 col-sm-12">
+            <label for="maquina_prog_nombre" class="control-label" title="Maquina asignada en la programacion de la OP">Máquina Programada</label>
+            <input type="text" id="maquina_prog_nombre" class="form-control" value="{{$tablas['maquina_prog']->nombre ?? 'Sin asignar'}}" readonly disabled/>
+        </div>
+        <div class="form-group col-xs-12 col-sm-12">
+            @if(count($tablas['maquinas']) > 0)
+                <label for="maquina_id" class="control-label requerido" data-toggle='tooltip' title="Maquina en la que se produjo realmente">Máquina</label>
+                <select name="maquina_id" id="maquina_id" class="form-control select2" required>
+                    <option value="">Seleccione...</option>
+                    @foreach($tablas['maquinas'] as $aux_maquina)
+                        <option
+                            value="{{$aux_maquina->id}}"
+                            @if(old('maquina_id', $tablas['maquina_sel'] ?? '') == $aux_maquina->id)
+                                {{'selected'}}
+                            @endif
+                            >{{$aux_maquina->nombre}}</option>
+                    @endforeach
+                </select>
+            @else
+                {{-- La etapa usa maquinas pero ninguna esta en una sucursal del usuario:
+                     se avisa el motivo en vez de dejar un select vacio con required,
+                     que daria el mensaje genérico "Falta: Valor" sin explicar nada. --}}
+                <label class="control-label" title="Maquina en la que se produjo realmente">Máquina</label>
+                <p class="text-danger" style="font-size:11px;margin:0;">
+                    No hay máquinas de esta etapa en su sucursal. Consulte con el administrador.
+                </p>
+            @endif
+        </div>
+    </div>
+</div>
+@endif
 <div class="clearfix"></div>
 
 {{-- R1: Checkbox muestra física. Solo aplica si la etapa requiere control de calidad

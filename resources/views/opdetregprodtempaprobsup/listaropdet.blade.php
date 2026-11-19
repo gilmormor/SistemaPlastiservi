@@ -123,7 +123,18 @@ OP Det
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
+                            {{-- Estatus Bloqueo: oculto, no hace falta en esta pantalla.
+
+                                 El select NO se elimina a proposito: listaropdet.js lee
+                                 $("#statusBloqueo").val() para armar la consulta, y si el
+                                 elemento no existe eso devuelve undefined y viaja
+                                 "statusBloqueo=undefined", que en PHP es verdadero y
+                                 activaria filtrarclientesbloqueados (biblioteca.php). Ese
+                                 filtro ademas falla aqui, porque consultaopdet no trae el
+                                 campo clientedesbloqueadopro_obs que la funcion lee.
+                                 Oculto conserva su valor vacio y nada de eso ocurre.
+                                 Se oculta el contenedor completo: no tiene nada mas. --}}
+                            <div class="col-xs-12 col-md-12 col-sm-12" style="display:none;">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Bloqueo">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label>Estatus Bloqueo:</label>

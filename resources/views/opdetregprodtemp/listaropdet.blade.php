@@ -72,6 +72,23 @@ OP Det
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label for="sucursal_id" class="control-label">Sucursal:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="sucursal_id[]" id="sucursal_id" multiple class='selectpicker form-control' data-live-search='true' multiple data-actions-box='true'>
+                                            @foreach($tablashtml['sucursales'] as $sucursal)
+                                                <option
+                                                    value="{{$sucursal->id}}"
+                                                    {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
+                                                    >
+                                                    {{$sucursal->nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>            
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Número Nota de Venta">
@@ -90,6 +107,8 @@ OP Det
                                         <input type="text" name="ot_id" id="ot_id" class="form-control" value="{{old('ot_id')}}" maxlength="8"/>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
                                 <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Orden Produccion">
                                     <div class="col-xs-12 col-md-4 col-sm-4 text-left">
                                         <label for="op_id">OP:</label>
@@ -98,8 +117,6 @@ OP Det
                                         <input type="text" name="op_id" id="op_id" class="form-control" value="{{old('op_id')}}" maxlength="6"/>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
                                 {{-- Lote de origen: el número de la etiqueta del material que
                                      el operario tiene delante. Devuelve el ítem donde ese lote
                                      entra a procesarse, no el que lo produjo. --}}
@@ -126,36 +143,6 @@ OP Det
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Código Producto">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label for="sucursal_id" class="control-label">Sucursal:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="sucursal_id[]" id="sucursal_id" multiple class='selectpicker form-control' data-live-search='true' multiple data-actions-box='true'>
-                                            @foreach($tablashtml['sucursales'] as $sucursal)
-                                                <option
-                                                    value="{{$sucursal->id}}"
-                                                    {{is_array(old('sucursal_id')) ? (in_array($sucursal->id, old('sucursal_id')) ? 'selected' : '') : (isset($data) ? ($data->sucursales->firstWhere('id', $sucursal->id) ? 'selected' : '') : '')}}
-                                                    >
-                                                    {{$sucursal->nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>            
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-12 col-sm-12">
-                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Bloqueo">
-                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
-                                        <label>Estatus Bloqueo:</label>
-                                    </div>
-                                    <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="statusBloqueo" id="statusBloqueo" class="selectpicker form-control statusBloqueo">
-                                            <option value="">Seleccione...</option>
-                                            <option value="1">Clientes Bloqueados</option>
-                                        </select>
-                                    </div>
-                                </div>
                                 {{-- Máquina: solo las de la etapa en la que está parado el usuario
                                      (relación maquinaetapaprod). Con buscador, porque Extrusión
                                      tiene 12. Si la etapa no tiene máquinas asignadas, el select
@@ -179,6 +166,28 @@ OP Det
                                                 <option>Sin máquinas en esta etapa</option>
                                             </select>
                                         @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-12 col-sm-12">
+                                {{-- Estatus Bloqueo: oculto, no hace falta en esta pantalla.
+
+                                     El select NO se elimina a proposito: listaropdet.js lee
+                                     $("#statusBloqueo").val() para armar la consulta, y si el
+                                     elemento no existe eso devuelve undefined y viaja
+                                     "statusBloqueo=undefined", que en PHP es verdadero y
+                                     dejaria el listado filtrando siempre solo los clientes
+                                     bloqueados (ver filtrarclientesbloqueados en biblioteca.php).
+                                     Oculto conserva su valor vacio y el filtro no se aplica. --}}
+                                <div class="col-xs-12 col-sm-6" data-toggle='tooltip' title="Estatus Bloqueo" style="display:none;">
+                                    <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                        <label>Estatus Bloqueo:</label>
+                                    </div>
+                                    <div class="col-xs-12 col-md-8 col-sm-8">
+                                        <select name="statusBloqueo" id="statusBloqueo" class="selectpicker form-control statusBloqueo">
+                                            <option value="">Seleccione...</option>
+                                            <option value="1">Clientes Bloqueados</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
