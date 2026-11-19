@@ -24,6 +24,8 @@ class OtDet extends Model
         'subtotal',
         'requiere_fabricacion',
         'obs',
+        // Forma de embalar acordada para este item; la lee la planilla del area
+        'formaembalar',
         'cantprog',
         'kgprog',
         'usuariodel_id'

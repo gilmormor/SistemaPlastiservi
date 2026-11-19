@@ -35,6 +35,62 @@ class OtNVController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Forma de embalar de un item: se guarda en el detalle de la OT y, ademas,
+     * como acuerdo con el cliente para ese producto.
+     *
+     * Los dos lados cumplen papeles distintos: otdet congela lo que se definio
+     * para ESTA orden, y cliente_producto es lo acordado a futuro, que es de
+     * donde se precarga la proxima vez. La planilla del area lee primero otdet.
+     *
+     * En cliente_producto solo se ACTUALIZA, nunca se inserta: esa tabla la
+     * alimentan otros flujos y crear filas desde aqui cambiaria lo que ven
+     * pantallas que listan los productos de un cliente.
+     */
+    private function guardarFormaEmbalar($otdet, $cliente_id, $formaembalar)
+    {
+        if ($formaembalar === null) {
+            return;
+        }
+        $aux_valor = trim($formaembalar);
+        if ($aux_valor === '') {
+            return;
+        }
+
+        $otdet->formaembalar = $aux_valor;
+
+        if ($cliente_id) {
+            DB::table('cliente_producto')
+                ->where('cliente_id', $cliente_id)
+                ->where('producto_id', $otdet->producto_id)
+                ->update(['formaembalar' => $aux_valor, 'updated_at' => now()]);
+        }
+    }
+
+    /**
+     * Forma de embalar ya acordada con el cliente para cada producto de la nota
+     * de venta. Sirve para precargar el campo al crear la OT: la primera vez el
+     * supervisor lo escribe, y de ahi en adelante sale solo.
+     * Devuelve [producto_id => formaembalar].
+     */
+    private function formasEmbalarCliente($cliente_id)
+    {
+        if (!$cliente_id) {
+            return [];
+        }
+        $aux_filas = DB::table('cliente_producto')
+            ->where('cliente_id', $cliente_id)
+            ->whereNotNull('formaembalar')
+            ->select('producto_id', 'formaembalar')
+            ->get();
+
+        $aux_salida = [];
+        foreach ($aux_filas as $f) {
+            $aux_salida[$f->producto_id] = $f->formaembalar;
+        }
+        return $aux_salida;
+    }
+
     public function index()
     {
         can('listar-otnv');
@@ -214,6 +270,10 @@ class OtNVController extends Controller
         $array_bodegasmodulo = $invmovmodulo->invmovmodulobodsals->pluck('id')->toArray();
         $tablas['sucurArray'] = $sucurArrayUsuario; //$clientesArray['sucurArray'];
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
+        /* Forma de embalar ya acordada con este cliente para cada producto: se
+           usa para precargar el campo del detalle. La primera OT hay que
+           escribirla, las siguientes salen solas. */
+        $tablas['formasembalar'] = $this->formasEmbalarCliente($notaventa->cliente_id);
         return view('otnv.crear', compact('notaventa','clienteselec','clienteDirec','detalles','comunas','formapagos','plazopagos','vendedores','vendedores1','fecha','empresa','tipoentregas','giros','aux_sta','aux_statusPant','array_bodegasmodulo','tablas'));
     }
 
@@ -331,6 +391,11 @@ class OtNVController extends Controller
                     $otdet->subtotal = $request->subtotal[$i];
                     $otdet->requiere_fabricacion = $request->stafab[$i];
                     $otdet->obs = $request->otdet_obs[$i];
+                    /* Forma de embalar: queda en el detalle y se actualiza el
+                       acuerdo con el cliente. Se lee con ?? null porque el
+                       detalle viaja como arrays paralelos y una fila sin el
+                       campo romperia el guardado entero. */
+                    $this->guardarFormaEmbalar($otdet, $notaventa->cliente_id, $request->otdet_formaembalar[$i] ?? null);
                     //dd($otdet);
                     if($otdet->save()){
                         if(isset($request->NVdet_id[$i])){
@@ -493,6 +558,10 @@ class OtNVController extends Controller
         $tablas['sucursales'] = Sucursal::orderBy('id')->whereIn('sucursal.id', $tablas['sucurArray'])->get();
 
         //dd($clientedirecs);
+        /* Igual que en crearot: el formulario es el mismo (otnv.form) y necesita
+           los acuerdos del cliente para precargar los items que todavia no
+           tengan la forma de embalar guardada en su detalle. */
+        $tablas['formasembalar'] = $this->formasEmbalarCliente($ot->cliente_id);
         return view('otnv.editar', compact('ot','notaventa','clienteselec','detalles','comunas','vendedores','vendedores1','fecha','empresa','sucurArray','aux_sta','aux_cont','aux_statusPant','invmovmodulo','array_bodegasmodulo','tablas'));
     }
 
@@ -549,7 +618,9 @@ class OtNVController extends Controller
                         $notaventadetalle->requiere_fabricacion = $request->stafab[$i];
                         $otdet = OtDet::findOrFail($request->otdet_id[$i]);
                         $otdet->requiere_fabricacion = $request->stafab[$i];
-                        $otdet->obs = $request->otdet_obs[$i];                        
+                        $otdet->obs = $request->otdet_obs[$i];
+                        // Ver la nota en guardar()
+                        $this->guardarFormaEmbalar($otdet, $ot->cliente_id, $request->otdet_formaembalar[$i] ?? null);
                         $otdet->kg = $request->totalkilos[$i];
                         $otdet->kgprod = $request->totalkilos[$i];
                         $notaventadetalle->save();

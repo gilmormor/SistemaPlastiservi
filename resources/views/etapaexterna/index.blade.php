@@ -169,7 +169,7 @@ Etapa Externa
                 <div class="form-group">
                     <label for="pl_formaembalar">Detalle de embalaje</label>
                     <input type="text" id="pl_formaembalar" class="form-control" maxlength="200"
-                           placeholder="Ej: BULTOS DE 4,00">
+                           placeholder="Ej: Pqts 3Kg, 50 Bolsas">
                     {{-- Se guarda en el detalle de la OT y en el acuerdo del cliente para
                          ese producto, asi la proxima OT ya lo trae cargado. --}}
                     <small class="text-muted">

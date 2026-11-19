@@ -845,6 +845,13 @@ $("#btnaceptarMT").click(function(event){
 			$("#nmbitem" + id).val(auxeditcampoT);
 			$("#nombreProdTD" + id).attr('title', auxeditcampoT);
 		}
+		/* Forma de embalar: rama aparte, no toca la de la observacion. Solo
+		   actualiza su propio input oculto y el atributo valor del icono, que
+		   es de donde el modal lee el dato la proxima vez que se abre. */
+		if($("#auxeditcampoT").attr('aux_nomcampot') == "campo_formaembalar"){
+			$("#otdet_formaembalar" + id).val(auxeditcampoT);
+			$("#campo_formaembalar" + id).attr('valor', auxeditcampoT);
+		}
 		/* if($("#auxeditcampoT").attr('aux_nomcampot') == "unmditemlbl"){
 			$("#unmditemlbl" + id).html(auxeditcampoT);
 			$("#unmditemlbl" + id).attr('valor', auxeditcampoT);

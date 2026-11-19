@@ -155,6 +155,9 @@
                             <th class="width100 tooltipsC" title="Unidad de Medida">UniMed</th>
                             <th title="Nombre producto">Nombre</th>
                             <th title="Observacion">Observacion</th>
+                            {{-- Forma de embalar: va impresa en la planilla que el
+                                 supervisor entrega al operario (modulo Etapa Externa). --}}
+                            <th title="Como se embala este producto. Ej: Pqts 3Kg, 50 Bolsas">Forma Embalar</th>
                             <th class="width100" style="text-align:right;">Kg</th>
                             <th style="display:none;">Desc</th>
                             <th style="display:none;">DescPorc</th>
@@ -229,6 +232,12 @@
                                     <td>
                                         <input type="text" name="otdet_obs[]" id="otdet_obs{{$aux_fila}}" class="form-control" value="{{$otdet->obs}}" title="{{$otdet->obs}}" maxlength="100"/>
                                     </td>
+                                    <td>
+                                        {{-- En la OT libre el valor se guarda solo en otdet: su cliente
+                                             es la propia empresa (produccion para stock), asi que no
+                                             corresponde registrarlo como acuerdo en cliente_producto. --}}
+                                        <input type="text" name="otdet_formaembalar[]" id="otdet_formaembalar{{$aux_fila}}" class="form-control" value="{{$otdet->formaembalar}}" title="{{$otdet->formaembalar}}" maxlength="200" placeholder="Ej: Pqts 3Kg, 50 Bolsas"/>
+                                    </td>
                                     <td name="kgTD{{$aux_fila}}" id="kgTD{{$aux_fila}}" style="text-align:right;" class="" valor="{{$otdet->kg}}">
                                         <input type="text" name="totalkilos[]" id="totalkilos{{$aux_fila}}" class="form-control" value="{{$otdet->kg}}" style="display:none;" valor="{{$otdet->kg}}" fila="{{$aux_fila}}"/>
                                         <input type="text" name="itemkg[]" id="itemkg{{$aux_fila}}" class="form-control numerico itemrequerido subtotalkg calsubtotalitem kgitemkeyup" value="{{number_format($otdet->kg, 2, ',', '.')}}" valor="{{$otdet->kg}}" item="{{$aux_fila}}" style="text-align:right" maxlength="15"/>
@@ -286,7 +295,10 @@
                                 <th id="Tcant" name="Tcant" style="text-align:right">
                                     {{number_format($aux_totalcant, 2, ',', '.')}}
                                 </th>
-                                <th colspan="3" style="text-align:right;"><b>Total Kg</b></th>
+                                {{-- colspan 4 (antes 3): cubre UniMed, Nombre, Observacion y
+                                     Forma Embalar, la columna nueva. Sin esto el valor de
+                                     Total Kg caia una columna antes de la de Kg. --}}
+                                <th colspan="4" style="text-align:right;"><b>Total Kg</b></th>
                                 <th id="totalkg" name="totalkg" style="text-align:right;" valor="{{$aux_totalkg}}">{{number_format($aux_totalkg, 2, ',', '.')}}</th>
                                 <th colspan="5" style="text-align:right;display:none;"><b>Neto</b></th>
                                 <th id="tdneto" name="tdneto" style="text-align:right;display:none;">0</th>

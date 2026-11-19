@@ -190,6 +190,15 @@ class OtController extends Controller
                 //$otdet->montoitem = round($otdet->qtyitem * $otdet->prcitem,0); //$request->montoitem[$i];
                 //$otdet->obsdet = $request->obsdet[$i];
                 $otdet->obs = $request->otdet_obs[$i];
+                /* Forma de embalar: queda congelada en el detalle de esta OT y la
+                   lee la planilla del area (modulo Etapa Externa). Aqui NO se
+                   escribe cliente_producto: la OT libre es produccion para stock
+                   y su cliente es la propia empresa, asi que guardarlo alli seria
+                   registrar un acuerdo de embalaje con uno mismo.
+                   Se lee con ?? null porque el detalle viaja como arrays
+                   paralelos: si una fila no mandara el campo, acceder al indice
+                   directo romperia el guardado completo. */
+                $otdet->formaembalar = $request->otdet_formaembalar[$i] ?? null;
                 $aux_itemkg = convertirNumeroLatinoaUS($request->itemkg[$i]);
                 $aux_itemkg = is_numeric($aux_itemkg) ? $aux_itemkg : 0;
                 $otdet->kg = $aux_itemkg;
@@ -341,6 +350,8 @@ class OtController extends Controller
                         'espesorprod' => $aux_espesor,
                         'unidadmedida_id' => $request->unidadmedidainp_id[$i],
                         'obs' => $request->otdet_obs[$i],
+                        // Ver la nota en guardar(): solo otdet, nunca cliente_producto
+                        'formaembalar' => $request->otdet_formaembalar[$i] ?? null,
                         'kg' => $aux_itemkg,
                         'kgprod' => $aux_itemkg,
                         'requiere_fabricacion' => 1

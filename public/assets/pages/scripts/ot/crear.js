@@ -374,6 +374,13 @@ function agregarFila() {
 		'<td>' +
 			'<input type="text" name="otdet_obs[]" id="otdet_obs' + aux_nfila + '" class="form-control" value="" maxlength="100"/>' +
 		'</td>' +
+		/* Forma de embalar: misma columna que ya existe en las filas que vienen
+		   del servidor (ot/formnew.blade.php). Debe ir aqui tambien o la fila
+		   nueva mandaria un elemento menos en otdet_formaembalar[] y los valores
+		   quedarian corridos respecto a las demas columnas. */
+		'<td>' +
+			'<input type="text" name="otdet_formaembalar[]" id="otdet_formaembalar' + aux_nfila + '" class="form-control" value="" maxlength="200" placeholder="Ej: Pqts 3Kg, 50 Bolsas"/>' +
+		'</td>' +
 		'<td name="kgTD' + aux_nfila + '" id="kgTD' + aux_nfila + '" style="text-align:right;" class="" valor="0">' +
 			'<input type="text" name="totalkilos[]" id="totalkilos' + aux_nfila + '" class="form-control" value="0" style="display:none;" valor="0" fila="' + aux_nfila + '"/>' +
 			'<input type="text" name="itemkg[]" id="itemkg' + aux_nfila + '" class="form-control numericofilanew' + aux_nfila + ' itemrequerido subtotalkg calsubtotalitem kgitemkeyup" value="0" valor="0" item="' + aux_nfila + '" style="text-align:right" maxlength="15"/>' +

@@ -175,6 +175,10 @@
                             <th style="display:none;">Sub Total Neto</th>
                             <th style="display:none;">Sub Total Neto Sin Formato</th>
                             <th style="text-align:center">Obs</th>
+                            {{-- Forma de embalar: va impresa en la planilla que el supervisor
+                                 entrega al operario (modulo Etapa Externa). Se edita con el
+                                 mismo modal que la observacion. --}}
+                            <th style="text-align:center" class="tooltipsC" title="Forma de Embalar">Emb</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -484,6 +488,25 @@
                                             <i class="fa fa-fw fa-comment-o"></i>
                                         </a>
                                         <input type="text" name="otdet_obs[]" id="otdet_obs{{$aux_nfila}}" class="form-control" value="{{isset($ot) ? $detalle->obs : ''}}" style="display:none;"/>
+                                    </td>
+                                    @php
+                                        /* Forma de embalar del item. Al editar manda lo congelado en el
+                                           detalle de la OT; si esta vacio -o se esta creando la OT- se
+                                           precarga lo acordado con el cliente para ese producto. Asi la
+                                           primera vez se escribe y las siguientes sale solo.
+                                           El producto esta en $detalle->producto_id tanto en el detalle
+                                           de la nota de venta como en el de la OT. */
+                                        $aux_formasemb  = $tablas['formasembalar'] ?? [];
+                                        $aux_prod_id    = $detalle->producto_id ?? null;
+                                        $aux_formaembal = (isset($ot) && !empty($detalle->formaembalar))
+                                                        ? $detalle->formaembalar
+                                                        : ($aux_formasemb[$aux_prod_id] ?? '');
+                                    @endphp
+                                    <td>
+                                        <a id="campo_formaembalar{{$aux_nfila}}" name="campo_formaembalar{{$aux_nfila}}" class="btn-accion-tabla tooltipsC editarcampoTex" title="Forma de Embalar" valor="{{$aux_formaembal}}" fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="campo_formaembalar">
+                                            <i class="fa fa-fw fa-cube"></i>
+                                        </a>
+                                        <input type="text" name="otdet_formaembalar[]" id="otdet_formaembalar{{$aux_nfila}}" class="form-control" value="{{$aux_formaembal}}" style="display:none;"/>
                                     </td>
                                 </tr>
                                 <?php 
