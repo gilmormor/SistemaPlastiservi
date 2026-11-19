@@ -287,7 +287,26 @@ function renderRamasLotes(nodos) {
 }
 
 function filaLote(o, esActual) {
-    var html = '<div class="trz-tree-node' + (esActual ? ' trz-actual' : '') + '">' +
+    var html;
+
+    /* Registro todavia en opdetregprodtemp: no es lote, no tiene etiqueta que
+       imprimir y no cuelga nada de el. Se muestra con su estado para que se vea
+       que la etapa ya esta trabajada pero aun no aprobada. */
+    if (o.es_temp) {
+        html = '<div class="trz-tree-node">' +
+            '<span class="trz-chip ' + (o.rechazado ? 'red' : 'orange') + '" ' +
+                'title="Registro de producción N° ' + o.lote_id + ' — ' + o.estado + '">' +
+                '<i class="fa fa-hourglass-half"></i> Reg-' + o.lote_id +
+            '</span>' +
+            '<span style="font-size:11px; color:#8a99aa;">' + (o.etapa_nombre || '—') +
+                ' &nbsp;·&nbsp; ' + MASKLA(o.kg, 2) + ' kg &nbsp;·&nbsp; ' +
+                '<em style="color:' + (o.rechazado ? '#a93226' : '#b7600a') + ';">' + o.estado + '</em>' +
+            '</span>' +
+        '</div>';
+        return html;
+    }
+
+    html = '<div class="trz-tree-node' + (esActual ? ' trz-actual' : '') + '">' +
         '<a href="javascript:void(0)" onclick="verEtiquetaEtapa(' + o.lote_id + ')" ' +
             'data-lote="' + o.lote_id + '" title="Ver etiqueta — Lote de producción #' + o.lote_id + '" ' +
             'class="trz-chip ' + (esActual ? 'blue' : 'gray') + '" style="cursor:pointer;">' +

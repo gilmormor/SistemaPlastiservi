@@ -87,6 +87,56 @@ class TrazabilidadLoteService
                 'destinos'     => self::destinosLote($f->lote_id, $visitados),
             ];
         }
+
+        /* Registros de produccion que todavia NO son lote: estan en
+           opdetregprodtemp esperando su paso por el supervisor. Sin ellos la
+           cadena se cortaba en el ultimo lote aprobado y no se veia que la
+           etapa siguiente ya estaba trabajada pero pendiente.
+
+           Se excluyen los aprobstatus = 2 porque esos ya pasaron a
+           opdetregprod y vienen por la consulta de arriba: apareceria dos veces
+           el mismo trabajo.
+
+           Son hojas del arbol: de un temp no cuelga nada hasta que se aprueba. */
+        $temps = DB::select("
+            SELECT t.opdetregprodtemp_id AS temp_id, t.kg, t.cant,
+                   tmp.aprobstatus, ep.nombre AS etapa_nombre
+            FROM   opdetregprodtemp_origen t
+            INNER  JOIN opdetregprodtemp tmp ON tmp.id = t.opdetregprodtemp_id
+                                            AND ISNULL(tmp.deleted_at)
+            INNER  JOIN opdet od ON od.id = tmp.opdet_id
+            LEFT   JOIN areaproduccionsucetapaprod aps ON aps.id = od.apsucetapaprod_id
+            LEFT   JOIN etapaprod ep ON ep.id = aps.etapaprod_id
+            WHERE  t.opdetregprod_id = ?
+              AND  (tmp.aprobstatus IS NULL OR tmp.aprobstatus <> 2)
+            ORDER  BY t.opdetregprodtemp_id
+        ", [$opdetregprod_id]);
+
+        foreach ($temps as $t) {
+            /* aprobstatus: null o 0 = registrado, aun sin enviar al supervisor;
+               1 = enviado, esperando aprobacion; 3 = rechazado. */
+            $aux_st = $t->aprobstatus;
+            if ($aux_st == 1) {
+                $aux_estado = 'Enviado, pendiente de aprobación';
+            } elseif ($aux_st == 3) {
+                $aux_estado = 'Rechazado por el supervisor';
+            } else {
+                $aux_estado = 'Registrado, sin enviar a aprobación';
+            }
+
+            $result[] = [
+                'lote_id'      => $t->temp_id,
+                'kg'           => $t->kg,
+                'cant'         => $t->cant,
+                'etapa_nombre' => $t->etapa_nombre,
+                'es_temp'      => true,            // todavia no es lote
+                'estado'       => $aux_estado,
+                'rechazado'    => ($aux_st == 3),
+                'despacho'     => [],
+                'destinos'     => [],
+            ];
+        }
+
         return $result;
     }
 
