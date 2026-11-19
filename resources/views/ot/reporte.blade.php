@@ -110,7 +110,12 @@
 				<td class="textright"><span><strong>{{number_format($ot->neto, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr>
-				<td colspan="7" class="textright"><span><strong>IVA {{$ot->otnotaventa->notaventa->piva}}%</strong></span></td>
+				{{-- Una OT libre (produccion para stock) no viene de una nota de venta,
+				     asi que no hay piva que leer: ahi se usa el IVA de la empresa.
+				     Sin este isset el PDF reventaba con "Trying to get property
+				     'notaventa' of non-object". Las demas lineas del reporte que leen
+				     otnotaventa ya estaban protegidas; esta se habia quedado fuera. --}}
+				<td colspan="7" class="textright"><span><strong>IVA {{isset($ot->otnotaventa) ? $ot->otnotaventa->notaventa->piva : ($empresa[0]['iva'] ?? 0)}}%</strong></span></td>
 				<td class="textright"><span><strong>{{number_format($ot->iva, 0, ",", ".")}}</strong></span></td>
 			</tr>
 			<tr>
