@@ -43,7 +43,9 @@
     background: #2c5f8a; color: #fff; font-weight: 700; font-size: 12px;
     border-radius: 12px; padding: 3px 10px;
 }
-.trz-item-body { padding: 12px 16px; }
+/* Fondo blanco explicito: no se deja heredar para que ningun estilo del tema
+   (AdminLTE) tiña el area donde se dibuja la cadena de lotes. */
+.trz-item-body { padding: 12px 16px; background: #fff; }
 
 .trz-chip {
     display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600;
@@ -60,9 +62,30 @@
 .trz-flow .trz-arrow { color: #b0bac6; font-size: 12px; }
 
 .trz-lotes-title { font-size: 11px; font-weight: 700; color: #8a99aa; text-transform: uppercase; margin: 10px 0 4px; }
-.trz-tree { margin-left: 14px; border-left: 2px dashed #d0d9e4; padding-left: 12px; }
-.trz-tree-node { margin: 4px 0; }
-.trz-tree-node.trz-actual { background: #eaf3fb; border-radius: 4px; padding: 3px 6px; margin: 4px -6px; }
+/* Arbol con conectores en codo: la linea vertical la dibuja cada rama, no el
+   contenedor, para poder cortarla en el ultimo hijo. Asi se ve a que elemento
+   llega cada linea y no queda bajando sin destino cuando ya no hay mas. */
+/* OJO: la clase se llama .trz-rama y NO .trz-item: ese nombre ya lo usa la
+   tarjeta blanca con borde y sombra que envuelve cada resultado (definida mas
+   arriba). Reutilizarlo convertia cada rama del arbol en una tarjeta. */
+.trz-tree { margin-left: 7px; padding-left: 11px; }
+.trz-rama { position: relative; }
+/* tramo vertical de la rama */
+.trz-rama::before {
+    content: ''; position: absolute; left: -11px; top: 0; bottom: 0;
+    border-left: 2px dashed #d0d9e4;
+}
+/* el ultimo hijo corta la vertical justo en su codo */
+.trz-rama:last-child::before { bottom: auto; height: 10px; }
+/* codo horizontal que apunta al elemento */
+.trz-rama::after {
+    content: ''; position: absolute; left: -11px; top: 10px; width: 8px;
+    border-top: 2px dashed #d0d9e4;
+}
+.trz-tree-node { margin: 0; line-height: 1.2; }
+/* El lote consultado se distingue por su chip azul; sin fondo de color la
+   cadena se lee mas limpia. */
+.trz-tree-node.trz-actual { background: transparent; padding: 0; margin: 0; }
 
 .trz-empty { color: #aaa; font-size: 12px; font-style: italic; padding: 6px 0; }
 </style>
@@ -75,16 +98,16 @@
 <div class="trz-filtros">
     <div class="row" style="align-items:flex-end; display:flex; flex-wrap:wrap;">
         <div class="col-xs-6 col-sm-2">
-            <label>N° Factura</label>
-            <input type="text" class="form-control numerico-entero" id="nrofactura" placeholder="Ej: 250302"/>
+            <label>N° Nota de Venta</label>
+            <input type="text" class="form-control numerico-entero" id="notaventa_id" placeholder="Ej: 33545"/>
         </div>
         <div class="col-xs-6 col-sm-2">
             <label>N° Guía</label>
             <input type="text" class="form-control numerico-entero" id="nroguia" placeholder="Ej: 176662"/>
         </div>
         <div class="col-xs-6 col-sm-2">
-            <label>N° Nota de Venta</label>
-            <input type="text" class="form-control numerico-entero" id="notaventa_id" placeholder="Ej: 33545"/>
+            <label>N° Factura</label>
+            <input type="text" class="form-control numerico-entero" id="nrofactura" placeholder="Ej: 250302"/>
         </div>
         <div class="col-xs-6 col-sm-2">
             <label>Lote</label>

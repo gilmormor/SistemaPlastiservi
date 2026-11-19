@@ -133,7 +133,7 @@ function renderItem(it) {
     '</a>';
     flow += '</div>';
 
-    var html = '<div class="trz-item">' +
+    var html = '<div class="trz-rama">' +
         '<div class="trz-item-header">' +
             '<a href="javascript:void(0)" onclick="verEtiquetaEtapa(' + it.lote_id + ')" ' +
                 'title="Ver etiqueta — Lote de producción #' + it.lote_id + '" class="lote-tag" style="color:#fff;">' +
@@ -177,27 +177,64 @@ function aplanarArbolLotes(nodos, campoHijos) {
         .sort(function (a, b) { return a.lote_id - b.lote_id; });
 }
 
-// Cadena completa en una sola lista continua, ascendente por número de lote:
-// lotes de etapas anteriores → el lote consultado (destacado, en su posición
-// real dentro de la secuencia) → lotes de etapas siguientes. El despacho se
-// muestra debajo de cualquier lote de la lista que efectivamente lo tenga
-// (normalmente el último — el lote consultado si es final, o uno de los
-// siguientes si es intermedio).
+// Cadena de lotes respetando la jerarquía real: cada lote cuelga, indentado,
+// del lote del que proviene. Antes se mostraba una lista plana ordenada por
+// número, y eso perdía la estructura: no se veía que el lote 48 sale del 41,
+// ni que una etapa que se divide en dos (una impresión que alimenta a dos
+// sellados) abre dos ramas paralelas.
+//
+// Hacia arriba la cadena se recorre hasta el lote consultado, indentando un
+// nivel por eslabón; hacia abajo se despliega el árbol completo.
 function renderCadenaLotes(it) {
-    var antes   = aplanarArbolLotes(it.origenes, 'origenes');
-    var despues = aplanarArbolLotes(it.destinos, 'destinos');
+    // Los orígenes se aplanan: hacia arriba la cadena es lineal y lo que
+    // interesa es el recorrido hasta el lote consultado, no sus ramas.
+    var antes = aplanarArbolLotes(it.origenes, 'origenes');
 
-    var actual = {
-        lote_id: it.lote_id,
-        kg: it.kgprod,
+    var html     = '';
+    var abiertos = 0;
+
+    /* Cada eslabon abre su propia rama (.trz-rama), que es lo que dibuja el
+       conector en codo y corta la linea cuando ya no hay nada mas abajo. */
+    antes.forEach(function (o) {
+        html += '<div class="trz-tree"><div class="trz-rama">' + filaLote(o, false);
+        abiertos++;
+    });
+
+    /* Si el lote tiene continuación, el despacho real cuelga de los lotes de
+       las etapas siguientes, no de este. */
+    var aux_tiene_destinos = (it.destinos || []).length > 0;
+
+    html += '<div class="trz-tree"><div class="trz-rama">';
+    abiertos++;
+    html += filaLote({
+        lote_id:      it.lote_id,
+        kg:           it.kgprod,
         etapa_nombre: it.etapa_nombre,
-        despacho: despues.length ? [] : (it.despacho || []) // si tiene siguientes, el despacho real está en ellos
-    };
+        despacho:     aux_tiene_destinos ? [] : (it.despacho || [])
+    }, true);
+
+    html += renderRamasLotes(it.destinos);
+
+    // Cada nivel abrio dos divs: el .trz-tree y su .trz-rama
+    while (abiertos-- > 0) { html += '</div></div>'; }
+    return html;
+}
+
+// Ramas hacia abajo, recursivo: los lotes que salen de cada lote se dibujan
+// dentro de él, de modo que la indentación muestra de quién viene cada uno.
+function renderRamasLotes(nodos) {
+    if (!nodos || !nodos.length) { return ''; }
 
     var html = '<div class="trz-tree">';
-    antes.forEach(function (o) { html += filaLote(o, false); });
-    html += filaLote(actual, true);
-    despues.forEach(function (d) { html += filaLote(d, false); });
+    nodos.forEach(function (n) {
+        /* El lote y todo lo que cuelga de el van dentro de una misma rama, para
+           que el conector en codo apunte al lote y la vertical se corte en el
+           ultimo hermano. */
+        html += '<div class="trz-rama">';
+        html += filaLote(n, false);
+        html += renderRamasLotes(n.destinos);
+        html += '</div>';
+    });
     html += '</div>';
     return html;
 }
@@ -212,10 +249,11 @@ function filaLote(o, esActual) {
         '<span style="font-size:11px; color:#8a99aa;">' + (o.etapa_nombre || '—') + ' &nbsp;·&nbsp; ' + MASKLA(o.kg, 2) + ' kg</span>' +
     '</div>';
     if (o.despacho && o.despacho.length) {
-        html += '<div class="trz-tree">' +
-            '<div class="trz-lotes-title" style="margin-top:6px;"><i class="fa fa-truck"></i> Trazabilidad de despacho</div>' +
-            renderDespacho(o.despacho) +
-        '</div>';
+        /* El titulo va fuera del arbol: dentro recibiria un conector propio,
+           como si fuera un eslabon mas de la cadena. */
+        html += '<div class="trz-lotes-title" style="margin-top:6px; margin-left:16px;">' +
+                    '<i class="fa fa-truck"></i> Trazabilidad de despacho</div>' +
+                '<div class="trz-tree">' + renderDespacho(o.despacho) + '</div>';
     }
     return html;
 }
@@ -227,6 +265,7 @@ function renderDespacho(sols) {
     var html = '';
     sols.forEach(function (sol) {
         var cSol = 's' + sol.id;
+        html += '<div class="trz-rama">';
         html += '<div class="trz-tree-node">' +
             '<a href="javascript:void(0)" class="trz-chip ' + (sol.anulada ? 'red' : 'orange') + '" ' +
                 'style="cursor:pointer;" data-chain="' + cSol + '" ' +
@@ -238,6 +277,7 @@ function renderDespacho(sols) {
             html += '<div class="trz-tree">';
             sol.ords.forEach(function (ord) {
                 var cOrd = cSol + '-o' + ord.id;
+                html += '<div class="trz-rama">';
                 html += '<div class="trz-tree-node">' +
                     '<a href="javascript:void(0)" class="trz-chip ' + (ord.anulada ? 'red' : 'blue') + '" ' +
                         'style="cursor:pointer;" data-chain="' + cOrd + '" ' +
@@ -249,6 +289,7 @@ function renderDespacho(sols) {
                     html += '<div class="trz-tree">';
                     ord.guias.forEach(function (guia) {
                         var cGuia = cOrd + '-g' + guia.id;
+                        html += '<div class="trz-rama">';
                         html += '<div class="trz-tree-node">' +
                             '<a href="javascript:void(0)" class="trz-chip ' + (guia.anulada ? 'red' : 'green') + '" ' +
                                 'style="cursor:pointer;" data-chain="' + cGuia + '" ' +
@@ -260,6 +301,7 @@ function renderDespacho(sols) {
                             html += '<div class="trz-tree">';
                             guia.facturas.forEach(function (fac) {
                                 var cFac = cGuia + '-f' + fac.id;
+                                html += '<div class="trz-rama">';
                                 html += '<div class="trz-tree-node">' +
                                     '<a href="javascript:void(0)" class="trz-chip purple" ' +
                                         'style="cursor:pointer;" data-chain="' + cFac + '" ' +
@@ -271,6 +313,7 @@ function renderDespacho(sols) {
                                     html += '<div class="trz-tree">';
                                     fac.ncnd.forEach(function (n) {
                                         var esNC = n.foliocontrol_id == 5;
+                                        html += '<div class="trz-rama">';
                                         html += '<div class="trz-tree-node">' +
                                             '<a href="javascript:void(0)" class="trz-chip gray" ' +
                                                 'style="cursor:pointer;" ' +
@@ -278,18 +321,23 @@ function renderDespacho(sols) {
                                                 '<i class="fa fa-file-pdf-o"></i> ' + (esNC ? 'NC' : 'ND') + ' ' + (n.nrodocto || n.id) +
                                             '</a> <small style="color:#8a99aa;">' + fechaCorta(n.fechahora) + '</small>' +
                                         '</div>';
+                                        html += '</div>';   // cierra .trz-rama de la NC/ND
                                     });
                                     html += '</div>';
                                 }
+                                html += '</div>';   // cierra .trz-rama de la factura
                             });
                             html += '</div>';
                         }
+                        html += '</div>';   // cierra .trz-rama de la guia
                     });
                     html += '</div>';
                 }
+                html += '</div>';   // cierra .trz-rama de la orden
             });
             html += '</div>';
         }
+        html += '</div>';   // cierra .trz-rama de la solicitud
     });
     return html;
 }

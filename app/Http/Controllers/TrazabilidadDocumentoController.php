@@ -83,6 +83,16 @@ class TrazabilidadDocumentoController extends Controller
         }
         $ids = array_values(array_unique($ids));
 
+        /* Busqueda por Nota de Venta: la NV es el punto de partida de la cadena,
+           no un lote mas. Mostrar una tarjeta por cada lote producido para ella
+           repetia la misma cadena vista desde distintos puntos -la NV 35489
+           devolvia 11 tarjetas para una sola cadena de produccion-. Se dejan
+           solo los lotes raiz y de ahi se despliega la ramificacion hacia
+           abajo, que ya contiene a todos los demas. */
+        if (!empty($request->notaventa_id)) {
+            $ids = $this->soloRaices($ids);
+        }
+
         $items = [];
         foreach ($ids as $id) {
             $item = $this->armarItem($id);
@@ -98,6 +108,43 @@ class TrazabilidadDocumentoController extends Controller
         }
 
         return response()->json(['items' => $items, 'nv_info' => $nvInfo]);
+    }
+
+    /**
+     * Deja solo los lotes RAIZ del conjunto: los que no provienen de otro lote
+     * de la misma lista. El resto ya aparece dentro de la ramificacion hacia
+     * abajo de alguno de ellos, asi que mostrarlos aparte solo repetia la
+     * cadena una vez por cada eslabon.
+     *
+     * Un lote cuyo origen esta FUERA del conjunto (material que vino de otra
+     * nota de venta, por ejemplo) sigue contando como raiz: no es una
+     * repeticion, es un punto de entrada propio y debe verse.
+     */
+    private function soloRaices(array $ids)
+    {
+        if (count($ids) < 2) {
+            return $ids;
+        }
+
+        // intval en cada id: la lista se concatena en el IN de la consulta
+        $aux_in = implode(',', array_map('intval', $ids));
+
+        $aux_hijos = DB::select("
+            SELECT DISTINCT opdetregprod_id
+            FROM   opdetregprod_origen
+            WHERE  opdetregprod_id        IN ($aux_in)
+              AND  opdetregprod_origen_id IN ($aux_in)
+        ");
+        $aux_hijos_ids = array_map(function ($h) {
+            return (int) $h->opdetregprod_id;
+        }, $aux_hijos);
+
+        $aux_raices = array_values(array_diff($ids, $aux_hijos_ids));
+
+        /* Si no quedara ninguna raiz -una cadena circular por datos
+           inconsistentes- se devuelve el conjunto completo: es preferible ver
+           de mas que dejar la pantalla vacia sin explicacion. */
+        return count($aux_raices) ? $aux_raices : $ids;
     }
 
     /**
