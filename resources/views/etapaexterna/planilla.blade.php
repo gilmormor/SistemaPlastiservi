@@ -9,7 +9,11 @@
            TODO entre en UNA hoja: con mas espacio, el pie se desbordaba a una
            segunda pagina en blanco. Al tocar cualquiera de esos valores hay
            que volver a comprobar que siga cabiendo en una sola. */
-        @page { size: letter landscape; margin: 8mm; }
+        /* margin 0 a proposito: con margen de pagina, el navegador imprime su
+           propio encabezado (titulo y URL) y su pie (numero de pagina y fecha)
+           dentro de ese margen. Sin margen no tiene donde dibujarlos y la hoja
+           sale limpia. El margen real lo pone el padding de .hoja. */
+        @page { size: letter landscape; margin: 0; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             background: #fff;
@@ -17,7 +21,8 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 10pt;
         }
-        .hoja { width: 100%; }
+        /* El margen de impresion va aqui, no en @page (ver la nota de arriba) */
+        .hoja { width: 100%; padding: 8mm; }
 
         /* ---------------------------------------------------- encabezado */
         .cab { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
@@ -286,11 +291,15 @@
        ---------------------------------------------------------------- */
     (function ajustarFilasEnBlanco() {
         var MM          = 96 / 25.4;            // px por milimetro a 96 dpi
-        /* Carta horizontal (215.9mm de alto) menos los margenes de @page (8mm
-           x 2). Se descuenta un colchon de 10px (~2,6mm) porque el calculo se
-           hace en pantalla y el render de impresion puede variar en decimas:
-           sin ese margen la ultima fila podia empujar una segunda hoja. */
-        var disponible  = (215.9 - 16) * MM - 10;
+        /* Carta horizontal: 215.9mm de alto. Como @page va sin margen (para que
+           el navegador no imprima su encabezado), el documento arranca en el
+           borde del papel y el margen lo pone el padding de .hoja: aqui solo hay
+           que descontar el padding de ABAJO, porque el de arriba ya esta
+           incluido en la posicion medida.
+           El colchon de 10px (~2,6mm) cubre que el calculo se hace en pantalla
+           y el render de impresion puede variar en decimas: sin el, la ultima
+           fila podia empujar una segunda hoja. */
+        var disponible  = (215.9 - 8) * MM - 10;
         var tbody       = document.querySelector('.prog tbody');
         var pie         = document.querySelector('.pie');
         if (!tbody || !pie) { return; }
