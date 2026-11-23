@@ -25,6 +25,17 @@ $(document).ready(function () {
         propagarTotalesADemanda();
     });
 
+    /* Cambiar de máquina cambia el margen: la que viene programada puede no ser
+       la que el operario usó, y el margen es de la máquina REAL. Si pasa a una
+       con menos margen (o sin él), lo ya escrito se vuelve a topar; si pasa a
+       una con más, no se toca nada de lo que escribió. */
+    $(document).on("change", "#maquina_id", function () {
+        $(".lote-origen-input").each(function () {
+            clampFilaLoteOrigen($(this));
+        });
+        propagarTotalesADemanda();
+    });
+
     // Si el operario ingresa solo ceros (0, 00, 0000000...), al salir del campo
     // se limpia a blanco: un cero explícito no debe interpretarse como una
     // asignación real a ese lote.
@@ -183,9 +194,28 @@ function parseNumeroLocal(v) {
 }
 
 /**
+ * Kg que la máquina elegida puede procesar por encima del lote.
+ *
+ * Las extrusoras sin cuenta metros no avisan cuándo se llegó a los kilos del
+ * lote, y el depósito nunca queda vacío: el operario corta a ojo y se pasa unos
+ * kilos, que salen del lote siguiente. Ese margen se configura por máquina y
+ * aquí se suma al disponible para que la pantalla deje escribirlos.
+ *
+ * Vale 0 cuando no hay máquina elegida o no está configurada, que es el caso
+ * normal: ahí el tope es el de siempre.
+ */
+function excesoMaquina() {
+    var $sel = $('#maquina_id');
+    if (!$sel.length) { return 0; }
+    var aux = parseFloat($sel.find('option:selected').data('exceso'));
+    return isNaN(aux) ? 0 : aux;
+}
+
+/**
  * Topa el valor de un campo (producción o scrap) para que, junto con el otro
- * campo de la MISMA fila, no supere el disponible de ese lote.
- * No auto-rellena nada: solo evita que la suma de la fila exceda el saldo.
+ * campo de la MISMA fila, no supere el disponible de ese lote más el margen de
+ * la máquina (ver excesoMaquina).
+ * No auto-rellena nada: solo evita que la suma de la fila exceda ese tope.
  */
 function clampFilaLoteOrigen($input) {
     var $fila = $input.closest('tr');
@@ -194,7 +224,7 @@ function clampFilaLoteOrigen($input) {
     var valorOtro = parseNumeroLocal($otro.val());
 
     var valor = parseNumeroLocal($input.val());
-    var maxPermitido = Math.max(disponible - valorOtro, 0);
+    var maxPermitido = Math.max(disponible + excesoMaquina() - valorOtro, 0);
     if (valor > maxPermitido) {
         valor = Math.round(maxPermitido * 100) / 100;
         // Punto decimal plano (no MASKLA): igual que el resto de este input,
@@ -282,6 +312,8 @@ function actualizarTotalesLoteOrigen(sumaProd, sumaScrap) {
     $("#lote-origen-scrap-registro").text(MASKLA(kgScrapObjetivo, 2));
     $("#lote-origen-scrap-asignado").text(MASKLA(sumaScrap, 2));
 
+    pintarPieLoteOrigen(sumaProd, sumaScrap);
+
     var $alerta = $("#lote-origen-alerta");
     var cuadraProd = Math.abs(sumaProd - kgProdObjetivo) <= 0.01;
     var cuadraScrap = Math.abs(sumaScrap - kgScrapObjetivo) <= 0.01;
@@ -293,6 +325,53 @@ function actualizarTotalesLoteOrigen(sumaProd, sumaScrap) {
     } else {
         $alerta.removeClass('alert-success').addClass('alert-danger')
             .html('<i class="fa fa-exclamation-triangle"></i> Reparta la producción y el scrap entre los lotes hasta que ambas sumas cuadren.');
+    }
+}
+
+/**
+ * Elige qué mostrar en el pie del bloque de lotes.
+ *
+ * Con UN solo lote, el control de reparto es tautológico: lo que el operario
+ * escribe en la fila se copia al campo Kg Producción, así que los dos números
+ * coinciden siempre. En su lugar se muestra el saldo del lote: cuánto tenía,
+ * cuánto se lleva este registro y cuánto queda para los siguientes.
+ *
+ * Con varios lotes vuelve el control del reparto, que ahí sí evita que la suma
+ * se quede corta o se pase.
+ */
+function pintarPieLoteOrigen(sumaProd, sumaScrap) {
+    var unico = (LOTEORIGEN_DATA.length === 1);
+
+    $("#lote-origen-pie-saldo").toggle(unico);
+    $("#lote-origen-pie-reparto").toggle(!unico);
+    if (!unico) { return; }
+
+    var lote      = LOTEORIGEN_DATA[0];
+    var disponible = parseFloat(lote.disponible_kg) || 0;
+    var usa        = Math.round((sumaProd + sumaScrap) * 100) / 100;
+
+    /* Lo que se tome por encima del saldo no sale de este lote sino del
+       siguiente, ya cargado en la máquina (margen por máquina). El lote queda
+       en 0, nunca en negativo, y el exceso se señala aparte. */
+    var queda  = Math.round((disponible - usa) * 100) / 100;
+    var exceso = 0;
+    if (queda < 0) {
+        exceso = Math.abs(queda);
+        queda  = 0;
+    }
+
+    $("#lote-origen-saldo-nro").text('#' + lote.id);
+    $("#lote-origen-saldo-disp").text(MASKLA(disponible, 2));
+    $("#lote-origen-saldo-usa").text(MASKLA(usa, 2));
+    $("#lote-origen-saldo-queda").text(MASKLA(queda, 2));
+
+    if (exceso > 0) {
+        $("#lote-origen-saldo-exceso")
+            .html('<i class="fa fa-warning"></i> ' + MASKLA(exceso, 2) +
+                  ' kg de más, del lote siguiente en la máquina')
+            .show();
+    } else {
+        $("#lote-origen-saldo-exceso").hide();
     }
 }
 

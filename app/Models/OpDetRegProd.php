@@ -36,6 +36,8 @@ class OpDetRegProd extends Model
         'kgent',
         'kgprod',
         'kgscrap',
+        // kg sin respaldo en los lotes de origen; van dentro de kgprod
+        'kgexceso',
         'cantprod',
         // unidades que representan los kilos, cuando la etapa entrega en kilos
         'cantunid',

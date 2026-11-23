@@ -169,6 +169,9 @@
                     @foreach($tablas['maquinas'] as $aux_maquina)
                         <option
                             value="{{$aux_maquina->id}}"
+                            {{-- Kg que esta maquina puede procesar de mas (extrusoras sin
+                                 cuenta metros). 0 en las demas: ahi nada cambia. --}}
+                            data-exceso="{{$aux_maquina->kgexceso_permitido ?? 0}}"
                             @if(old('maquina_id', $tablas['maquina_sel'] ?? '') == $aux_maquina->id)
                                 {{'selected'}}
                             @endif
@@ -239,15 +242,28 @@
                         <tr>
                             <th style="width:60px;">Lote</th>
                             <th>Origen</th>
-                            <th class="text-right" style="width:110px;">Disponible</th>
-                            <th class="text-right" style="width:140px;">Kg Producción de este lote</th>
-                            <th class="text-right" style="width:140px;">Kg Scrap de este lote</th>
+                            <th class="text-right" style="width:110px;">Pendientes</th>
+                            <th class="text-right" style="width:140px;">Kg Producción</th>
+                            <th class="text-right" style="width:140px;">Kg Scrap</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-lote-origen-body"></tbody>
                 </table>
             </div>
-            <div style="text-align:right;padding:6px 4px;background:#f4f4f4;border-radius:3px;">
+            {{-- Con UN solo lote de origen el control de reparto no dice nada: el
+                 campo Kg Produccion se llena desde la propia fila, asi que los dos
+                 numeros son siempre identicos. En ese caso se muestra lo que si
+                 importa, que es cuanto material le queda al lote despues de este
+                 registro. Con varios lotes vuelve el control del reparto, que ahi
+                 si hace falta para no pasarse ni quedarse corto. --}}
+            <div id="lote-origen-pie-saldo" style="display:none;text-align:right;padding:6px 4px;background:#f4f4f4;border-radius:3px;">
+                <span style="margin-right:20px;">Saldo del lote <strong id="lote-origen-saldo-nro"></strong>:
+                    <strong id="lote-origen-saldo-disp">0,00</strong> kg</span>
+                <span style="margin-right:20px;">Este registro: <strong id="lote-origen-saldo-usa">0,00</strong> kg</span>
+                <span>Quedarían: <strong id="lote-origen-saldo-queda">0,00</strong> kg</span>
+                <span id="lote-origen-saldo-exceso" style="display:none;color:#b7600a;margin-left:14px;"></span>
+            </div>
+            <div id="lote-origen-pie-reparto" style="text-align:right;padding:6px 4px;background:#f4f4f4;border-radius:3px;">
                 <span style="margin-right:20px;">Kg Producción: <strong id="lote-origen-kg-registro">0,00</strong></span>
                 <span style="margin-right:20px;">Kg asignados: <strong id="lote-origen-kg-asignado">0,00</strong></span>
                 <span style="margin-right:20px;">Kg Scrap: <strong id="lote-origen-scrap-registro">0,00</strong></span>

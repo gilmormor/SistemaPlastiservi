@@ -11,6 +11,22 @@
         <input type="text" name="desc" id="desc" class="form-control" value="{{old('desc', $data->desc ?? '')}}" maxlength="150" required/>
     </div>
 </div>
+{{-- Margen para las maquinas que no pueden medir cuanto llevan procesado
+     (extrusoras sin cuenta metros): el deposito nunca queda vacio, el operario
+     corta a ojo y se pasa unos kilos que salen del lote siguiente. En 0 -el
+     caso normal- el registro de produccion no deja pasarse ni un gramo, igual
+     que siempre. --}}
+<div class="form-group">
+    <label for="kgexceso_permitido" class="col-lg-3 control-label"
+           data-toggle="tooltip" title="Kg que esta máquina puede procesar por encima de los que tiene el lote">
+        Kg permitidos de más
+    </label>
+    <div class="col-lg-2">
+        <input type="text" name="kgexceso_permitido" id="kgexceso_permitido" class="form-control numerico"
+               value="{{old('kgexceso_permitido', $data->kgexceso_permitido ?? 0)}}" maxlength="10" style="text-align:right"/>
+        <small class="text-muted">0 = no se permite exceso</small>
+    </div>
+</div>
 <div class="form-group">
     <label for="sucursal_id" class="col-lg-3 control-label requerido">Sucursal</label>
     <div class="col-lg-4">

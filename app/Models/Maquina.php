@@ -13,6 +13,8 @@ class Maquina extends Model
         'sucursal_id',
         'maquinagrupo_id',
         'nombre',
+        // kg que esta maquina puede procesar de mas (extrusoras sin cuenta metros)
+        'kgexceso_permitido',
         'desc',
         'usuario_id',
         'usuariodel_id'

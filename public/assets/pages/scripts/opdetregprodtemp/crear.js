@@ -42,7 +42,15 @@ $(document).ready(function () {
             return;
         }
 
-        if(datos.aux_suma > datos.aux_saldo){
+        /* Margen de la maquina elegida en este formulario (no la programada):
+           las extrusoras sin cuenta metros pueden pasarse unos kilos, que salen
+           del lote siguiente ya cargado en el deposito. La funcion vive en
+           loteorigen.js, que se carga despues que este archivo pero antes de
+           que el usuario pueda escribir nada; se consulta con typeof por si esa
+           pantalla no lo incluyera, y entonces el tope es el de siempre. */
+        let aux_margen = (typeof excesoMaquina === 'function') ? excesoMaquina() : 0;
+
+        if(datos.aux_suma > datos.aux_saldo + aux_margen){
             swal({
                 title: '',
                 text: "La suma de Kg Producción y Kg Scrap no puede ser mayor al Kg Faltante.",

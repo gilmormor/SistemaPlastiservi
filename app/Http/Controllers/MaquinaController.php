@@ -120,6 +120,16 @@ class MaquinaController extends Controller
     {
         //Maquina::findOrFail($id)->update($request->all());
         $maquina = Maquina::findOrFail($id);
+        /* Se guarda SOLO este campo, no $request->all(): la linea de arriba
+           lleva comentada desde antes y al editar una maquina no se actualiza
+           ningun otro dato. Descomentarla cambiaria el comportamiento de toda
+           la pantalla, que no es lo que se pide aqui.
+           El input viene con formato de miles ("1.234,00"), hay que limpiarlo
+           antes de guardarlo en un double. */
+        $aux_exceso = str_replace(',', '.', str_replace('.', '', (string) $request->input('kgexceso_permitido', 0)));
+        $maquina->kgexceso_permitido = is_numeric($aux_exceso) ? (float) $aux_exceso : 0;
+        $maquina->save();
+
         $maquina->etapaprods()->sync($request->etapaprod_id);
         return redirect('maquina')->with('mensaje','Maquina actualizado con exito');
     }

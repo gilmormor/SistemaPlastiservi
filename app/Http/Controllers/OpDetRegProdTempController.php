@@ -301,7 +301,10 @@ public function etapaprod()
                     $q->orWhere('m.id', $aux_prog->id);
                 }
             })
-            ->select('m.id', 'm.nombre')
+            /* kgexceso_permitido viaja al formulario: el margen depende de la
+               maquina que elija el operario, y la pantalla tiene que saberlo
+               para dejarle escribir mas kg sin ir al servidor. */
+            ->select('m.id', 'm.nombre', 'm.kgexceso_permitido')
             ->orderBy('m.nombre')
             ->get();
 
@@ -448,6 +451,21 @@ public function etapaprod()
      * kgscrap se usan tal cual los ingresó el operario). Lanza excepción si no cuadra
      * (nunca cae en silencio al comportamiento anterior cuando hay ambigüedad real).
      */
+    /**
+     * Kg que la maquina elegida puede procesar por encima de lo que tiene el
+     * lote. Es 0 salvo en las maquinas configuradas (extrusoras sin cuenta
+     * metros, ver la migracion de maquina.kgexceso_permitido): con 0 todas las
+     * validaciones se comportan igual que antes de existir este margen.
+     */
+    private function excesoPermitido($maquina_id)
+    {
+        if (!$maquina_id) {
+            return 0.0;
+        }
+        $aux_maq = DB::table('maquina')->where('id', (int) $maquina_id)->first();
+        return $aux_maq ? (float) $aux_maq->kgexceso_permitido : 0.0;
+    }
+
     private function validarSeleccionLotes(Request $request, OpDet $opdet, $kgprodReq, $kgscrapReq, $excluirTempId = null)
     {
         if (!OpDetRegProdTempOrigen::opdetAnterior($opdet)) {
@@ -463,6 +481,10 @@ public function etapaprod()
             throw new \Exception('Debe seleccionar de qué lote(s) proviene esta producción.');
         }
 
+        /* Margen de la maquina en la que se esta registrando. Se lee del propio
+           formulario porque la maquina la elige el operario ahi mismo. */
+        $aux_exceso = $this->excesoPermitido($request->input('maquina_id'));
+
         $disponiblePorLote = [];
         foreach ($lotesDisponibles as $l) {
             $disponiblePorLote[$l['id']] = $l['disponible_kg'];
@@ -471,6 +493,7 @@ public function etapaprod()
         $selecciones = [];
         $totalProd = 0.0;
         $totalScrap = 0.0;
+        $totalExceso = 0.0;   // kg producidos sin respaldo en los lotes de origen
         foreach ($seleccion as $idx => $loteId) {
             $kg = isset($seleccionKg[$idx]) ? (float) str_replace(',', '.', $seleccionKg[$idx]) : 0;
             $scrap = isset($seleccionScrap[$idx]) ? (float) str_replace(',', '.', $seleccionScrap[$idx]) : 0;
@@ -478,9 +501,28 @@ public function etapaprod()
             if (!array_key_exists($loteId, $disponiblePorLote)) {
                 throw new \Exception('Uno de los lotes seleccionados ya no está disponible. Vuelva a intentar.');
             }
-            if (($kg + $scrap) - $disponiblePorLote[$loteId] > 0.01) {
-                throw new \Exception('Los kg (producción + scrap) asignados al lote #'.$loteId.' superan su saldo disponible.');
+            /* El margen de la maquina se aplica al lote: el operario puede
+               asignarle mas de lo que le queda porque esos kilos salieron del
+               lote siguiente, que ya estaba en el deposito. Con margen 0 esto
+               es exactamente la validacion de siempre. */
+            if (($kg + $scrap) - $disponiblePorLote[$loteId] > $aux_exceso + 0.01) {
+                throw new \Exception('Los kg (producción + scrap) asignados al lote #'.$loteId.' superan su saldo disponible'
+                    . ($aux_exceso > 0
+                        ? ' incluso con el margen de ' . number_format($aux_exceso, 2, ',', '.') . ' kg de esta máquina.'
+                        : '.'));
             }
+            /* Lo que exceda el saldo del lote NO se le carga a el: ese lote dio
+               todo lo que tenia y nada mas. Se le asigna su disponible y la
+               diferencia se anota como exceso, que es material que salio del
+               lote siguiente -de otra OT, no seleccionable aqui-. Asi el lote
+               de origen queda consumido al 100% y no en negativo. */
+            $aux_sobra = ($kg + $scrap) - $disponiblePorLote[$loteId];
+            if ($aux_sobra > 0.01) {
+                $aux_recorte = min($aux_sobra, $kg);   // el exceso se descuenta de produccion
+                $kg          = round($kg - $aux_recorte, 2);
+                $totalExceso = round($totalExceso + $aux_recorte, 2);
+            }
+
             $selecciones[$loteId] = ['kg' => $kg, 'scrap' => $scrap];
             $totalProd += $kg;
             $totalScrap += $scrap;
@@ -489,13 +531,21 @@ public function etapaprod()
         if (count($selecciones) === 0) {
             throw new \Exception('Debe asignar kg de producción o scrap a al menos un lote de origen.');
         }
-        if (abs($totalProd - (float) $kgprodReq) > 0.01) {
-            throw new \Exception('La suma de kg de producción por lote ('.number_format($totalProd, 2, ',', '.').') no cuadra con Kg Producción ('.number_format((float) $kgprodReq, 2, ',', '.').').');
+        /* La suma por lote debe cuadrar con los kg de produccion, salvo por el
+           exceso: esos kilos existen y se produjeron, pero no tienen lote de
+           origen al que cargarlos. La tolerancia es EXACTAMENTE el exceso
+           calculado, no el margen de la maquina: asi un descuadre que no venga
+           de este mecanismo sigue siendo un error, como siempre. */
+        if (abs(($totalProd + $totalExceso) - (float) $kgprodReq) > 0.01) {
+            throw new \Exception('La suma de kg de producción por lote ('.number_format($totalProd + $totalExceso, 2, ',', '.').') no cuadra con Kg Producción ('.number_format((float) $kgprodReq, 2, ',', '.').').');
         }
         if (abs($totalScrap - (float) $kgscrapReq) > 0.01) {
             throw new \Exception('La suma de scrap por lote ('.number_format($totalScrap, 2, ',', '.').') no cuadra con Kg Scrap ('.number_format((float) $kgscrapReq, 2, ',', '.').').');
         }
 
+        /* El exceso viaja con la seleccion para guardarlo en el registro. Se
+           devuelve en una clave que no puede chocar con un id de lote. */
+        $selecciones['__exceso'] = $totalExceso;
         return $selecciones;
     }
 
@@ -517,9 +567,16 @@ public function etapaprod()
         if (!$request->input('es_muestra')) {
             $kgProduccion_temp = $opdet->totales_pendientes->total_kgprod + $opdet->totales_pendientes->total_kgscrap;
             $saldokg_temp = $opdet->saldokg - $kgProduccion_temp;
-            if ($saldokg_temp < $kgentReq) {
+            /* El margen de la maquina tambien se aplica aqui. Son dos topes
+               distintos -este es el saldo de la OP y el otro el del lote de
+               origen- y en la practica coinciden, asi que relajar solo uno
+               dejaria el registro igual de bloqueado. Con margen 0 es la
+               validacion de siempre. */
+            $aux_excesoOp = $this->excesoPermitido($request->input('maquina_id'));
+            if ($saldokg_temp + $aux_excesoOp < $kgentReq) {
                 return redirect('opdetregprodtemp/listaropdet')->with([
-                    'mensaje'=>'La cantidad de Kg a registrar excede el saldo disponible en la Orden de Producción Detalle. Kg Saldo Disponible: '.number_format($saldokg_temp, 2, ',', '.'),
+                    'mensaje'=>'La cantidad de Kg a registrar excede el saldo disponible en la Orden de Producción Detalle. Kg Saldo Disponible: '.number_format($saldokg_temp, 2, ',', '.')
+                        . ($aux_excesoOp > 0 ? ' (margen de la máquina: ' . number_format($aux_excesoOp, 2, ',', '.') . ' kg)' : ''),
                     'tipo_alert' => 'alert-error'
                 ]);
             }
@@ -621,6 +678,14 @@ public function etapaprod()
             // obligatoria. Si es la primera etapa (sin etapa anterior), no hay origen
             // que registrar.
             if ($seleccionLotes !== null) {
+                /* El exceso no es un lote: se saca de la seleccion antes de
+                   repartir, y se guarda en el propio registro. */
+                $aux_kgexceso = $seleccionLotes['__exceso'] ?? 0;
+                unset($seleccionLotes['__exceso']);
+                if ($aux_kgexceso > 0) {
+                    $opdetregprodtemp->kgexceso = $aux_kgexceso;
+                    $opdetregprodtemp->save();
+                }
                 OpDetRegProdTempOrigen::asignarManual($opdetregprodtemp, $seleccionLotes);
             }
 
@@ -862,6 +927,14 @@ public function etapaprod()
             // Trazabilidad entre etapas: reasignar la selección de lotes con los kg
             // actualizados (borra las filas previas del temp y las recrea).
             if ($seleccionLotes !== null) {
+                /* El exceso no es un lote: se saca de la seleccion antes de
+                   repartir, y se guarda en el propio registro. */
+                $aux_kgexceso = $seleccionLotes['__exceso'] ?? 0;
+                unset($seleccionLotes['__exceso']);
+                if ($aux_kgexceso > 0) {
+                    $opdetregprodtemp->kgexceso = $aux_kgexceso;
+                    $opdetregprodtemp->save();
+                }
                 OpDetRegProdTempOrigen::asignarManual($opdetregprodtemp, $seleccionLotes);
             }
 
