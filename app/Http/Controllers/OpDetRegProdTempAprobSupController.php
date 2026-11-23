@@ -833,10 +833,20 @@ class OpDetRegProdTempAprobSupController extends Controller
                             'opdetregprod_id'     => $opdetregprod->id,
                             'notaventadetalle_id' => $nvdetIdBodega,
                         ]);
-                        InvMovDetNVDet::create([
-                            'invmovdet_id'        => $invmovdet->id,
-                            'notaventadetalle_id' => $nvdetIdBodega,
-                        ]);
+                        /* Sin NV no hay nada que vincular aqui: esta tabla relaciona
+                           un movimiento de inventario con el detalle de una nota de
+                           venta, y en una OT libre (produccion para stock) ese detalle
+                           no existe. Su columna notaventadetalle_id es NOT NULL con FK,
+                           asi que insertar con el valor en null reventaba la aprobacion
+                           entera de la ultima etapa. La trazabilidad del lote no se
+                           pierde: queda en invmovdet_opdetregprod, cuya columna si
+                           admite null justo para este caso. */
+                        if ($nvdetIdBodega) {
+                            InvMovDetNVDet::create([
+                                'invmovdet_id'        => $invmovdet->id,
+                                'notaventadetalle_id' => $nvdetIdBodega,
+                            ]);
+                        }
 
                     }
                 }
