@@ -903,7 +903,11 @@ class OpDetRegProdTempAprobSupController extends Controller
      */
     public function etiquetaBodega($opdetregprod_id)
     {
-        can('listar-registro-produccion-aprobar-supervidor');
+        /* Mismo criterio que etiquetaEtapa(): ver una etiqueta de un lote es
+           'ver-etiqueta-regprod', no el permiso del modulo del supervisor. Hoy
+           solo la abre listaropdet.js, pero si manana la enlaza una pantalla de
+           produccion o de bodega no hay que volver a tocar esto. */
+        can('ver-etiqueta-regprod');
         $produccion = OpDetRegProd::findOrFail($opdetregprod_id);
         $opdet = $produccion->opdet;
         $op    = $opdet->op;
@@ -954,7 +958,13 @@ class OpDetRegProdTempAprobSupController extends Controller
      */
     public function etiquetaEtapa($opdetregprod_id)
     {
-        can('listar-registro-produccion-aprobar-supervidor');
+        /* La etiqueta de etapa la consultan 7 pantallas ajenas al modulo del
+           supervisor (registro de produccion, CC, reportes, despacho,
+           trazabilidad, seguimiento de OP). Su permiso es 'ver-etiqueta-regprod',
+           el mismo que valida verEtiquetaEtapaConPermiso() en general.js antes de
+           abrir el modal; exigir aqui el del supervisor dejaba el iframe con el
+           mensaje de 'no tienes permisos' aunque el modal si hubiera abierto. */
+        can('ver-etiqueta-regprod');
         $produccion = OpDetRegProd::findOrFail($opdetregprod_id);
         $opdet = $produccion->opdet;
         $op    = $opdet->op;
