@@ -32,6 +32,13 @@ OP Det
                         <i class="fa fa-fw fa-reply-all"></i> Volver al listado
                     </a>
                 </div>
+                {{-- Mismo atajo que en el listado de registros: entrar por el numero
+                     de lote en vez de buscar el item de OP en esta pantalla. --}}
+                <div class="box-tools pull-right" style="margin-right:6px;">
+                    <a href="{{route('regprodlote')}}" class="btn btn-block btn-primary btn-sm">
+                        <i class="fa fa-fw fa-tag"></i> Registrar por lote
+                    </a>
+                </div>
             </div>
             <div class="box-body">
                 <div class="row">

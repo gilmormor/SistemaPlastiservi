@@ -24,6 +24,16 @@ Registrar Produccion
                         <i class="fa fa-fw fa-plus-circle"></i> Nuevo registro
                     </a>
                 </div>
+                {{-- Atajo al registro por lote: el operario escribe el numero de la
+                     etiqueta del rollo y el sistema deduce la etapa y el item de OP.
+                     Se deja aqui para poder encadenar un rollo tras otro sin volver
+                     al menu. No reemplaza a "Nuevo registro": ambos caminos siguen
+                     disponibles. --}}
+                <div class="box-tools pull-right" style="margin-right:6px;">
+                    <a href="{{route('regprodlote')}}" class="btn btn-block btn-primary btn-sm">
+                        <i class="fa fa-fw fa-tag"></i> Registrar por lote
+                    </a>
+                </div>
             </div>
             <div class="box-body">
                 <div class="table-responsive">

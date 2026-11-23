@@ -2001,3 +2001,15 @@ Route::get('etapaexterna/planilla/{id}/imprimir', 'EtapaExternaController@imprim
 Route::get('etapaexterna/etiqueta/{id}/imprimir', 'EtapaExternaController@imprimirEtiqueta')->name('etapaexterna_imprimir_etiqueta');
 Route::get('etapaexterna/listado', 'EtapaExternaController@listado')->name('etapaexterna_listado');
 Route::get('etapaexterna/listadopage', 'EtapaExternaController@listadopage')->name('etapaexterna_listadopage');
+
+/* ====================================================================
+   REGISTRO DE PRODUCCION POR LOTE — entrada rapida.
+   El operario escribe el numero de lote y el sistema deduce la etapa y el
+   item de la OP. Solo resuelve el camino: el registro lo sigue haciendo
+   opdetregprodtemp, con todas sus validaciones.
+   ==================================================================== */
+Route::get('regprodlote', 'RegProdLoteController@index')->name('regprodlote');
+Route::get('regprodlote/consultar/{id}', 'RegProdLoteController@consultar')->name('regprodlote_consultar');
+Route::post('regprodlote/buscar', 'RegProdLoteController@buscar')->name('regprodlote_buscar');
+// Corregir un registro rechazado por el supervisor (valida que sea del propio usuario)
+Route::get('regprodlote/corregir/{id}', 'RegProdLoteController@corregir')->name('regprodlote_corregir');

@@ -253,6 +253,10 @@ public function etapaprod()
         can('crear-registro-produccion');
         session(['opdet_id' => $id]);
         session(['opdet_updatednum_at' => $updatednum_at]);
+        /* Entrada por el flujo normal: se borra el lote que hubiera fijado la
+           entrada por lote, para que aqui se vean todos los lotes disponibles
+           como siempre. */
+        session()->forget('regprodlote_lote_id');
         session()->save();
         return redirect()->route('crear_opdetregprodtemp');
         //dd($updated_at);
@@ -435,6 +439,14 @@ public function etapaprod()
         $excluirTempId = $request->input('excluir_temp_id');
         $tieneEtapaAnterior = OpDetRegProdTempOrigen::opdetAnterior($opdet) !== null;
         $lotes = $tieneEtapaAnterior ? OpDetRegProdTempOrigen::lotesDisponibles($opdet, $excluirTempId) : collect();
+
+        /* Entrada por lote (RegProdLoteController): el operario ya dijo que rollo
+           tiene en la mano, asi que se muestra solo ese y no toda la lista. En el
+           flujo normal esta clave no existe y se ven todos, como siempre. */
+        $aux_lotefijo = session('regprodlote_lote_id');
+        if ($aux_lotefijo) {
+            $lotes = $lotes->where('id', (int) $aux_lotefijo)->values();
+        }
         return response()->json([
             // Primera etapa (sin etapa anterior): no hay de dónde elegir, kgprod/kgscrap
             // se ingresan directo como hoy. Si HAY etapa anterior, la selección de lote
@@ -700,7 +712,50 @@ public function etapaprod()
                 ]);
             }
 
+            /* ENTRADA POR LOTE (regprodlote): el operario entro escribiendo el
+               numero de lote, asi que el registro se envia a aprobacion aqui
+               mismo y no tiene que ir a index01 a pulsar "Enviar". El lote lo
+               sigue creando el supervisor al aprobar: esto solo adelanta el paso
+               intermedio, no aprueba nada.
+               Solo aplica a ese camino: entrando por selecetapaprod -> index01 ->
+               listaropdet no cambia absolutamente nada. */
+            $aux_porlote   = session('regprodlote_lote_id');
+            $aux_avisolote = '';
+            if ($aux_porlote) {
+                /* Misma regla de orden que enviaraprob(): no se envia si quedo un
+                   registro anterior del mismo rollo sin enviar. Si lo hay, este se
+                   guarda igual pero SIN enviar y se avisa, para no saltarse la
+                   regla por la puerta de atras ni perderle el trabajo al operario. */
+                $aux_previo = OpDetRegProdTemp::buscarEnMismoRollo(
+                    $opdetregprodtemp->opdet_id,
+                    $opdetregprodtemp->id,
+                    'anterior',
+                    function ($q) {
+                        $q->where(function ($q2) {
+                            $q2->whereNull('aprobstatus')->orWhere('aprobstatus', 0);
+                        });
+                    }
+                );
+                if ($aux_previo) {
+                    $aux_avisolote = ' Quedo SIN enviar a aprobacion: debe enviar primero el registro id='
+                        . $aux_previo->id . ' del mismo rollo, desde Registrar Produccion.';
+                } else {
+                    $opdetregprodtemp->aprobstatus    = 1;
+                    $opdetregprodtemp->aprobusu_id    = auth()->id();
+                    $opdetregprodtemp->aprobfechahora = date('Y-m-d H:i:s');
+                    $opdetregprodtemp->save();
+                    $aux_avisolote = ' Enviado a aprobacion del supervisor.';
+                }
+            }
+
             DB::commit();
+
+            /* Por entrada de lote vuelve al buscador, con el campo vacio, para
+               encadenar el siguiente rollo sin pasar por el listado. */
+            if ($aux_porlote) {
+                return redirect()->route('regprodlote')
+                    ->with('mensaje', 'Registro de Produccion creado con exito.' . $aux_avisolote);
+            }
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de Produccion creado con exito');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -948,7 +1003,30 @@ public function etapaprod()
                 ]);
             }
 
+            /* CORRECCION DE UN RECHAZO ENTRADA POR LOTE: el operario llego aqui
+               desde el bloque de rechazados de regprodlote (regprodlote/corregir,
+               que dejo la marca en sesion). Al guardar se reenvia a aprobacion,
+               porque si no el registro se queda en 3 y el supervisor NO vuelve a
+               verlo: su pantalla solo lista los que estan en 1. El operario creeria
+               que ya lo mando.
+               Editando por el camino de siempre (index01) nada cambia: el registro
+               sigue en 3 y se reenvia a mano, como hasta ahora. */
+            $aux_corrlote = (session('regprodlote_edit') == $opdetregprodtemp->id);
+            if ($aux_corrlote) {
+                $opdetregprodtemp->aprobstatus    = 1;
+                $opdetregprodtemp->aprobusu_id    = auth()->id();
+                $opdetregprodtemp->aprobfechahora = date('Y-m-d H:i:s');
+                $opdetregprodtemp->save();
+            }
+
             DB::commit();
+
+            if ($aux_corrlote) {
+                session()->forget('regprodlote_edit');
+                return redirect()->route('regprodlote')
+                    ->with('mensaje', 'Registro ' . $opdetregprodtemp->id
+                        . ' corregido y reenviado a aprobacion del supervisor.');
+            }
             return redirect()->route('opdetregprodtemp_index01')->with('mensaje','Registro de produccion actualizado con exito');
         } catch (\Exception $e) {
             DB::rollBack();
