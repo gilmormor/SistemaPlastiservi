@@ -301,7 +301,10 @@ function datosPentxProd(aux_filtro = 0){
         vendedor_id       : $("#vendedor_id").val(),
         oc_id             : $("#oc_id").val(),
         giro_id           : $("#giro_id").val(),
-        areaproduccion_id : $("#areaproduccion_id").val(),
+        /* Con un select multiple, .val() devuelve null si no hay nada marcado, y
+           concatenado en la URL viajaria como el texto "null": para PHP eso no
+           esta vacio y la consulta saldria sin filas. Vacio = todas las areas. */
+        areaproduccion_id : $("#areaproduccion_id").val() || "",
         tipoentrega_id    : $("#tipoentrega_id").val(),
         notaventa_id      : $("#notaventa_id").val(),
         aprobstatus       : $("#aprobstatus").val(),
@@ -800,7 +803,8 @@ function pdfjs(datos) {
         doc.setFontSize(8)
         doc.text('Sucursal: ' + $("#sucursal_id option:selected").html(), data.settings.margin.left + 120, 16);
         doc.text('Fecha: ' + fechaactual(), data.settings.margin.left + 220, 5);
-        doc.text('Area Producción: ' + $("#areaproduccion_id option:selected").html(), data.settings.margin.left + 220, 8);
+        // Varias areas: mismo helper que usa Vendedor ("PVC, Caneria" o "Todos")
+        doc.text('Area Producción: ' + descripElementoSelectMult("areaproduccion_id"), data.settings.margin.left + 220, 8);
         //doc.text('Vendedor: ' + $("#vendedor_id option:selected").html(), data.settings.margin.left + 220, 11);
         doc.text('Vendedor: ' + descripElementoSelectMult("vendedor_id"), data.settings.margin.left + 220, 11);
         doc.text('Giro: ' + $("#giro_id option:selected").html() + ' Estatus: ' + $("#aprobstatus option:selected").html(), data.settings.margin.left + 220, 14);

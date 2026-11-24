@@ -144,8 +144,12 @@ Pendiente x Producto
                                         <label >Area Prod:</label>
                                     </div>
                                     <div class="col-xs-12 col-md-8 col-sm-8">
-                                        <select name="areaproduccion_id" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id">
-                                            <option value="">Todos</option>
+                                        {{-- Varias areas a la vez, igual que el filtro de Vendedor.
+                                             No lleva opcion "Todos": en un multiselect esa opcion tiene
+                                             value="" y, marcada junto a otra, el valor viajaria como ",1"
+                                             y la consulta recibiria IN (,1). No seleccionar nada ya
+                                             significa todas, y asi lo muestra el encabezado del PDF. --}}
+                                        <select name="areaproduccion_id[]" id="areaproduccion_id" class="selectpicker form-control areaproduccion_id" data-actions-box="true" title="Todos" multiple>
                                             @foreach($areaproduccions as $areaproduccion)
                                                 <option
                                                     value="{{$areaproduccion->id}}"

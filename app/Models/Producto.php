@@ -1796,7 +1796,21 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
     if(empty($request->areaproduccion_id)){
         $aux_condareaproduccion_id = " true";
     }else{
-        $aux_condareaproduccion_id = "categoriaprod.areaproduccion_id='$request->areaproduccion_id'";
+        /* Varias areas a la vez (PVC y Caneria juntas, por ejemplo), igual que el
+           filtro de vendedor. Llega como array desde un select multiple, o como
+           lista "1,2" cuando el JS la concatena en la URL.
+           Con un solo valor, IN (3) se comporta igual que ='3', asi que quien
+           siga mandando un area sola no nota diferencia.
+           Los ids se pasan por intval porque el valor entra directo al SQL. */
+        $aux_areaproduccion_id = is_array($request->areaproduccion_id)
+            ? $request->areaproduccion_id
+            : explode(',', $request->areaproduccion_id);
+        $aux_areaproduccion_id = array_filter(array_map('intval', $aux_areaproduccion_id));
+        if(count($aux_areaproduccion_id) > 0){
+            $aux_condareaproduccion_id = " categoriaprod.areaproduccion_id in (" . implode(',', $aux_areaproduccion_id) . ") ";
+        }else{
+            $aux_condareaproduccion_id = " true";
+        }
     }
     if(empty($request->tipoentrega_id)){
         $aux_condtipoentrega_id = " true";
