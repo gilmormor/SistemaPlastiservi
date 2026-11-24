@@ -67,6 +67,8 @@ function configurarTabla(nombreTabla,url,serverSide) {
                     <th style='text-align:center' title="Suma total salidas del mes">Sal</th>
                     <th style='text-align:center' title="Stock bodega">Stock</th>
                     <th style='text-align:right' title="Stock Kg bodega">Stock Kg</th>
+                    <th style='text-align:center' title="Stock que ya tiene dueño: fabricado o asignado a un ítem de nota de venta">Comprom.</th>
+                    <th style='text-align:center' title="Stock sin dueño: disponible para asignar a cualquier nota de venta">Libre</th>
                 </tr>
             </thead>
             <tfoot>
@@ -76,11 +78,15 @@ function configurarTabla(nombreTabla,url,serverSide) {
                     <th colspan='12' style='text-align:right'>Total página</th>
                     <th id='subtotalstock' name='subtotalstock' style='text-align:right'>0</th>
                     <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
+                    <th id='subtotalcomp' name='subtotalcomp' style='text-align:right'>0</th>
+                    <th id='subtotallibre' name='subtotallibre' style='text-align:right'>0</th>
                 </tr>
                 <tr>
                     <th colspan='12' style='text-align:right'>TOTAL GENERAL</th>
                     <th id='totalstock' name='totalstock' style='text-align:right'>0</th>
                     <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                    <th id='totalcomp' name='totalcomp' style='text-align:right'>0</th>
+                    <th id='totallibre' name='totallibre' style='text-align:right'>0</th>
                 </tr>
             </tfoot>
 
@@ -114,7 +120,9 @@ function configurarTabla(nombreTabla,url,serverSide) {
             {data: 'mov_in'},
             {data: 'mov_out'},
             {data: 'stock'},
-            {data: 'stockkg'}
+            {data: 'stockkg'},
+            {data: 'comprometido'},
+            {data: 'libre'}
         ],
         "language": {
             //"url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
@@ -158,6 +166,25 @@ function configurarTabla(nombreTabla,url,serverSide) {
             $('td', row).eq(13).attr('data-search',stockKg);
             $('td', row).eq(13).html(MASKLA(stockKg,2));
             $('td', row).eq(13).addClass('subtotalkg');
+
+            /* Comprometido / Libre. Van al final para no mover los indices de
+               arriba. Comprometido = lo que ya tiene dueño (fabricado o asignado
+               a un item de NV); Libre = lo que queda para asignar. El stock que
+               esta en Picking aparece en la fila de esa bodega, no aqui: ya salio
+               fisicamente de la bodega de venta. */
+            $('td', row).eq(14).attr('style','text-align:right');
+            $('td', row).eq(14).attr('data-order',data.comprometido);
+            $('td', row).eq(14).attr('data-search',data.comprometido);
+            $('td', row).eq(14).html(data.comprometido > 0
+                ? '<span class="text-red">' + MASKLA(data.comprometido,0) + '</span>'
+                : MASKLA(0,0));
+            $('td', row).eq(14).addClass('subtotalcomp');
+
+            $('td', row).eq(15).attr('style','text-align:right');
+            $('td', row).eq(15).attr('data-order',data.libre);
+            $('td', row).eq(15).attr('data-search',data.libre);
+            $('td', row).eq(15).html(MASKLA(data.libre,0));
+            $('td', row).eq(15).addClass('subtotallibre');
             //MASKLA(data.aux_totalkg,2);
             /*
             aux_mesanno = mesanno(data.annomes);
@@ -181,7 +208,12 @@ totalizar();
 $("#btnconsultar").click(function()
 {
     data = datosinvstock();
-    var newUrl = "invcontrolpage/" + data.data2;
+    /* Ruta propia del reporte. Antes apuntaba a invcontrolpage, que es la
+       pantalla de Control de Inventario: servia los mismos datos pero sin las
+       columnas Comprometido / Libre, y DataTables fallaba pidiendolas.
+       invcontrolpage se queda como esta: la comparten invcontrol e
+       invbodpesajeabodprodterm. */
+    var newUrl = "reportinvstockpage/" + data.data2;
     
     configurarTabla("#tabla-data-invstock",newUrl,true); // Reinicia DataTable con `serverSide: true`
 
@@ -203,6 +235,9 @@ function totalizar(){
         success: function (datos) {
             $("#totalstock").html(MASKLA(datos.aux_totalstock,0));
             $("#totalkg").html(MASKLA(datos.aux_totalkg,2));
+            // Totales de las columnas nuevas
+            $("#totalcomp").html(MASKLA(datos.aux_totalcomp,0));
+            $("#totallibre").html(MASKLA(datos.aux_totallibre,0));
             //$("#totaldinero").html(MASKLA(datos.aux_totaldinero,0));
         }
     });
@@ -224,6 +259,19 @@ var eventFired = function ( type ) {
 		total += valorNum;
 	});
     $("#subtotalkg").html(MASKLA(total,2))
+
+    // Subtotales de pagina de las columnas nuevas
+    var aux_comp = 0;
+    $("#tabla-data-invstock tr .subtotalcomp").each(function() {
+        aux_comp += parseFloat($(this).attr('data-order')) || 0;
+    });
+    $("#subtotalcomp").html(MASKLA(aux_comp,0))
+
+    var aux_libre = 0;
+    $("#tabla-data-invstock tr .subtotallibre").each(function() {
+        aux_libre += parseFloat($(this).attr('data-order')) || 0;
+    });
+    $("#subtotallibre").html(MASKLA(aux_libre,0))
 }
 
 function datosinvstock(){
@@ -353,10 +401,11 @@ function tablascolsultainv(id){
 
 function exportarExcel() {
     data = datosinvstock();
-    var newUrl = "invcontrolpage/" + data.data2;
+    var newUrl = "reportinvstockpage/" + data.data2;
     // Obtener todos los registros mediante una solicitud AJAX
     $.ajax({
-        url: "invcontrolpage/" + data.data2, // ajusta la URL de la solicitud al endpoint correcto
+        // Misma fuente que la pantalla, para que el Excel traiga Comprometido / Libre
+        url: "reportinvstockpage/" + data.data2,
         type: 'POST',
         dataType: 'json',
         success: function(data) {
@@ -394,8 +443,11 @@ function exportarExcel() {
         datosExcel.push(["Fecha: " + aux_mesanno,"","","","","","","",""]);
         aux_totalStock = 0;
         aux_totalkg = 0;
+        // Totales de las columnas nuevas, para que el Excel diga lo mismo que la pantalla
+        aux_totalComp = 0;
+        aux_totalLibre = 0;
         datosExcel.push(["","","","","","","","",""]);
-        datosExcel.push(["Cod","Producto","Categoria","Clase/Sello","Diam/Ancho","L","Peso/Esp","TU","Bodega","Stock","Kg"]);
+        datosExcel.push(["Cod","Producto","Categoria","Clase/Sello","Diam/Ancho","L","Peso/Esp","TU","Bodega","Stock","Kg","Comprometido","Libre"]);
         data.data.forEach(function(registro) {
             aux_totalStock += registro.stock;
             if(registro.peso <= 0){
@@ -404,6 +456,8 @@ function exportarExcel() {
                 stockKg = registro.stock * registro.peso;
             }
             aux_totalkg += stockKg;
+            aux_totalComp  += registro.comprometido || 0;
+            aux_totalLibre += (registro.libre === undefined ? registro.stock : registro.libre);
             filainifusionar++;
 
             var filaExcel = [
@@ -417,13 +471,15 @@ function exportarExcel() {
                 registro.tipounion,
                 registro.invbodega_nombre,
                 registro.stock,
-                stockKg
+                stockKg,
+                registro.comprometido || 0,
+                (registro.libre === undefined ? registro.stock : registro.libre)
             ];
             count++;
 
             datosExcel.push(filaExcel);
         });
-        datosExcel.push(["","","","","","","","","Total: ",aux_totalStock,aux_totalkg]);
+        datosExcel.push(["","","","","","","","","Total: ",aux_totalStock,aux_totalkg,aux_totalComp,aux_totalLibre]);
 
         createExcel(datosExcel);
 

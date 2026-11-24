@@ -194,6 +194,10 @@ Stock Inventario
                             <th style='text-align:center'  title="Suma total salidas del mes">Sal</th>
                             <th style='text-align:center'  title="Stock bodega">Stock</th>
                             <th style='text-align:right'  title="Stock Kg bodega">Stock Kg</th>
+                            {{-- Comprometido / Libre: columnas nuevas, al final para no
+                                 desplazar los indices de columna que usa el JS. --}}
+                            <th style='text-align:center' title="Stock que ya tiene dueño: fabricado o asignado a un ítem de nota de venta">Comprom.</th>
+                            <th style='text-align:center' title="Stock sin dueño: disponible para asignar a cualquier nota de venta">Libre</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -203,11 +207,15 @@ Stock Inventario
                             <th colspan='12' style='text-align:right'>Total página</th>
                             <th id='subtotalstock' name='subtotalstock' style='text-align:right'>0</th>
                             <th id='subtotalkg' name='subtotalkg' style='text-align:right'>0,00</th>
+                            <th id='subtotalcomp' name='subtotalcomp' style='text-align:right'>0</th>
+                            <th id='subtotallibre' name='subtotallibre' style='text-align:right'>0</th>
                         </tr>
                         <tr>
                             <th colspan='12' style='text-align:right'>TOTAL GENERAL</th>
                             <th id='totalstock' name='totalstock' style='text-align:right'>0</th>
                             <th id='totalkg' name='totalkg' style='text-align:right'>0,00</th>
+                            <th id='totalcomp' name='totalcomp' style='text-align:right'>0</th>
+                            <th id='totallibre' name='totallibre' style='text-align:right'>0</th>
                         </tr>
                     </tfoot>
                 </table>

@@ -44,12 +44,18 @@
 					<th style='text-align:center' class='width40'>Sal</th>
 					<th style='text-align:center' class='width40'>Stock</th>
 					<th style='text-align:center' class='width50'>Kg</th>
+					{{-- Mismas columnas que en pantalla: Comprometido = stock que ya tiene
+					     dueño (fabricado o asignado a un ítem de NV); Libre = lo que queda. --}}
+					<th style='text-align:center' class='width40'>Comp</th>
+					<th style='text-align:center' class='width40'>Libre</th>
 					</tr>
 				</thead>
 				<tbody id="detalle_productos">
 					<?php 
 						$aux_totalstock = 0;
 						$aux_totalstockkg = 0;
+						$aux_totalcomp = 0;
+						$aux_totallibre = 0;
 					?>
 					@foreach($datas as $data)
 						<tr class='btn-accion-tabla tooltipsC'>
@@ -73,10 +79,14 @@
 							<td style='text-align:center'>{{$data->mov_out}}</td>
 							<td style='text-align:right'>{{$data->stock}}</td>
 							<td style='text-align:right'>{{number_format($data->stock * $data->peso, 2, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($data->comprometido ?? 0, 0, ",", ".")}}</td>
+							<td style='text-align:right'>{{number_format($data->libre ?? $data->stock, 0, ",", ".")}}</td>
 						</tr>
 						<?php 
 							$aux_totalstock += $data->stock;
 							$aux_totalstockkg += $data->stock * $data->peso;
+							$aux_totalcomp += $data->comprometido ?? 0;
+							$aux_totallibre += $data->libre ?? $data->stock;
 						?>
 					@endforeach
 				</tbody>
@@ -85,6 +95,8 @@
 						<th colspan="12" style='text-align:right'>TOTAL</th>
 						<th class="textright">{{number_format($aux_totalstock, 0, ",", ".")}}</th>
 						<th class="textright">{{number_format($aux_totalstockkg, 2, ",", ".")}}</th>
+						<th class="textright">{{number_format($aux_totalcomp, 0, ",", ".")}}</th>
+						<th class="textright">{{number_format($aux_totallibre, 0, ",", ".")}}</th>
 					</tr>
 				</tfoot>
 		</table>
