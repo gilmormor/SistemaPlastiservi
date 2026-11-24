@@ -36,6 +36,8 @@
 					<th style='text-align:center;white-space:nowrap'>CodProd</th>
 					<th style='text-align:left'>Producto</th>
 					<th style='text-align:left'>Modulo</th>
+					{{-- Nota de venta a la que pertenece el movimiento, o Stock --}}
+					<th style='text-align:left;white-space:nowrap'>Destino</th>
 					<th style='text-align:left'>Bodega</th>
 					<th style='text-align:right;white-space:nowrap'>Cant</th>
 					{{-- Unidad de medida del detalle del movimiento --}}
@@ -55,6 +57,7 @@
 						<td style='text-align:center;white-space:nowrap'>{{$data->producto_id}}</td>
 						<td style='text-align:left'>{{$data->producto_nombre}}</td>
 						<td style='text-align:left'>{{$data->invmovmodulo_nombre}}</td>
+						<td style='text-align:left;white-space:nowrap'>{{$data->destino_txt ?? 'Stock'}}</td>
 						<td style='text-align:left'>{{$data->invbodega_nombre}}</td>
 						<td style='text-align:right;white-space:nowrap'>{{$data->cant}}&nbsp;&nbsp;</td>
 						<td style='text-align:left;white-space:nowrap'>{{$data->unidadmedida_nombre}}</td>
@@ -67,7 +70,8 @@
 			</tbody>
 			<tfoot id="detalle_totales">
 				<tr>
-					<th colspan='8' style='text-align:right'>TOTAL</th>
+					{{-- 9 y no 8: la columna Destino se agrego antes de Cant --}}
+					<th colspan='9' style='text-align:right'>TOTAL</th>
 					<th style='text-align:right'>{{number_format($aux_total, 0, ",", ".")}}&nbsp;&nbsp;</th>
 					{{-- celda vacia que empareja el pie con la nueva columna UM --}}
 					<th></th>

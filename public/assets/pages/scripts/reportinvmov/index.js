@@ -104,6 +104,10 @@ function datosInvmov(){
         producto_idPxP    : $("#producto_idPxP").val(),
         invbodega_id      : $("#invbodega_id").val(),
         buscarxdesc       : $("#buscarxdesc").val(),
+        /* || "" porque en un select multiple .val() devuelve null si no hay nada
+           marcado, y concatenado en la URL viajaria como el texto "null". */
+        invmovmodulo_id   : $("#invmovmodulo_id").val() || "",
+        destino           : $("#destino").val() || "",
         _token            : $('input[name=_token]').val()
     };
 
@@ -114,7 +118,9 @@ function datosInvmov(){
     "&areaproduccion_id="+data1.areaproduccion_id +
     "&producto_idPxP="+data1.producto_idPxP +
     "&invbodega_id="+data1.invbodega_id +
-    "&buscarxdesc="+data1.buscarxdesc
+    "&buscarxdesc="+data1.buscarxdesc +
+    "&invmovmodulo_id="+data1.invmovmodulo_id +
+    "&destino="+data1.destino
 
     var data = {
         data1 : data1,
@@ -158,6 +164,7 @@ function consultarpage(data){
             {data: 'producto_id'},
             {data: 'producto_nombre'},
             {data: 'invmovmodulo_nombre'},
+            {data: 'destino_txt'},
             {data: 'invbodega_nombre'},
             {data: 'cant'},
             // unidad de medida del detalle (invmovdet.unidadmedida_id)
@@ -262,15 +269,16 @@ function consultarpage(data){
                 $('td', row).eq(6).attr('onClick', 'genpdfAcuTec(' + data.acuerdotecnico_id + ',null,1,"");');
             }
             
-            $('td', row).eq(10).attr('data-order',data.cant);
-            $('td', row).eq(10).attr('style','text-align:right');
+            /* 11 y no 10: la columna Destino se agrego antes de Cant. */
+            $('td', row).eq(11).attr('data-order',data.cant);
+            $('td', row).eq(11).attr('style','text-align:right');
             aux_text = MASKLA(data.cant,2);
-            $('td', row).eq(10).html(aux_text);
+            $('td', row).eq(11).html(aux_text);
             if(data.cant != 0){
                 aux_text = MASKLA(data.cantkg,2);
-                $('td', row).eq(10).attr('title',aux_text + ' Kg.');
+                $('td', row).eq(11).attr('title',aux_text + ' Kg.');
             }else{
-                $('td', row).eq(10).attr('title','0 Kg.');
+                $('td', row).eq(11).attr('title','0 Kg.');
             }
         }
       });
@@ -396,7 +404,8 @@ function exportarExcel() {
         // Crear una matriz para los datos de Excel
             var datosExcel = [];
 
-            datosExcel.push(["ID","Usuario","ID Detalle","ID Origen","FechaHora","Descripción","Obs","ID Producto","Nombre Producto","Módulo Origen","Bodega","Cantidad","Cant Kg","UniMed"]);
+            // Destino: la nota de venta a la que pertenece el movimiento, o Stock
+            datosExcel.push(["ID","Usuario","ID Detalle","ID Origen","FechaHora","Descripción","Obs","ID Producto","Nombre Producto","Módulo Origen","Destino","Bodega","Cantidad","Cant Kg","UniMed"]);
 
             // Agregar los datos de la tabla al arreglo
             data.data.forEach(function(registro) {
@@ -444,6 +453,7 @@ function exportarExcel() {
                     registro.producto_id,
                     registro.producto_nombre,
                     registro.invmovmodulo_nombre,
+                    registro.destino_txt,
                     registro.invbodega_nombre,
                     registro.cant,
                     registro.cantkg,

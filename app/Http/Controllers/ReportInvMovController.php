@@ -31,6 +31,11 @@ class ReportInvMovController extends Controller
         $tablashtml['sucursales'] = $sucursales;
         $tablashtml['areaproduccions'] =  AreaProduccion::areaproduccionxusuario();
         $tablashtml['invbodegas'] = InvBodega::orderBy('id')->get();
+        /* Modulos que originan movimientos (Produccion, Entrada y Salida Inv,
+           Guia de Despacho...). Sirve para aislar, por ejemplo, lo que entro por
+           produccion de lo que se cargo a mano al inventario. */
+        $tablashtml['invmovmodulos'] = \DB::table('invmovmodulo')
+            ->whereNull('deleted_at')->orderBy('nombre')->get();
         $selecmultprod = 1;
         return view('reportinvmov.index', compact('tablashtml','selecmultprod'));
     }
@@ -122,6 +127,40 @@ function consultainvmov($request){
     if(!empty($request->buscarxdesc)){
         $aux_condbuscarxdesc = "invmov.desc LIKE '%$request->buscarxdesc%'";
     }
+
+    /* Modulo de origen. Varios a la vez, igual que bodega y area. Los ids pasan
+       por intval porque el valor entra directo al SQL. */
+    $aux_condmodulo = " true";
+    if(!empty($request->invmovmodulo_id)){
+        $aux_modulos = is_array($request->invmovmodulo_id)
+            ? $request->invmovmodulo_id
+            : explode(',', $request->invmovmodulo_id);
+        $aux_modulos = array_filter(array_map('intval', $aux_modulos));
+        if(count($aux_modulos)){
+            $aux_condmodulo = " invmov.invmovmodulo_id in (" . implode(',', $aux_modulos) . ") ";
+        }
+    }
+
+    /* Para quien es el movimiento. La pregunta de fondo era poder separar lo que
+       entro para una nota de venta de lo que entro para stock -por una OT libre
+       o por carga manual de inventario-, que es justo lo que no se podia ver.
+
+       El vinculo con la NV puede estar en dos tablas: invmovdetnvdet (la escribe
+       la solicitud de despacho) o invmovdet_opdetregprod.notaventadetalle_id (la
+       escribe la aprobacion de produccion). Se usa EXISTS y no un JOIN porque un
+       movimiento puede tener varias filas en esas tablas y un JOIN duplicaria la
+       fila del reporte, inflando el total de cantidades. */
+    $aux_existeNV = "(EXISTS (SELECT 1 FROM invmovdetnvdet mn WHERE mn.invmovdet_id = invmovdet.id)
+                      OR EXISTS (SELECT 1 FROM invmovdet_opdetregprod mo
+                                  WHERE mo.invmovdet_id = invmovdet.id
+                                    AND mo.notaventadetalle_id IS NOT NULL))";
+    $aux_conddestino = " true";
+    if(isset($request->destino) and $request->destino === 'nv'){
+        $aux_conddestino = $aux_existeNV;
+    }
+    if(isset($request->destino) and $request->destino === 'stock'){
+        $aux_conddestino = " NOT " . $aux_existeNV;
+    }
     $sql = "SELECT STRAIGHT_JOIN invmov.id,invmovdet.id as invmovdet_id,
             usuario.usuario,
             invmov.fechahora,invmov.annomes,invmov.desc,invmov.obs,invbodegaproducto.producto_id,
@@ -130,7 +169,16 @@ function consultainvmov($request){
             producto.glosa as producto_nombre,categoriaprod.nombre as categoriaprod_nombre,invmovdet.cant,
             invmovdet.cantkg,
             unidadmedida.nombre as unidadmedida_nombre,
-            invmov.invmovmodulo_id,acuerdotecnico.id as acuerdotecnico_id
+            invmov.invmovmodulo_id,acuerdotecnico.id as acuerdotecnico_id,
+            /* Nota de venta a la que pertenece el movimiento, por cualquiera de
+               las dos vias. Subconsultas y no JOIN: un JOIN duplicaria la fila
+               cuando hay mas de un vinculo, y el total de cantidades saldria mal. */
+            (SELECT nvd.notaventa_id FROM invmovdetnvdet mn
+               INNER JOIN notaventadetalle nvd ON nvd.id = mn.notaventadetalle_id
+              WHERE mn.invmovdet_id = invmovdet.id LIMIT 1) as nv_por_nvdet,
+            (SELECT nvd2.notaventa_id FROM invmovdet_opdetregprod mo
+               INNER JOIN notaventadetalle nvd2 ON nvd2.id = mo.notaventadetalle_id
+              WHERE mo.invmovdet_id = invmovdet.id LIMIT 1) as nv_por_lote
             FROM invmov INNER JOIN invmovdet
             ON invmov.id = invmovdet.invmov_id and isnull(invmov.deleted_at) and isnull(invmov.staanul) and isnull(invmovdet.deleted_at)
             INNER JOIN invbodegaproducto
@@ -158,8 +206,21 @@ function consultainvmov($request){
             and $aux_condproducto_idPxP
             and $aux_condinvbodega_id
             and $aux_condbuscarxdesc
+            and $aux_condmodulo
+            and $aux_conddestino
             ORDER BY invmov.id,invbodega.orden;";
     //dd($sql);
     $datas = DB::select($sql);
+
+    /* Texto del dueno, resuelto una sola vez aqui para que la pantalla, el PDF y
+       el Excel digan lo mismo. "Stock" no significa huerfano: significa que ese
+       movimiento no se hizo para una nota de venta concreta -una OT libre, una
+       carga manual de inventario- y por lo tanto queda disponible para asignar. */
+    foreach ($datas as $d) {
+        $aux_nv = $d->nv_por_nvdet ?: $d->nv_por_lote;
+        $d->notaventa_destino = $aux_nv ?: null;
+        $d->destino_txt = $aux_nv ? ('NV ' . $aux_nv) : 'Stock';
+    }
+
     return $datas;
 }

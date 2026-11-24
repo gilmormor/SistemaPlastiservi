@@ -144,6 +144,38 @@ Movimiento de Inventario
                             </div>
                         </div>
 
+                        {{-- Filtros de origen y destino del movimiento.
+                             Modulo: de donde viene el movimiento (Produccion, Entrada
+                             y Salida Inv, Guia de Despacho...).
+                             Destino: si entro para una nota de venta concreta o quedo
+                             como stock disponible (OT libre, carga manual). --}}
+                        <div class="col-xs-12 col-md-12 col-sm-12">
+                            <div class="col-xs-12 col-sm-6" title="Modulo que origino el movimiento">
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label>Módulo:</label>
+                                </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="invmovmodulo_id" id="invmovmodulo_id" class="selectpicker form-control" data-live-search='true' multiple data-actions-box='true' title="Todos">
+                                        @foreach($tablashtml['invmovmodulos'] as $invmovmodulo)
+                                            <option value="{{$invmovmodulo->id}}">{{$invmovmodulo->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-6" title="Para quien es el movimiento">
+                                <div class="col-xs-12 col-md-4 col-sm-4 text-left">
+                                    <label>Destino:</label>
+                                </div>
+                                <div class="col-xs-12 col-md-8 col-sm-8">
+                                    <select name="destino" id="destino" class="selectpicker form-control">
+                                        <option value="">Todos</option>
+                                        <option value="nv">Solo los de una nota de venta</option>
+                                        <option value="stock">Solo los que quedaron para stock</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="col-xs-12 col-md-3 col-sm-12 text-center" style="padding-left: 0px;padding-right: 0px;">
                         <!--
@@ -181,6 +213,9 @@ Movimiento de Inventario
                             <th title='Código Producto'>CodProd</th>
                             <th title='Nombre Producto'>Producto</th>
                             <th class='tooltipsC' title='Modulo de Origen'>Modulo</th>
+                            {{-- Para quien: la nota de venta a la que pertenece el
+                                 movimiento, o "Stock" si quedo disponible --}}
+                            <th class='tooltipsC' title='Nota de venta a la que pertenece, o Stock si quedo disponible'>Destino</th>
                             <th>Bodega</th>
                             <th>Cant</th>
                             {{-- Unidad de medida del detalle del movimiento --}}
@@ -191,7 +226,8 @@ Movimiento de Inventario
                         <tr>
                         </tr>
                         <tr>
-                            <th colspan='10' style='text-align:right'>TOTAL</th>
+                            {{-- 11 y no 10: la columna Destino se agrego antes de Cant --}}
+                            <th colspan='11' style='text-align:right'>TOTAL</th>
                             <th id='totalcant' name='totalcant' style='text-align:right'>0,00</th>
                             {{-- celda vacia que empareja el pie con la nueva columna UM --}}
                             <th></th>
