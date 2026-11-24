@@ -930,11 +930,11 @@ function exportarExcel() {
         aux_total_at_kgdesp = 0;
         datosExcel.push(["","","","","","","","",""]);
         // encabezado: se le quita Stock si el usuario es vendedor
-        /* UndVenta va al FINAL y no junto a Cant, aunque ahi se leeria mejor:
+        /* UnidMed va al FINAL y no junto a Cant, aunque ahi se leeria mejor:
            createExcel tiene los formatos clavados por numero de columna (negritas
            de la 1 a la 29, alineaciones en la 9, de la 15 a la 23 y de la 26 a la
            28), asi que insertarla en medio correria todo y descuadraria la hoja. */
-        datosExcel.push(quitarColStockExcel(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor","MateriaPrima","Peso","KgTotal","KgDesp","UndVenta"], false));
+        datosExcel.push(quitarColStockExcel(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor","MateriaPrima","Peso","KgTotal","KgDesp","UnidMed"], false));
         data.data.forEach(function(registro) {
             aux_cont++;
             aux_totalPicking += registro.picking;
@@ -1061,7 +1061,7 @@ function createExcel(datosExcel) {
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    // 29: la ultima es UndVenta
+    // 29: la ultima es UnidMed
     for (let i = 1; i <= 29; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
