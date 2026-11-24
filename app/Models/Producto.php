@@ -2200,7 +2200,13 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
             notaventadetalle.preciounit,notaventadetalle.precioxkilo,
             comuna.nombre as comunanombre,acuerdotecnico.id as acuerdotecnico_id,
             '' as at_espesor,0 as stockbpt,0 as picking,
-            notaventa.lugarentrega";
+            notaventa.lugarentrega,
+            /* Unidad con la que se vendio el item (KG, PQTE, UN...). Pedido de
+               Santa Ester para el Excel: sin ella no se puede interpretar la
+               cantidad pendiente. Sale de notaventadetalle, no del producto,
+               porque es la unidad de ESA venta, que es la que explica la
+               cantidad de la fila. */
+            unidadmedida_venta.nombre as unidadventa_nombre";
             //SE ORDENA DE FORMA DESENDENTE PARA ENVIAR EN EL 1er REGISTRO LOS TOTALES Y LLEGUEN A LA TABLA PARA PODER TOTALIZAR
             //SI SE CAMBIA O ELIMINA ESTE ORDEN NO VA A TOTALIZAR EN LA CONSULTA POR PANTALLA
             $aux_AgruOrd = "order by notaventadetalle.notaventa_id desc";
@@ -2227,6 +2233,11 @@ function consultapendxprod($request,$aux_sql,$orden,$aux_AgruOrd){
         ON comuna.id=notaventa.comunaentrega_id
         LEFT JOIN acuerdotecnico
         ON notaventadetalle.producto_id = acuerdotecnico.producto_id
+        /* LEFT y no INNER a proposito: un INNER descartaria la fila si la unidad
+           no existiera, y el reporte perderia items pendientes cambiando sus
+           totales sin avisar. Asi, como mucho, la celda sale vacia. */
+        LEFT JOIN unidadmedida AS unidadmedida_venta
+        ON unidadmedida_venta.id = notaventadetalle.unidadmedida_id
         INNER JOIN tipoentrega
         ON tipoentrega.id=notaventa.tipoentrega_id
         INNER JOIN vendedor

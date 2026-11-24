@@ -930,7 +930,11 @@ function exportarExcel() {
         aux_total_at_kgdesp = 0;
         datosExcel.push(["","","","","","","","",""]);
         // encabezado: se le quita Stock si el usuario es vendedor
-        datosExcel.push(quitarColStockExcel(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor","MateriaPrima","Peso","KgTotal","KgDesp"], false));
+        /* UndVenta va al FINAL y no junto a Cant, aunque ahi se leeria mejor:
+           createExcel tiene los formatos clavados por numero de columna (negritas
+           de la 1 a la 29, alineaciones en la 9, de la 15 a la 23 y de la 26 a la
+           28), asi que insertarla en medio correria todo y descuadraria la hoja. */
+        datosExcel.push(quitarColStockExcel(["NV","OC","Fecha","PlazoEnt","Razon Social","ComunaEntrega","LugarEntrega","TipoEntrega","CodProd","Descripcion","ClaseSello","DiamAnc","Largo","PesoEsp","TU","Stock","Picking","Cant","Cant Desp","Cant Pend","KgPend","Precio Kg","$","Vendedor","MateriaPrima","Peso","KgTotal","KgDesp","UndVenta"], false));
         data.data.forEach(function(registro) {
             aux_cont++;
             aux_totalPicking += registro.picking;
@@ -995,7 +999,9 @@ function exportarExcel() {
                 registro.at_materiaprima,
                 at_peso,
                 at_kgtotal,
-                at_kgdesp
+                at_kgdesp,
+                // Unidad de venta del item; vacia si la nota de venta no la trae
+                registro.unidadventa_nombre || ""
 
             ];
             //aux_vendedor_id = registro.vendedor_id;
@@ -1055,7 +1061,8 @@ function createExcel(datosExcel) {
 
     //Establecer negrilla a titulo de columnas Fila 4
     const row6 = worksheet.getRow(4);
-    for (let i = 1; i <= 28; i++) {
+    // 29: la ultima es UndVenta
+    for (let i = 1; i <= 29; i++) {
         cell = row6.getCell(i);
         cell.font = { bold: true };
         cell.autosize = true;
