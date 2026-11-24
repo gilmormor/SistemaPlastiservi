@@ -1207,6 +1207,11 @@ function createExcel(datosExcel) {
         const cell28 = worksheet.getCell(i, 28);
         cell28.alignment = { wrapText: true, horizontal: "right", vertical: "middle" };
 
+        // UnidMed: centrada como las demas. El bucle arranca en la fila 4, asi que
+        // esto alinea tambien el titulo, no solo los datos.
+        const cell29 = worksheet.getCell(i, 29);
+        cell29.alignment = { wrapText: true, horizontal: "center", vertical: "middle" };
+
 
         /*
         const cell9 = worksheet.getCell(i, 9);
