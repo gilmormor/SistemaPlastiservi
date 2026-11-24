@@ -2008,6 +2008,18 @@ Route::get('etapaexterna/listadopage', 'EtapaExternaController@listadopage')->na
    item de la OP. Solo resuelve el camino: el registro lo sigue haciendo
    opdetregprodtemp, con todas sus validaciones.
    ==================================================================== */
+/* ====================================================================
+   RESERVA DE STOCK - apartar stock sin moverlo.
+   El picking ya reserva, pero exige una nota de venta con el item cargado.
+   Esto cubre lo que entro por OT libre o por carga de inventario y se quiere
+   guardar para un cliente antes de que exista la venta.
+   ==================================================================== */
+Route::get('stockreserva', 'StockReservaController@index')->name('stockreserva');
+Route::get('stockreservapage', 'StockReservaController@listadopage')->name('stockreservapage');
+Route::get('stockreserva/stockproducto/{producto_id}', 'StockReservaController@stockProducto')->name('stockreserva_stockproducto');
+Route::post('stockreserva', 'StockReservaController@guardar')->name('stockreserva_guardar');
+Route::post('stockreserva/{id}/liberar', 'StockReservaController@liberar')->name('stockreserva_liberar');
+
 Route::get('regprodlote', 'RegProdLoteController@index')->name('regprodlote');
 Route::get('regprodlote/consultar/{id}', 'RegProdLoteController@consultar')->name('regprodlote_consultar');
 Route::post('regprodlote/buscar', 'RegProdLoteController@buscar')->name('regprodlote_buscar');

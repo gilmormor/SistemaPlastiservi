@@ -37,7 +37,8 @@ class ReportInvStockController extends Controller
 
     /**
      * Kilos/unidades de cada bodega-producto que YA TIENEN DUENO: produccion
-     * fabricada para una nota de venta o stock asignado a un item de NV.
+     * fabricada para una nota de venta, stock asignado a un item de NV, o stock
+     * apartado a mano desde el modulo de Reserva de Stock.
      *
      * Se calcula aparte y se mezcla en PHP a proposito: InvMov::stocksql() la usan
      * doce sitios (los cinco reportes de stock, InvControl, InvBodPesajeaBodProdTerm,
@@ -182,6 +183,41 @@ class ReportInvStockController extends Controller
             if (isset($aux_res[$f->ibp])) {
                 $aux_res[$f->ibp]['cant']   += (float) $f->cant;
                 $aux_res[$f->ibp]['cantkg'] += (float) $f->cantkg;
+            }
+        }
+
+        /* ---- Paso 3: el stock apartado a mano (modulo Reserva de Stock) ----
+           Es el tercer tipo de compromiso, junto al fabricado para una NV y al
+           asignado a un item. Son reservas blandas: el stock sigue en la bodega
+           -por eso hay que restarlo del libre- pero ya tiene dueno.
+
+           El picking NO entra aqui: ese stock ya salio fisicamente de la bodega
+           de venta y esta en la bodega de Picking, que es su propia fila del
+           reporte. Y una reserva que paso a picking queda marcada como cumplida
+           (consumida_at), asi que deja de contar por este lado: nunca se suma
+           dos veces el mismo compromiso.
+
+           Vigentes() es la unica definicion de "esta reserva descuenta": vive en
+           el modelo para que la pantalla de reservas y este reporte no puedan
+           quedar en desacuerdo. */
+        $aux_reservas = \App\Models\StockReserva::reservadoPorBodegaProducto();
+        foreach ($aux_reservas as $aux_ibp => $aux_r) {
+            if (!isset($aux_res[$aux_ibp])) {
+                /* Una bodega-producto puede tener reservas sin haber pasado
+                   nunca por produccion: el stock que entro por carga manual de
+                   inventario. Ese es justo el caso que el picking no cubria. */
+                $aux_res[$aux_ibp] = ['prod' => null, 'cant' => 0, 'cantkg' => 0];
+            }
+            $aux_res[$aux_ibp]['cant']   += $aux_r['cant'];
+            $aux_res[$aux_ibp]['cantkg'] += $aux_r['cantkg'];
+        }
+
+        /* Las filas que solo tienen reserva no traen producto_id de las consultas
+           anteriores; se completa para poder consolidar por producto. */
+        foreach ($aux_res as $aux_ibp => $aux_fila) {
+            if ($aux_fila['prod'] === null) {
+                $aux_p = \DB::selectOne("SELECT producto_id FROM invbodegaproducto WHERE id = ?", [$aux_ibp]);
+                $aux_res[$aux_ibp]['prod'] = $aux_p ? $aux_p->producto_id : null;
             }
         }
 
