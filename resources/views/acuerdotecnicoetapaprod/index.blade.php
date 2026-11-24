@@ -4,6 +4,8 @@ Acuerdo Tecnico Etapas de Produccion
 @endsection
 
 @section("scripts")
+    {{-- general.js: trae genpdfAcuTec(), que abre el acuerdo tecnico --}}
+    <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/admin/indexnew.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/acuerdotecnicoetapaprod/index.js")}}" type="text/javascript"></script>
 @endsection
@@ -21,6 +23,8 @@ Acuerdo Tecnico Etapas de Produccion
                     <thead>
                         <tr>
                             <th class="width70">ID</th>
+                            {{-- codigo del producto: al hacer clic abre su acuerdo tecnico --}}
+                            <th class="width70">CodProd</th>
                             <th>Nombre</th>
                             <th class="width70">Accion</th>
                         </tr>
@@ -30,4 +34,6 @@ Acuerdo Tecnico Etapas de Produccion
         </div>
     </div>
 </div>
+{{-- Visor donde se abre el PDF del acuerdo tecnico --}}
+@include('generales.modalpdf')
 @endsection

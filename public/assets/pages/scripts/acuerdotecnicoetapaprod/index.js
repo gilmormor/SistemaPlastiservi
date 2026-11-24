@@ -12,6 +12,16 @@ $(document).ready(function () {
         'ajax'        : "acuerdotecnicoetapaprodpage",
         'columns'     : [
             {data: 'id'},
+            /* Codigo del producto: al hacer clic abre el acuerdo tecnico en el
+               visor, igual que en las demas pantallas. El id que recibe
+               genpdfAcuTec es el del acuerdo tecnico, no el del producto. */
+            {data: 'producto_id', render: function (dato, tipo, fila) {
+                if (tipo !== 'display') { return dato; }
+                return "<a class='btn-accion-tabla tooltipsC' style='cursor:pointer;' " +
+                       "title='Ver el acuerdo tecnico de este producto' " +
+                       'onclick=\'genpdfAcuTec(' + fila.id + ',0,1,"")\'>' +
+                       dato + '</a>';
+            }},
             {data: 'nombre_producto'},
             {defaultContent : 
                 "<a href='acuerdotecnicoetapaprod' class='btn-accion-tabla tooltipsC btnEditar' title='Editar este registro'>"+
