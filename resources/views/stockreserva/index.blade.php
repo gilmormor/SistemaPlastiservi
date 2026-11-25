@@ -150,6 +150,7 @@ Reserva de Stock
                         <thead>
                             <tr>
                                 <th class="width70">ID</th>
+                                <th class="width70" title="Código del producto">CodProd</th>
                                 <th>Producto</th>
                                 <th>Bodega</th>
                                 <th class="width70">Lote</th>

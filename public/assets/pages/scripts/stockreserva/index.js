@@ -204,6 +204,7 @@ function cargarTabla() {
         'order': [[0, 'desc']],
         'columns': [
             { data: 'id' },
+            { data: 'producto_id' },
             { data: 'producto_nombre' },
             { data: 'bodega_nombre' },
             { data: 'opdetregprod_id' },
@@ -217,43 +218,46 @@ function cargarTabla() {
         ],
         'language': { 'url': 'https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json' },
         'createdRow': function (row, data) {
-            $('td', row).eq(3).html(data.opdetregprod_id ? '#' + data.opdetregprod_id : '—');
-            $('td', row).eq(3).attr('style', 'text-align:center');
+            /* Del 2 en adelante: la columna CodProd corrio los indices uno. */
+            $('td', row).eq(1).attr('style', 'text-align:center');
 
-            $('td', row).eq(4).attr('style', 'text-align:right');
-            $('td', row).eq(4).attr('data-order', data.cant);
-            $('td', row).eq(4).html(MASKLA(data.cant, 2));
+            $('td', row).eq(4).html(data.opdetregprod_id ? '#' + data.opdetregprod_id : '—');
+            $('td', row).eq(4).attr('style', 'text-align:center');
+
+            $('td', row).eq(5).attr('style', 'text-align:right');
+            $('td', row).eq(5).attr('data-order', data.cant);
+            $('td', row).eq(5).html(MASKLA(data.cant, 2));
 
             /* Para quien: cliente, item de NV, o los dos */
             var aux_para = [];
             if (data.cliente_nombre) { aux_para.push(data.cliente_nombre); }
             if (data.notaventa_id) { aux_para.push('NV ' + data.notaventa_id); }
-            $('td', row).eq(5).html(aux_para.length ? aux_para.join('<br>') : '—');
+            $('td', row).eq(6).html(aux_para.length ? aux_para.join('<br>') : '—');
 
             /* Estado con color: vigente verde, vencida naranja, el resto gris */
             var aux_clase = 'label-default';
             if (data.estado === 'Vigente') { aux_clase = 'label-success'; }
             if (data.estado === 'Vencida') { aux_clase = 'label-warning'; }
             if (data.estado === 'Liberada') { aux_clase = 'label-danger'; }
-            $('td', row).eq(9).html('<span class="label ' + aux_clase + '">' + data.estado + '</span>');
-            $('td', row).eq(9).attr('style', 'text-align:center');
+            $('td', row).eq(10).html('<span class="label ' + aux_clase + '">' + data.estado + '</span>');
+            $('td', row).eq(10).attr('style', 'text-align:center');
 
             /* Una reserva cumplida no se libera: el stock ya se movio */
             if (data.puede_liberar == 1) {
-                $('td', row).eq(10).html(
+                $('td', row).eq(11).html(
                     '<a class="btn-accion-tabla tooltipsC sr-liberar" style="cursor:pointer;" ' +
                     'title="Liberar esta reserva" data-id="' + data.id + '" data-upd="' + data.updatednum_at + '">' +
                     '<i class="fa fa-fw fa-unlock text-danger"></i></a>'
                 );
             } else {
-                $('td', row).eq(10).html('');
+                $('td', row).eq(11).html('');
             }
-            $('td', row).eq(10).attr('style', 'text-align:center');
+            $('td', row).eq(11).attr('style', 'text-align:center');
 
             /* El motivo de la liberacion se muestra junto al original: explica
                por que ese stock volvio a estar disponible. */
             if (data.anulmotivo) {
-                $('td', row).eq(7).html((data.motivo || '') +
+                $('td', row).eq(8).html((data.motivo || '') +
                     '<br><small class="text-red">Liberada: ' + data.anulmotivo + '</small>');
             }
         }
