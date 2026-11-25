@@ -2019,6 +2019,15 @@ Route::get('etapaexterna/listadopage', 'EtapaExternaController@listadopage')->na
    a otro cliente o a otra NV. Nada se borra: el vinculo con la NV que lo
    origino queda intacto y se registra el hecho nuevo.
    ==================================================================== */
+/* ====================================================================
+   SALDO POR PRODUCIR - explica el numero que ve el vendedor en la nota de
+   venta: stock vendible - pendiente por despachar - reservado. Negativo =
+   sobrevendido. No es para vendedores: tiene su propio permiso.
+   ==================================================================== */
+Route::get('reportsaldoproducir', 'ReportSaldoProducirController@index')->name('reportsaldoproducir');
+Route::get('reportsaldoproducirpage', 'ReportSaldoProducirController@listadopage')->name('reportsaldoproducirpage');
+Route::get('reportsaldoproducir/detalle/{producto_id}', 'ReportSaldoProducirController@detalle')->name('reportsaldoproducir_detalle');
+
 Route::get('prodreasignacion', 'ProdReasignacionController@index')->name('prodreasignacion');
 Route::get('prodreasignacionpage', 'ProdReasignacionController@listadopage')->name('prodreasignacionpage');
 Route::get('prodreasignacion/consultar/{id}', 'ProdReasignacionController@consultar')->name('prodreasignacion_consultar');
