@@ -485,6 +485,7 @@ class DespachoSolController extends Controller
                                                     'cant'              => $cantLote,
                                                     'cantkg'            => $cantKgLote,
                                                 ]);
+
                                             }
                                         }
                                     }

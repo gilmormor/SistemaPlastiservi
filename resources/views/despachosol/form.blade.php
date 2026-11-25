@@ -659,6 +659,22 @@
                                                     . '   JOIN invmovdet imd3 ON imd3.id = b.invmovdet_id'
                                                     . '  WHERE dsd.notaventadetalle_id = ' . intval($detalle->id)
                                                     . '    AND imd3.deleted_at IS NULL'
+                                                    /* Tercera via: lotes que se le ENTREGARON a este item desde otra
+                                                       nota de venta o desde una OT libre (modulo Reasignar
+                                                       Produccion). Sin esto la pantalla decia "En proceso de
+                                                       fabricacion" aunque el material ya estuviera en bodega y
+                                                       asignado a este cliente: las otras dos vias preguntan por
+                                                       notaventadetalle_id y un lote reasignado no cuelga de el.
+                                                       Es ADITIVA: sin reasignaciones devuelve vacio y la pantalla se
+                                                       comporta exactamente como antes. */
+                                                    . ' UNION'
+                                                    . ' SELECT imd4.id FROM prodreasignacion r'
+                                                    . '   JOIN invmovdet_opdetregprod l ON l.opdetregprod_id = r.opdetregprod_id'
+                                                    . '   JOIN invmovdet imd4 ON imd4.id = l.invmovdet_id'
+                                                    . '  WHERE r.nvdet_destino_id = ' . intval($detalle->id)
+                                                    . '    AND r.deleted_at IS NULL AND r.anulada_at IS NULL'
+                                                    . '    AND r.consumida_at IS NULL'
+                                                    . '    AND imd4.deleted_at IS NULL'
                                                     . ') as u'))
                                                 ->join('invmovdet as imd',   'imd.id',  '=', 'u.id')
                                                 ->join('invbodega as ib',    'ib.id',   '=', 'imd.invbodega_id')
@@ -769,13 +785,12 @@
                                                         // cant_despachada = total ya asignado en solicitudes de despacho anteriores.
                                                         // cant_disponible  = cant_lote - cant_despachada (lo que realmente queda por despachar).
                                                         // Solo se muestran lotes con cant_disponible > 0.
-                                                        /* Lotes reasignados fuera de este item (ver el AND de abajo).
-                                                           Con 0 se neutraliza la condicion cuando no hay ninguno:
-                                                           ningun opdetregprod_id vale 0. */
-                                                        $aux_loteQuitados = \App\Models\ProdReasignacion::quitadasIdsDeNvdet($detalle->id);
-                                                        $aux_loteQuitadosSql = count($aux_loteQuitados)
-                                                            ? implode(',', array_map('intval', $aux_loteQuitados))
-                                                            : '0';
+                                                        /* Cuanto de cada lote de este item se entrego a otro cliente o a
+                                                           otra nota de venta. Se DESCUENTA, no se esconde el lote: una
+                                                           reasignacion puede ser parcial y de 600 unidades pueden
+                                                           haberse entregado 400, con lo que a esta NV todavia le
+                                                           quedan 200 suyas que si puede despachar. */
+                                                        $aux_loteQuitadoCant = \App\Models\ProdReasignacion::cantQuitadaPorLote($detalle->id);
                                                         $lotesRow = collect(DB::select("
                                                             SELECT
                                                                 imop.opdetregprod_id,
@@ -802,20 +817,17 @@
                                                             WHERE imdnv.notaventadetalle_id = ?
                                                               AND imd.invbodegaproducto_id   = ?
                                                               AND imd.deleted_at IS NULL
-                                                              /* Lotes que se fabricaron para este item pero ya se
-                                                                 entregaron a otro cliente u otra nota de venta. Si
-                                                                 siguieran a la vista, la ejecutiva podria despachar
-                                                                 material que ya no es suyo y el problema se
-                                                                 descubriria en bodega, o peor, en la calle.
-                                                                 La lista se arma en PHP porque NOT IN () vacio es
-                                                                 un error de sintaxis en MySQL. */
-                                                              AND imop.opdetregprod_id NOT IN ($aux_loteQuitadosSql)
                                                             GROUP BY imop.opdetregprod_id
                                                             ORDER BY imop.opdetregprod_id ASC
                                                         ", [$detalle->id, $invbodegaproducto->id]))
-                                                        ->map(function($lr) {
+                                                        ->map(function($lr) use ($aux_loteQuitadoCant) {
+                                                            /* Lo entregado a otro sale del disponible igual que lo ya
+                                                               despachado: para esta nota de venta ese material no
+                                                               esta. Si se entrego el lote completo queda en 0 y la
+                                                               fila desaparece sola por el filtro de mas abajo. */
+                                                            $lr->cant_reasignada = $aux_loteQuitadoCant[$lr->opdetregprod_id] ?? 0;
                                                             // Calcular disponible y kg proporcional
-                                                            $lr->cant_disponible   = max(0, $lr->cant_lote - $lr->cant_despachada);
+                                                            $lr->cant_disponible   = max(0, $lr->cant_lote - $lr->cant_despachada - $lr->cant_reasignada);
                                                             $lr->cantkg_disponible = $lr->cant_lote > 0
                                                                 ? ($lr->cant_disponible / $lr->cant_lote) * $lr->cantkg_lote
                                                                 : 0;
@@ -824,6 +836,32 @@
                                                         ->filter(function($lr) {
                                                             return $lr->cant_disponible > 0; // ocultar lotes agotados
                                                         });
+
+                                                        /* Lotes ENTREGADOS a este item desde otra nota de venta o desde
+                                                           una OT libre. No cuelgan de invmovdetnvdet, asi que la
+                                                           consulta de arriba no los ve y hay que traerlos aparte.
+
+                                                           La cantidad disponible es la REASIGNADA, no la del lote: si el
+                                                           lote tiene 600 en bodega pero a esta NV se le entregaron 400,
+                                                           se pueden despachar 400. Lo demas sigue siendo de otro.
+
+                                                           Se fusiona en PHP en vez de meterlo en la consulta de arriba
+                                                           para no tocarla: sin reasignaciones esta lista viene vacia y
+                                                           todo queda igual que antes. */
+                                                        $aux_lotesRecibidos = \App\Models\ProdReasignacion::lotesRecibidosEnBodega(
+                                                            $detalle->id, $invbodegaproducto->id
+                                                        );
+                                                        foreach ($aux_lotesRecibidos as $aux_lr) {
+                                                            /* Si por lo que sea el lote ya aparecia por la via normal, se
+                                                               respeta esa fila y no se agrega otra: dos filas del mismo
+                                                               lote dejarian despachar el doble. */
+                                                            if ($lotesRow->firstWhere('opdetregprod_id', $aux_lr->opdetregprod_id)) {
+                                                                continue;
+                                                            }
+                                                            if ($aux_lr->cant_disponible > 0) {
+                                                                $lotesRow->push($aux_lr);
+                                                            }
+                                                        }
 
                                                         // CC: validación por cadena de producción completa (BFS bidireccional)
                                                         // La lógica centralizada está en CcValidacion::verificarCadenaDespacho()
@@ -861,7 +899,18 @@
                                                         </td> --}}
                                                         <td style="text-align:right;width: 20% !important;padding-left: 0px;padding-right: 0px;" class='tooltipsC' title='Stock disponible'>
                                                             <div class="centrarhorizontal">
-                                                                <p name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="font-size: 11px;margin-bottom: 0px;">{{$spRow->cant_prod}}</p>
+                                                                {{-- El stock de la bodega NO es lo que esta nota de venta puede
+                                                                     despachar: del lote pueden quedar 600 en bodega y haberle
+                                                                     tocado solo 400, con las otras 200 reservadas o entregadas
+                                                                     a otro cliente. Se muestra la suma de los lotes que se
+                                                                     ofrecen abajo, que es lo que de verdad puede tomar; si no,
+                                                                     el encabezado diria 600 y las filas sumarian 400. --}}
+                                                                <?php
+                                                                    $aux_stockDisp = count($lotesRow)
+                                                                        ? $lotesRow->sum('cant_disponible')
+                                                                        : $spRow->cant_prod;
+                                                                ?>
+                                                                <p name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="font-size: 11px;margin-bottom: 0px;">{{$aux_stockDisp}}</p>
                                                             </div>
                                                         </td>
 
@@ -1047,7 +1096,19 @@
                                                                     </td>
                                                                     <td style="text-align:right;width: 20% !important;padding-left: 0px;padding-right: 0px;"  class='tooltipsC' title='Stock disponible'>
                                                                         <div class="centrarhorizontal">
-                                                                            <p name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="font-size: 11px;margin-bottom: 0px;">{{$existencia["stock"]["cant"]}}</p>
+                                                                            {{-- Lo disponible, no el stock bruto: si hay 600 en bodega
+                                                                                 pero 200 estan reservadas para otro cliente, esta nota de
+                                                                                 venta solo puede tomar 400. Las reservas y las entregas
+                                                                                 por reasignacion se descuentan igual que en el reporte
+                                                                                 de stock, para que los dos digan lo mismo. --}}
+                                                                            <?php
+                                                                                $aux_stockDisp = \App\Models\StockReserva::disponibleParaNvdet($invbodegaproducto->id, $detalle->id);
+                                                                                /* Nunca mas de lo que hay fisicamente en esta bodega: el
+                                                                                   calculo de libre mira el stock del invbodegaproducto y
+                                                                                   la existencia puede venir acotada por otros filtros. */
+                                                                                $aux_stockDisp = min($aux_stockDisp, $existencia["stock"]["cant"]);
+                                                                            ?>
+                                                                            <p name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="font-size: 11px;margin-bottom: 0px;">{{$aux_stockDisp}}</p>
                                                                         </div>
                                                                     </td>
                                                                     <td  class="width90 tooltipsC" name="cantorddespF{{$invbodegaproducto->id}}" id="cantorddespF{{$invbodegaproducto->id}}" style="text-align:right;width: 40% !important" title='Cant a despachar'>

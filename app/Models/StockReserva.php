@@ -113,8 +113,10 @@ class StockReserva extends Model
     /**
      * Cuanto queda LIBRE para reservar en una bodega-producto.
      *
-     * Libre = stock de la bodega - lo ya reservado vigente. Es la cifra contra la
-     * que se valida una reserva nueva: nadie puede apartar lo que otro ya aparto.
+     * Libre = stock de la bodega - lo ya reservado vigente - los lotes ya
+     * reasignados a otro cliente o nota de venta. Es la cifra contra la que se
+     * valida una reserva nueva: nadie puede apartar lo que otro ya aparto, venga
+     * ese compromiso de una reserva o de una reasignacion de produccion.
      *
      * El stock sale de invbodegaproducto.stock, que es el saldo que mantiene el
      * propio modulo de inventario; no se recalcula aqui para no tener dos
@@ -130,16 +132,90 @@ class StockReserva extends Model
             return 0;
         }
 
-        $q = self::vigentes()->where('invbodegaproducto_id', $invbodegaproducto_id);
+        $q = self::vigentes()->where('stockreserva.invbodegaproducto_id', $invbodegaproducto_id);
         if ($aux_excluir) {
-            $q->where('id', '<>', $aux_excluir);
+            $q->where('stockreserva.id', '<>', $aux_excluir);
         }
-        $aux_reservado = (float) $q->sum('cant');
+        $aux_reservado = (float) $q->sum('stockreserva.cant');
 
-        /* Nunca negativo: si el stock bajo por debajo de lo reservado -se
+        /* Lo que de los lotes de esta bodega-producto YA se entrego a otro cliente
+           o a otra nota de venta tampoco esta libre: ese material tiene dueno
+           aunque no exista una reserva sobre el. Sin esto, el mismo lote se podria
+           reasignar a una NV y reservar para otro cliente, y el sistema diria que
+           es de los dos.
+
+           Se suma la CANTIDAD reasignada y no el movimiento del lote, porque una
+           reasignacion puede ser parcial: de 600 se pueden haber entregado 400 y
+           las otras 200 siguen libres. */
+        $aux_reasignado = \App\Models\ProdReasignacion::cantReasignadaEnBodegaProducto($invbodegaproducto_id);
+
+        /* Nunca negativo: si el stock bajo por debajo de lo comprometido -se
            despacho sin liberar la reserva- lo que queda para reservar es cero,
            no un numero negativo. */
-        return max((float) $ibp->stock - $aux_reservado, 0);
+        return max((float) $ibp->stock - $aux_reservado - max($aux_reasignado, 0), 0);
+    }
+
+    /**
+     * Cuanto puede tomar ESTE item de nota de venta de una bodega-producto.
+     *
+     * No es lo mismo que el stock libre. El libre es lo que no tiene dueno, y
+     * sirve para saber si se puede reservar. Pero a la hora de despachar, un item
+     * puede tomar ademas LO SUYO: su propia reserva y lo que le entregaron por
+     * una reasignacion de produccion.
+     *
+     * Si ABR COMERCIAL tiene 200 reservados, para cualquier otro esos 200 no
+     * existen, pero para ABR COMERCIAL son justamente lo que vino a buscar.
+     *
+     * Por eso se calcula al reves: del stock se descuenta lo comprometido con
+     * OTROS, y lo que queda es lo que este item puede tomar.
+     *
+     *   NV 35504 (le entregaron 400, tomo 100):  500 - 200 de ABR      = 300
+     *   una NV de ABR COMERCIAL:                 500 - 300 de la 35504 = 200
+     *   cualquier otra:                          500 - 200 - 300       = 0
+     */
+    public static function disponibleParaNvdet($invbodegaproducto_id, $notaventadetalle_id = null)
+    {
+        $ibp = InvBodegaProducto::find($invbodegaproducto_id);
+        if (!$ibp) {
+            return 0;
+        }
+        $aux_stock = (float) $ibp->stock;
+
+        /* Cliente de este item, para reconocer las reservas hechas a su nombre
+           cuando todavia no existia la nota de venta. */
+        $aux_cliente_id = null;
+        if ($notaventadetalle_id) {
+            $aux_cliente_id = DB::table('notaventadetalle as nvd')
+                ->join('notaventa as nv', 'nv.id', '=', 'nvd.notaventa_id')
+                ->where('nvd.id', (int) $notaventadetalle_id)
+                ->value('nv.cliente_id');
+        }
+
+        /* Reservas de OTROS: ni de este item ni de su cliente. */
+        $q = self::vigentes()->where('stockreserva.invbodegaproducto_id', $invbodegaproducto_id);
+        if ($notaventadetalle_id) {
+            $q->where(function ($q2) use ($notaventadetalle_id, $aux_cliente_id) {
+                $q2->where(function ($q3) use ($notaventadetalle_id) {
+                    $q3->whereNull('stockreserva.notaventadetalle_id')
+                       ->orWhere('stockreserva.notaventadetalle_id', '<>', (int) $notaventadetalle_id);
+                });
+                if ($aux_cliente_id) {
+                    $q2->where(function ($q4) use ($aux_cliente_id) {
+                        $q4->whereNull('stockreserva.cliente_id')
+                           ->orWhere('stockreserva.cliente_id', '<>', $aux_cliente_id);
+                    });
+                }
+            });
+        }
+        $aux_resAjena = (float) $q->sum('stockreserva.cant');
+
+        /* Produccion entregada a OTROS items por reasignacion, y todavia no
+           tomada por el circuito de despacho. */
+        $aux_reaAjena = \App\Models\ProdReasignacion::cantReasignadaEnBodegaProducto(
+            $invbodegaproducto_id, $notaventadetalle_id
+        );
+
+        return round(max($aux_stock - $aux_resAjena - $aux_reaAjena, 0), 2);
     }
 
     /**
