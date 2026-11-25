@@ -73,6 +73,23 @@ $(document).ready(function () {
         cargarTabla();
     });
 
+    /* Filtros del listado. El cliente recarga al elegir; el codigo de producto
+       al salir del campo, para no consultar por cada tecla. */
+    $('#sr-f-cliente').on('change', cargarTabla);
+    $('#sr-f-producto').on('blur', cargarTabla);
+    $('#sr-f-producto').on('input', function () {
+        $(this).val($(this).val().replace(/[^0-9]/g, ''));
+    });
+    $('#sr-f-producto').on('keypress', function (e) {
+        if (e.which === 13) { e.preventDefault(); $(this).blur(); }
+    });
+
+    $('#sr-f-limpiar').on('click', function () {
+        $('#sr-f-cliente').val('').selectpicker('refresh');
+        $('#sr-f-producto').val('');
+        cargarTabla();
+    });
+
     /* Liberar: el stock vuelve a quedar disponible. Se pide el motivo porque
        la fila no se borra y despues hay que poder explicar que paso. */
     $(document).on('click', '.sr-liberar', function () {
@@ -187,7 +204,9 @@ function validarBoton() {
 $(document).on('change', '#sr-cliente, #sr-nvdet', validarBoton);
 
 function cargarTabla() {
-    var aux_url = SR_RUTA_PAGE + '?vertodas=' + ($('#sr-vertodas').is(':checked') ? 1 : 0);
+    var aux_url = SR_RUTA_PAGE + '?vertodas=' + ($('#sr-vertodas').is(':checked') ? 1 : 0) +
+        '&cliente_id=' + ($('#sr-f-cliente').val() || '') +
+        '&producto_id=' + $.trim($('#sr-f-producto').val());
 
     if (SR_TABLA) {
         SR_TABLA.ajax.url(aux_url).load();

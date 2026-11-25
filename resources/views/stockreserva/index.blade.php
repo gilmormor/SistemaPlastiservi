@@ -145,6 +145,30 @@ Reserva de Stock
                 </div>
             </div>
             <div class="box-body">
+
+                {{-- Filtros para encontrar una reserva concreta y liberarla: con
+                     muchas reservas, buscarla a ojo en la tabla no es viable. --}}
+                <div class="row" style="margin-bottom:12px;">
+                    <div class="col-xs-12 col-md-4">
+                        <label for="sr-f-cliente">Cliente</label>
+                        <select id="sr-f-cliente" class="selectpicker form-control"
+                                data-live-search="true" title="Todos">
+                            @foreach($tablas['clientes'] as $cliente)
+                                <option value="{{$cliente->id}}">{{$cliente->razonsocial}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        <label for="sr-f-producto">Código de producto</label>
+                        <input type="text" id="sr-f-producto" class="form-control" placeholder="Ej: 2070">
+                    </div>
+                    <div class="col-xs-12 col-md-3" style="margin-top:24px;">
+                        <button type="button" class="btn btn-default" id="sr-f-limpiar">
+                            <i class="fa fa-eraser"></i> Limpiar filtros
+                        </button>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered table-hover" id="tabla-reservas">
                         <thead>
