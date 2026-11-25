@@ -186,6 +186,21 @@ class ReportInvStockController extends Controller
             }
         }
 
+        /* Lo de produccion se acota a cero ANTES de sumar lo demas.
+
+           Las entradas y las salidas con dueno no siempre van en pares: un lote
+           de OT libre ENTRA sin dueno -no hay nota de venta- pero si se reasigna
+           y se despacha, SALE con dueno. El saldo de esa via queda negativo, y si
+           se arrastrara se comeria las reservas: una bodega con 200 reservados
+           mostraba 0 comprometido porque el -400 de la salida los tapaba.
+
+           Cada fuente de compromiso se cuenta por separado y ninguna puede
+           cancelar a las otras. */
+        foreach ($aux_res as $aux_ibp => $aux_fila) {
+            $aux_res[$aux_ibp]['cant']   = max(0, $aux_fila['cant']);
+            $aux_res[$aux_ibp]['cantkg'] = max(0, $aux_fila['cantkg']);
+        }
+
         /* ---- Paso 3: el stock apartado a mano (modulo Reserva de Stock) ----
            Es el tercer tipo de compromiso, junto al fabricado para una NV y al
            asignado a un item. Son reservas blandas: el stock sigue en la bodega
@@ -210,6 +225,28 @@ class ReportInvStockController extends Controller
             }
             $aux_res[$aux_ibp]['cant']   += $aux_r['cant'];
             $aux_res[$aux_ibp]['cantkg'] += $aux_r['cantkg'];
+        }
+
+        /* ---- Paso 4: lo entregado por una reasignacion de produccion ----
+           Un lote que se le entrego a otra nota de venta tiene dueno aunque no
+           haya reserva sobre el. Se cuenta lo que todavia no tomo el circuito de
+           despacho: en cuanto la solicitud lo toma, el stock se mueve a picking y
+           ya se refleja alli. */
+        foreach (array_keys($aux_res) as $aux_ibp) {
+            $aux_rea = \App\Models\ProdReasignacion::cantReasignadaEnBodegaProducto($aux_ibp);
+            if ($aux_rea > 0) {
+                $aux_res[$aux_ibp]['cant'] += $aux_rea;
+            }
+        }
+        /* Y las bodegas-producto que SOLO tienen reasignacion, sin produccion con
+           dueno ni reservas: tambien hay que mostrarlas. */
+        foreach (\App\Models\ProdReasignacion::ibpsConReasignacionVigente() as $aux_ibp) {
+            if (!isset($aux_res[$aux_ibp])) {
+                $aux_rea = \App\Models\ProdReasignacion::cantReasignadaEnBodegaProducto($aux_ibp);
+                if ($aux_rea > 0) {
+                    $aux_res[$aux_ibp] = ['prod' => null, 'cant' => $aux_rea, 'cantkg' => 0];
+                }
+            }
         }
 
         /* Las filas que solo tienen reserva no traen producto_id de las consultas
