@@ -38,7 +38,10 @@ class ReportInvStockBPPendxProdController extends Controller
         return view('reportinvstockbppendxprod.index', compact('tablashtml','selecmultprod'));
 
     }
-    //Pendiente por producir de UN producto en UNA sucursal: difcantpend = stock - (cant - cantdesp).
+    //Pendiente por producir de UN producto en UNA sucursal:
+    //  difcantpend = stock vendible - pendiente por despachar - reservado
+    //Negativo = sobreventa: hay mas comprometido que stock y hay que producir. Se
+    //muestra tal cual, porque es justo lo que el vendedor necesita saber.
     //Reutiliza la misma consulta del reporte (pendientexProducto + stocksql) para que el valor coincida siempre con él.
     //Sin permiso del reporte: es informativo para vendedores (se muestra en #stockM de calcprecioprodsn).
     //Lee de la caché producto_pendientexproducir_cache (actualizada cada 5 min por el comando
@@ -56,8 +59,31 @@ class ReportInvStockBPPendxProdController extends Controller
             ->where('sucursal_id', $request->sucursal_id)
             ->first();
         if($aux_cache){
-            $respuesta['mensaje'] = 'ok';
-            $respuesta['difcantpend'] = $aux_cache->difcantpend;
+            /* A lo que trae la cache se le descuenta el stock RESERVADO para otro
+               cliente u otra nota de venta (modulo Reserva de Stock).
+
+               Se resta aqui, al LEER, y no en el comando que llena la cache: esa
+               se refresca cada 5 minutos, pero una reserva se hace en cualquier
+               momento y el vendedor no puede estar cinco minutos viendo
+               disponible algo que ya tiene dueno. La consulta es barata: la tabla
+               de reservas es chica y se filtra por producto y sucursal.
+
+               El resultado PUEDE QUEDAR NEGATIVO, y debe quedar: un negativo le
+               dice al vendedor que ese producto esta sobrevendido y que hay que
+               producir. Por eso no se acota a cero. */
+            $aux_reservado = (float) \App\Models\StockReserva::vigentes()
+                ->join('invbodegaproducto as ibp', 'ibp.id', '=', 'stockreserva.invbodegaproducto_id')
+                ->join('invbodega as b', 'b.id', '=', 'ibp.invbodega_id')
+                ->where('ibp.producto_id', $request->producto_id)
+                ->where('b.sucursal_id', $request->sucursal_id)
+                ->sum('stockreserva.cant');
+
+            $respuesta['mensaje']     = 'ok';
+            $respuesta['difcantpend'] = round($aux_cache->difcantpend - $aux_reservado, 2);
+            /* Se devuelven por separado para poder explicarlo en pantalla si
+               alguna vez hace falta ("600 - 200 reservados"). */
+            $respuesta['reservado']   = $aux_reservado;
+            $respuesta['sinreserva']  = (float) $aux_cache->difcantpend;
         }
         //Si aún no hay caché para este producto/sucursal (ej: producto muy nuevo), no se responde valor
         //y el frontend conserva el stock actual; se completará en el próximo ciclo del comando (máx. 5 min).

@@ -69,10 +69,14 @@ class StockReserva extends Model
      */
     public function scopeVigentes($query)
     {
-        return $query->whereNull('deleted_at')
-            ->whereNull('anulada_at')
-            ->whereNull('consumida_at')
-            ->whereDate('fechavence', '>=', date('Y-m-d'));
+        /* Columnas calificadas con la tabla: este scope se usa tambien en
+           consultas con join -el calculo de #stockM une con invbodegaproducto e
+           invbodega, que tienen su propio deleted_at- y sin el prefijo MySQL lo
+           rechaza por ambiguo. */
+        return $query->whereNull('stockreserva.deleted_at')
+            ->whereNull('stockreserva.anulada_at')
+            ->whereNull('stockreserva.consumida_at')
+            ->whereDate('stockreserva.fechavence', '>=', date('Y-m-d'));
     }
 
     /**
