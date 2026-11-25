@@ -2403,8 +2403,25 @@ class DespachoOrdController extends Controller
 
             if (!is_null($despachoord->numfactura)) {
                 $dteguiadesp = $despachoord->dteguiadesps->last();
-                //dd($dteguiadesp->dte->dtedter->dte);
-                $dte = $dteguiadesp->dte->dtedter ? $dteguiadesp->dte->dtedter->dte : null;
+
+                /* Hay 12.397 ordenes de despacho con numero de factura pero SIN
+                   guia en dteguiadesp -facturas antiguas, cargadas antes de que
+                   existiera esa tabla-. El codigo daba por hecho que si habia
+                   numero de factura existia la guia, y last() devolvia null: la
+                   pantalla entera moria con "Trying to get property 'dte' of
+                   non-object" y no se veia ninguna orden de despacho de esa nota
+                   de venta.
+
+                   Sin guia no hay DTE que abrir, asi que el numero de factura se
+                   muestra como texto, sin enlace al PDF. Es un dato que si existe
+                   en la orden de despacho y no tiene por que perderse. */
+                $dte = null;
+                if (!$dteguiadesp) {
+                    $aux_enlacefactura = $despachoord->numfactura;
+                } elseif ($dteguiadesp->dte and $dteguiadesp->dte->dtedter) {
+                    $dte = $dteguiadesp->dte->dtedter->dte;
+                }
+
                 if ($dte) {
                     $aux_enlacefactura = "<a style='padding-left: 0px;' class='btn-accion-tabla btn-sm tooltipsC' title='' onclick='genpdfFACDin(\"$dte->id\",0,\"myModalTablaOD\")' data-original-title='Factura'>$dte->nrodocto</a>";
                     $aux_totalFact = number_format($dte->mnttotal, 0, ",", ".");
