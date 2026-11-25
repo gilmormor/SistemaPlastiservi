@@ -152,7 +152,30 @@ class ModuloProduccionMenuPermisoSeeder extends Seeder
 
     private function insertarSiNoExisteMenu($menu_id, $nombre, $url, $orden, $icono)
     {
-        $existente = DB::table('menu')->where('nombre', $nombre)->where('url', $url)->first();
+        /* Lo que identifica un menu es su URL, NO su nombre: el nombre es una
+           etiqueta y cada base puede tenerla distinta. Buscando por nombre + url
+           este seeder duplicaba menus que ya existian con otro texto:
+
+             'Habilitar  Cliente'      ya era  clientedesbloqueado
+             'Desbloquear Cliente'     se inserto de nuevo con la misma url
+
+           Pasaba con clientebloqueado, clientedesbloqueado, clientedesbloqueadopro
+           y reportinvstockvend. El usuario veia la opcion dos veces en el menu, y
+           la copia nueva no tenia los roles de la original.
+
+           Excepcion: los menus CONTENEDORES tienen url '#' y hay muchos, asi que
+           para esos no alcanza la url -encontraria cualquiera- y hay que comparar
+           tambien el nombre y de quien cuelgan. */
+        if ($url === '#') {
+            $existente = DB::table('menu')
+                ->where('nombre', $nombre)
+                ->where('url', $url)
+                ->where('menu_id', $menu_id)
+                ->first();
+        } else {
+            $existente = DB::table('menu')->where('url', $url)->first();
+        }
+
         if ($existente) {
             return $existente->id;
         }

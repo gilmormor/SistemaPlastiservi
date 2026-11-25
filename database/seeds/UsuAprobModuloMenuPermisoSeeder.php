@@ -60,7 +60,22 @@ class UsuAprobModuloMenuPermisoSeeder extends Seeder
 
     private function insertarSiNoExisteMenu($menu_id, $nombre, $url, $orden, $icono)
     {
-        $existente = DB::table('menu')->where('nombre', $nombre)->where('url', $url)->first();
+        /* Mismo criterio que ModuloProduccionMenuPermisoSeeder: lo que identifica
+           un menu es su URL, no su nombre. Buscando por nombre + url, si alguien
+           renombra la opcion en la base, el seeder la inserta otra vez y el
+           usuario la ve duplicada en el menu -ya paso con cuatro menus de
+           clientes e inventario-. Los contenedores ('#') si necesitan el nombre,
+           porque hay muchos con esa url. */
+        if ($url === '#') {
+            $existente = DB::table('menu')
+                ->where('nombre', $nombre)
+                ->where('url', $url)
+                ->where('menu_id', $menu_id)
+                ->first();
+        } else {
+            $existente = DB::table('menu')->where('url', $url)->first();
+        }
+
         if ($existente) {
             return $existente->id;
         }
