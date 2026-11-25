@@ -21,8 +21,11 @@ use Illuminate\Support\Facades\DB;
  * origen -la OT y la OP nacieron de ese pedido- y ese vinculo no se toca. Lo
  * que se registra es el hecho nuevo: a quien se le entrego finalmente.
  *
- * Primera version, acotada mientras se define el resto con produccion:
- *   - El lote se reasigna COMPLETO.
+ * Se puede entregar el lote completo o solo una parte: de 600 unidades, 400 a una
+ * nota de venta y el resto queda disponible para otra. Lo que limita es lo que de
+ * verdad esta libre, descontando reservas y entregas anteriores.
+ *
+ * Pendiente mientras se define con produccion:
  *   - La nota de venta que queda descubierta NO se relanza a fabricacion sola;
  *     se avisa en la solicitud de despacho y la decision es de planta.
  * Ver docs/reasignacion-produccion.md.
@@ -112,7 +115,20 @@ class ProdReasignacionController extends Controller
             ->sum('d.cant');
 
         $aux_prod = Producto::atributosProducto($lote->producto_id);
-        $aux_reasig = ProdReasignacion::vigenteDeLote($lote->id);
+        $aux_reasig = ProdReasignacion::vigentesDeLote($lote->id);
+
+        /* Lo reservado en la MISMA bodega-producto donde esta el lote.
+           Una reserva puede no estar anclada a un lote -es una cantidad sobre la
+           bodega-producto- pero el material es el mismo: si el lote 66 aporta los
+           600 que hay en esa bodega y 200 estan apartados para otro cliente,
+           reasignar el lote completo dejaria esas 200 sin respaldo fisico y el
+           sistema diria que el mismo material es de dos clientes. */
+        $aux_reservado = $this->reservadoDondeEstaElLote($lote->id);
+
+        /* Lo que ya se entrego de ESTE lote a otros. Un lote se puede repartir
+           entre varias notas de venta, asi que lo disponible baja con cada
+           reasignacion. */
+        $aux_yaReasignado = ProdReasignacion::cantReasignadaDeLote($lote->id);
 
         return response()->json([
             'ok'            => true,
@@ -123,10 +139,22 @@ class ProdReasignacionController extends Controller
             'cantkg'        => (float) $aux_mov->cantkg,
             'saldo'         => round($aux_saldo, 2),
             'bodega'        => $aux_mov->bodega,
+            'reservado'     => $aux_reservado['cant'],
+            'reservado_de'  => $aux_reservado['para'],
+            'ya_entregado'  => round($aux_yaReasignado, 2),
+            /* Lo que de verdad se puede reasignar: el saldo del lote, menos lo que
+               ya esta apartado para otro en esa misma bodega, menos lo que ya se
+               entrego de este mismo lote. */
+            'disponible'    => round(max($aux_saldo - $aux_reservado['cant'] - $aux_yaReasignado, 0), 2),
             'nvdet_origen'  => $aux_mov->notaventadetalle_id,
             'nv_origen'     => $aux_mov->notaventa_id,
             'cliente_origen' => $aux_mov->razonsocial,
-            'ya_reasignado' => $aux_reasig ? $aux_reasig->destino : null,
+            /* Texto de a quien se le entrego ya, con la cantidad de cada parte. */
+            'ya_reasignado' => count($aux_reasig)
+                ? implode('; ', $aux_reasig->map(function ($x) {
+                    return number_format($x->cant, 2, ',', '.') . ' a ' . $x->destino;
+                })->toArray())
+                : null,
         ]);
     }
 
@@ -185,6 +213,45 @@ class ProdReasignacionController extends Controller
         return response()->json(['ok' => true, 'items' => $q->limit(50)->get()]);
     }
 
+    /**
+     * Cuanto esta reservado en la bodega-producto donde vive este lote.
+     *
+     * Devuelve la cantidad y para quien, para poder decirlo en el mensaje: "libere
+     * la reserva de X" es accionable; "no se puede" no lo es.
+     */
+    private function reservadoDondeEstaElLote($opdetregprod_id)
+    {
+        $aux_ibp = DB::table('invmovdet_opdetregprod as l')
+            ->join('invmovdet as d', 'd.id', '=', 'l.invmovdet_id')
+            ->join('invbodega as b', 'b.id', '=', 'd.invbodega_id')
+            ->where('l.opdetregprod_id', (int) $opdetregprod_id)
+            ->whereNull('d.deleted_at')
+            ->where('b.tipo', 2)
+            ->value('d.invbodegaproducto_id');
+
+        if (!$aux_ibp) {
+            return ['cant' => 0, 'para' => ''];
+        }
+
+        $aux_filas = \App\Models\StockReserva::vigentes()
+            ->leftJoin('cliente as c', 'c.id', '=', 'stockreserva.cliente_id')
+            ->leftJoin('notaventadetalle as nvd', 'nvd.id', '=', 'stockreserva.notaventadetalle_id')
+            ->where('stockreserva.invbodegaproducto_id', $aux_ibp)
+            ->select('stockreserva.cant', 'stockreserva.fechavence', 'c.razonsocial', 'nvd.notaventa_id')
+            ->get();
+
+        $aux_cant = 0;
+        $aux_para = [];
+        foreach ($aux_filas as $f) {
+            $aux_cant += (float) $f->cant;
+            $aux_txt = $f->razonsocial ?: ('NV ' . $f->notaventa_id);
+            $aux_para[] = $aux_txt . ' (' . number_format($f->cant, 2, ',', '.')
+                . ', vence ' . date('d/m/Y', strtotime($f->fechavence)) . ')';
+        }
+
+        return ['cant' => round($aux_cant, 2), 'para' => implode('; ', $aux_para)];
+    }
+
     public function guardar(Request $request)
     {
         can('crear-prod-reasignacion');
@@ -194,6 +261,12 @@ class ProdReasignacionController extends Controller
         if (!$lote) {
             return $this->volver('No existe el lote ' . $aux_lote_id . '.');
         }
+
+        /* Cantidad a reasignar. Puede ser una parte del lote: de 600 unidades,
+           400 a una nota de venta y el resto queda disponible. Antes se exigia el
+           lote completo y eso bloqueaba casos legitimos -hay 400 libres y no hay
+           razon para no darlos-. */
+        $aux_cant = (float) str_replace(',', '.', str_replace('.', '', $request->input('cant')));
 
         $aux_nvdet_destino = $request->input('nvdet_destino_id') ?: null;
         $aux_cliente       = $request->input('cliente_destino_id') ?: null;
@@ -253,8 +326,36 @@ class ProdReasignacionController extends Controller
             return $this->volver('El lote ' . $lote->id . ' no tiene material en stock: fue despachado, o es de una etapa intermedia de producción.');
         }
 
-        if (ProdReasignacion::vigenteDeLote($lote->id)) {
-            return $this->volver('El lote ' . $lote->id . ' ya está reasignado. Deshaga esa reasignación antes de hacer otra.');
+        /* Cuanto se puede entregar de este lote: su saldo en bodega, menos lo
+           reservado para otro cliente en esa misma bodega -el material es el
+           mismo aunque la reserva no este anclada al lote- y menos lo que ya se
+           entrego de este lote en reasignaciones anteriores. */
+        $aux_reservado  = $this->reservadoDondeEstaElLote($lote->id);
+        $aux_yaEntregado = ProdReasignacion::cantReasignadaDeLote($lote->id);
+        $aux_disponible  = round($aux_saldo - $aux_reservado['cant'] - $aux_yaEntregado, 2);
+
+        if ($aux_disponible <= 0) {
+            $aux_motivo = [];
+            if ($aux_reservado['cant'] > 0) {
+                $aux_motivo[] = number_format($aux_reservado['cant'], 2, ',', '.')
+                    . ' reservados para ' . $aux_reservado['para'];
+            }
+            if ($aux_yaEntregado > 0) {
+                $aux_motivo[] = number_format($aux_yaEntregado, 2, ',', '.') . ' ya entregados en otra reasignación';
+            }
+            return $this->volver('El lote ' . $lote->id . ' no tiene nada disponible: de '
+                . number_format($aux_saldo, 2, ',', '.') . ' en bodega hay '
+                . implode(' y ', $aux_motivo) . '.');
+        }
+
+        if ($aux_cant <= 0) {
+            return $this->volver('Indique cuánto del lote se entrega. Disponible: '
+                . number_format($aux_disponible, 2, ',', '.') . '.');
+        }
+        if ($aux_cant > $aux_disponible + 0.01) {
+            return $this->volver('No alcanza: del lote ' . $lote->id . ' solo hay '
+                . number_format($aux_disponible, 2, ',', '.') . ' disponibles y está intentando entregar '
+                . number_format($aux_cant, 2, ',', '.') . '.');
         }
 
         /* De quien era: el vinculo original, que NO se modifica. */
@@ -272,13 +373,14 @@ class ProdReasignacionController extends Controller
                 'nvdet_origen_id'    => $aux_origen,
                 'nvdet_destino_id'   => $aux_nvdet_destino,
                 'cliente_destino_id' => $aux_cliente,
-                'cant'               => $aux_saldo,
+                'cant'               => $aux_cant,
                 'motivo'             => $request->input('motivo'),
                 'usuario_id'         => auth()->id(),
             ]);
             DB::commit();
             return redirect()->route('prodreasignacion')
-                ->with('mensaje', 'Lote ' . $lote->id . ' reasignado. La nota de venta de origen queda sin esta producción y se le avisará a quien haga su solicitud de despacho.');
+                ->with('mensaje', number_format($aux_cant, 2, ',', '.') . ' del lote ' . $lote->id
+                    . ' entregados. La nota de venta de origen deja de contar con esa cantidad y se le avisará a quien haga su solicitud de despacho.');
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->volver('Error: ' . $e->getMessage());

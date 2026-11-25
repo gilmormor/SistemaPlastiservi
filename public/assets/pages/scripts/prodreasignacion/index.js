@@ -11,7 +11,8 @@
    ==================================================================== */
 
 var PR_TABLA = null;
-var PR_ULTIMO = null;   // ultimo lote consultado, para no repetir la consulta
+var PR_ULTIMO = null;      // ultimo lote consultado, para no repetir la consulta
+var PR_DISPONIBLE = 0;     // cuanto se puede entregar del lote en pantalla
 var PR_PRODUCTO = null;
 var PR_NVDET_ORIGEN = null;
 
@@ -49,6 +50,22 @@ $(document).ready(function () {
     });
 
     $('#pr-motivo').on('input', validar);
+
+    $('#pr-cant').on('input', function () {
+        $(this).val($(this).val().replace(/[^0-9.,]/g, ''));
+        validar();
+    });
+
+    /* Aviso temprano al pasarse. El servidor lo vuelve a comprobar: entre que se
+       cargo la ficha y el usuario confirma, otro pudo reservar o entregar. */
+    $('#pr-cant').on('blur', function () {
+        if (numeroDe($(this).val()) > PR_DISPONIBLE) {
+            $('#pr-cant-aviso').html('<span class="text-red">Solo hay ' +
+                MASKLA(PR_DISPONIBLE, 2) + ' disponibles</span>');
+        } else {
+            $('#pr-cant-aviso').html('Disponible: <strong>' + MASKLA(PR_DISPONIBLE, 2) + '</strong>');
+        }
+    });
 
     $('#pr-vertodas').on('change', cargarTabla);
 
@@ -91,6 +108,9 @@ function limpiar() {
     $('#pr-destino-box').hide();
     $('#pr-destinos-body').html('');
     $('#pr-nvdet-destino').val('');
+    $('#pr-cant').val('');
+    $('#pr-cant-aviso').html('');
+    PR_DISPONIBLE = 0;
     PR_PRODUCTO = null;
     PR_NVDET_ORIGEN = null;
     validar();
@@ -113,6 +133,30 @@ function consultarLote(id) {
             $('#pr-f-producto').html('<strong>' + resp.producto_id + '</strong> &mdash; ' + resp.producto);
             $('#pr-f-bodega').html(MASKLA(resp.saldo, 2) + ' en ' + resp.bodega);
 
+            /* Lo apartado para otro cliente en esa misma bodega. El material es el
+               mismo aunque la reserva no este anclada a este lote. */
+            if (resp.reservado > 0) {
+                $('#pr-f-reservado').html(MASKLA(resp.reservado, 2) +
+                    '<br><small>' + (resp.reservado_de || '') + '</small>');
+                $('#pr-f-fila-reservado').show();
+            } else {
+                $('#pr-f-fila-reservado').hide();
+            }
+            if (resp.ya_entregado > 0) {
+                $('#pr-f-entregado').html(MASKLA(resp.ya_entregado, 2) +
+                    '<br><small class="text-muted">' + (resp.ya_reasignado || '') + '</small>');
+                $('#pr-f-fila-entregado').show();
+            } else {
+                $('#pr-f-fila-entregado').hide();
+            }
+
+            $('#pr-f-disponible').html('<strong>' + MASKLA(resp.disponible, 2) + '</strong>');
+            PR_DISPONIBLE = resp.disponible;
+            /* Se propone el total disponible: lo habitual es entregar todo lo que
+               queda, y quien necesite menos lo corrige. */
+            $('#pr-cant').val(MASKLA(resp.disponible, 2));
+            $('#pr-cant-aviso').html('Disponible: <strong>' + MASKLA(resp.disponible, 2) + '</strong>');
+
             /* Para quien se fabrico. Si no tiene nota de venta es una OT libre:
                no hay a quien quitarselo, pero igual se puede asignar. */
             if (resp.nv_origen) {
@@ -134,6 +178,25 @@ function consultarLote(id) {
             }
             if (resp.saldo <= 0) {
                 $('#pr-error').text('El lote ya no tiene material en bodega: fue despachado.').show();
+                $('#pr-destino-box').hide();
+                validar();
+                return;
+            }
+
+            /* Sin nada disponible no hay nada que entregar: se explica por que, en
+               vez de dejar que llene el formulario para rechazarlo al final. */
+            if (resp.disponible <= 0) {
+                var aux_txt = 'No queda nada disponible de este lote: de los ' + MASKLA(resp.saldo, 2) + ' en bodega, ';
+                var aux_mot = [];
+                if (resp.reservado > 0) {
+                    aux_mot.push('<strong>' + MASKLA(resp.reservado, 2) + '</strong> están reservados para ' +
+                        (resp.reservado_de || 'otro cliente'));
+                }
+                if (resp.ya_entregado > 0) {
+                    aux_mot.push('<strong>' + MASKLA(resp.ya_entregado, 2) + '</strong> ya se entregaron');
+                }
+                $('#pr-error').html(aux_txt + aux_mot.join(' y ') +
+                    '. Para liberar una reserva: <em>Inventario &rarr; Reserva de Stock</em>.').show();
                 $('#pr-destino-box').hide();
                 validar();
                 return;
@@ -190,10 +253,21 @@ function cargarDestinos() {
     });
 }
 
-/* El motivo es obligatorio de verdad: no basta con pedirlo en el servidor. */
+/* Convierte lo escrito a numero. Acepta 1.234,56 y 1234.56 */
+function numeroDe(aux_txt) {
+    aux_txt = (aux_txt || '').toString().trim();
+    if (aux_txt.indexOf(',') >= 0) {
+        aux_txt = aux_txt.replace(/\./g, '').replace(',', '.');
+    }
+    return parseFloat(aux_txt) || 0;
+}
+
+/* El motivo y la cantidad son obligatorios de verdad: no basta con pedirlos en
+   el servidor. */
 function validar() {
     var aux_ok = $('#pr-nvdet-destino').val() !== '' &&
-                 $.trim($('#pr-motivo').val()) !== '';
+                 $.trim($('#pr-motivo').val()) !== '' &&
+                 numeroDe($('#pr-cant').val()) > 0;
     $('#pr-guardar').prop('disabled', !aux_ok);
 }
 

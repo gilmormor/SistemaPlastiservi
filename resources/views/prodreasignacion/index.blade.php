@@ -49,6 +49,17 @@ Reasignar Producción
                                     <tr><th style="width:34%;">Lote</th><td id="pr-f-lote"></td></tr>
                                     <tr><th>Producto</th><td id="pr-f-producto"></td></tr>
                                     <tr><th>En bodega</th><td id="pr-f-bodega"></td></tr>
+                                    {{-- Reservado y disponible: sin esto se veia "600 en bodega"
+                                         aunque 200 estuvieran apartados para otro cliente. --}}
+                                    <tr id="pr-f-fila-reservado" style="display:none;">
+                                        <th class="text-red">Reservado para otros</th>
+                                        <td id="pr-f-reservado" class="text-red"></td>
+                                    </tr>
+                                    <tr id="pr-f-fila-entregado" style="display:none;">
+                                        <th>Ya entregado de este lote</th>
+                                        <td id="pr-f-entregado"></td>
+                                    </tr>
+                                    <tr><th>Disponible para entregar</th><td id="pr-f-disponible"></td></tr>
                                     <tr><th>Se fabricó para</th><td id="pr-f-origen"></td></tr>
                                 </table>
                             </div>
@@ -89,7 +100,16 @@ Reasignar Producción
                         </div>
 
                         <div class="row" style="margin-top:10px;">
-                            <div class="col-xs-12 col-md-9">
+                            <div class="col-xs-12 col-md-3">
+                                {{-- Se puede entregar el lote completo o solo una parte: de 600
+                                     unidades, 400 a una nota de venta y el resto queda
+                                     disponible para otra. --}}
+                                <label for="pr-cant">Cantidad a entregar <span class="text-red">*</span></label>
+                                <input type="text" name="cant" id="pr-cant" class="form-control text-right"
+                                       placeholder="0">
+                                <small class="text-muted" id="pr-cant-aviso"></small>
+                            </div>
+                            <div class="col-xs-12 col-md-6">
                                 <label for="pr-motivo">Motivo <span class="text-red">*</span></label>
                                 <input type="text" name="motivo" id="pr-motivo" class="form-control" maxlength="300"
                                        placeholder="Por qué se le entrega a otro">
@@ -111,9 +131,10 @@ Reasignar Producción
                             <div class="col-xs-12">
                                 <div class="alert alert-warning" style="margin-bottom:0;">
                                     <i class="fa fa-exclamation-triangle"></i>
-                                    <strong>La nota de venta que pierde esta producción queda descubierta.</strong>
-                                    Sigue requiriendo fabricación, y quien haga su solicitud de despacho
-                                    verá el aviso de que este lote se entregó a otro.
+                                    <strong>La cantidad que entregue deja de estar disponible para la nota de
+                                    venta de origen.</strong>
+                                    Quien haga su solicitud de despacho verá el aviso, y esa cantidad se le
+                                    descuenta del lote: lo que no se entregue sigue siendo suyo.
                                 </div>
                             </div>
                         </div>
