@@ -675,6 +675,39 @@
                                                 ->get();
                                         }
                                         ?>
+                                        <?php
+                                        /* REASIGNACION DE PRODUCCION: lotes que se fabricaron para
+                                           ESTE item y se entregaron a otro cliente u otra nota de
+                                           venta. Hay que decirlo aqui: sin este aviso la pantalla
+                                           mostraria "En proceso de fabricacion", que seria falso
+                                           -ya se fabrico- y la ejecutiva esperaria un material que
+                                           no va a llegar. */
+                                        $aux_reasigQuitadas = \App\Models\ProdReasignacion::quitadasANvdet($detalle->id);
+                                        ?>
+                                        @if (count($aux_reasigQuitadas) > 0)
+                                            <div class="alert alert-warning" style="text-align:left;padding:6px 8px;margin-bottom:6px;font-size:11px;">
+                                                <i class="fa fa-exclamation-triangle"></i>
+                                                <strong>Producción entregada a otro cliente</strong>
+                                                @foreach($aux_reasigQuitadas as $aux_re)
+                                                    <div style="margin-top:3px;">
+                                                        Lote <strong>#{{$aux_re->opdetregprod_id}}</strong>
+                                                        @if($aux_re->cant) ({{number_format($aux_re->cant, 2, ',', '.')}}) @endif
+                                                        &rarr;
+                                                        @if($aux_re->destino_nv) <strong>NV {{$aux_re->destino_nv}}</strong> @endif
+                                                        {{$aux_re->destino_cliente}}
+                                                        <br>
+                                                        <span style="color:#777;">
+                                                            {{date('d/m/Y', strtotime($aux_re->created_at))}}
+                                                            @if($aux_re->usuario_nombre) · {{$aux_re->usuario_nombre}} @endif
+                                                            @if($aux_re->motivo) · {{$aux_re->motivo}} @endif
+                                                        </span>
+                                                    </div>
+                                                @endforeach
+                                                <div style="margin-top:4px;">
+                                                    Esta nota de venta requiere una nueva fabricación o que se le asigne stock.
+                                                </div>
+                                            </div>
+                                        @endif
                                         @if ($detalle->requiere_fabricacion == 1 && $stockProdRows->isEmpty())
                                             En proceso de fabricacion
                                         @elseif ($detalle->requiere_fabricacion == 1 && $stockProdRows->isNotEmpty())
@@ -736,6 +769,13 @@
                                                         // cant_despachada = total ya asignado en solicitudes de despacho anteriores.
                                                         // cant_disponible  = cant_lote - cant_despachada (lo que realmente queda por despachar).
                                                         // Solo se muestran lotes con cant_disponible > 0.
+                                                        /* Lotes reasignados fuera de este item (ver el AND de abajo).
+                                                           Con 0 se neutraliza la condicion cuando no hay ninguno:
+                                                           ningun opdetregprod_id vale 0. */
+                                                        $aux_loteQuitados = \App\Models\ProdReasignacion::quitadasIdsDeNvdet($detalle->id);
+                                                        $aux_loteQuitadosSql = count($aux_loteQuitados)
+                                                            ? implode(',', array_map('intval', $aux_loteQuitados))
+                                                            : '0';
                                                         $lotesRow = collect(DB::select("
                                                             SELECT
                                                                 imop.opdetregprod_id,
@@ -762,6 +802,14 @@
                                                             WHERE imdnv.notaventadetalle_id = ?
                                                               AND imd.invbodegaproducto_id   = ?
                                                               AND imd.deleted_at IS NULL
+                                                              /* Lotes que se fabricaron para este item pero ya se
+                                                                 entregaron a otro cliente u otra nota de venta. Si
+                                                                 siguieran a la vista, la ejecutiva podria despachar
+                                                                 material que ya no es suyo y el problema se
+                                                                 descubriria en bodega, o peor, en la calle.
+                                                                 La lista se arma en PHP porque NOT IN () vacio es
+                                                                 un error de sintaxis en MySQL. */
+                                                              AND imop.opdetregprod_id NOT IN ($aux_loteQuitadosSql)
                                                             GROUP BY imop.opdetregprod_id
                                                             ORDER BY imop.opdetregprod_id ASC
                                                         ", [$detalle->id, $invbodegaproducto->id]))

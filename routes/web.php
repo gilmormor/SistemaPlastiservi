@@ -2014,6 +2014,18 @@ Route::get('etapaexterna/listadopage', 'EtapaExternaController@listadopage')->na
    Esto cubre lo que entro por OT libre o por carga de inventario y se quiere
    guardar para un cliente antes de que exista la venta.
    ==================================================================== */
+/* ====================================================================
+   REASIGNAR PRODUCCION - un lote fabricado para una nota de venta se entrega
+   a otro cliente o a otra NV. Nada se borra: el vinculo con la NV que lo
+   origino queda intacto y se registra el hecho nuevo.
+   ==================================================================== */
+Route::get('prodreasignacion', 'ProdReasignacionController@index')->name('prodreasignacion');
+Route::get('prodreasignacionpage', 'ProdReasignacionController@listadopage')->name('prodreasignacionpage');
+Route::get('prodreasignacion/consultar/{id}', 'ProdReasignacionController@consultar')->name('prodreasignacion_consultar');
+Route::get('prodreasignacion/destinos/{producto_id}', 'ProdReasignacionController@destinos')->name('prodreasignacion_destinos');
+Route::post('prodreasignacion', 'ProdReasignacionController@guardar')->name('prodreasignacion_guardar');
+Route::post('prodreasignacion/{id}/anular', 'ProdReasignacionController@anular')->name('prodreasignacion_anular');
+
 Route::get('stockreserva', 'StockReservaController@index')->name('stockreserva');
 Route::get('stockreservapage', 'StockReservaController@listadopage')->name('stockreservapage');
 Route::get('stockreserva/stockproducto/{producto_id}', 'StockReservaController@stockProducto')->name('stockreserva_stockproducto');
