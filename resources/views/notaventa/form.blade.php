@@ -501,6 +501,10 @@
                                     }else{
                                         $cotizaciondetalle_id = $detalle->cotizaciondetalle_id ? $detalle->cotizaciondetalle_id : null;
                                     }
+                                    /* OJO con el nombre: la variable es $cotizaciondetalle_id, sin
+                                       prefijo aux_. Se uso $aux_cotizaciondetalle_id mas abajo -que no
+                                       existe- y editar cualquier nota de venta moria con "Undefined
+                                       variable" desde el 22/09/2025. */
                                     $aux_producto_nombre = $detalle->producto->atribNomProd($detalle->producto_id,$cotizaciondetalle_id);
                                 ?>
                                 <tr name="fila{{$aux_nfila}}" id="fila{{$aux_nfila}}" class="prod_id{{$detalle->producto_id}}">
@@ -554,7 +558,7 @@
                                     </td>
                                     <td style="display:none;">
                                         @if ($aux_sta==2)
-                                            <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$aux_cotizaciondetalle_id}}" style="display:none;"/>
+                                            <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$cotizaciondetalle_id}}" style="display:none;"/>
                                         @else
                                             <input type="text" name="cotizaciondetalle_id[]" id="cotizaciondetalle_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                         @endif
