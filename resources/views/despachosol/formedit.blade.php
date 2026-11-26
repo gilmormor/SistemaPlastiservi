@@ -659,6 +659,10 @@
                                                     . ' SELECT imd4.id FROM prodreasignacion r'
                                                     . '   JOIN invmovdet_opdetregprod l ON l.opdetregprod_id = r.opdetregprod_id'
                                                     . '   JOIN invmovdet imd4 ON imd4.id = l.invmovdet_id'
+                                                    /* Solo bodegas de almacenamiento (tipo 2). De picking no se
+                                                       despacha: ahi va el material ya apartado para una solicitud,
+                                                       y ofrecerlo como origen invita a tomarlo dos veces. */
+                                                    . '   JOIN invbodega ib4 ON ib4.id = imd4.invbodega_id AND ib4.tipo = 2'
                                                     . '  WHERE r.nvdet_destino_id = ' . $aux_nvdet_id
                                                     . '    AND r.deleted_at IS NULL AND r.anulada_at IS NULL'
                                                     . '    AND r.consumida_at IS NULL'
@@ -753,6 +757,25 @@
                                                             ['producto_id'  => $detalle->notaventadetalle->producto_id,
                                                              'invbodega_id' => $spRow->invbodega_id]
                                                         );
+
+                                                        /* Cuanto tiene asignado ESTA solicitud en esta bodega. Se calcula
+                                                           aqui arriba -el mismo calculo de $aux_invcantBod de mas abajo-
+                                                           solo para decidir si la bodega se muestra. */
+                                                        $aux_asignadoAqui = 0;
+                                                        foreach ($detalle->despachosoldet_invbodegaproductos as $aux_dsdBP) {
+                                                            if ($aux_dsdBP->invbodegaproducto_id == $invbodegaproducto->id) {
+                                                                $aux_asignadoAqui = (($aux_dsdBP->cant + $aux_dsdBP->cantex) * -1);
+                                                            }
+                                                        }
+                                                        $aux_bodTipoEd = \App\Models\InvBodega::where('id', $spRow->invbodega_id)->value('tipo');
+                                                    ?>
+                                                    {{-- Las bodegas de picking (tipo 1) no se ofrecen para pedir: ese
+                                                         material ya esta comprometido por la solicitud que lo mando a
+                                                         picking, no esta libre. Pero si ESTA solicitud tiene algo
+                                                         asignado ahi, la fila se muestra igual: esconderla le quitaria
+                                                         al usuario lo que ya habia pedido. --}}
+                                                    @continue($aux_bodTipoEd == 1 and $aux_asignadoAqui <= 0)
+                                                    <?php
                                                         // Buscar en $stockProdRowsOT el registro que coincide con este invbodegaproducto.
                                                         // $stockProdRowsOT ya agrupa por invbodegaproducto_id y tiene ot_ids.
                                                         $aux_ot_ids = "";
@@ -835,8 +858,12 @@
                                                            Se fusiona en PHP en vez de meterlo en la consulta de arriba
                                                            para no tocarla: sin reasignaciones esta lista viene vacia y
                                                            todo queda igual que antes. */
+                                                        /* Se excluye el item que se esta editando: lo que esta propia
+                                                           solicitud tiene tomado no es material ajeno, lo puede soltar o
+                                                           volver a pedir. Sin esto el lote se ve agotado por su propia
+                                                           asignacion y desaparece de la pantalla. */
                                                         $aux_lotesRecibidos = \App\Models\ProdReasignacion::lotesRecibidosEnBodega(
-                                                            $aux_nvdet_id, $invbodegaproducto->id
+                                                            $aux_nvdet_id, $invbodegaproducto->id, $detalle->id
                                                         );
                                                         foreach ($aux_lotesRecibidos as $aux_lr) {
                                                             /* Si por lo que sea el lote ya aparecia por la via normal, se
@@ -850,10 +877,29 @@
                                                             }
                                                         }
 
-                                                        // Pre-cargar asignaciones de lotes ya guardadas para este despachosoldet
-                                                        $existingLoteAsig = DB::table('despachosoldet_opdetregprod')
+                                                        /* Tope GLOBAL por lote. El mismo lote puede aparecer en varias
+                                                           bodegas y cada fila traia el disponible completo: entre dos
+                                                           filas se podia cargar 400 de un lote con 300. El JS usa este
+                                                           valor para que la suma de las filas del mismo lote no lo
+                                                           pase. Si el lote no vino por reasignacion queda null y manda
+                                                           su propio cant_disponible, como siempre. */
+                                                        foreach ($lotesRow as $aux_lrow) {
+                                                            $aux_lrow->cant_disponible_lote =
+                                                                \App\Models\ProdReasignacion::dispGlobalDeLotePorNvdet(
+                                                                    $aux_lrow->opdetregprod_id, $aux_nvdet_id, $detalle->id
+                                                                ) ?? $aux_lrow->cant_disponible;
+                                                        }
+
+                                                        /* Lo ya guardado para este item. Desde que la tabla guarda la
+                                                           bodega, cada campo de la pantalla tiene su propia fila y se
+                                                           recupera tal cual se escribio; las filas anteriores a eso no
+                                                           traen bodega y se siguen repartiendo en orden. */
+                                                        $aux_lotesGuardados = DB::table('despachosoldet_opdetregprod')
                                                             ->where('despachosoldet_id', $detalle->id)
-                                                            ->get()
+                                                            ->get();
+                                                        // Indice por lote, para el reparto de las filas sin bodega
+                                                        $existingLoteAsig = $aux_lotesGuardados
+                                                            ->filter(function ($f) { return !is_null($f->opdetregprod_id); })
                                                             ->keyBy('opdetregprod_id');
 
                                                         // CC: el estado de calidad por lote ya no se calcula aquí con una consulta
@@ -864,7 +910,7 @@
                                                     {{-- <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$spRow->bodega_sucursal_id}}"> --}}
                                                     <tr name="fila{{$invbodegaproducto->id}}" id="fila{{$invbodegaproducto->id}}" sucursal_id="{{$invbodegaproducto->invbodega->sucursal_id}}">
                                                         <td name="invbodegaproducto_idTD{{$invbodegaproducto->id}}" id="invbodegaproducto_idTD{{$invbodegaproducto->id}}" style="text-align:left;display:none;">
-                                                            <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->producto_id}}" style="display:none;"/>
+                                                            <input type="text" name="invbodegaproducto_producto_id[]" id="invbodegaproducto_producto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$detalle->notaventadetalle->producto_id}}" style="display:none;"/>
                                                             <input type="text" name="invbodegaproducto_id[]" id="invbodegaproducto_id{{$invbodegaproducto->id}}" class="form-control" value="{{$invbodegaproducto->id}}" style="display:none;"/>
                                                             <input type="text" name="invbodegaproductoNVdet_id[]" id="invbodegaproductoNVdet_id{{$aux_nfila}}" class="form-control" value="{{$detalle->id}}" style="display:none;"/>
                                                             {{$invbodegaproducto->id}}
@@ -901,8 +947,23 @@
                                                                      ofrecen abajo, que es lo que de verdad puede tomar; si no,
                                                                      el encabezado diria 600 y las filas sumarian 400. --}}
                                                                 <?php
+                                                                    /* Lo que este item puede tomar de la bodega: descuenta lo
+                                                                       reservado o ya entregado a otros clientes. */
+                                                                    $aux_dispBodega = \App\Models\StockReserva::disponibleParaNvdet(
+                                                                        $invbodegaproducto->id, $detalle->notaventadetalle_id
+                                                                    );
+                                                                    /* Lo que queda despues de los lotes que se ofrecen abajo es
+                                                                       material SIN lote: entro por carga manual de inventario y
+                                                                       no por produccion. Tambien se puede pedir, asi que suma al
+                                                                       disponible y se ofrece como una fila mas. */
+                                                                    $aux_libreSinLote = round($aux_dispBodega - $lotesRow->sum('cant_disponible'), 2);
+                                                                    if ($aux_libreSinLote < 0) { $aux_libreSinLote = 0; }
+                                                                    /* Cuanto de lo guardado se precarga en lotes DE ESTA bodega:
+                                                                       lo usa la fila "sin lote" de mas abajo para saber cuanto
+                                                                       de esta bodega se guardo sin lote. */
+                                                                    $aux_preFillBodega = 0;
                                                                     $aux_stockDisp = count($lotesRow)
-                                                                        ? $lotesRow->sum('cant_disponible')
+                                                                        ? $lotesRow->sum('cant_disponible') + $aux_libreSinLote
                                                                         : $spRow->cant_prod;
                                                                 ?>
                                                                 <p name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" style="font-size: 11px;margin-bottom: 0px;">{{$aux_stockDisp}}</p>
@@ -967,8 +1028,44 @@
                                                     <?php
                                                         // Pre-cargar cantidad ya asignada a este lote (si existe en despachosoldet_opdetregprod)
                                                         $loteAsigExist = $existingLoteAsig->get($loteRow->opdetregprod_id);
-                                                        $cantPreFill   = $loteAsigExist ? $loteAsigExist->cant   : 0;
-                                                        $cantKgPreFill = $loteAsigExist ? $loteAsigExist->cantkg : 0;
+
+                                                        /* Camino exacto: la fila guardada dice de que bodega salio, asi
+                                                           que su cantidad es la de ESTE campo y se devuelve tal cual. */
+                                                        $aux_filaBod = $aux_lotesGuardados->first(function ($f) use ($loteRow, $invbodegaproducto) {
+                                                            return $f->opdetregprod_id == $loteRow->opdetregprod_id
+                                                                and $f->invbodegaproducto_id == $invbodegaproducto->id;
+                                                        });
+
+                                                        if ($aux_filaBod) {
+                                                            $cantPreFill   = (float) $aux_filaBod->cant;
+                                                            $cantKgPreFill = (float) $aux_filaBod->cantkg;
+                                                            $aux_preFillBodega += $cantPreFill;
+                                                        } else {
+                                                            /* Filas anteriores a que la tabla guardara la bodega: se
+                                                               reparte lo guardado entre las bodegas donde el lote
+                                                               aparece, sin repetirlo. Si se precargara el total en cada
+                                                               una, un lote visible en dos bodegas se precargaria dos
+                                                               veces y al guardar quedaria el doble. El reparto se apoya
+                                                               en $aux_invcantBod, que si es por bodega. */
+                                                            $aux_clvPre = $detalle->id . '-' . $loteRow->opdetregprod_id;
+                                                            if (!isset($aux_prefillUsado[$aux_clvPre])) {
+                                                                $aux_prefillUsado[$aux_clvPre] = 0;
+                                                            }
+                                                            $aux_pendPre = $loteAsigExist
+                                                                ? max(0, (float) $loteAsigExist->cant - $aux_prefillUsado[$aux_clvPre])
+                                                                : 0;
+                                                            $cantPreFill = min(
+                                                                $aux_pendPre,
+                                                                (float) $loteRow->cant_disponible,
+                                                                max(0, (float) $aux_invcantBod - $aux_preFillBodega)
+                                                            );
+                                                            $aux_prefillUsado[$aux_clvPre] += $cantPreFill;
+                                                            $aux_preFillBodega             += $cantPreFill;
+                                                            /* Los kilos, en la misma proporcion que las unidades precargadas */
+                                                            $cantKgPreFill = ($loteAsigExist and (float) $loteAsigExist->cant > 0)
+                                                                ? round((float) $loteAsigExist->cantkg * $cantPreFill / (float) $loteAsigExist->cant, 2)
+                                                                : 0;
+                                                        }
                                                         // Validación CC: recorre toda la cadena de producción del lote.
                                                         // Se usa el mismo CcValidacion::verificarCadenaDespacho() que en crearsol
                                                         // (form.blade.php) — la consulta SQL previa solo detectaba muestras CC
@@ -1058,6 +1155,11 @@
                                                                    data-ibp="{{$invbodegaproducto->id}}"
                                                                    data-nfila="{{$aux_nfila}}"
                                                                    data-max="{{$loteRow->cant_disponible}}"
+                                                                   {{-- El lote y su disponible GLOBAL: el mismo lote puede estar
+                                                                        en varias bodegas y el tope es del lote, no de la fila.
+                                                                        Sin esto se podia cargar 400 de un lote con 300. --}}
+                                                                   data-lote="{{$loteRow->opdetregprod_id}}"
+                                                                   data-max-lote="{{$loteRow->cant_disponible_lote ?? $loteRow->cant_disponible}}"
                                                                    data-cantkg-total="{{$loteRow->cantkg_disponible}}"
                                                                    data-stock-bodega="{{$spRow->cant_prod ?? 0}}"
                                                                    value="{{$loteBlocked ? '0' : $cantPreFill}}"
@@ -1072,6 +1174,82 @@
                                                         <td></td>
                                                     </tr>
                                                     @endforeach
+
+                                                    {{-- Stock libre SIN lote de esta bodega -------------------------
+                                                         Espejo de la fila que ofrece crearsol. Aqui cumple ademas algo
+                                                         imprescindible: trae precargado lo que la solicitud ya guardo
+                                                         sin lote. El campo de la bodega es la suma de las filas de
+                                                         abajo, asi que sin esta fila bastaba tocar un lote para que el
+                                                         campo se recalculara solo con los lotes y esa cantidad se
+                                                         perdiera en silencio. Si no hay nada sin lote -ni guardado ni
+                                                         libre- la fila no aparece y la pantalla queda igual que antes. --}}
+                                                    <?php
+                                                        /* Lo guardado sin lote: lo que la bodega lleva menos lo que esta
+                                                           declarado en lotes. OJO: despachosoldet_opdetregprod no guarda
+                                                           la bodega, asi que con el item repartido en VARIAS bodegas esta
+                                                           resta no se puede atribuir por bodega y queda en 0; con una
+                                                           sola bodega -el caso normal- es exacto. */
+                                                        /* La cantidad sin lote de ESTA bodega, tal como se guardo. */
+                                                        $aux_filaSinLote = $aux_lotesGuardados->first(function ($f) use ($invbodegaproducto) {
+                                                            return is_null($f->opdetregprod_id)
+                                                                and $f->invbodegaproducto_id == $invbodegaproducto->id;
+                                                        });
+                                                        if ($aux_filaSinLote) {
+                                                            $aux_sinLoteGuardado = (float) $aux_filaSinLote->cant;
+                                                        } else {
+                                                            /* Solicitudes guardadas antes de que esto se registrara: se
+                                                               deduce restando lo que esta GUARDADO en la trazabilidad -no
+                                                               lo que se alcanzo a precargar en pantalla-, porque un lote
+                                                               guardado que la pantalla ya no ofrece precarga 0 y su
+                                                               cantidad se habria presentado como "sin lote" teniendo lote.
+                                                               Con el item en varias bodegas la resta no se puede atribuir
+                                                               por bodega y queda en 0, que es el lado seguro. */
+                                                            $aux_sinLoteGuardado = round($aux_invcantBod - $existingLoteAsig->sum('cant'), 2);
+                                                        }
+                                                        if ($aux_sinLoteGuardado < 0) { $aux_sinLoteGuardado = 0; }
+                                                        /* El tope nunca puede quedar por debajo de lo ya guardado: el JS
+                                                           recorta al tope y, si fuera menor, al tocar cualquier lote se
+                                                           bajaria sola la cantidad que la solicitud ya tenia. */
+                                                        $aux_topeSinLote = max($aux_libreSinLote, $aux_sinLoteGuardado);
+                                                    ?>
+                                                    @if(count($lotesRow) and $aux_topeSinLote > 0)
+                                                    <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:#eef7ee;">
+                                                        <td style="display:none;">
+                                                            {{-- opdetregprod_id en 0: el guardado la reconoce como "sin lote" y
+                                                                 no la inserta en la trazabilidad. Los tres campos se emiten
+                                                                 igual que en las filas de lote: los arrays se alinean por
+                                                                 posicion y si faltara uno, el valor tipeado aqui se le
+                                                                 asignaria a otro lote. --}}
+                                                            <input type="hidden" name="opdetregprod_id[]"       value="0"/>
+                                                            <input type="hidden" name="opdetregprod_invbp[]"    value="{{$invbodegaproducto->id}}"/>
+                                                            <input type="hidden" name="opdetregprod_nvdet_id[]" value="{{$detalle->id}}"/>
+                                                        </td>
+                                                        <td colspan="2" style="padding:1px 6px;font-size:10px;text-align:left;vertical-align:middle;">
+                                                            <span style="color:#888;">&#8627; Sin lote</span>
+                                                            <span style="color:#bbb;" title="Material de esta bodega que no proviene de un lote de produccion (carga manual de inventario). Se despacha sin trazabilidad de lote.">(disp. {{$aux_topeSinLote}} un)</span>
+                                                        </td>
+                                                        <td style="padding:1px 2px;vertical-align:middle;">
+                                                            <input type="text"
+                                                                   name="opdetregprod_cant[]"
+                                                                   id="opdetregprod_cant_{{$invbodegaproducto->id}}_0"
+                                                                   class="form-control dismpadding lote-cant-input"
+                                                                   data-ibp="{{$invbodegaproducto->id}}"
+                                                                   data-nfila="{{$aux_nfila}}"
+                                                                   data-max="{{$aux_topeSinLote}}"
+                                                                   {{-- Sin data-lote ni data-max-lote: no hay lote al que ponerle
+                                                                        tope global. Y el tope de bodega es lo que el item puede
+                                                                        tomar en total, no solo el stock de produccion: esto
+                                                                        justamente no viene de produccion. --}}
+                                                                   data-cantkg-total="0"
+                                                                   data-stock-bodega="{{max($aux_dispBodega, $aux_invcantBod)}}"
+                                                                   value="{{$aux_sinLoteGuardado}}"
+                                                                   style="text-align:right;font-size:11px;" />
+                                                            {{-- Se emite para no desalinear los arrays; sin lote no hay kg de lote --}}
+                                                            <input type="hidden" name="opdetregprod_cantkg[]" value="0"/>
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                    @endif
                                                 @endforeach
                                                 </tbody>
                                             </table>

@@ -241,8 +241,15 @@ class ProdReasignacion extends Model
      * despachar 400 y el resto sigue siendo de otro. Y se resta lo que esta misma
      * NV ya despacho de ese lote, o lo despacharia dos veces.
      */
-    public static function lotesRecibidosEnBodega($notaventadetalle_id, $invbodegaproducto_id)
+    public static function lotesRecibidosEnBodega($notaventadetalle_id, $invbodegaproducto_id, $aux_excluirDsd = null)
     {
+        /* Igual que en dispGlobalDeLotePorNvdet: al editar una solicitud, lo que
+           ella misma tiene tomado no cuenta como despachado. Se arma como trozo
+           de texto porque la consulta es SQL plano; sin parametro queda vacio y
+           la consulta es exactamente la de antes. */
+        $aux_fExcluir = $aux_excluirDsd
+            ? ' AND dsop.despachosoldet_id != ' . (int) $aux_excluirDsd
+            : '';
         $aux_filas = DB::select("
             SELECT r.opdetregprod_id,
                    SUM(r.cant) AS cant_entregada,
@@ -265,7 +272,8 @@ class ProdReasignacion extends Model
                             WHERE dsop.opdetregprod_id = r.opdetregprod_id
                               AND dsd.notaventadetalle_id = r.nvdet_destino_id
                               AND ds.id NOT IN (SELECT despachosol_id FROM despachosolanul
-                                                 WHERE ISNULL(deleted_at))), 0) AS cant_despachada
+                                                 WHERE ISNULL(deleted_at))
+                              " . $aux_fExcluir . "), 0) AS cant_despachada
               FROM prodreasignacion r
              WHERE r.nvdet_destino_id = ?
                AND ISNULL(r.deleted_at) AND ISNULL(r.anulada_at) AND ISNULL(r.consumida_at)
@@ -370,6 +378,51 @@ class ProdReasignacion extends Model
             ->distinct()
             ->pluck('d.invbodegaproducto_id')
             ->toArray();
+    }
+
+    /**
+     * Cuanto queda por despachar de un lote para un item, SIN mirar bodega.
+     *
+     * El mismo lote puede estar repartido en varias bodegas -parte en Bodega,
+     * parte en Picking-. La consulta de la solicitud de despacho se hace por
+     * bodega, asi que cada fila traia el disponible completo y entre las dos se
+     * podia cargar mas de lo que el lote tiene: 400 de un lote con 300.
+     *
+     * Este es el tope de verdad. La vista lo pone en cada fila para que el JS
+     * sume las filas del mismo lote y no deje pasar del total.
+     */
+    public static function dispGlobalDeLotePorNvdet($opdetregprod_id, $notaventadetalle_id, $aux_excluirDsd = null)
+    {
+        $aux_entregado = (float) self::vigentes()
+            ->where('opdetregprod_id', (int) $opdetregprod_id)
+            ->where('nvdet_destino_id', (int) $notaventadetalle_id)
+            ->sum('cant');
+
+        if ($aux_entregado <= 0) {
+            return null;   // el lote no vino por reasignacion: manda su propio calculo
+        }
+
+        $aux_qTomado = DB::table('despachosoldet_opdetregprod as dsop')
+            ->join('despachosoldet as dsd', 'dsd.id', '=', 'dsop.despachosoldet_id')
+            ->join('despachosol as ds', 'ds.id', '=', 'dsd.despachosol_id')
+            ->where('dsop.opdetregprod_id', (int) $opdetregprod_id)
+            ->where('dsd.notaventadetalle_id', (int) $notaventadetalle_id)
+            ->whereNull('dsd.deleted_at')
+            ->whereNull('ds.deleted_at')
+            ->whereRaw('ds.id NOT IN (SELECT despachosol_id FROM despachosolanul WHERE ISNULL(deleted_at))');
+
+        /* Al editar una solicitud, lo que ELLA MISMA tiene tomado no es material
+           ajeno: lo puede soltar o volver a pedir. Sin esta exclusion el lote se
+           ve agotado por su propia asignacion, desaparece de la pantalla y al
+           guardar se pierde. Quien crea una solicitud nueva no pasa este
+           parametro y el calculo es el de siempre. */
+        if ($aux_excluirDsd) {
+            $aux_qTomado->where('dsop.despachosoldet_id', '!=', (int) $aux_excluirDsd);
+        }
+
+        $aux_tomado = (float) $aux_qTomado->sum('dsop.cant');
+
+        return round(max($aux_entregado - $aux_tomado, 0), 2);
     }
 
     /** Texto de a quien se le entrego, para mostrar en pantalla. */

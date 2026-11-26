@@ -1140,10 +1140,37 @@ class DteFacturaController extends Controller
                                 ]
                             );
 
+                            $aux_restoSinLote = null; // sobrante de esta bodega que no viene de un lote
                             if ($lotesAsignados->isNotEmpty()) {
+                                /* Un acumulador por recorrido: cuanto queda por revertir de cada lote.
+                                   La clave lleva el id del item, asi vale entre las bodegas de un mismo
+                                   item sin mezclarse con los demas. */
+                                if (!isset($aux_loteSaldoAnulSal)) { $aux_loteSaldoAnulSal = []; }
+                                /* Lo que falta revertir de ESTA bodega, en positivo. Acota los lotes a lo
+                                   que la bodega realmente movio y evita revertir dos veces un lote que
+                                   esta repartido en varias bodegas del mismo item. */
+                                $aux_pendBodega = abs((float) $oddetbodprod->cant);
+                                $aux_signoBod   = $oddetbodprod->cant < 0 ? -1 : 1;
                                 foreach ($lotesAsignados as $loteAsig) {
-                                    $cantLote = (float) $loteAsig->cant * ($oddetbodprod->cant < 0 ? -1 : 1);
-                                    $cantkgLote = (float) $loteAsig->cantkg * ($oddetbodprod->cant < 0 ? -1 : 1);
+                                    if ($aux_pendBodega <= 0.01) {
+                                        break;
+                                    }
+                                    $aux_clvLote = $despachoorddet->id . '-' . $loteAsig->id;
+                                    if (!isset($aux_loteSaldoAnulSal[$aux_clvLote])) {
+                                        $aux_loteSaldoAnulSal[$aux_clvLote] = (float) $loteAsig->cant;
+                                    }
+                                    $aux_tomaLote = min($aux_loteSaldoAnulSal[$aux_clvLote], $aux_pendBodega);
+                                    if ($aux_tomaLote <= 0) {
+                                        continue;
+                                    }
+                                    /* Los kilos siguen la proporcion de las unidades revertidas */
+                                    $aux_kgLote = ((float) $loteAsig->cant) > 0
+                                        ? round(((float) $loteAsig->cantkg) * $aux_tomaLote / ((float) $loteAsig->cant), 2)
+                                        : (float) $loteAsig->cantkg;
+                                    $aux_loteSaldoAnulSal[$aux_clvLote] -= $aux_tomaLote;
+                                    $aux_pendBodega     -= $aux_tomaLote;
+                                    $cantLote   = $aux_tomaLote * $aux_signoBod;
+                                    $cantkgLote = $aux_kgLote   * $aux_signoBod;
                                     if ($cantLote == 0) {
                                         continue;
                                     }
@@ -1170,10 +1197,20 @@ class DteFacturaController extends Controller
                                         'despachoorddet_invbodegaproducto_id' => $oddetbodprod->id,
                                     ]);
                                 }
+                            /* El sobrante sin lote tambien tiene que revertirse, con el movimiento
+                               agregado de abajo. Con la bodega igual a la suma de sus lotes -el caso de
+                               siempre- esto queda en 0 y el flujo termina aqui igual que antes. */
+                            if ($aux_pendBodega <= 0.01) {
                                 continue;
+                            }
+                            $aux_restoSinLote = round($aux_pendBodega * $aux_signoBod, 2);
                             }
 
                             $array_invmovdet = $oddetbodprod->attributesToArray();
+                            /* Si hubo lotes, el agregado revierte solo el sobrante sin lote */
+                            if ($aux_restoSinLote !== null) {
+                                $array_invmovdet["cant"] = $aux_restoSinLote;
+                            }
                             $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $aux_bodegadespacho_id;
@@ -1211,10 +1248,37 @@ class DteFacturaController extends Controller
                         $lotesAsignados = DespachoOrdDet_OpDetRegProd::where('despachoorddet_id', $despachoorddet->id)->get();
 
                         foreach ($despachoorddet->despachoorddet_invbodegaproductos as $oddetbodprod) {
+                            $aux_restoSinLote = null; // sobrante de esta bodega que no viene de un lote
                             if ($lotesAsignados->isNotEmpty()) {
+                                /* Un acumulador por recorrido: cuanto queda por revertir de cada lote.
+                                   La clave lleva el id del item, asi vale entre las bodegas de un mismo
+                                   item sin mezclarse con los demas. */
+                                if (!isset($aux_loteSaldoAnulEnt)) { $aux_loteSaldoAnulEnt = []; }
+                                /* Lo que falta revertir de ESTA bodega, en positivo. Acota los lotes a lo
+                                   que la bodega realmente movio y evita revertir dos veces un lote que
+                                   esta repartido en varias bodegas del mismo item. */
+                                $aux_pendBodega = abs((float) $oddetbodprod->cant);
+                                $aux_signoBod   = $oddetbodprod->cant < 0 ? -1 : 1;
                                 foreach ($lotesAsignados as $loteAsig) {
-                                    $cantLote = ($oddetbodprod->cant >= 0) ? -(float) $loteAsig->cant : (float) $loteAsig->cant;
-                                    $cantkgLote = ($oddetbodprod->cant >= 0) ? -(float) $loteAsig->cantkg : (float) $loteAsig->cantkg;
+                                    if ($aux_pendBodega <= 0.01) {
+                                        break;
+                                    }
+                                    $aux_clvLote = $despachoorddet->id . '-' . $loteAsig->id;
+                                    if (!isset($aux_loteSaldoAnulEnt[$aux_clvLote])) {
+                                        $aux_loteSaldoAnulEnt[$aux_clvLote] = (float) $loteAsig->cant;
+                                    }
+                                    $aux_tomaLote = min($aux_loteSaldoAnulEnt[$aux_clvLote], $aux_pendBodega);
+                                    if ($aux_tomaLote <= 0) {
+                                        continue;
+                                    }
+                                    /* Los kilos siguen la proporcion de las unidades revertidas */
+                                    $aux_kgLote = ((float) $loteAsig->cant) > 0
+                                        ? round(((float) $loteAsig->cantkg) * $aux_tomaLote / ((float) $loteAsig->cant), 2)
+                                        : (float) $loteAsig->cantkg;
+                                    $aux_loteSaldoAnulEnt[$aux_clvLote] -= $aux_tomaLote;
+                                    $aux_pendBodega     -= $aux_tomaLote;
+                                    $cantLote   = $aux_tomaLote * $aux_signoBod * -1;
+                                    $cantkgLote = $aux_kgLote   * $aux_signoBod * -1;
                                     if ($cantLote == 0) {
                                         continue;
                                     }
@@ -1248,10 +1312,20 @@ class DteFacturaController extends Controller
                                         }
                                     }
                                 }
+                            /* El sobrante sin lote tambien tiene que revertirse, con el movimiento
+                               agregado de abajo. Con la bodega igual a la suma de sus lotes -el caso de
+                               siempre- esto queda en 0 y el flujo termina aqui igual que antes. */
+                            if ($aux_pendBodega <= 0.01) {
                                 continue;
+                            }
+                            $aux_restoSinLote = round($aux_pendBodega * $aux_signoBod, 2);
                             }
 
                             $array_invmovdet = $oddetbodprod->attributesToArray();
+                            /* Si hubo lotes, el agregado revierte solo el sobrante sin lote */
+                            if ($aux_restoSinLote !== null) {
+                                $array_invmovdet["cant"] = $aux_restoSinLote;
+                            }
                             $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                             $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
                             $array_invmovdet["sucursal_id"] = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;

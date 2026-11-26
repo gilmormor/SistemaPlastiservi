@@ -2680,9 +2680,30 @@ $(document).on('input', '.lote-cant-input', function() {
     var raw = $input.val().replace(/[^0-9.]/g, '');
     var val = parseFloat(raw) || 0;
 
-    // Capear al disponible del lote
+    // Capear al disponible del lote EN ESTA BODEGA
     if (val > max) { val = max; }
     if (val < 0)   { val = 0;  }
+
+    /* Y capear al disponible GLOBAL del lote.
+       Un mismo lote puede aparecer en varias bodegas -parte en Bodega y parte en
+       Picking, por ejemplo- y cada fila traia su propio data-max con el
+       disponible completo: entre las dos se podia cargar 400 cuando del lote solo
+       quedaban 300. El tope de verdad es del lote, no de la fila, asi que se
+       suma lo que ya tienen las OTRAS filas del mismo lote.
+       Asi se puede repartir como se quiera -300 en una, o 200 y 100- pero nunca
+       pasar del total. Si el input no trae data-max-lote (pantallas que aun no lo
+       informan) no se aplica y todo sigue como antes. */
+    var maxLote = parseFloat($input.data('max-lote'));
+    var loteId  = $input.data('lote');
+    if (!isNaN(maxLote) && loteId) {
+        var otrasFilasLote = 0;
+        $('.lote-cant-input[data-lote="' + loteId + '"]').not($input).each(function() {
+            otrasFilasLote += parseFloat($(this).val()) || 0;
+        });
+        var margenLote = maxLote - otrasFilasLote;
+        if (margenLote < 0) { margenLote = 0; }
+        if (val > margenLote) { val = Math.round(margenLote * 100) / 100; }
+    }
 
     // Capear tambien al STOCK REAL de la bodega: la suma de los lotes de una misma
     // bodega no puede superar lo que la bodega efectivamente tiene. El "disponible"
@@ -2803,6 +2824,18 @@ function sumbod(i,y,aux_orig,requiere_fabricacion = 0){
 				$("#invcant" + y).val(aux_stockcant);
 			}
 		}
+	}
+
+	/* Tope por lo que ESTA nota de venta puede tomar de la bodega.
+	   El stock de una bodega incluye material reservado para otro cliente o ya
+	   entregado a otra nota de venta: esta ahi, pero no es de quien esta
+	   pickeando. Lo suyo -su reserva, la produccion que le asignaron- si cuenta,
+	   por eso el tope no es el stock libre a secas.
+	   La pantalla lo informa con data-max-tomar. El input que no lo trae -todas
+	   las demas- no se ve afectado: el calculo de abajo sigue igual que siempre. */
+	var aux_maxTomar = parseFloat($("#invcant" + y).attr("data-max-tomar"));
+	if (!isNaN(aux_maxTomar) && (parseFloat($("#invcant" + y).val()) || 0) > aux_maxTomar) {
+		$("#invcant" + y).val(aux_maxTomar > 0 ? aux_maxTomar : "");
 	}
 	totalSolDe = 0;
 	totalSolDeStock = 0;

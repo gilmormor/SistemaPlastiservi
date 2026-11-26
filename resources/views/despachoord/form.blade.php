@@ -218,17 +218,25 @@
                                             // OTROS lotes del mismo producto ajenos a este despacho.
                                             $lotesDeEsteItem = DB::table('despachosoldet_opdetregprod')
                                                 ->where('despachosoldet_id', $detalle->id)
+                                                ->whereNotNull('opdetregprod_id')   // la fila "sin lote" no es un lote
                                                 ->pluck('opdetregprod_id');
-                                            $bodegaproductoIdsConLote = DB::table('invmovdetnvdet as imdnv')
-                                                ->join('invmovdet as imd', 'imd.id', '=', 'imdnv.invmovdet_id')
-                                                ->join('invmovdet_opdetregprod as iodr', 'iodr.invmovdet_id', '=', 'imd.id')
-                                                ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle->id)
-                                                ->whereIn('iodr.opdetregprod_id', $lotesDeEsteItem)
-                                                ->whereNull('imd.deleted_at')
-                                                ->groupBy('imd.invbodegaproducto_id')
-                                                ->havingRaw('SUM(imd.cant) > 0')
-                                                ->pluck('imd.invbodegaproducto_id');
-                                            $invbodegaproductos = $invbodegaproductos->whereIn('id', $bodegaproductoIdsConLote);
+                                            /* Si el item no tiene ningun lote -pidio solo stock sin lote, que
+                                               no viene de produccion- no hay por donde filtrar. Se dejan las
+                                               bodegas como en cualquier item sin fabricacion: filtrar por una
+                                               lista vacia no devuelve ninguna y el item quedaria sin poder
+                                               despacharse. */
+                                            if ($lotesDeEsteItem->count()) {
+                                                $bodegaproductoIdsConLote = DB::table('invmovdetnvdet as imdnv')
+                                                    ->join('invmovdet as imd', 'imd.id', '=', 'imdnv.invmovdet_id')
+                                                    ->join('invmovdet_opdetregprod as iodr', 'iodr.invmovdet_id', '=', 'imd.id')
+                                                    ->where('imdnv.notaventadetalle_id', $detalle->notaventadetalle->id)
+                                                    ->whereIn('iodr.opdetregprod_id', $lotesDeEsteItem)
+                                                    ->whereNull('imd.deleted_at')
+                                                    ->groupBy('imd.invbodegaproducto_id')
+                                                    ->havingRaw('SUM(imd.cant) > 0')
+                                                    ->pluck('imd.invbodegaproducto_id');
+                                                $invbodegaproductos = $invbodegaproductos->whereIn('id', $bodegaproductoIdsConLote);
+                                            }
                                             // En Orden de Despacho el stock ya fue reservado y movido a Picking; si hay
                                             // bodega de picking (tipo=1) se muestra solo esa, no la bodega de origen
                                             // donde aun queda el saldo no reservado del mismo lote.
@@ -255,6 +263,7 @@
                                         // CC: validación por cadena completa de producción (BFS bidireccional centralizado)
                                         $lotesAsigOrd = DB::table('despachosoldet_opdetregprod')
                                             ->where('despachosoldet_id', $detalle->id)
+                                            ->whereNotNull('opdetregprod_id')   // sin lote no hay cadena CC que validar
                                             ->get();
                                         $ccLotesBloqueados = [];
                                         foreach ($lotesAsigOrd as $loteAsig) {

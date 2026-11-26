@@ -225,6 +225,7 @@ class TrazabilidadDocumentoController extends Controller
             WHERE  ds.notaventa_id = ?
               AND  ISNULL(ds.deleted_at)
               AND  ISNULL(dsd.deleted_at)
+              AND  dsop.opdetregprod_id IS NOT NULL
         ", [$notaventa_id]);
 
         // 2) Lotes producidos para esta NV (aunque no esten despachados aun)
@@ -310,6 +311,7 @@ class TrazabilidadDocumentoController extends Controller
             WHERE  dtg.dte_id = ?
               AND  ISNULL(dod.deleted_at)
               AND  ISNULL(dsd.deleted_at)
+              AND  dsop.opdetregprod_id IS NOT NULL
         ", [$guia_dte_id]);
         return array_map(function ($r) { return (int) $r->opdetregprod_id; }, $rows);
     }

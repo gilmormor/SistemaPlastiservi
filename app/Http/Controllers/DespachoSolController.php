@@ -473,17 +473,57 @@ class DespachoSolController extends Controller
                                 // Guardar lotes de producción asociados a este despachosoldet (trazabilidad granular)
                                 // Los lotes se identifican por opdetregprod_nvdet_id[] que debe coincidir con el NVdet actual
                                 if (!empty($request->opdetregprod_id)) {
+                                    /* Cuanto se esta pidiendo de CADA lote, sumando todas sus filas.
+                                       Un lote puede venir repartido en varias bodegas y el tope es del
+                                       lote, no de la fila: el navegador ya lo impide, pero quien decide
+                                       es el servidor. Dos personas cargando solicitudes del mismo lote a
+                                       la vez, o un formulario manipulado, pasan por encima del JS. */
+                                    $aux_pedidoPorLote = [];
+                                    foreach ($request->opdetregprod_id as $k2 => $aux_lote2) {
+                                        /* La fila "sin lote" (id 0) no tiene lote al que ponerle tope */
+                                        if ($aux_lote2 > 0
+                                            and ($request->opdetregprod_nvdet_id[$k2] ?? null) == $request->NVdet_id[$i]) {
+                                            $aux_pedidoPorLote[$aux_lote2] = ($aux_pedidoPorLote[$aux_lote2] ?? 0)
+                                                + floatval($request->opdetregprod_cant[$k2] ?? 0);
+                                        }
+                                    }
+                                    foreach ($aux_pedidoPorLote as $aux_lote2 => $aux_ped) {
+                                        $aux_tope = \App\Models\ProdReasignacion::dispGlobalDeLotePorNvdet(
+                                            $aux_lote2, $request->NVdet_id[$i]
+                                        );
+                                        /* null = el lote no vino por reasignacion: lo valida su propio
+                                           flujo de siempre y aqui no se toca nada. */
+                                        if ($aux_tope !== null and $aux_ped > $aux_tope + 0.01) {
+                                            DB::rollBack();
+                                            return redirect('despachosol')->with([
+                                                'mensaje' => 'Del lote ' . $aux_lote2 . ' solo quedan '
+                                                    . number_format($aux_tope, 2, ',', '.')
+                                                    . ' disponibles para esta nota de venta y se están solicitando '
+                                                    . number_format($aux_ped, 2, ',', '.')
+                                                    . '. Revise el reparto entre bodegas.',
+                                                'tipo_alert' => 'alert-error',
+                                            ]);
+                                        }
+                                    }
+
                                     foreach ($request->opdetregprod_id as $k => $opdetregprod_id_val) {
                                         $nvdetLote = $request->opdetregprod_nvdet_id[$k] ?? null;
                                         if ($nvdetLote == $request->NVdet_id[$i]) {
                                             $cantLote   = floatval($request->opdetregprod_cant[$k]   ?? 0);
                                             $cantKgLote = floatval($request->opdetregprod_cantkg[$k] ?? 0);
+                                            /* opdetregprod_id = 0 es la fila "sin lote": material de la
+                                               bodega que no viene de produccion (carga manual de
+                                               inventario, por ejemplo). Se guarda igual, con el lote en
+                                               NULL, para poder devolverle al usuario exactamente lo que
+                                               escribio en cada campo cuando edite. Los recorridos que
+                                               mueven inventario por lote la ignoran (whereNotNull). */
                                             if ($cantLote > 0) {
                                                 DespachoSolDet_OpDetRegProd::create([
-                                                    'despachosoldet_id' => $despachosoldet->id,
-                                                    'opdetregprod_id'   => $opdetregprod_id_val,
-                                                    'cant'              => $cantLote,
-                                                    'cantkg'            => $cantKgLote,
+                                                    'despachosoldet_id'    => $despachosoldet->id,
+                                                    'invbodegaproducto_id' => $request->opdetregprod_invbp[$k] ?? null,
+                                                    'opdetregprod_id'      => $opdetregprod_id_val > 0 ? $opdetregprod_id_val : null,
+                                                    'cant'                 => $cantLote,
+                                                    'cantkg'               => $cantKgLote,
                                                 ]);
 
                                             }
@@ -812,12 +852,16 @@ class DespachoSolController extends Controller
                                             if ($nvdetLote == $despachosoldet_id_actual) {
                                                 $cantLote   = floatval($request->opdetregprod_cant[$k]   ?? 0);
                                                 $cantKgLote = floatval($request->opdetregprod_cantkg[$k] ?? 0);
+                                                /* Fila "sin lote" (id 0): se guarda con el lote en NULL,
+                                                   igual que al crear, para que al volver a editar cada
+                                                   campo recupere su propio valor. */
                                                 if ($cantLote > 0) {
                                                     DespachoSolDet_OpDetRegProd::create([
-                                                        'despachosoldet_id' => $despachosoldet_id_actual,
-                                                        'opdetregprod_id'   => $opdetregprod_id_val,
-                                                        'cant'              => $cantLote,
-                                                        'cantkg'            => $cantKgLote,
+                                                        'despachosoldet_id'    => $despachosoldet_id_actual,
+                                                        'invbodegaproducto_id' => $request->opdetregprod_invbp[$k] ?? null,
+                                                        'opdetregprod_id'      => $opdetregprod_id_val > 0 ? $opdetregprod_id_val : null,
+                                                        'cant'                 => $cantLote,
+                                                        'cantkg'               => $cantKgLote,
                                                     ]);
                                                 }
                                             }
@@ -1138,6 +1182,10 @@ class DespachoSolController extends Controller
                 
                 $invmov = InvMov::create($invmov_array);
                 array_push($arrayinvmov_id, $invmov->id);
+                /* Cuanto queda por devolver de cada lote, compartido entre todas las
+                   bodegas del mismo item: un lote repartido en dos bodegas se devuelve
+                   una sola vez. Clave: despachosoldet-fila de lote. */
+                $aux_loteSaldoEnt = [];
                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                     foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                         $aux_cant = $oddetbodprod->cant * -1;
@@ -1153,16 +1201,40 @@ class DespachoSolController extends Controller
                             // aproborddesp), enlazado via InvMovDetOpDetRegProd — así el lote vuelve a
                             // aparecer bajo la bodega de origen en despachosol/crearsol, no bajo picking.
                             $lotesAsignados = $despachosoldet->notaventadetalle->requiere_fabricacion == 1
-                                ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)->get()
+                                ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)
+                                    ->whereNotNull('opdetregprod_id')   // la fila "sin lote" no se mueve por lote
+                                    ->get()
                                 : collect();
 
                             if ($lotesAsignados->isNotEmpty()) {
+                                /* Lo que falta devolver de ESTA bodega-producto. Los lotes no
+                                   guardan de que bodega salieron (despachosoldet_opdetregprod
+                                   solo tiene cantidad), asi que se reparten en orden entre las
+                                   bodegas del item y cada una toma hasta cubrir lo suyo. Con una
+                                   sola bodega -el caso de siempre- toma todos los lotes
+                                   completos y se comporta igual que antes. */
+                                $aux_pendBodega = $aux_cant;
                                 foreach ($lotesAsignados as $loteAsig) {
-                                    $cantLote   = (float) $loteAsig->cant;
-                                    $cantkgLote = (float) $loteAsig->cantkg;
+                                    if ($aux_pendBodega <= 0.01) {
+                                        break;
+                                    }
+                                    /* Saldo del lote entre bodegas: lo que otra bodega del mismo
+                                       item ya devolvio no se vuelve a devolver aqui. Sin esto, un
+                                       lote repartido en dos bodegas se devolvia el doble. */
+                                    $aux_clvLote = $despachosoldet->id . '-' . $loteAsig->id;
+                                    if (!isset($aux_loteSaldoEnt[$aux_clvLote])) {
+                                        $aux_loteSaldoEnt[$aux_clvLote] = (float) $loteAsig->cant;
+                                    }
+                                    $cantLote = min($aux_loteSaldoEnt[$aux_clvLote], $aux_pendBodega);
                                     if ($cantLote <= 0) {
                                         continue;
                                     }
+                                    /* Los kilos se devuelven en la misma proporcion que las unidades */
+                                    $cantkgLote = ((float) $loteAsig->cant) > 0
+                                        ? round(((float) $loteAsig->cantkg) * $cantLote / ((float) $loteAsig->cant), 2)
+                                        : (float) $loteAsig->cantkg;
+                                    $aux_loteSaldoEnt[$aux_clvLote] -= $cantLote;
+                                    $aux_pendBodega                 -= $cantLote;
                                     $array_invmovdetLote = [
                                         "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id,
                                         "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
@@ -1187,7 +1259,16 @@ class DespachoSolController extends Controller
                                         'notaventadetalle_id' => $despachosoldet->notaventadetalle->id,
                                     ]);
                                 }
-                                continue;
+                                /* Lo que salio de esta bodega y NO estaba trazado a ningun lote
+                                   (stock libre sin lote pedido en el mismo item junto a los lotes)
+                                   se devuelve con el movimiento agregado de abajo. Cuando la bodega
+                                   es exactamente la suma de sus lotes -el caso de siempre- esto
+                                   queda en 0 y el flujo termina aqui igual que antes. Sin esto, ese
+                                   sobrante no volvia nunca al inventario. */
+                                $aux_cant = round($aux_pendBodega, 2);
+                                if ($aux_cant <= 0.01) {
+                                    continue;
+                                }
                             }
 
                             $array_invmovdet = $oddetbodprod->attributesToArray();
@@ -1230,6 +1311,9 @@ class DespachoSolController extends Controller
                 
                 $invmov = InvMov::create($invmov_array);
                 array_push($arrayinvmov_id, $invmov->id);
+                /* Mismo reparto que en la entrada, con su propio acumulador: este
+                   recorrido vuelve a pasar por todos los items desde cero. */
+                $aux_loteSaldoSal = [];
                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                     foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                         //$aux_cant = $oddetbodprod->cant * -1;
@@ -1260,16 +1344,34 @@ class DespachoSolController extends Controller
                             // un movimiento de salida por cada lote asignado, enlazado via
                             // InvMovDetOpDetRegProd, para que el lote deje de figurar bajo picking.
                             $lotesAsignados = $despachosoldet->notaventadetalle->requiere_fabricacion == 1
-                                ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)->get()
+                                ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)
+                                    ->whereNotNull('opdetregprod_id')   // la fila "sin lote" no se mueve por lote
+                                    ->get()
                                 : collect();
 
                             if ($lotesAsignados->isNotEmpty()) {
+                                /* Reparto entre bodegas, igual que en la entrada: cada bodega saca
+                                   de picking hasta cubrir lo que entro por ella, sin repetir un
+                                   lote que ya saco otra bodega del mismo item. */
+                                $aux_pendBodega = $aux_cant;
                                 foreach ($lotesAsignados as $loteAsig) {
-                                    $cantLote   = (float) $loteAsig->cant;
-                                    $cantkgLote = (float) $loteAsig->cantkg;
+                                    if ($aux_pendBodega <= 0.01) {
+                                        break;
+                                    }
+                                    $aux_clvLote = $despachosoldet->id . '-' . $loteAsig->id;
+                                    if (!isset($aux_loteSaldoSal[$aux_clvLote])) {
+                                        $aux_loteSaldoSal[$aux_clvLote] = (float) $loteAsig->cant;
+                                    }
+                                    $cantLote = min($aux_loteSaldoSal[$aux_clvLote], $aux_pendBodega);
                                     if ($cantLote <= 0) {
                                         continue;
                                     }
+                                    /* Los kilos salen en la misma proporcion que las unidades */
+                                    $cantkgLote = ((float) $loteAsig->cant) > 0
+                                        ? round(((float) $loteAsig->cantkg) * $cantLote / ((float) $loteAsig->cant), 2)
+                                        : (float) $loteAsig->cantkg;
+                                    $aux_loteSaldoSal[$aux_clvLote] -= $cantLote;
+                                    $aux_pendBodega                 -= $cantLote;
                                     $array_invmovdetLote = [
                                         "invbodegaproducto_id" => $invbodegaproducto->id,
                                         "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
@@ -1298,7 +1400,13 @@ class DespachoSolController extends Controller
                                         'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id,
                                     ]);
                                 }
-                                continue;
+                                /* El sobrante sin lote tambien tiene que salir de picking: si solo
+                                   salieran los lotes, picking se quedaria con existencia fantasma.
+                                   Con la bodega igual a la suma de sus lotes esto queda en 0. */
+                                $aux_cant = round($aux_pendBodega, 2);
+                                if ($aux_cant <= 0.01) {
+                                    continue;
+                                }
                             }
 
                             $array_invmovdet = $oddetbodprod->attributesToArray();
@@ -1687,6 +1795,46 @@ class DespachoSolController extends Controller
                     $despchosoldet->cantsoldesp = $despchosoldet->cantsoldesp - $cantsoldespdev;
                     $despchosoldet->cantsoldespdev = $cantsoldespdev;
                     $despchosoldet->save();
+
+                    /* El detalle por lote tiene que quedar en lo mismo que
+                       cantsoldesp. Si no se ajusta, el lote sigue contando como
+                       tomado material que ya volvio a la bodega al liberar el
+                       picking, y esas unidades quedan bloqueadas para siempre:
+                       la nota de venta a la que se le asigno el lote no las
+                       puede volver a pedir y nadie mas tampoco.
+
+                       Se recorta en el mismo orden en que se despacha -primero
+                       los lotes, el sobrante sin lote al final-, que es el orden
+                       que usan los movimientos de salida hacia la bodega de
+                       despacho. Asi lo que queda registrado coincide con lo que
+                       de verdad salio.
+
+                       Las filas que quedan en cero no se borran: dejan constancia
+                       de lo que se habia pedido de cada lote. */
+                    $aux_quedan = (float) $despchosoldet->cantsoldesp;
+                    $aux_filasLote = DB::table('despachosoldet_opdetregprod')
+                        ->where('despachosoldet_id', $despchosoldet->id)
+                        ->orderByRaw('opdetregprod_id IS NULL')
+                        ->orderBy('id')
+                        ->get();
+
+                    foreach ($aux_filasLote as $aux_fl) {
+                        $aux_cantFila = (float) $aux_fl->cant;
+                        $aux_deja     = min($aux_cantFila, max($aux_quedan, 0));
+                        $aux_quedan  -= $aux_deja;
+
+                        if (abs($aux_deja - $aux_cantFila) > 0.01) {
+                            DB::table('despachosoldet_opdetregprod')
+                                ->where('id', $aux_fl->id)
+                                ->update([
+                                    'cant'       => $aux_deja,
+                                    'cantkg'     => $aux_cantFila > 0
+                                        ? round(((float) $aux_fl->cantkg) * $aux_deja / $aux_cantFila, 2)
+                                        : 0,
+                                    'updated_at' => date('Y-m-d H:i:s'),
+                                ]);
+                        }
+                    }
                 }
             }
             $despachosol->updated_at = date("Y-m-d H:i:s");
@@ -1782,6 +1930,7 @@ class DespachoSolController extends Controller
                                                       AND ccm.sta_env = 2
                         LEFT JOIN ccregistmuestra_desbloqueo desb ON desb.ccregistmuestra_id = ccm.id
                         WHERE  dsd.despachosol_id = ?
+                          AND  dsop.opdetregprod_id IS NOT NULL
                         GROUP BY dsop.opdetregprod_id
                         HAVING rechazados_bloqueados > 0
                     ", [$despachosol->id]);
@@ -1893,11 +2042,16 @@ class DespachoSolController extends Controller
 
                                 $invmov = InvMov::create($invmov_array);
                                 array_push($arrayinvmov_id, $invmov->id);
+                                /* Cuanto queda por sacar de cada lote, compartido entre las
+                                   bodegas del mismo item: un lote repartido en dos bodegas sale
+                                   una sola vez. */
+                                $aux_loteSaldoIdaSal = [];
                                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                                     //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
                                     if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
                                         foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                                             $aux_cant = $oddetbodprod->cant * -1;
+                                            $aux_restoSinLote = null; // sobrante de esta bodega que no viene de un lote
                                             if($aux_cant > 0){
                                                 // Trazabilidad de lote: si el item requiere fabricacion, en vez de un
                                                 // solo movimiento agregado por bodega, se crea un movimiento por cada
@@ -1905,16 +2059,40 @@ class DespachoSolController extends Controller
                                                 // InvMovDetOpDetRegProd, para poder mostrar en despachoord de que
                                                 // lote(s) viene el stock y validar CC por lote.
                                                 $lotesAsignados = $despachosoldet->notaventadetalle->requiere_fabricacion == 1
-                                                    ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)->get()
+                                                    ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)
+                                                        ->whereNotNull('opdetregprod_id')   // la fila "sin lote" no se mueve por lote
+                                                        ->get()
                                                     : collect();
 
                                                 if ($lotesAsignados->isNotEmpty()) {
+                                                    /* Lo que falta mover de ESTA bodega-producto. Los
+                                                       lotes no guardan de que bodega salieron, asi que
+                                                       se reparten en orden entre las bodegas del item.
+                                                       Con una sola bodega -el caso de siempre- toma
+                                                       todos los lotes completos: identico a antes. */
+                                                    $aux_pendBodega = $aux_cant;
+                                                    $aux_signoBod   = $oddetbodprod->cant < 0 ? -1 : 1;
                                                     foreach ($lotesAsignados as $loteAsig) {
-                                                        $cantLote   = (float) $loteAsig->cant;
-                                                        $cantkgLote = (float) $loteAsig->cantkg;
+                                                        if ($aux_pendBodega <= 0.01) {
+                                                            break;
+                                                        }
+                                                        /* Saldo del lote entre bodegas: lo que otra
+                                                           bodega del mismo item ya saco no se vuelve a
+                                                           sacar aqui. */
+                                                        $aux_clvLote = $despachosoldet->id . '-' . $loteAsig->id;
+                                                        if (!isset($aux_loteSaldoIdaSal[$aux_clvLote])) {
+                                                            $aux_loteSaldoIdaSal[$aux_clvLote] = (float) $loteAsig->cant;
+                                                        }
+                                                        $cantLote = min($aux_loteSaldoIdaSal[$aux_clvLote], $aux_pendBodega);
                                                         if ($cantLote <= 0) {
                                                             continue;
                                                         }
+                                                        /* Los kilos siguen la proporcion de las unidades */
+                                                        $cantkgLote = ((float) $loteAsig->cant) > 0
+                                                            ? round(((float) $loteAsig->cantkg) * $cantLote / ((float) $loteAsig->cant), 2)
+                                                            : (float) $loteAsig->cantkg;
+                                                        $aux_loteSaldoIdaSal[$aux_clvLote] -= $cantLote;
+                                                        $aux_pendBodega                    -= $cantLote;
                                                         $array_invmovdet = [
                                                             "invbodegaproducto_id" => $oddetbodprod->invbodegaproducto_id,
                                                             "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
@@ -1939,10 +2117,23 @@ class DespachoSolController extends Controller
                                                             'notaventadetalle_id' => $despachosoldet->notaventadetalle->id,
                                                         ]);
                                                     }
-                                                    continue;
+                                                    /* Lo que se pidio de esta bodega y NO viene de un
+                                                       lote (stock libre sin lote pedido en el mismo
+                                                       item) sale con el movimiento agregado de abajo.
+                                                       Con la bodega igual a la suma de sus lotes -el
+                                                       caso de siempre- esto queda en 0 y el flujo
+                                                       termina aqui como antes. */
+                                                    if ($aux_pendBodega <= 0.01) {
+                                                        continue;
+                                                    }
+                                                    $aux_restoSinLote = round($aux_pendBodega * $aux_signoBod, 2);
                                                 }
 
                                                 $array_invmovdet = $oddetbodprod->attributesToArray();
+                                                /* Si hubo lotes, el agregado mueve solo el sobrante */
+                                                if ($aux_restoSinLote !== null) {
+                                                    $array_invmovdet["cant"] = $aux_restoSinLote;
+                                                }
                                                 $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                                                 $array_invmovdet["invbodega_id"] = $oddetbodprod->invbodegaproducto->invbodega_id;
                                                 $array_invmovdet["sucursal_id"] = $despachosol->notaventa->sucursal_id;
@@ -1982,11 +2173,15 @@ class DespachoSolController extends Controller
                                 
                                 $invmov = InvMov::create($invmov_array);
                                 array_push($arrayinvmov_id, $invmov->id);
+                                /* Espejo del acumulador de la salida: este recorrido vuelve a
+                                   pasar por todos los items desde cero. */
+                                $aux_loteSaldoIdaEnt = [];
                                 foreach ($despachosol->despachosoldets as $despachosoldet) {
                                     //PARA PROCESAR SOLO PRODUCTOS QUE MANEJAN INVENTARIO Y QUE MUEVEN LOS ARCHIVOS DE BODEGA
                                     if($despachosoldet->notaventadetalle->producto->tipoprod == 0){
                                         foreach ($despachosoldet->despachosoldet_invbodegaproductos as $oddetbodprod) {
                                             $aux_cant = $oddetbodprod->cant * -1;
+                                            $aux_restoSinLote = null; // sobrante de esta bodega que no viene de un lote
                                             if($aux_cant > 0){
                                                 $aux_sucursal_id_producto = $oddetbodprod->invbodegaproducto->invbodega->sucursal_id;
                                                 foreach($invmoduloBod->invmovmodulobodents as $invmovmodulobodent){
@@ -2006,16 +2201,35 @@ class DespachoSolController extends Controller
                                                 // Trazabilidad de lote: mismo criterio que en la salida — un movimiento
                                                 // de entrada por cada lote asignado, enlazado via InvMovDetOpDetRegProd.
                                                 $lotesAsignados = $despachosoldet->notaventadetalle->requiere_fabricacion == 1
-                                                    ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)->get()
+                                                    ? DespachoSolDet_OpDetRegProd::where('despachosoldet_id', $despachosoldet->id)
+                                                        ->whereNotNull('opdetregprod_id')   // la fila "sin lote" no se mueve por lote
+                                                        ->get()
                                                     : collect();
 
                                                 if ($lotesAsignados->isNotEmpty()) {
+                                                    /* Espejo del reparto de la salida: cada bodega
+                                                       aporta lo suyo a picking, sin repetir un lote
+                                                       que ya aporto otra bodega del mismo item. */
+                                                    $aux_pendBodega = $aux_cant;
+                                                    $aux_signoBod   = $oddetbodprod->cant < 0 ? -1 : 1;
                                                     foreach ($lotesAsignados as $loteAsig) {
-                                                        $cantLote   = (float) $loteAsig->cant;
-                                                        $cantkgLote = (float) $loteAsig->cantkg;
+                                                        if ($aux_pendBodega <= 0.01) {
+                                                            break;
+                                                        }
+                                                        $aux_clvLote = $despachosoldet->id . '-' . $loteAsig->id;
+                                                        if (!isset($aux_loteSaldoIdaEnt[$aux_clvLote])) {
+                                                            $aux_loteSaldoIdaEnt[$aux_clvLote] = (float) $loteAsig->cant;
+                                                        }
+                                                        $cantLote = min($aux_loteSaldoIdaEnt[$aux_clvLote], $aux_pendBodega);
                                                         if ($cantLote <= 0) {
                                                             continue;
                                                         }
+                                                        /* Los kilos siguen la proporcion de las unidades */
+                                                        $cantkgLote = ((float) $loteAsig->cant) > 0
+                                                            ? round(((float) $loteAsig->cantkg) * $cantLote / ((float) $loteAsig->cant), 2)
+                                                            : (float) $loteAsig->cantkg;
+                                                        $aux_loteSaldoIdaEnt[$aux_clvLote] -= $cantLote;
+                                                        $aux_pendBodega                    -= $cantLote;
                                                         $array_invmovdet = [
                                                             "invbodegaproducto_id" => $invbodegaproducto->id,
                                                             "producto_id"          => $oddetbodprod->invbodegaproducto->producto_id,
@@ -2044,10 +2258,22 @@ class DespachoSolController extends Controller
                                                             'despachosoldet_invbodegaproducto_id' => $oddetbodprod->id,
                                                         ]);
                                                     }
-                                                    continue;
+                                                    /* El sobrante sin lote tambien tiene que entrar a
+                                                       picking: si solo entraran los lotes, picking
+                                                       quedaria corto y el despacho no cuadraria. */
+                                                    if ($aux_pendBodega <= 0.01) {
+                                                        continue;
+                                                    }
+                                                    $aux_restoSinLote = round($aux_pendBodega * $aux_signoBod, 2);
                                                 }
 
                                                 $array_invmovdet = $oddetbodprod->attributesToArray();
+                                                /* Si hubo lotes, el agregado mueve solo el sobrante. Se
+                                                   deja con el signo de la bodega: una linea mas abajo
+                                                   lo invierte para la entrada. */
+                                                if ($aux_restoSinLote !== null) {
+                                                    $array_invmovdet["cant"] = $aux_restoSinLote;
+                                                }
                                                 $array_invmovdet["invbodegaproducto_id"] = $invbodegaproducto->id;
                                                 $array_invmovdet["producto_id"] = $oddetbodprod->invbodegaproducto->producto_id;
                                                 $array_invmovdet["invbodega_id"] = $aux_bodega_idPicking;

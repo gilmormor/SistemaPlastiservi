@@ -364,6 +364,66 @@ class PickingController extends Controller
                 ];                    
             }
         }
+        /* Que ninguna bodega entregue mas de lo que ESTA nota de venta puede
+           tomar. El stock de una bodega incluye lo reservado para otro cliente y
+           lo ya entregado a otra nota de venta: esta ahi, pero no es de quien
+           pickea. Lo propio -su reserva, la produccion que le asignaron- si
+           cuenta, por eso el tope no es el stock libre a secas.
+
+           Va ANTES del recorrido que escribe, y no dentro, porque este metodo no
+           abre transaccion: abortar a mitad dejaria movimientos ya hechos.
+
+           El navegador ya lo impide, pero quien decide es el servidor: dos
+           personas pickeando a la vez, o un formulario manipulado, pasan por
+           encima del JS.
+
+           Se apaga solo si el modulo de reservas no esta instalado, para que esta
+           pantalla siga funcionando igual donde no lo este. */
+        if (class_exists('\App\Models\StockReserva')
+            and \Illuminate\Support\Facades\Schema::hasTable('stockreserva')
+            and \Illuminate\Support\Facades\Schema::hasTable('prodreasignacion')) {
+
+            $aux_pedidoPorBod = [];
+            for ($v=0; $v < $cont_invbodegaproducto; $v++){
+                $aux_ibpV = $request->invbodegaproducto_id[$v];
+                $aux_pedidoPorBod[$aux_ibpV] = ($aux_pedidoPorBod[$aux_ibpV] ?? 0) + (float) $request->invcant[$v];
+            }
+
+            foreach ($aux_pedidoPorBod as $aux_ibpV => $aux_pedidoV) {
+                if ($aux_pedidoV <= 0) {
+                    continue;
+                }
+                $aux_ibpObj = InvBodegaProducto::findOrFail($aux_ibpV);
+
+                /* El item de la solicitud que corresponde a este producto: de ahi
+                   sale la nota de venta con la que se compara lo comprometido. */
+                $aux_nvdetPick = null;
+                foreach ($despachosol->despachosoldets as $aux_dsdPick) {
+                    if ($aux_dsdPick->notaventadetalle
+                        and $aux_dsdPick->notaventadetalle->producto_id == $aux_ibpObj->producto_id) {
+                        $aux_nvdetPick = $aux_dsdPick->notaventadetalle_id;
+                        break;
+                    }
+                }
+                if (!$aux_nvdetPick) {
+                    continue;
+                }
+
+                $aux_puedeTomar = \App\Models\StockReserva::disponibleParaNvdet($aux_ibpV, $aux_nvdetPick);
+                if ($aux_pedidoV > $aux_puedeTomar + 0.01) {
+                    return redirect('/')->with([
+                        'mensaje'=> "Picking: en la bodega " . $aux_ibpObj->invbodega->nombre
+                            . " hay " . $aux_ibpObj->stock . " de " . $aux_ibpObj->producto->nombre
+                            . ", pero esta nota de venta solo puede tomar "
+                            . number_format($aux_puedeTomar, 2, ',', '.')
+                            . ": el resto está reservado para otro cliente o ya entregado a otra nota de venta."
+                            . " Está intentando hacer picking por " . number_format($aux_pedidoV, 2, ',', '.') . ".",
+                        'tipo_alert' => 'alert-error'
+                    ]);
+                }
+            }
+        }
+
         for ($i=0; $i < $cont_invbodegaproducto; $i++){
             $invbodegaproducto = InvBodegaProducto::findOrFail($request->invbodegaproducto_id[$i]);
             $array_exisInvbodegaproducto[$request->invbodegaproducto_id[$i]]["stockresto"] -= $request->invcant[$i];
@@ -375,8 +435,9 @@ class PickingController extends Controller
                 return redirect('/')->with([
                     'mensaje'=> "Picking: Sin Stock Sucursal: " . $despachosol->notaventa->sucursal->nombre . ", Bodega: " . $invbodegaproducto->invbodega->nombre . ". Id: " . $invbodegaproducto->producto_id . ", Nombre: " . $invbodegaproducto->producto->nombre . ", Stock: " . $aux_stock . "  Estas tratando de hacer picking por: " . $aux_cant,
                     'tipo_alert' => 'alert-error'
-                ]);    
+                ]);
             }
+
             $aux_sucursal_id_producto = $invbodegaproducto->invbodega->sucursal_id; 
             $aux_bodega_idPesaje = 0;
             foreach($invmoduloBodPesaje->invmovmodulobodents as $invmovmodulobodent){
@@ -439,8 +500,14 @@ class PickingController extends Controller
             $invmov_array = array();
             $invmov_array["fechahora"] = date("Y-m-d H:i:s");
             $invmov_array["annomes"] = $annomes;
-            $invmov_array["desc"] = "Salida de Picking entrada Bodega Pesaje NV:" . $despachosol->notaventa_id . " SD:" . $despachosol->id;
-            $invmov_array["obs"] = "Salida de Picking entrada Bodega Pesaje NV:" . $despachosol->notaventa_id . " SD:" . $despachosol->id;
+            /* El destino no se nombra aqui porque no es uno solo: lo que viene de
+               un lote de produccion vuelve a su bodega de origen y el resto va a
+               Pesaje, y bajo esta misma cabecera pueden ir ambos. Decia "entrada
+               Bodega Pesaje" para todo, lo que al leer el historico daba a
+               entender que el material estaba en Pesaje cuando no era asi. Cada
+               linea del movimiento dice en que bodega entro. */
+            $invmov_array["desc"] = "Salida de Picking NV:" . $despachosol->notaventa_id . " SD:" . $despachosol->id;
+            $invmov_array["obs"] = "Salida de Picking NV:" . $despachosol->notaventa_id . " SD:" . $despachosol->id;
             $invmov_array["invmovmodulo_id"] = $invmodulo[0]->id; //Modulo PICKING
             $invmov_array["idmovmod"] = $despachosol->id;
             $invmov_array["invmovtipo_id"] = 2;
@@ -541,6 +608,53 @@ class PickingController extends Controller
                             'opdetregprod_id' => $lp['lote'],
                         ]);
                         $restante -= $tomar;
+                    }
+
+                    /* Lo que se libera y NO viene de un lote tambien tiene que
+                       volver. Una solicitud puede pedir lotes de produccion y,
+                       ademas, stock de la bodega que no viene de produccion
+                       (carga manual de inventario). Ese sobrante no entra en el
+                       reparto de arriba -no hay lote al que asignarlo- y sin
+                       esto se quedaba sin devolver: salia de picking y no
+                       entraba en ningun lado, o sea desaparecia del inventario.
+
+                       Vuelve a la bodega que la solicitud declaro para su fila
+                       "sin lote"; si esa fila no existe -solicitudes anteriores
+                       a que se guardara- se usa la bodega de origen del primer
+                       lote, que es de donde salio todo junto. */
+                    if ($restante > 0.01) {
+                        $aux_ibpSinLote = DB::table('despachosoldet_opdetregprod')
+                            ->where('despachosoldet_id', $despachosoldet->id)
+                            ->whereNull('opdetregprod_id')
+                            ->whereNotNull('invbodegaproducto_id')
+                            ->value('invbodegaproducto_id');
+
+                        if (!$aux_ibpSinLote) {
+                            $aux_ibpSinLote = $lotesConOrigen[0]['ibp_origen'];
+                        }
+
+                        $aux_ibpDest = InvBodegaProducto::findOrFail($aux_ibpSinLote);
+                        /* Los kilos, en la misma proporcion que las unidades del item */
+                        $aux_kgResto = $despachosoldet->notaventadetalle->cant > 0
+                            ? ($despachosoldet->notaventadetalle->totalkilos / $despachosoldet->notaventadetalle->cant) * $restante
+                            : 0;
+
+                        InvMovDet::create([
+                            "invbodegaproducto_id" => $aux_ibpDest->id,
+                            "producto_id"          => $aux_ibpDest->producto_id,
+                            "invbodega_id"         => $aux_ibpDest->invbodega_id,
+                            "sucursal_id"          => $aux_ibpDest->invbodega->sucursal_id,
+                            "unidadmedida_id"      => $despachosoldet->notaventadetalle->unidadmedida_id,
+                            "invmovtipo_id"        => 1,
+                            "cant"                 => $restante,
+                            "cantgrupo"            => $restante,
+                            "cantxgrupo"           => 1,
+                            "peso"                 => $despachosoldet->notaventadetalle->producto->peso,
+                            "cantkg"               => round($aux_kgResto, 2),
+                            "invmov_id"            => $invmov_idSalPicking,
+                        ]);
+                        /* Sin InvMovDetOpDetRegProd: no hay lote que declarar. */
+                        $restante = 0;
                     }
 
                     //BUSCO EL REGISTRO Y ACTUALIZO LOS VALORES DE PICKING Y EXESO QUE SE VA A LA SOLOCITUD Y LUEGO A LA ORDEN DE DESPACHO

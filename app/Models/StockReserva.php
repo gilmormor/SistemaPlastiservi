@@ -219,6 +219,53 @@ class StockReserva extends Model
     }
 
     /**
+     * Lo reservado que debe RESTARSE del saldo por producir.
+     *
+     * No todas las reservas restan. Una reserva resta solo si su compromiso NO
+     * esta ya contado en el pendiente por despachar, o se castigaria dos veces
+     * la misma necesidad:
+     *
+     *   sin nota de venta (para un cliente a secas)   -> RESTA
+     *       nadie mas la esta contando
+     *   con nota de venta que sigue pendiente         -> NO resta
+     *       esa necesidad ya esta dentro del pendiente; la reserva solo aparta
+     *       stock para cubrirla
+     *   con nota de venta despachada o cerrada        -> RESTA
+     *       salio del pendiente pero el stock sigue apartado
+     *
+     * El criterio de "sigue pendiente" es el mismo que usa el calculo del
+     * pendiente por despachar: aprobada (aprobstatus 1 o 3), no anulada, sin
+     * despacho terminado, no cerrada, y con cantidad sin despachar.
+     */
+    public static function reservadoQueResta($producto_id, $sucursal_id)
+    {
+        return (float) self::vigentes()
+            ->join('invbodegaproducto as ibp', 'ibp.id', '=', 'stockreserva.invbodegaproducto_id')
+            ->join('invbodega as b', 'b.id', '=', 'ibp.invbodega_id')
+            ->where('ibp.producto_id', (int) $producto_id)
+            ->where('b.sucursal_id', (int) $sucursal_id)
+            ->where(function ($q) {
+                /* Las que no apuntan a ningun item siempre restan. */
+                $q->whereNull('stockreserva.notaventadetalle_id')
+                  /* Y las que apuntan a uno que YA NO cuenta como pendiente. */
+                  ->orWhereRaw("NOT EXISTS (
+                        SELECT 1
+                          FROM notaventadetalle nvd
+                          INNER JOIN notaventa nv ON nv.id = nvd.notaventa_id
+                          LEFT JOIN vista_sumorddespxnvdetid od ON od.notaventadetalle_id = nvd.id
+                         WHERE nvd.id = stockreserva.notaventadetalle_id
+                           AND ISNULL(nvd.deleted_at) AND ISNULL(nv.deleted_at)
+                           AND ISNULL(nv.anulada) AND ISNULL(nv.findespacho)
+                           AND nv.aprobstatus IN (1,3)
+                           AND nvd.notaventa_id NOT IN (SELECT notaventa_id FROM notaventacerrada
+                                                         WHERE ISNULL(deleted_at))
+                           AND nvd.cant > IFNULL(od.cantdesp, 0)
+                    )");
+            })
+            ->sum('stockreserva.cant');
+    }
+
+    /**
      * Texto de para quien es la reserva, para mostrar en pantalla.
      */
     public function getDestinoAttribute()

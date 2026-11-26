@@ -3,6 +3,15 @@
     use App\Models\DespachoSolDet_InvBodegaProducto;
     use App\Models\DespachoOrd;
     use App\Models\InvBodegaProducto;
+    use Illuminate\Support\Facades\Schema;
+
+    /* Las reservas de stock y las reasignaciones de produccion son del modulo de
+       produccion. Si sus tablas no estan, esta pantalla se comporta exactamente
+       como antes y solo muestra el stock. Se comprueba una sola vez, aqui, y no
+       dentro del recorrido de bodegas. */
+    $aux_hayDisponible = class_exists('\App\Models\StockReserva')
+        && Schema::hasTable('stockreserva')
+        && Schema::hasTable('prodreasignacion');
 ?>
 <input type="hidden" name="updated_at" id="updated_at" value="{{old('updated_at', $data->updated_at ?? '')}}">
 <input type="hidden" name="despachosol_id" id="despachosol_id" value="{{$data->id}}">
@@ -302,6 +311,29 @@
                                                                     $aux_stock = $existencia["stock"]["cant"];
                                                                 }
                                                             }
+                                                            /* Cuanto de ese stock no tiene dueno: se le restan las
+                                                               reservas vigentes y la produccion ya entregada a otra
+                                                               nota de venta. Solo para mostrarlo; el campo y su tope
+                                                               siguen gobernados por $aux_stock, igual que siempre. */
+                                                            $aux_libreBod   = null;
+                                                            $aux_puedeTomar = null;
+                                                            if ($aux_hayDisponible) {
+                                                                $aux_libreBod = round(
+                                                                    \App\Models\StockReserva::libreEnBodegaProducto($invbodegaproducto->id), 2
+                                                                );
+                                                                /* Lo que puede tomar ESTE item: el stock menos lo
+                                                                   comprometido con OTROS. Lo propio -su reserva, la
+                                                                   produccion que le asignaron- sigue siendo suyo y
+                                                                   puede retirarlo; por eso no se usa el libre a secas,
+                                                                   que dejaria a un cliente sin poder sacar el lote que
+                                                                   se le entrego. */
+                                                                $aux_puedeTomar = round(
+                                                                    \App\Models\StockReserva::disponibleParaNvdet(
+                                                                        $invbodegaproducto->id, $detalle->notaventadetalle_id
+                                                                    ), 2
+                                                                );
+                                                            }
+
                                                             if ($invbodegaproducto->invbodega->sucursal_id == 1) {
                                                                 $colorSuc = "#26ff00";
                                                             }
@@ -327,13 +359,29 @@
                                                                         <p name="nomabreTD{{$invbodegaproducto->id}}" id="nomabreTD{{$invbodegaproducto->id}}" style="color:{{$colorSuc}};font-size: 11px;margin-bottom: 0px">{{$invbodegaproducto->invbodega->nombre}} {{$invbodegaproducto->invbodega->sucursal->abrev}}</p>
                                                                     </div>
                                                                 </td>
-                                                                <td style="text-align:right;padding-left: 0px;padding-right: 0px;padding-top: 4px;padding-bottom: 4px;"  class='tooltipsC' title='Stock disponible'>
+                                                                <td style="text-align:right;padding-left: 0px;padding-right: 0px;padding-top: 4px;padding-bottom: 4px;"  class='tooltipsC' title='Stock en bodega'>
+                                                                    {{-- Este div lo lee el JS para capear la cantidad: adentro va
+                                                                         el numero y nada mas. Lo demas se pinta debajo. --}}
                                                                     <div name="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" id="stockcantTD{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="centrarhorizontal">
                                                                         {{$aux_stock}}
                                                                     </div>
+                                                                    {{-- Lo que esta nota de venta puede tomar de esta bodega. Solo
+                                                                         se muestra cuando es menor que el stock, que es cuando avisa
+                                                                         de algo: si coinciden, repetirlo solo haria ruido. --}}
+                                                                    @if(!is_null($aux_puedeTomar) and $aux_puedeTomar < $aux_stock)
+                                                                        <div class="centrarhorizontal tooltipsC"
+                                                                             title="De las {{$aux_stock}} unidades de esta bodega, esta nota de venta puede tomar {{$aux_puedeTomar}}. Libres para cualquiera: {{$aux_libreBod}}. El resto está reservado o entregado a otra nota de venta.">
+                                                                            <small class="text-red" style="font-size:10px;">
+                                                                                <i class="fa fa-lock"></i> puede tomar: <strong>{{$aux_puedeTomar}}</strong>
+                                                                            </small>
+                                                                        </div>
+                                                                    @endif
                                                                 </td>
                                                                 <td class="width90" name="cantorddespFInput{{$invbodegaproducto->id}}" id="cantorddespFInput{{$invbodegaproducto->id}}" style="text-align:right;padding-top: 4px;padding-bottom: 4px;">
-                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$aux_valueStock}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}"/>
+                                                                    {{-- data-max-tomar: tope por lo que esta nota de venta puede sacar
+                                                                         de esta bodega. Solo se emite cuando es menor que el stock; sin
+                                                                         el atributo el campo se comporta como siempre. --}}
+                                                                    <input type="text" name="invcant[]" id="invcant{{$aux_nfila}}-{{$invbodegaproducto->id}}" class="form-control tooltipsC numerico bod{{$aux_nfila}} cantord{{$aux_nfila}} {{$invbodegaproducto->invbodega->nomabre}} dismpadding" onkeyup="sumbod({{$aux_nfila}},'{{$aux_nfila}}-{{$invbodegaproducto->id}}','OD')" style="text-align:right;" value="{{$aux_valueStock}}" title='Cant a despachar' nomabrbod="{{$invbodegaproducto->invbodega->nomabre}}" filabod="{{$invbodegaproducto->id}}" stockvalororig="{{$aux_stock}}" @if(!is_null($aux_puedeTomar) and $aux_puedeTomar < $aux_stock) data-max-tomar="{{$aux_puedeTomar}}" @endif/>
                                                                 </td>
                                                             </tr>
                                                         @endif
