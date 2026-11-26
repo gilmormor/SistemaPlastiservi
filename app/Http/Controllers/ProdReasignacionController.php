@@ -444,6 +444,16 @@ class ProdReasignacionController extends Controller
                 'r.anulada_at', 'r.anulmotivo',
                 'p.producto_id',
                 'prod.glosa as producto_nombre',
+                /* En que bodega esta hoy ese lote. No se guarda en la tabla: un
+                   lote se mueve -entra a bodega, pasa a picking, sale en la guia-
+                   y un campo grabado al reasignar mentiria al dia siguiente. Se
+                   deduce de los movimientos, que son la verdad. */
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT b2.nombre ORDER BY b2.nombre SEPARATOR ', ')
+                            FROM invmovdet_opdetregprod l2
+                            INNER JOIN invmovdet d2 ON d2.id = l2.invmovdet_id AND ISNULL(d2.deleted_at)
+                            INNER JOIN invbodega b2 ON b2.id = d2.invbodega_id
+                           WHERE l2.opdetregprod_id = r.opdetregprod_id
+                             AND b2.tipo IN (1,2)) as bodegas"),
                 'nvoo.id as nv_origen', 'co.razonsocial as cliente_origen',
                 'nvdd.id as nv_destino',
                 DB::raw('COALESCE(cd.razonsocial, cdir.razonsocial) as cliente_destino'),

@@ -99,6 +99,7 @@ class ReportSaldoProducirController extends Controller
             'bodegas'  => $this->detalleBodegas((int) $producto_id, $aux_sucursal),
             'ventas'   => $this->detalleVentas((int) $producto_id, $aux_sucursal),
             'reservas' => $this->detalleReservas((int) $producto_id, $aux_sucursal),
+            'lotes'    => $this->detalleLotes((int) $producto_id, $aux_sucursal),
         ]);
     }
 
@@ -139,12 +140,11 @@ class ReportSaldoProducirController extends Controller
             ->whereRaw('nvd.cant > IFNULL(od.cantdesp, 0)')
             ->sum(DB::raw('nvd.cant - IFNULL(od.cantdesp, 0)'));
 
-        $aux_res = (float) StockReserva::vigentes()
-            ->join('invbodegaproducto as ibp', 'ibp.id', '=', 'stockreserva.invbodegaproducto_id')
-            ->join('invbodega as b', 'b.id', '=', 'ibp.invbodega_id')
-            ->where('ibp.producto_id', $producto_id)
-            ->where('b.sucursal_id', $sucursal_id)
-            ->sum('stockreserva.cant');
+        /* Misma regla que el campo del vendedor: solo restan las reservas cuyo
+           compromiso no este ya dentro del pendiente por despachar. Si los dos
+           numeros no coincidieran, esta pantalla dejaria de servir para explicar
+           el otro, que es justo para lo que existe. */
+        $aux_res = StockReserva::reservadoQueResta($producto_id, $sucursal_id);
 
         if ($aux_stock == 0 and $aux_pend == 0 and $aux_res == 0) {
             return null;   // nada que contar de este producto en esta sucursal
@@ -173,10 +173,13 @@ class ReportSaldoProducirController extends Controller
             $aux_pendPara = count($aux_ventas) . ' notas de venta';
         }
 
+        $aux_libre = $this->libreDelProducto($producto_id, $sucursal_id, $aux_stock);
+
         return (object) [
             'producto_id'      => $producto_id,
             'producto_nombre'  => $aux_prod['nombre'] ?? ('Prod. ' . $producto_id),
             'stock'            => round($aux_stock, 2),
+            'libre'            => round($aux_libre, 2),
             'pendiente'        => round($aux_pend, 2),
             'pendiente_para'   => $aux_pendPara,
             'reservado'        => round($aux_res, 2),
@@ -187,7 +190,7 @@ class ReportSaldoProducirController extends Controller
 
     private function detalleBodegas($producto_id, $sucursal_id)
     {
-        return DB::table('invbodegaproducto as ibp')
+        $aux_filas = DB::table('invbodegaproducto as ibp')
             ->join('invbodega as b', 'b.id', '=', 'ibp.invbodega_id')
             ->where('ibp.producto_id', $producto_id)
             ->whereIn('b.tipo', [1, 2])
@@ -196,8 +199,21 @@ class ReportSaldoProducirController extends Controller
             ->whereNull('ibp.deleted_at')
             ->whereNull('b.deleted_at')
             ->orderBy('b.orden')
-            ->select('b.nombre as bodega', 'b.tipo', 'ibp.stock')
+            ->select('ibp.id as ibp_id', 'b.nombre as bodega', 'b.tipo', 'ibp.stock')
             ->get();
+
+        /* Cuanto de ese stock esta libre para vender.
+           En una bodega de venta es el stock menos lo apartado y lo ya entregado
+           a otra nota de venta. En picking (tipo 1) no hay nada libre por
+           definicion: ese material salio de la bodega hacia una solicitud de
+           despacho concreta y ya tiene destino. */
+        foreach ($aux_filas as $aux_b) {
+            $aux_b->libre = $aux_b->tipo == 1
+                ? 0
+                : round(StockReserva::libreEnBodegaProducto($aux_b->ibp_id), 2);
+        }
+
+        return $aux_filas;
     }
 
     private function detalleVentas($producto_id, $sucursal_id)
@@ -238,6 +254,104 @@ class ReportSaldoProducirController extends Controller
                 'stockreserva.motivo', 'b.nombre as bodega',
                 'c.razonsocial', 'nvd.notaventa_id'
             )->get();
+    }
+
+    /**
+     * Stock libre para vender: la suma de lo que queda libre en cada bodega de
+     * venta. El material que esta en picking no entra: ya salio de la bodega
+     * hacia una solicitud de despacho y tiene destino, aunque siga siendo stock.
+     */
+    private function libreDelProducto($producto_id, $sucursal_id, $stock)
+    {
+        $aux_libre = 0;
+        foreach ($this->detalleBodegas($producto_id, $sucursal_id) as $aux_b) {
+            $aux_libre += (float) $aux_b->libre;
+        }
+
+        return round(min($aux_libre, $stock), 2);
+    }
+
+    /**
+     * Produccion entregada a otra nota de venta, lote por lote.
+     *
+     * Un lote se fabrica para alguien -una OT nacida de una nota de venta- o para
+     * stock -una OT libre, sin cliente-. Cuando se entrega a otro, queda aqui:
+     * de que lote salio, para quien se fabrico, a quien se le dio, cuanto se le
+     * dio y cuanto de eso ya se llevo en una solicitud de despacho.
+     *
+     * No suma ni resta al saldo: ese material ya esta contado en el stock de la
+     * bodega. Lo que explica es POR QUE una nota de venta no puede tomar todo lo
+     * que ve en bodega, que es la pregunta que trae a esta pantalla.
+     */
+    private function detalleLotes($producto_id, $sucursal_id)
+    {
+        $aux_filas = DB::table('prodreasignacion as r')
+            ->join('opdetregprod as p', 'p.id', '=', 'r.opdetregprod_id')
+            ->leftJoin('notaventadetalle as nvo', 'nvo.id', '=', 'r.nvdet_origen_id')
+            ->leftJoin('notaventa as nvoo', 'nvoo.id', '=', 'nvo.notaventa_id')
+            ->leftJoin('cliente as co', 'co.id', '=', 'nvoo.cliente_id')
+            ->leftJoin('notaventadetalle as nvd', 'nvd.id', '=', 'r.nvdet_destino_id')
+            ->leftJoin('notaventa as nvdd', 'nvdd.id', '=', 'nvd.notaventa_id')
+            ->leftJoin('cliente as cd', 'cd.id', '=', 'nvdd.cliente_id')
+            ->leftJoin('cliente as cdir', 'cdir.id', '=', 'r.cliente_destino_id')
+            ->where('p.producto_id', $producto_id)
+            ->where('p.sucursal_id', $sucursal_id)
+            ->whereNull('r.deleted_at')
+            ->whereNull('r.anulada_at')
+            ->orderBy('r.opdetregprod_id')
+            ->orderBy('r.id')
+            ->select(
+                'r.id', 'r.opdetregprod_id as lote', 'r.cant', 'r.created_at', 'r.motivo',
+                'r.nvdet_destino_id',
+                'nvoo.id as nv_origen', 'co.razonsocial as cliente_origen',
+                'nvdd.id as nv_destino',
+                DB::raw('COALESCE(cd.razonsocial, cdir.razonsocial) as cliente_destino')
+            )->get();
+
+        foreach ($aux_filas as $aux_f) {
+            /* Lo que el destinatario ya se llevo de ese lote: mismo criterio que
+               usa la solicitud de despacho para decidir cuanto le queda. Cuenta
+               desde que se guarda la solicitud, no desde que se aprueba, para que
+               dos solicitudes no puedan cargar el mismo material. */
+            $aux_f->usado = (float) DB::table('despachosoldet_opdetregprod as dsop')
+                ->join('despachosoldet as dsd', 'dsd.id', '=', 'dsop.despachosoldet_id')
+                ->join('despachosol as ds', 'ds.id', '=', 'dsd.despachosol_id')
+                ->where('dsop.opdetregprod_id', $aux_f->lote)
+                ->where('dsd.notaventadetalle_id', $aux_f->nvdet_destino_id)
+                ->whereNull('dsd.deleted_at')
+                ->whereNull('ds.deleted_at')
+                ->whereRaw('ds.id NOT IN (SELECT despachosol_id FROM despachosolanul WHERE ISNULL(deleted_at))')
+                ->sum('dsop.cant');
+
+            $aux_f->usado      = round($aux_f->usado, 2);
+            $aux_f->disponible = round(max($aux_f->cant - $aux_f->usado, 0), 2);
+
+            /* Cuanto queda del lote FISICAMENTE en las bodegas de venta y picking.
+               No es lo mismo que el saldo de la asignacion: de un lote de 600 se
+               pueden haber entregado 400 a un cliente y las otras 200 siguen en
+               bodega sin dueno. Si este numero es menor que el disponible, el
+               material ya salio y la asignacion quedo sin respaldo. */
+            $aux_f->en_bodega = round((float) DB::table('invmovdet_opdetregprod as l')
+                ->join('invmovdet as d', 'd.id', '=', 'l.invmovdet_id')
+                ->join('invbodega as b', 'b.id', '=', 'd.invbodega_id')
+                ->where('l.opdetregprod_id', $aux_f->lote)
+                ->whereIn('b.tipo', [1, 2])
+                ->where('b.sucursal_id', $sucursal_id)
+                ->whereNull('d.deleted_at')
+                ->sum('d.cant'), 2);
+
+            /* Para quien se fabrico. Sin nota de venta de origen es una OT libre:
+               se produjo para stock y no se le quito a ningun cliente. */
+            $aux_f->origen_txt = $aux_f->nv_origen
+                ? ('NV ' . $aux_f->nv_origen . ($aux_f->cliente_origen ? ' — ' . $aux_f->cliente_origen : ''))
+                : 'OT libre (para stock)';
+
+            $aux_f->destino_txt = $aux_f->nv_destino
+                ? ('NV ' . $aux_f->nv_destino . ($aux_f->cliente_destino ? ' — ' . $aux_f->cliente_destino : ''))
+                : ($aux_f->cliente_destino ?: '—');
+        }
+
+        return $aux_filas;
     }
 
     /** Los productos que pidio el usuario: uno, varios o ninguno. */

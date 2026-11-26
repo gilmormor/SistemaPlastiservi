@@ -292,6 +292,7 @@ function cargarTabla() {
             { data: 'opdetregprod_id' },
             { data: 'producto_id' },
             { data: 'producto_nombre' },
+            { data: 'bodegas' },
             { data: 'nv_origen' },
             { data: 'nv_destino' },
             { data: 'motivo' },
@@ -309,32 +310,32 @@ function cargarTabla() {
 
             /* Las dos puntas de la historia, cada una con su cliente.
                Del 4 en adelante: la columna CodProd corrio los indices uno. */
-            $('td', row).eq(4).html(data.nv_origen
+            $('td', row).eq(5).html(data.nv_origen
                 ? 'NV ' + data.nv_origen + '<br><small class="text-muted">' + (data.cliente_origen || '') + '</small>'
                 : '<span class="text-muted">Sin NV</span>');
-            $('td', row).eq(5).html((data.nv_destino ? 'NV ' + data.nv_destino + '<br>' : '') +
+            $('td', row).eq(6).html((data.nv_destino ? 'NV ' + data.nv_destino + '<br>' : '') +
                 '<small class="text-muted">' + (data.cliente_destino || '') + '</small>');
 
-            $('td', row).eq(7).html(data.created_at ? data.created_at.substring(0, 10) : '');
+            $('td', row).eq(8).html(data.created_at ? data.created_at.substring(0, 10) : '');
 
             var aux_clase = (data.estado === 'Vigente') ? 'label-success' : 'label-default';
-            $('td', row).eq(9).html('<span class="label ' + aux_clase + '">' + data.estado + '</span>');
-            $('td', row).eq(9).attr('style', 'text-align:center');
+            $('td', row).eq(10).html('<span class="label ' + aux_clase + '">' + data.estado + '</span>');
+            $('td', row).eq(10).attr('style', 'text-align:center');
 
             if (data.estado === 'Vigente') {
-                $('td', row).eq(10).html(
+                $('td', row).eq(11).html(
                     '<a class="btn-accion-tabla tooltipsC pr-anular" style="cursor:pointer;" ' +
                     'title="Deshacer: el lote vuelve a su nota de venta de origen" data-id="' + data.id + '">' +
                     '<i class="fa fa-fw fa-undo text-danger"></i></a>'
                 );
             } else {
-                $('td', row).eq(10).html('');
+                $('td', row).eq(11).html('');
                 if (data.anulmotivo) {
-                    $('td', row).eq(6).html((data.motivo || '') +
+                    $('td', row).eq(7).html((data.motivo || '') +
                         '<br><small class="text-red">Deshecha: ' + data.anulmotivo + '</small>');
                 }
             }
-            $('td', row).eq(10).attr('style', 'text-align:center');
+            $('td', row).eq(11).attr('style', 'text-align:center');
         }
     });
 }

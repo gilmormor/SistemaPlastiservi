@@ -71,12 +71,15 @@ class ReportInvStockBPPendxProdController extends Controller
                El resultado PUEDE QUEDAR NEGATIVO, y debe quedar: un negativo le
                dice al vendedor que ese producto esta sobrevendido y que hay que
                producir. Por eso no se acota a cero. */
-            $aux_reservado = (float) \App\Models\StockReserva::vigentes()
-                ->join('invbodegaproducto as ibp', 'ibp.id', '=', 'stockreserva.invbodegaproducto_id')
-                ->join('invbodega as b', 'b.id', '=', 'ibp.invbodega_id')
-                ->where('ibp.producto_id', $request->producto_id)
-                ->where('b.sucursal_id', $request->sucursal_id)
-                ->sum('stockreserva.cant');
+            /* Solo las reservas cuyo compromiso NO este ya contado en el
+               pendiente por despachar. Una reserva hecha contra un item de nota
+               de venta que sigue pendiente ya esta dentro de esa cifra, y
+               restarla otra vez castigaria dos veces la misma necesidad.
+               La regla vive en el modelo para que esta pantalla y el reporte
+               Saldo por Producir no puedan quedar en desacuerdo. */
+            $aux_reservado = \App\Models\StockReserva::reservadoQueResta(
+                $request->producto_id, $request->sucursal_id
+            );
 
             $respuesta['mensaje']     = 'ok';
             $respuesta['difcantpend'] = round($aux_cache->difcantpend - $aux_reservado, 2);

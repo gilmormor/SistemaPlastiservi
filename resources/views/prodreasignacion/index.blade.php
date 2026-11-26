@@ -164,6 +164,8 @@ Reasignar Producción
                                 <th class="width70">Lote</th>
                                 <th class="width70" title="Código del producto">CodProd</th>
                                 <th>Producto</th>
+                                {{-- Donde esta el lote hoy: se deduce de los movimientos --}}
+                                <th class="width70">Bodega</th>
                                 <th>Se fabricó para</th>
                                 <th>Se entregó a</th>
                                 <th>Motivo</th>
