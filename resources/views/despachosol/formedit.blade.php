@@ -1162,6 +1162,10 @@
                                                                    data-max-lote="{{$loteRow->cant_disponible_lote ?? $loteRow->cant_disponible}}"
                                                                    data-cantkg-total="{{$loteRow->cantkg_disponible}}"
                                                                    data-stock-bodega="{{$spRow->cant_prod ?? 0}}"
+                                                                   {{-- Lo que el item tiene pendiente MAS lo que esta solicitud ya
+                                                                        tenia: al editar puede soltarlo y volver a repartirlo. Es el
+                                                                        techo de todas las filas juntas. --}}
+                                                                   data-max-item="{{$aux_saldo + $detalle->cantsoldesp}}"
                                                                    value="{{$loteBlocked ? '0' : $cantPreFill}}"
                                                                    style="text-align:right;font-size:11px;{{$loteBlocked ? 'background:#ffcccc;cursor:not-allowed;' : ''}}"
                                                                    @if($loteBlocked) readonly title="{{$sinMuestraCC && !$ccVal['rechazado'] ? 'Bloqueado — alguna etapa de la cadena requiere muestra CC: ' . implode(', ', $ccVal['etapas_problema']) : 'Bloqueado por rechazo CC — Muestra(s) #' . $ccVal['ids_bloqueados']}}" @endif />
@@ -1242,6 +1246,8 @@
                                                                         justamente no viene de produccion. --}}
                                                                    data-cantkg-total="0"
                                                                    data-stock-bodega="{{max($aux_dispBodega, $aux_invcantBod)}}"
+                                                                   {{-- Mismo techo que las filas de lote --}}
+                                                                   data-max-item="{{$aux_saldo + $detalle->cantsoldesp}}"
                                                                    value="{{$aux_sinLoteGuardado}}"
                                                                    style="text-align:right;font-size:11px;" />
                                                             {{-- Se emite para no desalinear los arrays; sin lote no hay kg de lote --}}

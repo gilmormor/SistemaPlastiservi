@@ -398,6 +398,91 @@ class DespachoSolController extends Controller
                 $request->request->add(['provincia_id' => $comuna->provincia_id]);
                 $request->request->add(['region_id' => $comuna->provincia->region_id]);
                 //dd($request);
+                /* ------------------------------------------------------------------
+                   Validar los lotes ANTES de crear nada.
+
+                   Este metodo no abre transaccion: si se aborta despues de haber
+                   guardado la solicitud, lo guardado se queda. Aqui se rechazaba
+                   con un DB::rollBack() que no revertia nada y la solicitud
+                   quedaba creada SIN sus filas de lote, con el material
+                   despachandose sin trazabilidad.
+
+                   Ademas el saldo hay que medirlo antes: consultado despues de
+                   guardar el item, cuenta la propia solicitud y da cero.
+
+                   Todo esto solo corre cuando la solicitud trae filas de lote,
+                   que es algo que solo existe en el modulo de produccion.
+                   ------------------------------------------------------------------ */
+                if (!empty($request->opdetregprod_id)) {
+                    for ($v = 0; $v < $cont_producto; $v++) {
+                        $aux_nvdetV = $request->NVdet_id[$v] ?? null;
+                        if (!$aux_nvdetV) {
+                            continue;
+                        }
+
+                        $aux_porLoteV = [];
+                        $aux_totalV   = 0;
+                        foreach ($request->opdetregprod_id as $kv => $aux_loteV) {
+                            if (($request->opdetregprod_nvdet_id[$kv] ?? null) != $aux_nvdetV) {
+                                continue;
+                            }
+                            $aux_cantV   = floatval($request->opdetregprod_cant[$kv] ?? 0);
+                            $aux_totalV += $aux_cantV;
+                            /* La fila "sin lote" (id 0) no tiene lote al que ponerle tope */
+                            if ($aux_loteV > 0) {
+                                $aux_porLoteV[$aux_loteV] = ($aux_porLoteV[$aux_loteV] ?? 0) + $aux_cantV;
+                            }
+                        }
+
+                        /* Un lote puede venir repartido en varias bodegas y el tope es
+                           del lote, no de la fila: el navegador ya lo impide, pero quien
+                           decide es el servidor. Dos personas cargando solicitudes del
+                           mismo lote a la vez, o un formulario manipulado, pasan por
+                           encima del JS. */
+                        foreach ($aux_porLoteV as $aux_loteV => $aux_pedV) {
+                            $aux_topeV = \App\Models\ProdReasignacion::dispGlobalDeLotePorNvdet(
+                                $aux_loteV, $aux_nvdetV
+                            );
+                            /* null = el lote no vino por reasignacion: lo valida su
+                               propio flujo de siempre y aqui no se toca nada. */
+                            if ($aux_topeV !== null and $aux_pedV > $aux_topeV + 0.01) {
+                                return redirect('despachosol')->with([
+                                    'mensaje' => 'Del lote ' . $aux_loteV . ' solo quedan '
+                                        . number_format($aux_topeV, 2, ',', '.')
+                                        . ' disponibles para esta nota de venta y se están solicitando '
+                                        . number_format($aux_pedV, 2, ',', '.')
+                                        . '. Revise el reparto entre bodegas.',
+                                    'tipo_alert' => 'alert-error',
+                                ]);
+                            }
+                        }
+
+                        /* Y entre TODAS las filas no se puede pedir mas de lo que el
+                           item tiene pendiente: cada una respeta su propio tope -el
+                           lote, la bodega- pero ninguno mira el total. En un item de
+                           200 se podian cargar 120 de un lote y 180 sin lote. */
+                        if ($aux_totalV > 0) {
+                            $aux_nvdetObjV = NotaVentaDetalle::find($aux_nvdetV);
+                            if ($aux_nvdetObjV) {
+                                $aux_sumasV = NotaVentaDetalle::sumasDespachoPorItem([$aux_nvdetObjV->id]);
+                                $aux_yaSolV = $aux_sumasV['cantsoldesp'][$aux_nvdetObjV->id] ?? 0;
+                                $aux_saldoV = (float) $aux_nvdetObjV->cant - (float) $aux_yaSolV;
+
+                                if ($aux_totalV > $aux_saldoV + 0.01) {
+                                    return redirect('despachosol')->with([
+                                        'mensaje' => 'Al producto ' . $aux_nvdetObjV->producto_id
+                                            . ' le quedan ' . number_format($aux_saldoV, 2, ',', '.')
+                                            . ' por solicitar y se están pidiendo '
+                                            . number_format($aux_totalV, 2, ',', '.')
+                                            . ' entre los lotes y el stock sin lote.',
+                                        'tipo_alert' => 'alert-error',
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 $despachosol = DespachoSol::create($request->all());
                 $despachosolid = $despachosol->id;
                 //$cont_producto = count($request->producto_id);
@@ -473,39 +558,6 @@ class DespachoSolController extends Controller
                                 // Guardar lotes de producción asociados a este despachosoldet (trazabilidad granular)
                                 // Los lotes se identifican por opdetregprod_nvdet_id[] que debe coincidir con el NVdet actual
                                 if (!empty($request->opdetregprod_id)) {
-                                    /* Cuanto se esta pidiendo de CADA lote, sumando todas sus filas.
-                                       Un lote puede venir repartido en varias bodegas y el tope es del
-                                       lote, no de la fila: el navegador ya lo impide, pero quien decide
-                                       es el servidor. Dos personas cargando solicitudes del mismo lote a
-                                       la vez, o un formulario manipulado, pasan por encima del JS. */
-                                    $aux_pedidoPorLote = [];
-                                    foreach ($request->opdetregprod_id as $k2 => $aux_lote2) {
-                                        /* La fila "sin lote" (id 0) no tiene lote al que ponerle tope */
-                                        if ($aux_lote2 > 0
-                                            and ($request->opdetregprod_nvdet_id[$k2] ?? null) == $request->NVdet_id[$i]) {
-                                            $aux_pedidoPorLote[$aux_lote2] = ($aux_pedidoPorLote[$aux_lote2] ?? 0)
-                                                + floatval($request->opdetregprod_cant[$k2] ?? 0);
-                                        }
-                                    }
-                                    foreach ($aux_pedidoPorLote as $aux_lote2 => $aux_ped) {
-                                        $aux_tope = \App\Models\ProdReasignacion::dispGlobalDeLotePorNvdet(
-                                            $aux_lote2, $request->NVdet_id[$i]
-                                        );
-                                        /* null = el lote no vino por reasignacion: lo valida su propio
-                                           flujo de siempre y aqui no se toca nada. */
-                                        if ($aux_tope !== null and $aux_ped > $aux_tope + 0.01) {
-                                            DB::rollBack();
-                                            return redirect('despachosol')->with([
-                                                'mensaje' => 'Del lote ' . $aux_lote2 . ' solo quedan '
-                                                    . number_format($aux_tope, 2, ',', '.')
-                                                    . ' disponibles para esta nota de venta y se están solicitando '
-                                                    . number_format($aux_ped, 2, ',', '.')
-                                                    . '. Revise el reparto entre bodegas.',
-                                                'tipo_alert' => 'alert-error',
-                                            ]);
-                                        }
-                                    }
-
                                     foreach ($request->opdetregprod_id as $k => $opdetregprod_id_val) {
                                         $nvdetLote = $request->opdetregprod_nvdet_id[$k] ?? null;
                                         if ($nvdetLote == $request->NVdet_id[$i]) {

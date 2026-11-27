@@ -2721,6 +2721,23 @@ $(document).on('input', '.lote-cant-input', function() {
         if (val > margen) { val = Math.round(margen * 100) / 100; }
     }
 
+    /* Tope por el SALDO DEL ITEM: entre todas las bodegas y todos los lotes no
+       se puede pedir mas de lo que esa linea de la nota de venta tiene
+       pendiente. Los topes de arriba miran cada parte -el disponible del lote,
+       el stock de la bodega- pero ninguno el total: en un item de 200 se podian
+       cargar 120 de un lote y 180 sin lote.
+       El input que no trae data-max-item no se ve afectado. */
+    var maxItem = parseFloat($input.data('max-item'));
+    if (!isNaN(maxItem)) {
+        var otrasDelItem = 0;
+        $('.lote-cant-input[data-nfila="' + nfila + '"]').not($input).each(function() {
+            otrasDelItem += parseFloat($(this).val()) || 0;
+        });
+        var margenItem = maxItem - otrasDelItem;
+        if (margenItem < 0) { margenItem = 0; }
+        if (val > margenItem) { val = Math.round(margenItem * 100) / 100; }
+    }
+
     $input.val(raw === '' ? '' : val);
 
     // Calcular kg proporcional al valor asignado
