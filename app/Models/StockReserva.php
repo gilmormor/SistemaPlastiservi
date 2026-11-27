@@ -298,4 +298,76 @@ class StockReserva extends Model
         }
         return 'Vigente';
     }
+
+    /**
+     * Que hay en bodega para un item que todavia no tiene produccion asignada.
+     *
+     * Solo para informar. Un item que requiere fabricacion no puede despachar
+     * este material: se fabrica a medida y nadie ha verificado que el stock de
+     * bodega cumpla sus especificaciones. Una reserva a nombre del cliente dice
+     * "guardalo para el", no "esto le sirve". La via para despacharlo es que
+     * produccion le reasigne un lote, y ahi si hay alguien mirando material
+     * identificado.
+     *
+     * Pero esconderlo tampoco ayuda: la pantalla decia "En proceso de
+     * fabricacion" y quien hace la solicitud no tenia como saber que habia 300
+     * unidades y cual era la salida.
+     *
+     * Devuelve [total, reservado_suyo, libre] sobre las bodegas de venta de la
+     * sucursal. Con varias bodegas los numeros son aproximados por arriba -el
+     * disponible por bodega descuenta el mismo lote repartido en cada una-,
+     * suficiente para un aviso que no decide nada.
+     */
+    public static function loQuePodriaTomar($notaventadetalle_id, $sucursal_id)
+    {
+        $aux_nvdet = DB::table('notaventadetalle as nvd')
+            ->join('notaventa as nv', 'nv.id', '=', 'nvd.notaventa_id')
+            ->where('nvd.id', (int) $notaventadetalle_id)
+            ->select('nvd.producto_id', 'nv.cliente_id')
+            ->first();
+
+        $aux_vacio = ['total' => 0, 'reservado_suyo' => 0, 'libre' => 0];
+        if (!$aux_nvdet) {
+            return $aux_vacio;
+        }
+
+        $aux_ibps = DB::table('invbodegaproducto as ibp')
+            ->join('invbodega as b', 'b.id', '=', 'ibp.invbodega_id')
+            ->where('ibp.producto_id', $aux_nvdet->producto_id)
+            ->where('b.tipo', 2)                 // solo bodegas de venta
+            ->where('b.sucursal_id', (int) $sucursal_id)
+            ->where('b.activo', 1)
+            ->whereNull('ibp.deleted_at')
+            ->whereNull('b.deleted_at')
+            ->pluck('ibp.id');
+
+        if (!count($aux_ibps)) {
+            return $aux_vacio;
+        }
+
+        $aux_total = 0;
+        foreach ($aux_ibps as $aux_ibp) {
+            $aux_total += (float) self::disponibleParaNvdet($aux_ibp, $notaventadetalle_id);
+        }
+
+        /* Lo apartado a su nombre: por su propia nota de venta, o por su cliente
+           cuando la reserva se hizo antes de que la venta existiera. */
+        $aux_suyo = (float) self::vigentes()
+            ->whereIn('stockreserva.invbodegaproducto_id', $aux_ibps)
+            ->where(function ($q) use ($notaventadetalle_id, $aux_nvdet) {
+                $q->where('stockreserva.notaventadetalle_id', (int) $notaventadetalle_id);
+                if ($aux_nvdet->cliente_id) {
+                    $q->orWhere('stockreserva.cliente_id', $aux_nvdet->cliente_id);
+                }
+            })
+            ->sum('stockreserva.cant');
+
+        $aux_suyo = min($aux_suyo, $aux_total);
+
+        return [
+            'total'          => round($aux_total, 2),
+            'reservado_suyo' => round($aux_suyo, 2),
+            'libre'          => round(max($aux_total - $aux_suyo, 0), 2),
+        ];
+    }
 }

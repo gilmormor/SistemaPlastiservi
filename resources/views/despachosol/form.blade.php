@@ -730,6 +730,39 @@
                                         @endif
                                         @if ($detalle->requiere_fabricacion == 1 && $stockProdRows->isEmpty())
                                             En proceso de fabricacion
+                                            {{-- Si en bodega hay material que esta nota de venta podria
+                                                 tomar, decirlo. No habilita nada: el item se fabrica a
+                                                 medida y ese stock no esta verificado contra sus
+                                                 especificaciones, asi que la via sigue siendo que
+                                                 produccion le reasigne un lote. Pero callarlo obligaba a
+                                                 la ejecutiva a adivinar que existian esas unidades y
+                                                 cual era la salida. --}}
+                                            <?php
+                                                $aux_hay = \App\Models\StockReserva::loQuePodriaTomar(
+                                                    $detalle->id, $data->sucursal_id
+                                                );
+                                            ?>
+                                            @if($aux_hay['total'] > 0)
+                                                <div class="alert alert-info" style="text-align:left;padding:6px 8px;margin-top:6px;margin-bottom:0;font-size:11px;">
+                                                    <i class="fa fa-info-circle"></i>
+                                                    <strong>Hay {{number_format($aux_hay['total'], 2, ',', '.')}} en bodega</strong>
+                                                    que esta nota de venta podría tomar:
+                                                    @if($aux_hay['reservado_suyo'] > 0)
+                                                        <br>&bull; <strong>{{number_format($aux_hay['reservado_suyo'], 2, ',', '.')}}</strong>
+                                                        reservadas a nombre de este cliente
+                                                    @endif
+                                                    @if($aux_hay['libre'] > 0)
+                                                        <br>&bull; <strong>{{number_format($aux_hay['libre'], 2, ',', '.')}}</strong>
+                                                        libres, sin dueño
+                                                    @endif
+                                                    <div style="margin-top:4px;color:#555;">
+                                                        No se pueden despachar desde aquí: este producto se fabrica a medida
+                                                        y ese stock no está verificado contra sus especificaciones. Para usarlo,
+                                                        producción debe <strong>reasignarle un lote</strong> en
+                                                        <em>Reasignar Producción</em>.
+                                                    </div>
+                                                </div>
+                                            @endif
                                         @elseif ($detalle->requiere_fabricacion == 1 && $stockProdRows->isNotEmpty())
                                             <?php 
                                                 $stockProdRowsOT = DB::table('invmovdet_opdetregprod as iodr')
