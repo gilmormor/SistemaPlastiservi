@@ -821,6 +821,17 @@ $(".editarcampoTex").click(function()
 	$("#auxeditcampoT").attr('aux_nomcampot',$(this).attr('nomcampo'));
 	$("#auxeditcampoT").attr('fila_id',id);
 	$("#auxeditcampoT").val(aux_valor.trim());
+
+	/* Tope del campo que se esta editando. El modal es UNO SOLO para la
+	   observacion y para la forma de embalar, que no admiten lo mismo, asi que
+	   hay que ponerlo cada vez; y quitarlo cuando el enlace no lo trae, o se
+	   quedaria puesto el del campo anterior. */
+	var aux_maxlen = $(this).attr('maxlen');
+	if (aux_maxlen) {
+		$("#auxeditcampoT").attr('maxlength', aux_maxlen);
+	} else {
+		$("#auxeditcampoT").removeAttr('maxlength');
+	}
 	$("#lbleditarcampo").html($(this).attr('data-original-title') + " Id Producto: " + $("#producto_id" + id).val());
 	$("#myModalEditarCampoTex").modal('show');
 });
@@ -837,6 +848,10 @@ $("#btnaceptarMT").click(function(event){
 		let auxeditcampoT = $("#auxeditcampoT").val();
 		//esto es para reemplazar el caracter comilla doble " de la cadena, para evitar que me trunque los valores en javascript al asignar a attr val 
 		auxeditcampoT = auxeditcampoT.replaceAll('"', "'");
+		/* El campo es de varias lineas para poder leer lo que se escribe, pero lo
+		   que se guarda es una sola: en 100 y 200 caracteres no caben parrafos y
+		   un salto de linea en otdet.obs descuadra el PDF de la OT. */
+		auxeditcampoT = auxeditcampoT.replace(/\s*[\r\n]+\s*/g, ' ').trim();
 		id = $("#auxeditcampoT").attr('fila_id');
 		if($("#auxeditcampoT").attr('aux_nomcampot') == "campo_obs"){
 			$("#otdet_obs" + id).val(auxeditcampoT);

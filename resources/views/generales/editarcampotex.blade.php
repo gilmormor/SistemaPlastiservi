@@ -12,7 +12,21 @@
                 <div class="row">
                     <div class="form-group col-xs-12 col-sm-12">
                         <label id="lbleditarcampo" name="lbleditarcampo" for="id" class="control-label">Campo</label>
-                        <input type="text" name="auxeditcampoT" id="auxeditcampoT" class="form-control requeridos valorrequerido" tipoval="texto" required placeholder="Ingrese valor" fila_id="" aux_nomcampot=""/>
+                        {{-- Campo de varias lineas SOLO si la pantalla lo pide. Este modal lo
+                             comparten cinco pantallas y en las de guia de despacho y factura
+                             edita el nombre del producto y la unidad de medida que viajan al
+                             XML del DTE: alli un salto de linea no tiene nada que hacer.
+                             Sin la variable se pinta el input de siempre, sin ningun cambio.
+
+                             El textarea conserva id, name, class, tipoval, required y
+                             placeholder, asi que verificarDato() lo valida igual: usa
+                             serializeArray() y getElementById().value, que no distinguen
+                             entre input y textarea. --}}
+                        @if(!empty($auxEditCampoMultilinea))
+                            <textarea name="auxeditcampoT" id="auxeditcampoT" class="form-control requeridos valorrequerido" tipoval="texto" required placeholder="Ingrese valor" fila_id="" aux_nomcampot="" rows="3" style="resize:vertical;"></textarea>
+                        @else
+                            <input type="text" name="auxeditcampoT" id="auxeditcampoT" class="form-control requeridos valorrequerido" tipoval="texto" required placeholder="Ingrese valor" fila_id="" aux_nomcampot=""/>
+                        @endif
                     </div>
                 </div>
             </div>

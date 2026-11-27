@@ -483,8 +483,25 @@
                                         {{-- {{$detalle->subtotal}} --}}
                                         {{$aux_subtotal}}
                                     </td>
+                                    @php
+                                        /* Tope de cada campo leido de la propia tabla y no escrito a
+                                           mano: si manana la columna cambia de tamano, el formulario
+                                           lo sigue solo. Se calcula una vez para todo el detalle. */
+                                        if (!isset($aux_maxlenOtdet)) {
+                                            $aux_maxlenOtdet = [];
+                                            foreach (DB::select(
+                                                'SELECT COLUMN_NAME, CHARACTER_MAXIMUM_LENGTH len'
+                                                . '  FROM INFORMATION_SCHEMA.COLUMNS'
+                                                . ' WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?'
+                                                . '   AND COLUMN_NAME IN (?, ?)',
+                                                ['otdet', 'obs', 'formaembalar']
+                                            ) as $aux_col) {
+                                                $aux_maxlenOtdet[$aux_col->COLUMN_NAME] = (int) $aux_col->len;
+                                            }
+                                        }
+                                    @endphp
                                     <td>
-                                        <a id="campo_obs{{$aux_nfila}}" name="campo_obs{{$aux_nfila}}" class="btn-accion-tabla tooltipsC editarcampoTex" title="Observación" valor="{{isset($ot) ? $detalle->obs : ''}}" fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="campo_obs">
+                                        <a id="campo_obs{{$aux_nfila}}" name="campo_obs{{$aux_nfila}}" class="btn-accion-tabla tooltipsC editarcampoTex" title="Observación" valor="{{isset($ot) ? $detalle->obs : ''}}" fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="campo_obs" maxlen="{{$aux_maxlenOtdet['obs'] ?? ''}}">
                                             <i class="fa fa-fw fa-comment-o"></i>
                                         </a>
                                         <input type="text" name="otdet_obs[]" id="otdet_obs{{$aux_nfila}}" class="form-control" value="{{isset($ot) ? $detalle->obs : ''}}" style="display:none;"/>
@@ -503,7 +520,7 @@
                                                         : ($aux_formasemb[$aux_prod_id] ?? '');
                                     @endphp
                                     <td>
-                                        <a id="campo_formaembalar{{$aux_nfila}}" name="campo_formaembalar{{$aux_nfila}}" class="btn-accion-tabla tooltipsC editarcampoTex" title="Forma de Embalar" valor="{{$aux_formaembal}}" fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="campo_formaembalar">
+                                        <a id="campo_formaembalar{{$aux_nfila}}" name="campo_formaembalar{{$aux_nfila}}" class="btn-accion-tabla tooltipsC editarcampoTex" title="Forma de Embalar" valor="{{$aux_formaembal}}" fila="{{$aux_nfila}}" tipocampo="texto" nomcampo="campo_formaembalar" maxlen="{{$aux_maxlenOtdet['formaembalar'] ?? ''}}">
                                             <i class="fa fa-fw fa-cube"></i>
                                         </a>
                                         <input type="text" name="otdet_formaembalar[]" id="otdet_formaembalar{{$aux_nfila}}" class="form-control" value="{{$aux_formaembal}}" style="display:none;"/>
@@ -550,4 +567,7 @@
 -->
 
 @include('generales.modalpdf')
-@include('generales.editarcampotex')
+{{-- Aqui el modal edita la observacion y la forma de embalar: texto libre que
+     conviene ver entero mientras se escribe. En las otras cuatro pantallas que
+     incluyen este mismo modal se queda como esta. --}}
+@include('generales.editarcampotex', ['auxEditCampoMultilinea' => true])
