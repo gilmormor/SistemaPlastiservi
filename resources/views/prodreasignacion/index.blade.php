@@ -8,6 +8,13 @@ Reasignar Producción
         const PR_RUTA_LOTE     = "{{ url('prodreasignacion/consultar') }}";
         const PR_RUTA_DESTINOS = "{{ url('prodreasignacion/destinos') }}";
         const PR_RUTA_PAGE     = "{{ route('prodreasignacionpage') }}";
+        const PR_RUTA_SOLDESP  = "{{ url('prodreasignacion/solicitudes') }}";
+        /* Que documentos puede abrir este usuario. Sin permiso no se pinta el
+           enlace: ofrecerlo para que despues el PDF diga "No tienes permisos"
+           es hacerle perder el tiempo. Mismos permisos que validan los
+           controladores que generan cada PDF. */
+        const PR_VER_SD = {{ can('ver-pdf-solicitud-despacho', false) ? 'true' : 'false' }};
+        const PR_VER_NV = {{ can('ver-pdf-nota-de-venta', false) ? 'true' : 'false' }};
     </script>
     <script src="{{autoVer("assets/pages/scripts/general.js")}}" type="text/javascript"></script>
     <script src="{{autoVer("assets/pages/scripts/prodreasignacion/index.js")}}" type="text/javascript"></script>
@@ -182,4 +189,28 @@ Reasignar Producción
         </div>
     </div>
 </div>
+
+{{-- Las solicitudes de despacho que componen lo ya tomado de una entrega.
+     Se abre al hacer clic sobre el numero: ese valor solo, sin poder ver de
+     donde sale, no se puede verificar. --}}
+<div class="modal fade" id="modalSolDespReasig" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-truck"></i> <span id="pr-sd-titulo"></span></h4>
+            </div>
+            <div class="modal-body" id="pr-sd-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- El visor de PDF: lo usan genpdfSD y genpdfNV. Esta pantalla no lo incluia,
+     asi que sin esto los enlaces no abririan nada. Trae ademas el campo
+     #venmodant, con el que se vuelve al modal anterior al cerrarlo. --}}
+@include('generales.modalpdf')
+
 @endsection

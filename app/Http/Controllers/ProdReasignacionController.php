@@ -425,6 +425,48 @@ class ProdReasignacionController extends Controller
         }
     }
 
+    /**
+     * Las solicitudes de despacho que componen lo ya tomado de una entrega.
+     *
+     * El listado muestra "170 en SolDesp" y ese numero, solo, no se puede
+     * verificar: hay que poder ver de que solicitudes sale y abrir cada una.
+     */
+    public function solicitudes($id)
+    {
+        can('listar-prod-reasignacion');
+
+        $aux_reasig = ProdReasignacion::find((int) $id);
+        if (!$aux_reasig) {
+            return response()->json(['ok' => false, 'mensaje' => 'No existe la reasignación.']);
+        }
+
+        $aux_filas = DB::table('despachosoldet_opdetregprod as dsop')
+            ->join('despachosoldet as dsd', 'dsd.id', '=', 'dsop.despachosoldet_id')
+            ->join('despachosol as ds', 'ds.id', '=', 'dsd.despachosol_id')
+            ->leftJoin('notaventa as nv', 'nv.id', '=', 'ds.notaventa_id')
+            ->leftJoin('cliente as c', 'c.id', '=', 'nv.cliente_id')
+            ->where('dsop.opdetregprod_id', $aux_reasig->opdetregprod_id)
+            ->where('dsd.notaventadetalle_id', $aux_reasig->nvdet_destino_id)
+            ->whereNull('dsd.deleted_at')
+            ->whereNull('ds.deleted_at')
+            ->whereRaw('ds.id NOT IN (SELECT despachosol_id FROM despachosolanul WHERE ISNULL(deleted_at))')
+            ->orderBy('ds.id')
+            ->select(
+                'ds.id as despachosol_id', 'ds.fechahora', 'ds.aprorddesp',
+                'dsop.cant', 'nv.id as notaventa_id', 'c.razonsocial',
+                /* Si ya paso a orden de despacho, el material salio de picking */
+                DB::raw('(SELECT COUNT(*) FROM despachoord o
+                           WHERE o.despachosol_id = ds.id AND ISNULL(o.deleted_at)) as ordenes')
+            )->get();
+
+        return response()->json([
+            'ok'       => true,
+            'lote'     => $aux_reasig->opdetregprod_id,
+            'total'    => round($aux_filas->sum('cant'), 2),
+            'detalles' => $aux_filas,
+        ]);
+    }
+
     public function listadopage(Request $request)
     {
         can('listar-prod-reasignacion');

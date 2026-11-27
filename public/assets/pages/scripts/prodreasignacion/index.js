@@ -319,7 +319,17 @@ function cargarTabla() {
             $('td', row).eq(5).html(data.nv_origen
                 ? 'NV ' + data.nv_origen + '<br><small class="text-muted">' + (data.cliente_origen || '') + '</small>'
                 : '<span class="text-muted">Sin NV</span>');
-            $('td', row).eq(6).html((data.nv_destino ? 'NV ' + data.nv_destino + '<br>' : '') +
+            /* La nota de venta destino se abre como en el resto del sistema.
+               Sin permiso para verla se deja el numero en texto plano. */
+            var aux_nvd = '';
+            if (data.nv_destino) {
+                aux_nvd = PR_VER_NV
+                    ? 'NV <a class="btn-accion-tabla tooltipsC" style="cursor:pointer;" ' +
+                      'onclick="genpdfNV(' + data.nv_destino + ',1)" ' +
+                      'title="Nota de venta ' + data.nv_destino + '">' + data.nv_destino + '</a><br>'
+                    : 'NV ' + data.nv_destino + '<br>';
+            }
+            $('td', row).eq(6).html(aux_nvd +
                 '<small class="text-muted">' + (data.cliente_destino || '') + '</small>');
 
             /* Cuanto se entrego y cuanto se llevo ya el destinatario: con los dos
@@ -329,13 +339,22 @@ function cargarTabla() {
                Del 7 en adelante los indices corren uno por esta columna. */
             var aux_cel = '<strong>' + MASKLA(data.cant, 2) + '</strong>';
             if (data.usado !== null && data.usado !== undefined) {
+                /* El numero es clicable: abre las solicitudes que lo componen.
+                   Un total suelto no se puede verificar, y es justo lo que se
+                   quiere revisar cuando una entrega no cuadra. */
+                var aux_usado = data.usado > 0
+                    ? '<a class="pr-ver-sd" style="cursor:pointer;text-decoration:underline;" ' +
+                      'data-id="' + data.id + '" title="Ver las solicitudes de despacho">' +
+                      MASKLA(data.usado, 2) + '</a>'
+                    : MASKLA(data.usado, 2);
+
                 if (data.pendiente <= 0) {
-                    aux_cel += '<br><small class="text-muted">todo retirado</small>';
+                    aux_cel += '<br><small class="text-muted">' + aux_usado + ' en SolDesp</small>';
                 } else if (data.usado > 0) {
-                    aux_cel += '<br><small class="text-muted">' + MASKLA(data.usado, 2) + ' retiradas</small>' +
+                    aux_cel += '<br><small class="text-muted">' + aux_usado + ' en SolDesp</small>' +
                                '<br><small class="text-green">quedan ' + MASKLA(data.pendiente, 2) + '</small>';
                 } else {
-                    aux_cel += '<br><small class="text-muted">sin retirar</small>';
+                    aux_cel += '<br><small class="text-muted">sin SolDesp</small>';
                 }
             }
             $('td', row).eq(7).html(aux_cel);
@@ -364,3 +383,67 @@ function cargarTabla() {
         }
     });
 }
+
+/* ---------------------------------------------------------------------------
+   Las solicitudes de despacho detras del numero "en SolDesp".
+   --------------------------------------------------------------------------- */
+$(document).on('click', '.pr-ver-sd', function () {
+    var aux_id = $(this).data('id');
+    $.ajax({
+        url: PR_RUTA_SOLDESP + '/' + aux_id,
+        type: 'GET',
+        success: function (resp) {
+            if (!resp.ok) {
+                swal({ title: 'Atencion', text: resp.mensaje || 'No se pudo consultar.', type: 'warning' });
+                return;
+            }
+            $('#pr-sd-titulo').text('Lote #' + resp.lote + ' — solicitudes de despacho');
+
+            if (!resp.detalles.length) {
+                $('#pr-sd-body').html('<p class="text-muted">Todavia no hay solicitudes de despacho ' +
+                    'que tomen de esta entrega.</p>');
+            } else {
+                var h = '<table class="table table-condensed table-bordered" style="font-size:12px;">' +
+                        '<thead><tr><th>N° SolDesp</th><th>Fecha</th><th>Nota de venta</th>' +
+                        '<th>Cliente</th><th class="text-right">Cantidad</th><th>Estado</th></tr></thead><tbody>';
+                for (var i = 0; i < resp.detalles.length; i++) {
+                    var d = resp.detalles[i];
+
+                    /* Al abrir la solicitud se le pasa este modal como padre: se
+                       oculta y vuelve solo al cerrar el PDF. Sin eso quedarian
+                       los dos abiertos, uno encima del otro. */
+                    var aux_sd = PR_VER_SD
+                        ? '<a class="btn-accion-tabla tooltipsC" style="cursor:pointer;" ' +
+                          'onclick="genpdfSD(' + d.despachosol_id + ',1,\'modalSolDespReasig\')" ' +
+                          'title="Ver Solicitud de Despacho">' + d.despachosol_id + '</a>'
+                        : d.despachosol_id;
+
+                    var aux_nv = (d.notaventa_id && PR_VER_NV)
+                        ? '<a class="btn-accion-tabla tooltipsC" style="cursor:pointer;" ' +
+                          'onclick="genpdfNV(' + d.notaventa_id + ',1,\'modalSolDespReasig\')" ' +
+                          'title="Nota de venta ' + d.notaventa_id + '">' + d.notaventa_id + '</a>'
+                        : (d.notaventa_id || '');
+
+                    /* Donde esta hoy ese material: aprobada lo mando a picking, y
+                       si ya tiene orden de despacho salio de la bodega. */
+                    var aux_est = d.ordenes > 0
+                        ? '<span class="label label-success">En orden de despacho</span>'
+                        : (d.aprorddesp == 1
+                            ? '<span class="label label-info">En picking</span>'
+                            : '<span class="label label-default">Sin aprobar</span>');
+
+                    h += '<tr><td>' + aux_sd + '</td>' +
+                         '<td>' + (d.fechahora ? d.fechahora.substring(0, 10) : '') + '</td>' +
+                         '<td>' + aux_nv + '</td>' +
+                         '<td><small>' + (d.razonsocial || '') + '</small></td>' +
+                         '<td class="text-right"><strong>' + MASKLA(d.cant, 2) + '</strong></td>' +
+                         '<td>' + aux_est + '</td></tr>';
+                }
+                h += '</tbody><tfoot><tr><th colspan="4" class="text-right">Total</th>' +
+                     '<th class="text-right">' + MASKLA(resp.total, 2) + '</th><th></th></tr></tfoot></table>';
+                $('#pr-sd-body').html(h);
+            }
+            $('#modalSolDespReasig').modal('show');
+        }
+    });
+});

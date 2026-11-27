@@ -2032,6 +2032,7 @@ Route::get('prodreasignacion', 'ProdReasignacionController@index')->name('prodre
 Route::get('prodreasignacionpage', 'ProdReasignacionController@listadopage')->name('prodreasignacionpage');
 Route::get('prodreasignacion/consultar/{id}', 'ProdReasignacionController@consultar')->name('prodreasignacion_consultar');
 Route::get('prodreasignacion/destinos/{producto_id}', 'ProdReasignacionController@destinos')->name('prodreasignacion_destinos');
+Route::get('prodreasignacion/solicitudes/{id}', 'ProdReasignacionController@solicitudes')->name('prodreasignacion_solicitudes');
 Route::post('prodreasignacion', 'ProdReasignacionController@guardar')->name('prodreasignacion_guardar');
 Route::post('prodreasignacion/{id}/anular', 'ProdReasignacionController@anular')->name('prodreasignacion_anular');
 
