@@ -92,6 +92,56 @@ class ProdReasignacion extends Model
     }
 
     /**
+     * Lo que se entrego de este lote y el destinatario TODAVIA no retiro.
+     *
+     * No es lo mismo que cantReasignadaDeLote, que suma lo entregado nominal.
+     * El saldo del lote en bodega YA bajo cuando el destinatario se llevo su
+     * parte, asi que restar lo entregado completo descuenta esas unidades dos
+     * veces: de 600 se entregaron 400 y se retiraron 170, el saldo quedo en 430
+     * y el compromiso vivo es 230 — no 400. Restando 400 el disponible daba 30
+     * cuando en realidad habia 200.
+     *
+     * Mismo criterio que cantReasignadaEnBodegaProducto, pero mirando un lote
+     * concreto en vez de una bodega.
+     */
+    public static function pendienteDeRetirarDeLote($opdetregprod_id)
+    {
+        $aux_filas = DB::select("
+            SELECT SUM(r.cant) AS entregado,
+                   IFNULL((SELECT SUM(dsop.cant)
+                             FROM despachosoldet_opdetregprod dsop
+                             INNER JOIN despachosoldet dsd ON dsd.id = dsop.despachosoldet_id
+                                                          AND ISNULL(dsd.deleted_at)
+                             INNER JOIN despachosol ds ON ds.id = dsd.despachosol_id
+                                                      AND ISNULL(ds.deleted_at)
+                            WHERE dsop.opdetregprod_id = r.opdetregprod_id
+                              AND dsd.notaventadetalle_id = r.nvdet_destino_id
+                              AND ds.id NOT IN (SELECT despachosol_id FROM despachosolanul
+                                                 WHERE ISNULL(deleted_at))), 0) AS tomado
+              FROM prodreasignacion r
+             WHERE r.opdetregprod_id = ?
+               AND ISNULL(r.deleted_at) AND ISNULL(r.anulada_at)
+             GROUP BY r.opdetregprod_id, r.nvdet_destino_id
+        ", [(int) $opdetregprod_id]);
+
+        $aux_total = 0;
+        foreach ($aux_filas as $aux_f) {
+            $aux_total += max(0, (float) $aux_f->entregado - (float) $aux_f->tomado);
+        }
+
+        return round($aux_total, 2);
+    }
+
+    /** De lo entregado de este lote, cuanto se llevo ya el destinatario. */
+    public static function yaRetiradoDeLote($opdetregprod_id)
+    {
+        return round(
+            self::cantReasignadaDeLote($opdetregprod_id)
+            - self::pendienteDeRetirarDeLote($opdetregprod_id), 2
+        );
+    }
+
+    /**
      * Cuanto se le quito a un item de nota de venta, lote por lote.
      *
      * Devuelve [opdetregprod_id => cantidad]. La solicitud de despacho lo usa

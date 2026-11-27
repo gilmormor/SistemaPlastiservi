@@ -143,7 +143,14 @@ function consultarLote(id) {
                 $('#pr-f-fila-reservado').hide();
             }
             if (resp.ya_entregado > 0) {
+                /* Se dice cuanto de lo entregado ya se retiro: sin ese dato los
+                   numeros no cuadran a la vista. De 430 en bodega, entregadas
+                   400 y retiradas 170, quedan 200 disponibles — no 30. Lo que
+                   ya salio de la bodega no se puede descontar otra vez. */
                 $('#pr-f-entregado').html(MASKLA(resp.ya_entregado, 2) +
+                    (resp.ya_retirado > 0
+                        ? ' <small class="text-muted">(' + MASKLA(resp.ya_retirado, 2) + ' ya retiradas)</small>'
+                        : '') +
                     '<br><small class="text-muted">' + (resp.ya_reasignado || '') + '</small>');
                 $('#pr-f-fila-entregado').show();
             } else {
@@ -167,15 +174,13 @@ function consultarLote(id) {
             }
             $('#pr-ficha').show();
 
-            /* Ya reasignado: no se encadenan reasignaciones sin deshacer la
-               anterior, o nadie entenderia donde termino el material. */
-            if (resp.ya_reasignado) {
-                $('#pr-error').html('Este lote ya fue reasignado a <strong>' + resp.ya_reasignado +
-                    '</strong>. Deshaga esa reasignación antes de hacer otra.').show();
-                $('#pr-destino-box').hide();
-                validar();
-                return;
-            }
+            /* Un lote se puede repartir entre varias notas de venta: 400 a una y
+               el resto a otra. Antes la pantalla lo impedia -habia que deshacer
+               la anterior- aunque el calculo del disponible y la tabla de abajo
+               estan hechos para varios destinos. El motivo de entonces era no
+               perder de vista donde termino el material, y eso ya esta cubierto:
+               la ficha dice a quien se entrego cada parte y la tabla lista cada
+               reasignacion con su destino. El tope del campo protege el resto. */
             if (resp.saldo <= 0) {
                 $('#pr-error').text('El lote ya no tiene material en bodega: fue despachado.').show();
                 $('#pr-destino-box').hide();
@@ -295,6 +300,7 @@ function cargarTabla() {
             { data: 'bodegas' },
             { data: 'nv_origen' },
             { data: 'nv_destino' },
+            { data: 'cant' },
             { data: 'motivo' },
             { data: 'created_at' },
             { data: 'usuario_nombre' },
@@ -316,26 +322,45 @@ function cargarTabla() {
             $('td', row).eq(6).html((data.nv_destino ? 'NV ' + data.nv_destino + '<br>' : '') +
                 '<small class="text-muted">' + (data.cliente_destino || '') + '</small>');
 
-            $('td', row).eq(8).html(data.created_at ? data.created_at.substring(0, 10) : '');
+            /* Cuanto se entrego y cuanto se llevo ya el destinatario: con los dos
+               datos se ve de un vistazo que entregas siguen pendientes y cuales
+               estan consumidas. En las deshechas no se muestra nada retirado,
+               porque el material volvio a su nota de venta de origen.
+               Del 7 en adelante los indices corren uno por esta columna. */
+            var aux_cel = '<strong>' + MASKLA(data.cant, 2) + '</strong>';
+            if (data.usado !== null && data.usado !== undefined) {
+                if (data.pendiente <= 0) {
+                    aux_cel += '<br><small class="text-muted">todo retirado</small>';
+                } else if (data.usado > 0) {
+                    aux_cel += '<br><small class="text-muted">' + MASKLA(data.usado, 2) + ' retiradas</small>' +
+                               '<br><small class="text-green">quedan ' + MASKLA(data.pendiente, 2) + '</small>';
+                } else {
+                    aux_cel += '<br><small class="text-muted">sin retirar</small>';
+                }
+            }
+            $('td', row).eq(7).html(aux_cel);
+            $('td', row).eq(7).attr('style', 'text-align:right');
+
+            $('td', row).eq(9).html(data.created_at ? data.created_at.substring(0, 10) : '');
 
             var aux_clase = (data.estado === 'Vigente') ? 'label-success' : 'label-default';
-            $('td', row).eq(10).html('<span class="label ' + aux_clase + '">' + data.estado + '</span>');
-            $('td', row).eq(10).attr('style', 'text-align:center');
+            $('td', row).eq(11).html('<span class="label ' + aux_clase + '">' + data.estado + '</span>');
+            $('td', row).eq(11).attr('style', 'text-align:center');
 
             if (data.estado === 'Vigente') {
-                $('td', row).eq(11).html(
+                $('td', row).eq(12).html(
                     '<a class="btn-accion-tabla tooltipsC pr-anular" style="cursor:pointer;" ' +
                     'title="Deshacer: el lote vuelve a su nota de venta de origen" data-id="' + data.id + '">' +
                     '<i class="fa fa-fw fa-undo text-danger"></i></a>'
                 );
             } else {
-                $('td', row).eq(11).html('');
+                $('td', row).eq(12).html('');
                 if (data.anulmotivo) {
-                    $('td', row).eq(7).html((data.motivo || '') +
+                    $('td', row).eq(8).html((data.motivo || '') +
                         '<br><small class="text-red">Deshecha: ' + data.anulmotivo + '</small>');
                 }
             }
-            $('td', row).eq(11).attr('style', 'text-align:center');
+            $('td', row).eq(12).attr('style', 'text-align:center');
         }
     });
 }

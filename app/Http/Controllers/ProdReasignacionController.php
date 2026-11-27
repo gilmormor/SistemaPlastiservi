@@ -127,8 +127,15 @@ class ProdReasignacionController extends Controller
 
         /* Lo que ya se entrego de ESTE lote a otros. Un lote se puede repartir
            entre varias notas de venta, asi que lo disponible baja con cada
-           reasignacion. */
+           reasignacion.
+
+           Para el DISPONIBLE no sirve lo entregado nominal sino lo que sigue
+           comprometido: el saldo en bodega ya bajo cuando el destinatario
+           retiro su parte, y restar lo entregado completo descontaria esas
+           unidades dos veces. */
         $aux_yaReasignado = ProdReasignacion::cantReasignadaDeLote($lote->id);
+        $aux_pendRetirar  = ProdReasignacion::pendienteDeRetirarDeLote($lote->id);
+        $aux_yaRetirado   = ProdReasignacion::yaRetiradoDeLote($lote->id);
 
         return response()->json([
             'ok'            => true,
@@ -142,10 +149,11 @@ class ProdReasignacionController extends Controller
             'reservado'     => $aux_reservado['cant'],
             'reservado_de'  => $aux_reservado['para'],
             'ya_entregado'  => round($aux_yaReasignado, 2),
+            'ya_retirado'   => $aux_yaRetirado,
             /* Lo que de verdad se puede reasignar: el saldo del lote, menos lo que
-               ya esta apartado para otro en esa misma bodega, menos lo que ya se
-               entrego de este mismo lote. */
-            'disponible'    => round(max($aux_saldo - $aux_reservado['cant'] - $aux_yaReasignado, 0), 2),
+               ya esta apartado para otro en esa misma bodega, menos lo que sigue
+               comprometido de este mismo lote (entregado y aun no retirado). */
+            'disponible'    => round(max($aux_saldo - $aux_reservado['cant'] - $aux_pendRetirar, 0), 2),
             'nvdet_origen'  => $aux_mov->notaventadetalle_id,
             'nv_origen'     => $aux_mov->notaventa_id,
             'cliente_origen' => $aux_mov->razonsocial,
@@ -331,7 +339,10 @@ class ProdReasignacionController extends Controller
            mismo aunque la reserva no este anclada al lote- y menos lo que ya se
            entrego de este lote en reasignaciones anteriores. */
         $aux_reservado  = $this->reservadoDondeEstaElLote($lote->id);
-        $aux_yaEntregado = ProdReasignacion::cantReasignadaDeLote($lote->id);
+        /* Lo que sigue comprometido, no lo entregado nominal: lo que el
+           destinatario ya retiro salio del saldo en bodega y restarlo otra vez
+           lo contaria dos veces. */
+        $aux_yaEntregado = ProdReasignacion::pendienteDeRetirarDeLote($lote->id);
         $aux_disponible  = round($aux_saldo - $aux_reservado['cant'] - $aux_yaEntregado, 2);
 
         if ($aux_disponible <= 0) {
@@ -441,6 +452,7 @@ class ProdReasignacionController extends Controller
         $datas = $query->orderBy('r.id', 'desc')
             ->select(
                 'r.id', 'r.opdetregprod_id', 'r.cant', 'r.motivo', 'r.created_at',
+                'r.nvdet_destino_id',
                 'r.anulada_at', 'r.anulmotivo',
                 'p.producto_id',
                 'prod.glosa as producto_nombre',
@@ -460,8 +472,49 @@ class ProdReasignacionController extends Controller
                 'u.usuario as usuario_nombre'
             )->get();
 
+        /* Cuanto de cada entrega se llevo ya el destinatario. Se consulta de una
+           sola vez para todo el listado -no una consulta por fila- y despues se
+           reparte entre las reasignaciones del mismo lote al mismo destino: dos
+           entregas de 100 al mismo item comparten lo despachado, asi que la
+           primera se da por consumida antes que la segunda. */
+        $aux_tomado = [];
+        $aux_lotes  = $datas->pluck('opdetregprod_id')->unique()->filter()->all();
+        if (count($aux_lotes)) {
+            $aux_desp = DB::table('despachosoldet_opdetregprod as dsop')
+                ->join('despachosoldet as dsd', 'dsd.id', '=', 'dsop.despachosoldet_id')
+                ->join('despachosol as ds', 'ds.id', '=', 'dsd.despachosol_id')
+                ->whereIn('dsop.opdetregprod_id', $aux_lotes)
+                ->whereNull('dsd.deleted_at')
+                ->whereNull('ds.deleted_at')
+                ->whereRaw('ds.id NOT IN (SELECT despachosol_id FROM despachosolanul WHERE ISNULL(deleted_at))')
+                ->groupBy('dsop.opdetregprod_id', 'dsd.notaventadetalle_id')
+                ->select(
+                    'dsop.opdetregprod_id',
+                    'dsd.notaventadetalle_id',
+                    DB::raw('SUM(dsop.cant) as tomado')
+                )->get();
+
+            foreach ($aux_desp as $aux_d) {
+                $aux_tomado[$aux_d->opdetregprod_id . '-' . $aux_d->notaventadetalle_id] = (float) $aux_d->tomado;
+            }
+        }
+
         foreach ($datas as $d) {
             $d->estado = $d->anulada_at ? 'Deshecha' : 'Vigente';
+
+            /* Una reasignacion deshecha no tiene nada retirado que mostrar: el
+               material volvio a su nota de venta de origen. */
+            if ($d->anulada_at) {
+                $d->usado      = null;
+                $d->pendiente  = null;
+                continue;
+            }
+
+            $aux_clv       = $d->opdetregprod_id . '-' . $d->nvdet_destino_id;
+            $aux_queda     = $aux_tomado[$aux_clv] ?? 0;
+            $d->usado      = round(min((float) $d->cant, max($aux_queda, 0)), 2);
+            $aux_tomado[$aux_clv] = $aux_queda - $d->usado;
+            $d->pendiente  = round((float) $d->cant - $d->usado, 2);
         }
 
         return datatables($datas)->toJson();

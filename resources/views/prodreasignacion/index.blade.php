@@ -168,6 +168,7 @@ Reasignar Producción
                                 <th class="width70">Bodega</th>
                                 <th>Se fabricó para</th>
                                 <th>Se entregó a</th>
+                                <th class="text-right width70">Cantidad</th>
                                 <th>Motivo</th>
                                 <th class="width70">Fecha</th>
                                 <th class="width70">Usuario</th>
