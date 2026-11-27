@@ -681,6 +681,61 @@
                                                 ->groupBy('imd.invbodegaproducto_id', 'ib.sucursal_id')
                                                 ->having('cant_prod', '>', 0)
                                                 ->get();
+
+                                            /* Cuarta via: stock RESERVADO a nombre de este cliente o de
+                                               esta nota de venta, mas las bodegas que ESTA solicitud ya
+                                               esta usando.
+
+                                               Lo primero es lo mismo que hace la pantalla de crear: un
+                                               producto que se fabrica a medida pero cuyo stock entro por
+                                               inventario no tiene lotes, y sin lote no hay nada que
+                                               ofrecer aunque haya material apartado a su nombre.
+
+                                               Lo segundo solo hace falta aqui: si la reserva se anula o
+                                               vence despues de crear la solicitud, la bodega desapareceria
+                                               de la pantalla y al guardar se perderia lo ya pedido. Su
+                                               tope es lo que la solicitud ya tenia -no deja subir, pero si
+                                               ver y corregir-.
+
+                                               Solo entra cuando las otras tres vias no encontraron nada.
+                                               Sin reservas y sin nada guardado devuelve vacio y la
+                                               pantalla se comporta como antes. */
+                                            if ($stockProdRows->isEmpty()) {
+                                                $aux_bodHabilita = [];
+                                                foreach (\App\Models\StockReserva::bodegasReservadasParaNvdet($detalle->notaventadetalle_id) as $aux_br) {
+                                                    $aux_bodHabilita[$aux_br->invbodegaproducto_id] = $aux_br;
+                                                }
+
+                                                foreach ($detalle->despachosoldet_invbodegaproductos as $aux_dsdb) {
+                                                    $aux_usado = round((($aux_dsdb->cant + $aux_dsdb->cantex) * -1), 2);
+                                                    if ($aux_usado <= 0) { continue; }
+
+                                                    $aux_ibpUsa = \App\Models\InvBodegaProducto::find($aux_dsdb->invbodegaproducto_id);
+                                                    if (!$aux_ibpUsa or !$aux_ibpUsa->invbodega) { continue; }
+
+                                                    if (isset($aux_bodHabilita[$aux_dsdb->invbodegaproducto_id])) {
+                                                        /* Ya viene por la reserva: el tope es el mayor de los dos,
+                                                           porque lo guardado no se puede dejar por debajo. */
+                                                        $aux_bodHabilita[$aux_dsdb->invbodegaproducto_id]->cant_prod =
+                                                            max((float) $aux_bodHabilita[$aux_dsdb->invbodegaproducto_id]->cant_prod, $aux_usado);
+                                                        continue;
+                                                    }
+
+                                                    $aux_fil = new \stdClass();
+                                                    $aux_fil->invbodega_id         = $aux_ibpUsa->invbodega_id;
+                                                    $aux_fil->invbodegaproducto_id = $aux_ibpUsa->id;
+                                                    $aux_fil->bodega_nombre        = $aux_ibpUsa->invbodega->nombre;
+                                                    $aux_fil->bodega_nomabre       = $aux_ibpUsa->invbodega->nomabre;
+                                                    $aux_fil->bodega_sucursal_id   = $aux_ibpUsa->invbodega->sucursal_id;
+                                                    $aux_fil->cant_prod            = $aux_usado;
+                                                    $aux_fil->es_reserva           = true;   // mismo tope acotado
+                                                    $aux_bodHabilita[$aux_ibpUsa->id] = $aux_fil;
+                                                }
+
+                                                if (count($aux_bodHabilita)) {
+                                                    $stockProdRows = collect(array_values($aux_bodHabilita));
+                                                }
+                                            }
                                         }
                                         ?>
                                         <?php
@@ -958,6 +1013,14 @@
                                                                        disponible y se ofrece como una fila mas. */
                                                                     $aux_libreSinLote = round($aux_dispBodega - $lotesRow->sum('cant_disponible'), 2);
                                                                     if ($aux_libreSinLote < 0) { $aux_libreSinLote = 0; }
+                                                                    /* Si la bodega se ofrece por una reserva a su nombre -o por
+                                                                       ser una que esta solicitud ya usa-, el tope es eso y no
+                                                                       todo lo que el item podria tomar de la bodega: el stock
+                                                                       libre no se le ofrece. Mas abajo se respeta igual la
+                                                                       regla de no bajar de lo ya guardado. */
+                                                                    if (!empty($spRow->es_reserva)) {
+                                                                        $aux_libreSinLote = min($aux_libreSinLote, (float) $spRow->cant_prod);
+                                                                    }
                                                                     /* Cuanto de lo guardado se precarga en lotes DE ESTA bodega:
                                                                        lo usa la fila "sin lote" de mas abajo para saber cuanto
                                                                        de esta bodega se guardo sin lote. */
@@ -1216,7 +1279,10 @@
                                                            bajaria sola la cantidad que la solicitud ya tenia. */
                                                         $aux_topeSinLote = max($aux_libreSinLote, $aux_sinLoteGuardado);
                                                     ?>
-                                                    @if(count($lotesRow) and $aux_topeSinLote > 0)
+                                                    {{-- O cuando la bodega entro por una reserva a su nombre o por estar
+                                                         ya usada por esta solicitud: ahi no hay lotes que acompanar y esta
+                                                         es la unica fila. --}}
+                                                    @if($aux_topeSinLote > 0 and (count($lotesRow) or !empty($spRow->es_reserva)))
                                                     <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:#eef7ee;">
                                                         <td style="display:none;">
                                                             {{-- opdetregprod_id en 0: el guardado la reconoce como "sin lote" y
@@ -1245,7 +1311,9 @@
                                                                         tomar en total, no solo el stock de produccion: esto
                                                                         justamente no viene de produccion. --}}
                                                                    data-cantkg-total="0"
-                                                                   data-stock-bodega="{{max($aux_dispBodega, $aux_invcantBod)}}"
+                                                                   {{-- Si la bodega viene de una reserva a su nombre, el techo es
+                                                                        lo reservado; nunca por debajo de lo ya guardado. --}}
+                                                                   data-stock-bodega="{{!empty($spRow->es_reserva) ? max(min($aux_dispBodega, (float) $spRow->cant_prod), $aux_invcantBod) : max($aux_dispBodega, $aux_invcantBod)}}"
                                                                    {{-- Mismo techo que las filas de lote --}}
                                                                    data-max-item="{{$aux_saldo + $detalle->cantsoldesp}}"
                                                                    value="{{$aux_sinLoteGuardado}}"

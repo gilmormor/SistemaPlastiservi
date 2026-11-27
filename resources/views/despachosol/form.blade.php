@@ -693,6 +693,27 @@
                                                 ->groupBy('imd.invbodegaproducto_id', 'ib.sucursal_id')
                                                 ->having('cant_prod', '>', 0)
                                                 ->get();
+
+                                            /* Cuarta via: stock RESERVADO a nombre de este cliente o de
+                                               esta nota de venta.
+
+                                               Un producto que se fabrica a medida pero cuyo stock entro por
+                                               inventario -ajustes, entradas manuales- no tiene ningun lote
+                                               de produccion, y sin lote no hay nada que reasignarle: la
+                                               pantalla decia "En proceso de fabricacion" y no quedaba
+                                               ninguna via, aunque hubiera material en bodega apartado a su
+                                               nombre. La unica salida era fabricar de nuevo teniendo stock.
+
+                                               Solo entra cuando las otras tres no encontraron nada, y solo
+                                               lo reservado: el stock libre no se ofrece, porque nadie
+                                               decidio que sea para este cliente. Sin reservas a su nombre
+                                               devuelve vacio y la pantalla se comporta como antes. */
+                                            if ($stockProdRows->isEmpty()) {
+                                                $aux_bodResv = \App\Models\StockReserva::bodegasReservadasParaNvdet($detalle->id);
+                                                if (count($aux_bodResv)) {
+                                                    $stockProdRows = collect($aux_bodResv);
+                                                }
+                                            }
                                         }
                                         ?>
                                         <?php
@@ -983,6 +1004,13 @@
                                                                        disponible y se ofrece como una fila mas. */
                                                                     $aux_libreSinLote = round($aux_dispBodega - $lotesRow->sum('cant_disponible'), 2);
                                                                     if ($aux_libreSinLote < 0) { $aux_libreSinLote = 0; }
+                                                                    /* Si la bodega se ofrece por una reserva a nombre del cliente
+                                                                       -la cuarta via-, el tope es lo reservado y no todo lo que
+                                                                       el item podria tomar: el stock libre de esa bodega no se
+                                                                       le ofrece, solo lo que alguien aparto para el. */
+                                                                    if (!empty($spRow->es_reserva)) {
+                                                                        $aux_libreSinLote = min($aux_libreSinLote, (float) $spRow->cant_prod);
+                                                                    }
                                                                     $aux_stockDisp = count($lotesRow)
                                                                         ? $lotesRow->sum('cant_disponible') + $aux_libreSinLote
                                                                         : $spRow->cant_prod;
@@ -1148,7 +1176,9 @@
                                                          fila mas, con su propio tope, y al guardar NO genera fila de
                                                          trazabilidad porque no hay lote que declarar. Si la bodega no
                                                          tiene nada sin lote la fila no aparece y todo queda como antes. --}}
-                                                    @if(count($lotesRow) and $aux_libreSinLote > 0)
+                                                    {{-- O cuando la bodega entro por una reserva a nombre del cliente:
+                                                         ahi no hay lotes que acompanar y esta es la unica fila. --}}
+                                                    @if($aux_libreSinLote > 0 and (count($lotesRow) or !empty($spRow->es_reserva)))
                                                     <tr class="lote-prod-row" data-ibp="{{$invbodegaproducto->id}}" style="background:#eef7ee;">
                                                         <td style="display:none;">
                                                             {{-- opdetregprod_id en 0: el guardado la reconoce como "sin lote".
@@ -1176,7 +1206,9 @@
                                                                         tomar en total, no solo el stock de produccion: esto
                                                                         justamente no viene de produccion. --}}
                                                                    data-cantkg-total="0"
-                                                                   data-stock-bodega="{{$aux_dispBodega}}"
+                                                                   {{-- Si la bodega viene de una reserva a su nombre, el techo es
+                                                                        lo reservado, no todo lo que podria tomar de esa bodega. --}}
+                                                                   data-stock-bodega="{{!empty($spRow->es_reserva) ? min($aux_dispBodega, (float) $spRow->cant_prod) : $aux_dispBodega}}"
                                                                    {{-- Mismo techo que las filas de lote: lo que al item le queda
                                                                         por solicitar. --}}
                                                                    data-max-item="{{$aux_saldo}}"

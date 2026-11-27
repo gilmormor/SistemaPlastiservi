@@ -370,4 +370,73 @@ class StockReserva extends Model
             'libre'          => round(max($aux_total - $aux_suyo, 0), 2),
         ];
     }
+
+    /**
+     * Bodegas con stock reservado a nombre de este item o de su cliente.
+     *
+     * Sirve para que un item que requiere fabricacion pueda despachar material
+     * apartado para el. Hace falta porque un producto cuyo stock entro por
+     * inventario -ajustes, entradas manuales- no tiene ningun lote de
+     * produccion, y sin lote no hay nada que reasignarle: quedaba bloqueado
+     * para siempre aunque el material estuviera en bodega y apartado a su
+     * nombre.
+     *
+     * Solo lo RESERVADO. El stock libre no entra: crear la reserva es un acto
+     * deliberado -alguien eligio producto, cliente y cantidad- y esa es la
+     * decision que habilita el despacho de un producto que se fabrica a
+     * medida. Sin reserva, la pantalla sigue diciendo "En proceso de
+     * fabricacion".
+     *
+     * Devuelve filas con la misma forma que las de $stockProdRows, mas la
+     * marca es_reserva para que la pantalla sepa de donde salieron.
+     */
+    public static function bodegasReservadasParaNvdet($notaventadetalle_id)
+    {
+        $aux_nvdet = DB::table('notaventadetalle as nvd')
+            ->join('notaventa as nv', 'nv.id', '=', 'nvd.notaventa_id')
+            ->where('nvd.id', (int) $notaventadetalle_id)
+            ->select('nvd.producto_id', 'nv.cliente_id', 'nv.sucursal_id')
+            ->first();
+
+        if (!$aux_nvdet) {
+            return [];
+        }
+
+        $aux_filas = self::vigentes()
+            ->join('invbodegaproducto as ibp', 'ibp.id', '=', 'stockreserva.invbodegaproducto_id')
+            ->join('invbodega as ib', 'ib.id', '=', 'ibp.invbodega_id')
+            ->where('ibp.producto_id', $aux_nvdet->producto_id)
+            ->where('ib.tipo', 2)                       // solo bodegas de venta
+            ->where('ib.activo', 1)
+            ->where('ib.sucursal_id', $aux_nvdet->sucursal_id)
+            ->where(function ($q) use ($notaventadetalle_id, $aux_nvdet) {
+                $q->where('stockreserva.notaventadetalle_id', (int) $notaventadetalle_id);
+                if ($aux_nvdet->cliente_id) {
+                    $q->orWhere('stockreserva.cliente_id', $aux_nvdet->cliente_id);
+                }
+            })
+            ->groupBy('ibp.id', 'ib.id', 'ib.sucursal_id')
+            ->select(
+                'ib.id as invbodega_id',
+                'ibp.id as invbodegaproducto_id',
+                'ib.nombre as bodega_nombre',
+                'ib.nomabre as bodega_nomabre',
+                'ib.sucursal_id as bodega_sucursal_id',
+                DB::raw('SUM(stockreserva.cant) as cant_prod'),
+                'ibp.stock as stock_bodega'
+            )->get();
+
+        $aux_res = [];
+        foreach ($aux_filas as $aux_f) {
+            /* Lo reservado no puede superar lo que hay: una reserva vieja sobre
+               stock ya despachado no habilita material que no existe. */
+            $aux_f->cant_prod  = round(min((float) $aux_f->cant_prod, (float) $aux_f->stock_bodega), 2);
+            $aux_f->es_reserva = true;
+            if ($aux_f->cant_prod > 0) {
+                $aux_res[] = $aux_f;
+            }
+        }
+
+        return $aux_res;
+    }
 }
