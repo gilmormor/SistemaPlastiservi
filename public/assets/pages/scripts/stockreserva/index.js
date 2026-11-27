@@ -30,15 +30,36 @@ $(document).ready(function () {
         $('#myModalBuscarProd').modal('show');
     });
 
-    /* Al cambiar el producto se consultan sus bodegas. Se escucha change y no
-       input porque el modal de busqueda rellena el campo de una vez. */
-    $('#producto_idPxP').on('change input', function () {
-        var aux_id = $.trim($(this).val()).split(',')[0];
-        if (aux_id === '') {
-            limpiarBodegas();
-            return;
+    /* Al cambiar el producto se consultan sus bodegas, pero NUNCA por cada
+       tecla: escuchando 'input' escribir 2069 lanzaba cuatro consultas al
+       servidor -2, 20, 206, 2069- y si la respuesta de una lenta llegaba
+       despues de la ultima, la pantalla terminaba mostrando las bodegas del
+       codigo equivocado.
+
+       'change' dispara al salir del campo y solo si el valor cambio, que es
+       justo lo que se quiere. Mismo patron que el filtro #sr-f-producto de
+       mas abajo. */
+    $('#producto_idPxP').on('change', function () {
+        consultarProductoEscrito();
+    });
+
+    /* Enter consulta igual, aunque el codigo no haya cambiado: es la forma
+       natural de reintentar sin tener que salir y volver al campo. */
+    $('#producto_idPxP').on('keypress', function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            consultarProductoEscrito();
         }
-        consultarStock(aux_id);
+    });
+
+    /* Al aceptar en el modal de busqueda, general.js escribe el codigo con
+       .val(), que no dispara ningun evento: sin esto, elegir del modal se
+       quedaria sin consultar. Su handler se registra antes que este -general.js
+       se carga primero-, asi que aqui el campo ya tiene el valor.
+       Solo se AGREGA un oyente desde el js de esta pantalla: general.js no se
+       toca, que lo cargan todas las demas. */
+    $('#aceptarmbp').on('click', function () {
+        consultarProductoEscrito();
     });
 
     /* Solo digitos en los campos de id */
@@ -134,6 +155,17 @@ function numeroDe(aux_txt) {
         aux_txt = aux_txt.replace(/\./g, '').replace(',', '.');
     }
     return parseFloat(aux_txt) || 0;
+}
+
+/* Consulta las bodegas del codigo que haya en el campo. Si esta vacio, limpia:
+   es el mismo comportamiento que tenia el handler anterior. */
+function consultarProductoEscrito() {
+    var aux_id = $.trim($('#producto_idPxP').val()).split(',')[0];
+    if (aux_id === '') {
+        limpiarBodegas();
+        return;
+    }
+    consultarStock(aux_id);
 }
 
 function limpiarBodegas() {
