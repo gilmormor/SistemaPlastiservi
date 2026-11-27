@@ -265,6 +265,15 @@
                                             ->where('despachosoldet_id', $detalle->id)
                                             ->whereNotNull('opdetregprod_id')   // sin lote no hay cadena CC que validar
                                             ->get();
+
+                                        /* Lo que la solicitud tomo de stock que NO viene de produccion.
+                                           Hay que mostrarlo: sin esto la pantalla ponia la etiqueta del
+                                           lote junto al total de la bodega y parecia que todo venia de
+                                           ese lote, cuando puede ser solo una parte. */
+                                        $aux_sinLoteOrd = (float) DB::table('despachosoldet_opdetregprod')
+                                            ->where('despachosoldet_id', $detalle->id)
+                                            ->whereNull('opdetregprod_id')
+                                            ->sum('cant');
                                         $ccLotesBloqueados = [];
                                         foreach ($lotesAsigOrd as $loteAsig) {
                                             $ccVal = \App\Models\CcValidacion::verificarCadenaDespacho($loteAsig->opdetregprod_id);
@@ -478,18 +487,31 @@
                                                                             </span>
                                                                         @endif
                                                                     @endforeach
-                                                                    {{-- Lotes de producción asignados (solo en bodega picking; vacío si el producto no requiere fabricación) --}}
-                                                                    @if(array_key_exists($invbodegaproducto->id . '-' . $detalle->id, $arrayBodegasPicking) && $lotesAsigOrd->isNotEmpty())
-                                                                        <div style="margin-top:3px;">
-                                                                            @foreach($lotesAsigOrd as $loteAsig)
-                                                                                <a href="javascript:void(0)"
-                                                                                   onclick="verEtiquetaEtapaConPermiso({{$loteAsig->opdetregprod_id}}, 'ver-etiqueta-regprod')"
-                                                                                   title="Ver etiqueta — Lote de producción #{{$loteAsig->opdetregprod_id}}"
-                                                                                   style="color:#2980b9;font-weight:600;font-size:11px;display:inline-block;margin-top:1px;">
-                                                                                    <i class="fa fa-tag"></i> Lote-{{$loteAsig->opdetregprod_id}}
-                                                                                </a>
-                                                                            @endforeach
-                                                                        </div>
+                                                                    {{-- De donde viene lo que hay en picking. El detalle va en un
+                                                                         modal y no debajo del campo: con varios lotes la fila crecia
+                                                                         sin control. Los datos viajan en el enlace, asi que abrirlo
+                                                                         no cuesta una consulta mas. --}}
+                                                                    @php
+                                                                        $aux_origenOrd = [];
+                                                                        foreach ($lotesAsigOrd as $aux_lo) {
+                                                                            $aux_origenOrd[] = [
+                                                                                'lote' => $aux_lo->opdetregprod_id,
+                                                                                'cant' => (float) $aux_lo->cant,
+                                                                            ];
+                                                                        }
+                                                                        if ($aux_sinLoteOrd > 0) {
+                                                                            $aux_origenOrd[] = ['lote' => null, 'cant' => $aux_sinLoteOrd];
+                                                                        }
+                                                                    @endphp
+                                                                    @if(array_key_exists($invbodegaproducto->id . '-' . $detalle->id, $arrayBodegasPicking) && count($aux_origenOrd))
+                                                                        <a href="javascript:void(0)" class="od-ver-origen tooltipsC"
+                                                                           data-bodega="{{$invbodegaproducto->invbodega->nombre}}"
+                                                                           data-producto="{{$detalle->notaventadetalle->producto_id}}"
+                                                                           data-origen="{{json_encode($aux_origenOrd)}}"
+                                                                           title="Ver de qué lotes viene este material"
+                                                                           style="color:#2980b9;font-weight:600;font-size:11px;display:block;margin-top:2px;">
+                                                                            <i class="fa fa-tag"></i> Ver origen
+                                                                        </a>
                                                                     @endif
                                                                 </td>
                                                             </tr>
@@ -640,3 +662,20 @@
 
 {{-- Modal etiqueta de lote de producción (verEtiquetaEtapaConPermiso en general.js) --}}
 @include('generales.modaletiquetaetapa')
+
+{{-- De donde viene el material de una bodega: que parte sale de cada lote de
+     produccion y que parte es stock que no viene de produccion. --}}
+<div class="modal fade" id="modalOrigenBodega" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-tag"></i> <span id="od-origen-titulo"></span></h4>
+            </div>
+            <div class="modal-body" id="od-origen-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

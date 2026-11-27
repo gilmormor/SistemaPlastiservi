@@ -711,3 +711,46 @@ function elibodsob(){ //ELIMINAR BODEGAS SOBRANTES
 		//console.log(aux_staelibod);
 	});	
 }
+
+
+/* ---------------------------------------------------------------------------
+   De donde viene el material de una bodega: que parte sale de cada lote de
+   produccion y que parte es stock que no viene de produccion.
+
+   El detalle viaja en el propio enlace (data-origen), asi que abrirlo no pide
+   nada al servidor. Vive aqui y no en la vista porque el contenido se pinta
+   antes de que el layout cargue jQuery.
+   --------------------------------------------------------------------------- */
+$(document).on('click', '.od-ver-origen', function () {
+	var aux_filas = $(this).data('origen') || [];
+	var aux_bod   = $(this).data('bodega');
+	var aux_prod  = $(this).data('producto');
+
+	$('#od-origen-titulo').text('Producto ' + aux_prod + ' \u2014 ' + aux_bod);
+
+	var h = '<table class="table table-condensed table-bordered" style="font-size:12px;">' +
+			'<thead><tr><th>Origen</th><th class="text-right">Cantidad</th></tr></thead><tbody>';
+	var tot = 0;
+	for (var i = 0; i < aux_filas.length; i++) {
+		var f = aux_filas[i];
+		tot += parseFloat(f.cant) || 0;
+
+		/* Al abrir la etiqueta se le pasa este modal como padre: se oculta y
+		   vuelve solo al cerrarla. */
+		var aux_org = f.lote
+			? '<a href="javascript:void(0)" ' +
+			  'onclick="verEtiquetaEtapaConPermiso(' + f.lote + ', \'ver-etiqueta-regprod\', \'modalOrigenBodega\')" ' +
+			  'title="Ver etiqueta del lote ' + f.lote + '" style="color:#2980b9;font-weight:600;">' +
+			  '<i class="fa fa-tag"></i> Lote #' + f.lote + '</a>'
+			: '<span class="text-muted"><i class="fa fa-cube"></i> Sin lote ' +
+			  '<small>(stock que no viene de producci\u00f3n)</small></span>';
+
+		h += '<tr><td>' + aux_org + '</td>' +
+			 '<td class="text-right"><strong>' + MASKLA(f.cant, 2) + '</strong></td></tr>';
+	}
+	h += '</tbody><tfoot><tr><th class="text-right">Total</th>' +
+		 '<th class="text-right">' + MASKLA(tot, 2) + '</th></tr></tfoot></table>';
+
+	$('#od-origen-body').html(h);
+	$('#modalOrigenBodega').modal('show');
+});
